@@ -1,0 +1,97 @@
+* For my logging computers, I typically use a small/cheap PC running the latest Ubuntu release.
+
+* I configure it to use NTP to keep time going fairly accurately...
+
+# /etc/ntp.conf, configuration for ntpd
+
+Look in the noaadata/etc/ntp.conf for an example.
+
+TODO: provide an easy to setup analysis of how well timing does.
+
+* Then edit the logais script and place it in /etc/init.d/.  Make sure
+  to change where the data logging is occurring and as which user (default to data).  We
+  recommend creating a "data" user The serial logger should be setup
+  something like this:
+
+./serial-logger --port=/dev/ttyS2 --log-prefix=ais- --uscg-format --station-id mawhoi --timeout=30 --mark-timeouts --verbose --enable-tcp-out
+
+The above will configure it to log to files with one per day.  It will
+also respond (only at localhost) to a socket connection so that you
+can write whatever that gets the messages and forwards them on.  The
+log file will look like this...
+
+# START LOGGING UTC seconds since the epoch: 1202774494.83
+# SPEED:       38400
+# PORT:        /dev/ttyS2
+# TIMEOUT:     300.0
+# STATIONID:   nhjel
+# DAEMON MODE: True
+!AIVDM,1,1,,B,JF0E0>9qPArui4g`lh<,2*6C,rnhjel,1202774752.91
+# MARK: 1202775052.88
+# MARK: 1202775352.85
+...
+# MARK: 1202793097.8
+# MARK: 1202793397.77
+!AIVDM,1,1,,B,381520m000JstL>HbOL=0CW<0000,0*46,rnhjel,1202793399.59
+# MARK: 1202793699.57
+# MARK: 1202793999.54
+# MARK: 1202794299.51
+!AIVDM,1,1,,B,381520m000JstLLHbOMu0CW@0000,0*01,rnhjel,1202794480.37
+!AIVDM,2,1,3,B,N81Q1;0H000100h000300h02l<<h0h<3<0h240180P0009P102BD1iP0,0*4D,rnh
+jel,1202794592.79
+!AIVDM,2,2,3,B,60l;09000<400<<3<3h0<000k<0P@00,2*6B,rnhjel,1202794592.81
+!AIVDM,1,1,,B,381520m000JstLFHbOIu0CW>0000,0*71,rnhjel,1202794840.13
+# MARK: 1202795140.1
+# MARK: 1202795440.07
+# MARK: 1202795740.05
+# MARK: 1202796040.02
+!AIVDM,1,1,,B,35MmU85P00Jsr3hHbe6;@?v80000,0*68,rnhjel,1202796124.1
+# MARK: 1202796424.07
+!AIVDM,1,1,,B,381520m000JstLrHbOFM0CWB0000,0*0E,rnhjel,1202796641.3
+# MARK: 1202796941.27
+# MARK: 1202797241.25
+
+* Try decoding a message by hand...
+
+./ais_msg_3.py -d '!AIVDM,1,1,,B,381520m000JstLrHbOFM0CWB0000,0*0E,rnhjel,1202796641.3'
+position:
+        MessageID:          3
+        RepeatIndicator:    0
+        UserID:             538001923
+        NavigationStatus:   5
+        ROT:                0
+        SOG:                0
+        PositionAccuracy:   0
+        longitude:          -70.79099166666666666666666667
+        latitude:           43.103295
+        COG:                332.9
+        TrueHeading:        115
+        TimeStamp:          41
+        RegionalReserved:   0
+        Spare:              0
+        RAIM:               False
+        state_syncstate:    0
+        state_slottimeout:  0
+        state_slotoffset:   0
+
+or to google earth...
+
+./ais_msg_3.py -d -T kml-full '!AIVDM,1,1,,B,381520m000JstLrHbOFM0CWB0000,0*0E,rnhjel,1202796641.3' > foo.kml
+
+
+* I then use ais-forward init script to put the data to an
+  ais-net-to-postgis to load the data into postgis in real time.
+
+* I am still working on web interfaces to the data, but I am doing
+  both django and mapserver displays.
+
+----------------------------------------------------------------------
+Additional material:
+
+Add "data" user to the dialout group in /etc/group
+
+chown data:data /var/run/data
+chown -R data:data /var/run/data
+chown -R data:data /var/log/datalogging/
+
+update-rc.d

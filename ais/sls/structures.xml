@@ -1,0 +1,56 @@
+<!-- <?xml version="1.0" encoding="utf-8"?> -->
+<!-- FIX: what is the best way to do an include file? -->
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+<a-bunch-of-structs>
+
+  <struct name="sls_pos" postgis_type="POINT">
+    <description>Generic representation of position on the WGS84 sphereoid</description>
+    <field name="longitude" numberofbits="25" type="decimal">
+      <description>East West location</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>-122.16328</testvalue>  <!-- Stanford - Trancos -->
+    </field>
+    
+    <field name="latitude" numberofbits="24" type="decimal">
+      <description>North South location</description>
+      <range min="-90" max="90"/>
+      <unavailable>91</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>37.42446</testvalue>  <!-- Stanford - Trancos -->
+
+    </field>
+  </struct>
+
+  <struct name="sls_time">
+    <description>Time stamp in UTC for the St Lawrence Seaway</description>
+    <field name="month" numberofbits="4" type="uint">
+      <description>month 1..12</description>
+      <testvalue>2</testvalue>
+    </field>
+ 	
+    <field name="day" numberofbits="5" type="uint">
+      <description>day of the month 1..31</description>
+      <testvalue>28</testvalue>
+    </field>
+    <field name="hour" numberofbits="5" type="uint">
+      <description>UTC hours 0..23</description>
+      <testvalue>23</testvalue>
+    </field>
+    <field name="min" numberofbits="6" type="uint">
+      <description>minutes</description>
+      <testvalue>45</testvalue>
+    </field>
+  </struct> <!-- sls_time -->
+
+
+</a-bunch-of-structs>

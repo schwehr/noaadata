@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<!DOCTYPE doc SYSTEM "http://vislab-ccom.unh.edu/~schwehr/somewhere"
+[
+	  <!ENTITY slsinc SYSTEM "structures.xml">
+]>
+-->
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="../structs-inc.xml"/>
+  <xi:include href="structures.xml"/>
+
+  <!-- ============================================================ -->
+  <!-- &slsinc; -->
+  <!-- ============================================================ -->
+
+  <!-- this fills out lockorder -->
+
+  <message name="sls_lockorder" aismsgnum="8" dac="366 316" fid="1" efid="1">
+    <description>St Lawrance Seaway wind information</description>
+
+    <field name="vessel" numberofbits="6" arraylength="15" type="aisstr6">
+      <description>Vessel Name</description>
+      <unavailable>@@@@@@@@@@@@@@@</unavailable>
+      <testvalue>ICEBERG@@@@@@@@</testvalue> <!-- must be uppercase -->
+    </field>
+
+
+    <field name="direction" numberofbits="1" type="bool">
+      <description>Up bound/Down bound</description>
+      <lookuptable>
+	<entry key="0">Down bound</entry>
+	<entry key="1">Up bound</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="ETA" struct="sls_time">
+      <description>Estimated time of arrival</description>
+    </include-struct>
+
+    <field name="reserved" numberofbits="19" type="uint">
+      <description>Reserved bits for future use</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- sls_waterlevel -->
+
+</ais-binary-message>

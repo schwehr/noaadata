@@ -1,0 +1,228 @@
+#!/usr/bin/env python
+
+__version__ = '$Revision: 8449 $'.split()[1]
+__date__ = '$Date: 2008-01-31 11:11:50 -0500 (Thu, 31 Jan 2008) $'.split()[1]
+__author__ = 'Kurt Schwehr'
+
+__doc__="""
+Convert xy and stuff to a kml.
+
+@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
+@requires: U{pyproj<>}
+@requires: grid.py
+
+@author: """+__author__+"""
+@version: """ + __version__ +"""
+@var __date__: Date of last svn commit
+@undocumented: __version__ __author__ __doc__ parser
+@status: under development
+@license: GPL v2
+@since: 2007-Aug-22
+@organization: U{CCOM<http://ccom.unh.edu/>}
+
+"""
+
+import math,sys,os
+import sys
+import time
+
+def deg2rad(degrees):
+    return (degrees / 180.) * math.pi
+def rad2deg(radians):
+    return (radians / math.pi) * 180.
+
+
+def getCircle(cx,cy,radius,stepsize=15):
+    '''
+
+    Make a circle.  Google Earth wants counter clockwise.  It is up to
+    you to close the circle and to project the results to something
+    more displayable.  E.g. if you convert from geographic (lon,lat) to
+    UTM and give a radius in meters, then you have to do the inverse
+    projection.
+    
+    @param cx: center x coord in native units
+    @param stepsize: how many degrees between vertex
+    
+    '''
+    pts=[]
+    for theta in range(0,360,stepsize):
+        thetar=deg2rad(90-theta)
+        x = cx+radius * math.cos(thetar)
+        y = cy+radius * math.sin(thetar)
+        pts.append((x,y))
+    pts.reverse()
+    return pts
+
+
+def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpacity=.5,lineWidth=5,indent='    ',styleName='style'):
+    '''
+    @param polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
+    '''
+    o=out
+    lo = (int(lineOpacity*255)).__hex__()
+    lo = lo[lo.find('x')+1:]
+    if len(lo)==1: lo='0'+lo
+    po = (int(polyOpacity*255)).__hex__()
+    po = po[po.find('x')+1:]
+    if len(po)==1: po='0'+po
+    
+    o.write(indent+'<Style id="'+styleName+'">\n')
+    o.write(indent+'\t<LineStyle>'+'\n')
+    o.write(indent+'\t  <color>'+lo+str(lineColor)+'</color>\n')
+    o.write(indent+'\t  <width>'+str(lineWidth)+'</width>\n')
+    o.write(indent+'\t</LineStyle>'+'\n')
+    o.write(indent+'\t<PolyStyle>'+'\n')
+    o.write(indent+'\t  <color>'+po+str(polyColor)+'</color>\n')
+    o.write(indent+'\t</PolyStyle>'+'\n')
+    o.write(indent+'</Style>'+'\n')
+
+
+if __name__ == '__main__':
+    from optparse import OptionParser
+
+    parser = OptionParser(usage="%prog [options] [file1] [file2] ...",
+                          version="%prog "+__version__+' ('+__date__+')')
+
+    parser.add_option('-r','--radius',dest='radius'
+                      ,default=1852
+                      , type='float'
+                      ,help='Half width of the shape if not a point'
+                      +' [default: %default m (1 nautical mile)]')
+
+    shapeChoices = ('point','circle','square')
+    parser.add_option('-s','--shape=type'
+                      ,choices=shapeChoices
+                      ,type='choice'
+                      ,dest='shapeType'
+                      ,default='point'
+                      ,help='What shape to use ('+', '.join(shapeChoices)+') [default: %default]')
+
+
+    parser.add_option('-S','--with-style',dest='withStyle'
+                      ,default=False
+                      , action='store_true'
+                      ,help='Include a style reference')
+
+
+    parser.add_option('--line-color'  ,dest='lineColor'  ,type='string',default='a0a0a0',help=' [default: %default (gray)]')
+    parser.add_option('--poly-color'  ,dest='polyColor'  ,type='string',default='080808',help=' [default: %default (gray)]')
+    parser.add_option('--poly-opacity',dest='polyOpacity',type='float' ,default=0.25    ,help=' 0..1 [default: %default]')
+    parser.add_option('--line-opacity',dest='lineOpacity',type='float' ,default=0.5     ,help=' 0..1 [default: %default]')
+    parser.add_option('--line-width'  ,dest='lineWidth'  ,type='float',default=5        ,help=' [default: %default]')
+    parser.add_option('--style-name',dest='styleName',default='style',help='Name of the style for the polygon')
+
+    parser.add_option('-Z','--height',dest='z'
+                      ,default=10
+                      , type='float'
+                      ,help='Height above the surface'
+                      +' [default: %default m ]')
+
+    parser.add_option('--stagger-height',dest='staggerHeight'
+                      ,default=None
+                      , type='float'
+                      ,help='Stagger every other item by this height to prevent z-fighting'
+                      +' [default: %default m (off) ]')
+
+
+    parser.add_option('-z','--zone',dest='zone',type='int', default=19,
+                        help='UTM Zone (19 for UNH) [default: %default]')
+
+    (options,args) = parser.parse_args()
+
+    shapeType=options.shapeType
+    radius = options.radius
+    z = options.z
+    zOrig = z
+
+    from pyproj import Proj
+
+    params={'proj':'utm','zone':int(options.zone)}
+    proj = Proj(params)
+
+    print '''<?xml version="1.0" encoding="UTF-8"?>
+<!-- Produced with noaadata/xy2kml.py (code by Kurt Schwehr) -->
+<kml xmlns="http://earth.google.com/kml/2.2">
+  <Document>'''
+    if options.withStyle:
+        addStyle(sys.stdout
+                 ,lineColor=options.lineColor
+                 ,polyColor=options.polyColor
+                 ,polyOpacity=options.polyOpacity
+                 ,lineOpacity=options.lineOpacity
+                 ,lineWidth=options.lineWidth
+#                 ,indent='    '
+                 ,styleName=options.styleName
+                 )
+    print '''    <Folder>
+'''
+    itemNum=0 # For staggering/stuttering the height 
+    for filename in args:
+        for line in file(filename):
+            fields = line.split()
+            x,y = fields[:2]
+            if x == '181':
+                continue # bad data - typical for AIS positions that are not valid
+
+            if 'point'==shapeType:
+                print '      <Placemark>'
+                if len(fields)>2:
+                    print '        <name>'+fields[-1]+'</name>'
+                print '        <description>'+' '.join(fields[2:])+'</description>'
+                print '        <Point><coordinates>'+x+','+y+',0</coordinates></Point>'
+                print '      </Placemark>'
+
+            if 'square'==shapeType:
+                xutm,yutm=proj(float(x),float(y))
+                xmin,ymin = proj(xutm-radius,yutm-radius,inverse=True)
+                xmax,ymax = proj(xutm+radius,yutm+radius,inverse=True)
+                xmin=str(xmin)
+                ymin=str(ymin)
+                xmax=str(xmax)
+                ymax=str(ymax)
+                print '      <Placemark>'
+                if len(fields)>2:
+                    print '        <name>'+fields[-1]+'</name>'
+                #print '        <description>'+' '.join(fields[2:])+'</description>'
+                print '        <Polygon><outerBoundaryIs><LinearRing><coordinates>'
+                print '          '+xmin+','+ymax+','+str(z)
+                print '          '+xmin+','+ymin+','+str(z)
+                print '          '+xmax+','+ymin+','+str(z)
+                print '          '+xmax+','+ymax+','+str(z)
+                print '          '+xmin+','+ymax+','+str(z)
+                print '        </coordinates></LinearRing></outerBoundaryIs></Polygon>'
+                print '      </Placemark>'
+
+
+            if 'circle'==shapeType:
+                itemNum+=1
+                if options.staggerHeight!=None:
+                    if itemNum%2==0: z=zOrig
+                    else: z = zOrig+options.staggerHeight
+                
+                xutm,yutm=proj(float(x),float(y))
+                pts = getCircle(xutm,yutm,radius)
+                print '      <Placemark>'
+                if len(fields)>2:
+                    print '        <name>'+fields[-1]+'</name>'
+                if options.withStyle: print '        <styleUrl>#'+options.styleName+'</styleUrl>'
+                #print '        <description>'+' '.join(fields[2:])+'</description>'
+                print '        <Polygon>'
+                print '          <altitudeMode>relativeToGround</altitudeMode>'
+                print '            <outerBoundaryIs><LinearRing><coordinates>'
+                #print '          '+xmin+','+ymax+','+str(z)
+                for pt in pts:
+                    x,y = proj(pt[0],pt[1],inverse=True)
+                    print '            '+str(x)+','+str(y)+','+str(z)
+                # Close the circle
+                x,y = proj(pts[0][0],pts[0][1],inverse=True)
+                print '            '+str(x)+','+str(y)+','+str(z)
+                print '        </coordinates></LinearRing></outerBoundaryIs></Polygon>'
+                print '      </Placemark>'
+
+
+    print '''
+    </Folder>
+  </Document>
+</kml>
+'''

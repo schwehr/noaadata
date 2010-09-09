@@ -1,0 +1,10 @@
+#   * Eastern  N-S line - 68.50 W -*- shell-script-*-
+#   * Western  N-S line - 69.30 W
+#   * Southern E-W line - 41.00 N
+#   * Northern E-W line - 42.15 N
+
+ -69.30 42.15
+ -68.50 42.15
+ -68.50 41
+ -69.30 41
+ -69.30 42.15

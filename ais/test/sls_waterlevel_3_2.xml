@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+
+MsgNum, LineNum, MM/DD HH:MM, StnID, Longitude, Latitude, Water Level Type, Water Level, Ref Datum
+000001, 000001, 10/01 03:56, SLBL, -73.518350, 45.496667, Depth,  5.58m, IGLD-85
+000001, 000001, 10/01 03:56, CSCL, -73.562267, 45.408000, Depth, 11.76m, IGLD-85
+000001, 000001, 10/01 03:56, CSCU, -73.569567, 45.407983, Depth, 20.79m, IGLD-85
+000001, 000001, 10/01 03:56, B03L, -73.916633, 45.320033, Depth, 21.00m, IGLD-85
+000001, 000001, 09/30 12:00,  CTL, -74.205150, 45.254533, Depth, 46.55m, IGLD-85
+000001, 000001, 10/01 03:56, B04U, -73.929083, 45.299733, Depth, 46.00m, IGLD-85
+
+
+-->
+<aismsg>
+  <notes>Copied the SLS example data from Volpe</notes>
+  <nmea>!AIVDM,3,1,4,A,8030ot1?0@>PSpPPPC<2<oURAU=>T08f@02PSpPPP3C3<oU=d5<U00BH,0*7C,B0003160047,1064981014</nmea>
+  <nmea>!AIVDM,3,2,4,A,@02PSpPPP3C3EoU:A5<TwPPO@02PSpPPP2hk<oRWU5;si0Pl@02O<0PP,0*1A,B0003160047,1064981014</nmea>
+  <nmea>!AIVDM,3,3,4,A,PP3D<oPPEU;M418g@02PSpPPP2hlEoRQgU;j@17p@00,2*63,B0003160047,1064981014</nmea>
+  <nmealong>!AIVDM,1,1,4,A,8030ot1?0@>PSpPPPC<2<oURAU=>T08f@02PSpPPP3C3<oU=d5<U00BH@02PSpPPP3C3EoU:A5<TwPPO@02PSpPPP2hk<oRWU5;si0Pl@02O<0PPPP3D<oPPEU;M418g@02PSpPPP2hlEoRQgU;j@17p@00,2*32</nmealong>
+  <nmeapayload>8030ot1?0@>PSpPPPC<2<oURAU=>T08f@02PSpPPP3C3<oU=d5<U00BH@02PSpPPP3C3EoU:A5<TwPPO@02PSpPPP2hk<oRWU5;si0Pl@02O<0PPPP3D<oPPEU;M418g@02PSpPPP2hlEoRQgU;j@17p@00</nmeapayload>
+  <binary>001000000000000011000000110111111100000001001111000000010000001110100000100011111000100000100000100000010011001100000010001100110111100101100010010001100101001101001110100100000000001000101110010000000000000010100000100011111000100000100000100000000011010011000011001100110111100101001101101100000101001100100101000000000000010010011000010000000000000010100000100011111000100000100000100000000011010011000011010101110111100101001010010001000101001100100100111111100000100000011111010000000000000010100000100011111000100000100000100000000010110000110011001100110111100010100111100101000101001011111011110001000000100000110100010000000000000010011111001100000000100000100000100000100000000011010100001100110111100000100000010101100101001011011101000100000001001000101111010000000000000010100000100011111000100000100000100000000010110000110100010101110111100010100001101111100101001011110010010000000001000111111000010000000000000000</binary>
+  <fields>
+    <group>
+      <field name="time_mon" bits="">10</field>
+      <field name="time_day" bits="">1</field>
+      <field name="time_hr" bits="">3</field>
+      <field name="time_min" bits="">56</field>
+      <field name="stationid" bits="">SLBL</field>
+      <field name="longitude" bits="">-73.518350</field>
+      <field name="latitude" bits="">45.496667</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel" bits="">5.58m</field>
+      <field name="datum" bits="">IGLD-85</field>
+      <field name="reserved" bits="">0</field>
+    </group>
+    <group>
+      <field name="time_mon"       bits="">10</field>
+      <field name="time_day"       bits="">1</field>
+      <field name="time_hr"        bits="">3</field>
+      <field name="time_min"       bits="">56</field>
+      <field name="stationid"      bits="">CSCL</field>
+      <field name="longitude"      bits="">-73.562267</field>
+      <field name="latitude"       bits="">45.408000</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel"     bits="">11.76m</field>
+      <field name="datum"          bits="">IGLD-85</field>
+      <field name="reserved"       bits="">0</field>
+    </group>
+    <group>
+      <field name="time_mon"       bits="">10</field>
+      <field name="time_day"       bits="">1</field>
+      <field name="time_hr"        bits="">3</field>
+      <field name="time_min"       bits="">56</field>
+      <field name="stationid"      bits="">CSCU</field>
+      <field name="longitude"      bits="">-73.569567</field>
+      <field name="latitude"       bits="">45.407983</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel"     bits="">20.79m</field>
+      <field name="datum"          bits="">IGLD-85</field>
+      <field name="reserved"       bits="">0</field>
+    </group>
+    <group>
+      <field name="time_mon"       bits="">10</field>
+      <field name="time_day"       bits="">1</field>
+      <field name="time_hr"        bits="">3</field>
+      <field name="time_min"       bits="">56</field>
+      <field name="stationid"      bits="">B03L</field>
+      <field name="longitude"      bits="">-73.916633</field>
+      <field name="latitude"       bits="">45.320033</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel"     bits="">21.00m</field>
+      <field name="datum"          bits="">IGLD-85</field>
+      <field name="reserved"       bits="">0</field>
+    </group>
+    <group>
+      <field name="time_mon"       bits="">9</field>
+      <field name="time_day"       bits="">30</field>
+      <field name="time_hr"        bits="">12</field>
+      <field name="time_min"       bits="">0</field>
+      <field name="stationid"      bits="">CTL</field>
+      <field name="longitude"      bits="">-74.205150</field>
+      <field name="latitude"       bits="">45.254533</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel"     bits="">46.55m</field>
+      <field name="datum"          bits="">IGLD-85</field>
+      <field name="reserved"       bits="">0</field>
+    </group>
+    <group>
+      <field name="time_mon"       bits="">10</field>
+      <field name="time_day"       bits="">1</field>
+      <field name="time_hr"        bits="">3</field>
+      <field name="time_min"       bits="">56</field>
+      <field name="stationid"      bits="">B04U</field>
+      <field name="longitude"      bits="">-73.929083</field>
+      <field name="latitude"       bits="">45.299733</field>
+      <field name="waterleveltype" bits="">Depth</field>
+      <field name="waterlevel"     bits="">46.00m</field>
+      <field name="datum"          bits="">IGLD-85</field>
+      <field name="reserved"       bits="">0</field>
+    </group>
+  </fields>
+</aismsg>

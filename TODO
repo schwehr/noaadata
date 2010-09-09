@@ -1,0 +1,40 @@
+Make the first line of doc text for messages include the message name
+
+Create the "registry" so it can be proposed to IALA
+
+AIS messages for environmental response
+  A way to report equipment deployment
+
+Add filtering to serial logger... e.g. only log AIVDM or some other
+start string.  Suggested by A. Maitland Bottoms.
+
+See if I can make a serial logger using the python logging module and
+filters to do exactly what serial-logger does including both the logging
+to a file and forwarding to TCP.
+
+Eventually want to put everything under a noaadata namespace, right?
+
+Get almost all code (other than opt parse) out of the scripts directory
+and into better engineered/reusable modules.
+
+Refactor to get all ais related stuff under the ais namespace:  comments?
+Maybe stuff under utils should be just in ais?
+
+  ais
+   |- compiler1
+   |- compiler2 (rewrite the current compiler)
+   |- c_compiler
+   |- util
+   |- db (break the database stuff down somewhat)
+   |- msgs ... itu m 1..64  (all binary messages are in a subdirectory by defining athority)
+       |- ris
+       |- sls
+       |- pawss (probably just alias to sls)
+       |- rtcm (prototype messages_
+       |- uscg? or do I do this by the dac?  dac366
+
+Make a bbox for each station calculator.
+
+ais_build_sqlite3 appears broken
+
+cBitVector for speed

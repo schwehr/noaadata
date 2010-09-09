@@ -1,0 +1,9 @@
+This is rough research code.
+
+You can install it by doing:
+
+python setup.py install --prefix=/where/you/want/it
+
+WARNING: if you just do a python setup.py install, it will install on top of your python libraries.
+
+The Makefile is mostly for the developer.

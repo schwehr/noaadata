@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: waterlevel.xml 7453 2007-11-05 13:11:53Z schwehr $ -->
+<!-- $Revision: 7453 $ -->
+<!-- $Date: 2007-11-05 08:11:53 -0500 (Mon, 05 Nov 2007) $ -->
+
+<!-- Example by Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+
+  <struct name="utcdatetime">
+    <description>Time stamp in UTC</description>
+    <field name="month" numberofbits="4" type="uint">
+      <description>month 1..12</description>
+      <testvalue>2</testvalue>
+    </field>
+ 	
+    <field name="day" numberofbits="5" type="uint">
+      <description>day of the month 1..31</description>
+      <testvalue>28</testvalue>
+    </field>
+    <field name="hour" numberofbits="5" type="uint">
+      <description>UTC hours 0..23</description>
+      <testvalue>23</testvalue>
+    </field>
+    <field name="min" numberofbits="6" type="uint">
+      <description>minutes</description>
+      <testvalue>45</testvalue>
+    </field>
+    <field name="sec" numberofbits="6" type="uint">
+      <description>seconds</description>
+      <testvalue>58</testvalue>
+    </field>
+  </struct> <!-- utcdatetime -->
+
+
+  <!-- ============================================================ -->
+
+  <message name="waterlevel" aismsgnum="8" dac="366" fid="63" efid="2" titlefield="stationid">
+
+    <description>Water level report.  In this case from the NOAA
+Co-Ops 6 minute raw data.  This is <b>DRAFT/PROPOSED</b> message
+format and should not be considered any sort of standard.  The main
+goal is to illustrated the Tide Aware ENC and the AIS XML engine.
+    </description>
+    <note>Prototype only for the Hampton Roads/Elizabeth River 2007 demonstration project</note>
+    <see-also>http://opendap.co-ops.nos.noaa.gov/axis/</see-also>
+    <see-also>http://http://vislab-ccom.unh.edu/~schwehr/ais/waterlevel/</see-also>
+    <!-- <see-also>http://opendap.co-ops.nos.noaa.gov/axis/doc.html</see-also> -->
+
+    <!-- leave this one line so that it may be used just for the payload with a "grep -v ais_header" -->
+    <!-- do not do name mangling on the header.  That would be strange -->
+    <include-struct name="ais_header" struct="msg8_header"><do_not_mangle_name/><description></description></include-struct>
+
+    <!-- binary broadcast message (bbm) header -->
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code</description>
+      <required>366</required>
+    </field>
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Identifier</description>
+      <required>63</required>
+    </field>
+
+    <!-- Kurt Schwehr's suggestion for a much larger name space 0f 4096 message types -->
+    <field name="efid" numberofbits="12" type="uint">
+      <description>extended functional identifier</description>
+      <required>2</required>
+    </field>
+
+
+    <!-- body -->
+
+    <include-struct name="timetag" struct="utcdatetime">
+      <do_not_mangle_name/>
+      <description>Time the measurement represents</description>
+    </include-struct>
+    
+    <!-- number of bits of station id is just to match St. Lawrence Seaway -->
+    <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
+      <description>Character identifier of the station.  Usually a number.</description>
+      <note>station name should be taken from an external lookup table based on stationid</note>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>A234567</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="stationloc" struct="position2d">
+      <do_not_mangle_name/>
+      <description>Location of the sensor taking the water level measurement or position of prediction.</description>
+    </include-struct>
+
+    <!-- <field name="waterlevel" numberofbits="16" type="decimal"> -->
+    <field name="waterlevel" numberofbits="16" type="int">
+      <description>Water level in centimeters</description>
+      <units>cm</units>
+      <unavailable>-32768</unavailable>
+      <testvalue>-97</testvalue>
+    </field>
+
+    <field name="datum" numberofbits="5" type="uint">
+      <description>What reference datum applies to the value</description>
+      <note>Tries to match the first 2 along with the St. Lawrence Seaway.  2 is for Water Level Type of 1?!?</note>
+      <note>Need a good reference to the definition of each</note>
+      <lookuptable>
+	<!-- FIX: need to doc these! -->
+	<entry key="0">MLLW</entry>
+	<entry key="1">IGLD-85</entry>
+	<entry key="2">WaterDepth</entry>
+	<entry key="3">STND</entry>
+	<entry key="4">MHW</entry>
+	<entry key="5">MSL</entry>
+	<entry key="6">NGVD</entry>
+	<entry key="7">NAVD</entry>
+	<entry key="8">WGS-84</entry>
+	<entry key="9">LAT</entry>
+      </lookuptable>
+      <unavailable>31</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="sigma" numberofbits="32" type="float">
+      <description>Standard deviation of 1 second samples used to compute the water level height</description>
+      <note>could easily be make a more compact decimal</note>
+      <units>m</units>
+      <testvalue>-1.234</testvalue>
+    </field>
+
+    <field name="o" numberofbits="8" type="uint">
+      <description>Count of number of samples that fall outside a 3-sigma band about the mean</description>
+      <unavailable>255</unavailable>
+      <testvalue>240</testvalue>
+    </field>
+
+    <!-- FLAGS Based on NOAA Co-ops format -->
+
+    <field name="levelinferred" numberofbits="1" type="bool">
+      <description>indicates that the water level value has been inferred</description>
+      <note>NOAA Co-Ops I flag</note>
+      <testvalue>0</testvalue> <!-- false -->
+    </field>
+
+    <field name="flat_tolerance_exceeded" numberofbits="1" type="bool">
+      <description>flat tolerance limit was exceeded.  Need better descr</description>
+      <note>NOAA Co-Ops F flag</note>
+      <testvalue>1</testvalue> <!-- true -->
+    </field>
+
+    <field name="rate_tolerance_exceeded" numberofbits="1" type="bool">
+      <description>rate of change tolerance limit was exceeded</description>
+      <note>NOAA Co-Ops R flag</note>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="temp_tolerance_exceeded" numberofbits="1" type="bool">
+      <description>temperature difference tolerance limit was exceeded</description>
+      <note>NOAA Co-Ops T flag</note>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="expected_height_exceeded" numberofbits="1" type="bool">
+      <description>either the maximum or minimum expected water level height limit was exceeded</description>
+      <note>NOAA Co-Ops L flag</note>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="link_down" numberofbits="1" type="bool">
+      <description>Unable to communicate with the tide system.  All data invalid</description>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="timeLastMeasured" numberofbits="12" type="udecimal">
+      <description>Time relative since the timetag that the station actually measured a value.</description>
+      <note>This value should be 0 iff levelinfered is False.  Tenths of an hour match well to NOAA's 6 minute reporting interval.</note>
+      <units>hours</units>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <unavailable>409.6</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+  </message> <!-- waterlevel -->
+
+</ais-binary-message>

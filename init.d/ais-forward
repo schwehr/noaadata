@@ -1,0 +1,102 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:        ais-forward
+# Required-Start:  $ntp $log-ais
+# Required-Stop:   
+# Default-Start:   2 3 4 5
+# Default-Stop:    0 1 6
+# Short-Description: Start tide logging daemon
+### END INIT INFO
+
+# FIX: set the required-start to have logais
+
+# Derived from /etc/init.d/ntp on ubuntu 7.04
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/home/data/bin
+
+. /lib/lsb/init-functions
+
+NAME=ais-forward
+RUNASUSER=data
+DAEMON=/home/$RUNASUSER/bin/ais-port-forward
+PIDDIR=/var/run/data
+PIDFILE=$PIDDIR/ais-forward.pid
+LOGDIR=/var/log/datalogging
+LOGFILE=${LOGDIR}/${NAME}.log
+
+test -x $DAEMON || echo "ERROR: can not find forwarding daemon: $DAEMON"  
+test -x $DAEMON || exit 5
+
+#if [ -r /etc/default/$NAME ]; then
+#	. /etc/default/$NAME
+#fi
+
+#if [ -e /etc/ntp.conf.dhcp ]; then
+#	NTPD_OPTS="$NTPD_OPTS -c /etc/ntp.conf.dhcp"
+#fi
+
+UGID=$(getent passwd $RUNASUSER | cut -f 3,4 -d:) || true
+#STATION=nhjel
+#SUBDIR=tide1
+
+
+case $1 in
+	start)
+		log_daemon_msg "Starting ais forwarding server" "$NAME"
+		if [ -z "$UGID" ]; then
+			log_failure_msg "user \"$RUNASUSER\" does not exist"
+			exit 1
+		fi
+
+		if [ ! -d $PIDDIR ]; then
+		    mkdir -p $PIDDIR
+		    chown $RUNASUSER $PIDDIR 
+		fi
+		if [ ! -d $LOGDIR ]; then
+		    mkdir -p $LOGDIR
+		    chown $RUNASUSER $LOGDIR 
+		fi
+
+		# FIX: make this read through a list of loggers to run with parameters
+		# How to control all of the loggers in batch or one at a time?
+		export PYTHONPATH=/home/schwehr/projects/noaadata
+
+  		start-stop-daemon --start --quiet --oknodo --chdir /home/${RUNASUSER}/projects/data --pidfile $PIDFILE --startas $DAEMON -c $RUNASUSER -- --pid-file $PIDFILE --daemon -i 31500 -O gall.sr.unh.edu --log-file=$LOGFILE
+		log_end_msg $?
+  		;;
+	stop)
+		log_daemon_msg "Stopping $NAME server" "$NAME"
+  		start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+		log_end_msg $?
+		rm -f $PIDFILE
+  		;;
+	restart|force-reload)
+		$0 stop && sleep 2 && $0 start
+  		;;
+	try-restart)
+		if $0 status >/dev/null; then
+			$0 restart
+		else
+			exit 0
+		fi
+		;;
+	reload)
+		exit 3
+		;;
+	status)
+		# FIX: why does this not work?
+		pidofproc -p $PIDFILE $DAEMON >/dev/null
+		status=$?
+		if [ $status -eq 0 ]; then
+			log_success_msg "AIS forwarding server is running."
+		else
+			log_failure_msg "AIS forwarding server is not running."
+		fi
+		exit $status
+		;;
+	*)
+		echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}"
+		exit 2
+		;;
+esac

@@ -1,0 +1,100 @@
+Info2: <<
+
+# TODO: make the package appear right with update-alternatives
+Package: noaadata-py%type_pkg[python]
+Type: python (2.5)
+Version: @VERSION@
+Revision: 1
+Description: Python marine AIS library
+DescDetail: <<
+Marine Automatic Indentification System networking library.  noaadata-py
+provides routines to encode and decode bitstreams need to send and
+receive AIS messages.  The package also contains code to talk to
+the NOAA PORTS/CO-OPS waterlevel data through both SOAP and OpenDAP.
+<<
+Source: http://vislab-ccom.unh.edu/~schwehr/software/noaadata/downloads/noaadata-py-%v.tar.bz2
+Source-MD5: @MD5@
+
+Recommends: django-py%type_pkg[python]
+# Or geodjango
+
+Depends: <<
+  python%type_pkg[python]
+  , pysqlite2-py%type_pkg[python]
+  , bitvector-py%type_pkg[python]
+  , pyserial-py%type_pkg[python]
+  , postgis83
+  , psycopg2-py25
+  , pyexcelerator-py%type_pkg[python]
+  , pyproj-py%type_pkg[python]
+  , magicdate-py%type_pkg[python]
+  , pcl-core-py%type_pkg[python]
+  , pytz-py%type_pkg[python]
+<<
+# Needs pcl, I had pcl-py%type_pkg[python], but I think that was 
+
+BuildDepends: help2man, code2html, man2html, epydoc-py%type_pkg[python]
+
+CompileScript: <<
+  echo Nothing to compile
+<<
+
+InstallScript: <<
+ #!/bin/bash -ev
+
+ # FIX: setup.py should do most of this instead
+ mkdir -p %i/share/doc/%n/msgs/{rtcm,sls,ris,test}
+# cp -r html %i/share/doc/%n/
+ cp -r ais/*{xml,html} %i/share/doc/%n/msgs/
+ for subdir in rtcm sls ris test; do
+    cp -r ais/$subdir/*.xml %i/share/doc/%n/msgs/$subdir
+    #cp -r ais/$subdir/*.{xml,html} %i/share/doc/%n/msgs/$subdir
+ done
+
+ #cp -r html-man %i/share/%n/
+ #cp -r html-scripts %i/share/%n/
+ #cp -r html-test %i/share/%n/
+ #mkdir -p %i/share/man/man1
+ #cp man/* %i/share/man/man1
+
+
+ %p/bin/python%type_raw[python] setup.py install --root=%d
+
+ mkdir -p %i/share/%n
+ #mv %i/bin/*.{dat,bash} %i/share/%n/
+ mv %i/bin/*.bash %i/share/%n/
+ rm %i/bin/Makefile
+
+ # FIX: eventually, when all python scripts do not have -py at the end, add it for the main package
+ for file in %i/bin/*; do 
+   mv $file ${file}%type_pkg[python]
+   pushd %i/bin 
+   ln -s ${file##%i/bin/}%type_pkg[python] ${file##%i/bin/} 
+   popd
+ done
+
+ ## FIX: where should these really go?
+ #cp noaadata/noaadata.{xml,xsd} %i/lib/python%type_raw[python]/site-packages/noaadata/
+
+ 
+<<
+
+# FIX: switch to update-alternatives
+SplitOff: <<
+  Description: Python AIS - Main binaries
+  Package: %N-bin
+  Depends: %N (= %v-%r)
+  Conflicts: noaadata-py25-bin, noaadata-py24-bin
+  Replaces: noaadata-py25, noaadata-py24-bin
+  Files: bin/*
+  DocFiles: LICENSE README MANIFEST.in ChangeLog.html COPYING
+<<
+
+
+DocFiles: LICENSE README MANIFEST.in ChangeLog.html TODO
+License: GPL
+Homepage: http://vislab-ccom.unh.edu/~schwehr/software/noaadata
+Maintainer: Kurt Schwehr <kurt@ccom.unh.edu>
+
+# Info2
+<<

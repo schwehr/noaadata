@@ -1,0 +1,387 @@
+#!/usr/bin/env python
+__author__    = 'Kurt Schwehr'
+__version__   = '$Revision$'.split()[1]
+__revision__  = __version__
+__date__      = '$Date$'.split()[1]
+__copyright__ = '2007, 2008'
+__license__   = 'GPL v2'
+__doc__ = '''
+Simple serial port logger.  Log times added to the stream are in UTC
+seconds since the Epoch (UTC).
+
+@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
+@requires: U{pyserial<http://pyserial.sourceforge.net/>}
+@status: under development
+@since: 2007-Feb-17
+@undocumented: __doc__ parser defaultPort defaultPorts speeds
+@todo: Add a line for STOP LOGGING when a log file is closed
+@todo: Add lines at start of logging for computer name, user name, and ???
+@todo: Follow up on suggestions from A. Maitland Bottom
+@todo: Optional WWW and UDP transmitting
+@todo: Clean way to shut down
+'''
+
+import sys
+import os
+import time
+import serial
+import socket
+import thread
+import Queue
+import nmea.znt
+
+
+def create_daemon():
+    """nohup like function to detach from the terminal"""
+
+    try:
+        pid = os.fork()
+    except OSError, except_params:
+        raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+
+    if (pid == 0):
+        # The first child.
+        os.setsid()
+
+        try:
+            pid = os.fork()	# Fork a second child.
+        except OSError, except_params:
+            raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+
+        if (pid != 0):
+            os._exit(0)	# Exit parent (the first child) of the second child.
+
+    else:
+        os._exit(0)	# Exit parent of the first child.
+
+    import resource		# Resource usage information.
+    maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
+    if (maxfd == resource.RLIM_INFINITY):
+        maxfd = 1024
+  
+    # Iterate through and close all file descriptors.
+    if True:
+        for fd in range(0, maxfd):
+            try:
+                os.close(fd)
+            except OSError:	# ERROR, fd wasn't open to begin with (ignored)
+                pass
+
+    # Send all output to /dev/null - FIX: send it to a log file
+    os.open('/dev/null', os.O_RDWR)
+    os.dup2(0, 1)
+    os.dup2(0, 2)
+
+    return (0)
+
+def date_str():
+    '''
+    String representing the day so that it sorts correctly
+
+    datetime.datetime.utcnow().strftime('%Y-%m-%d')
+
+    @return: yyyy-mm-dd
+    @rtype: str
+    '''
+    curtime = time.gmtime()
+    return '%04d-%02d-%02d' % curtime[:3]
+
+
+
+######################################################################
+class PassThroughServer:
+    '''Receive data from a socket and write the data to all clients that
+    are connected.  Starts two threads and returns to the caller.
+
+    Ripped out of port_server, but without the log file support
+    '''
+    def __init__(self,options):
+	self.clients=[]
+	self.options = options
+        self.q = Queue.Queue()
+	self.count=0
+        self.v = options.verbose
+        # NTP monitoring
+        
+        self.znt = nmea.znt.ZntLogger(
+            self.log, # Make sure to change this with the log file rotation
+            enabled = options.znt_enable,
+            max_sec=options.znt_max_sec,
+            max_cnt=options.znt_max_cnt,
+            always=options.znt_always,
+            station=self.options.station_id,
+            verbose=options.verbose
+            )
+
+    def start(self):
+	print 'starting threads'
+	thread.start_new_thread(self.passdata,(self,))
+	thread.start_new_thread(self.connection_handler,(self,))
+	return
+
+    def put(self,nmea_str):
+        self.q.put(nmea_str)
+
+    def passdata(self,unused=None):
+	'''Do not use this.  Call start() instead.
+
+	@bug: how can I get rid of unused?
+	'''
+	print 'starting passthrough server'
+
+	while 1:
+	    time.sleep(.001) # Replace with select
+            m = self.q.get()
+            if len(m) == 0:
+                sys.stderr.write('No data in queue get\n')
+                continue
+            for c in self.clients:
+                try:
+                    if self.v:
+                        sys.stderr.write('sending message %s' % m)
+                        if m[-1] != '\n':
+                            sys.stderr.write('\n')
+                    c.send(m)
+                except socket.error:
+                    sys.stderr.write('Client Disconnect\n')
+                    self.clients.remove(c)
+	
+    def connection_handler(self,unused=None):
+	'''Do not use this.  Call start() instead.  This listens for
+	connections and adds the new socket to the clients list.
+
+	@bug: how can I get rid of unused?
+	'''
+	sys.stderr.write('starting incoming connection receiver\n')
+	sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
+
+	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+	serversocket.bind((self.options.outHost, self.options.outPort))
+	serversocket.listen(5)
+
+	while 1:
+	    (clientsocket, address) = serversocket.accept()
+	    sys.stderr.write('connect from %s\n' % (address,))
+	    self.clients.append(clientsocket)
+
+
+
+def start(options, pts):
+    '''
+    Do the logging
+    @param pts: PassThroughServer or None
+    '''
+    verbose = options.verbose
+
+    ser = serial.Serial(options.port, options.baud, timeout=options.timeout)
+    
+    logfile = options.log_prefix + date_str()
+    current_day = time.gmtime()[2]
+    if not options.daemonMode:
+        sys.stderr.write ('opening logfile: %s\n' % logfile)
+    log = open(logfile,'a')
+    log.write('# START LOGGING UTC seconds since the epoch: '+str(time.time())+'\n')
+    log.write('# SPEED:       ' + str(options.baud)+'\n')
+    log.write('# PORT:        ' + str(options.port)+'\n')
+    log.write('# TIMEOUT:     ' + str(options.timeout)+'\n')
+    log.write('# STATIONID:   ' + str(options.station_id)+'\n')
+    log.write('# DAEMON MODE: ' + str(options.daemonMode)+'\n')
+    # getlogin is not happy as a daemon
+    #log.write('# USER:        ' + str(os.getlogin())+'\n')
+    log.flush()
+
+    znt = nmea.znt.ZntLogger(
+        log, # Make sure to change this with the log file rotation
+        enabled = options.znt_enable,
+        max_sec=options.znt_max_sec,
+        max_cnt=options.znt_max_cnt,
+        always=options.znt_always,
+        station=options.station_id,
+        verbose=options.verbose
+        )
+
+
+    while True:
+        # Handle date rollover
+        # FIX: gmtime is likely not the same as UTC.  no???
+        if current_day != time.gmtime()[2]:
+            current_day = time.gmtime()[2]
+            log.write('# STOP LOGGING UTC seconds since the epoch: '+str(time.time())+'\n')
+            log.write('# Log roll over\n')
+            log.close()
+            logfile = options.log_prefix + date_str()
+            log = open(logfile,'a')
+            log.write('# START LOGGING UTC seconds since the epoch: '+str(time.time())+'\n')
+            log.write('# SPEED:       ' + str(options.baud)+'\n')
+            log.write('# PORT:        ' + str(options.port)+'\n')
+            log.write('# TIMEOUT:     ' + str(options.timeout)+'\n')
+            log.write('# STATIONID:   ' + str(options.station_id)+'\n')
+            log.write('# DAEMON MODE: ' + str(options.daemonMode)+'\n')
+            # getlogin is not happy as a daemon
+            #log.write('# USER:        ' + str(os.getlogin())+'\n')
+            
+            znt.out_file = log # Let NTP stamper know the new file.
+
+
+        znt.update()
+        
+        line = ser.readline().strip()
+        timestamp = time.time()
+        if len(line) == 0:
+            if verbose:
+                print '# --- No data ---'
+            if options.mark:
+                log_str = '# MARK: '+str(timestamp)+'\n'
+                log.write(log_str)
+                if pts is not None: 
+                    pts.put(log_str)
+                if options.flush:
+                    log.flush()
+            continue
+        elif verbose: 
+            if options.uscgFormat:
+                if options.station_id != None:
+                    print line+',r'+options.station_id+','+str(timestamp)
+                else:
+                    print line+','+str(timestamp)
+            else:
+                print line
+
+        if len(line) > 0:
+            if options.uscgFormat:
+                #pts.put(line)
+                out_str = line
+                #log.write(line)
+                if options.station_id != None:
+                    out_str += ',r'+options.station_id
+                    #log.write(',r'+options.station_id)
+                #pts.put(','+str(timestamp)+'\n')
+                #log.write(','+str(timestamp)+'\n')
+                out_str += ','+str(timestamp)+'\n'
+                log.write(out_str)
+                if pts is not None: 
+                    pts.put(out_str)
+            else:
+                if pts is not None: 
+                    pts.put('# ' +str(timestamp)+'\n')
+                log.write('# ' +str(timestamp)+'\n')
+                log.flush() # FIX: better not to flush so writing to disk less often
+                if pts is not None: 
+                    pts.put(line+'\n')
+                log.write(line+'\n')
+
+        elif options.uscgFormat:
+            pts.put('# ' +str(timestamp)+'\n')
+            log.write('# ' +str(timestamp)+'\n') # allow detection of the station being active
+
+        if options.flush:
+            log.flush()
+
+
+######################################################################
+       
+if __name__ == '__main__':
+    from optparse import OptionParser
+
+    parser = OptionParser(usage="%prog [options]",
+                            version="%prog "+__version__)
+
+    default_ports = {'Darwin':'/dev/tty.KeySerial1', 'Linux':'/dev/ttyS0'}
+    default_port = '/dev/ttyS0'
+    if os.uname()[0] in default_ports:
+        default_port = default_ports[os.uname()[0]]
+
+    parser.add_option('-d'
+                      ,'--daemon'
+                      ,dest='daemonMode'
+                      ,default=False,action='store_true'
+                      ,help='Detach from the terminal and run as a daemon service.'
+                      +'  Returns the pid. [default: %default]')
+
+    parser.add_option('--pid-file'
+                      ,dest='pidFile'
+                      ,default=None
+                      ,help='Where to write the process id when in daemon mode')
+
+    parser.add_option('-p'
+                      ,'--port'
+                      ,dest='port'
+                      ,type='string'
+                      ,default=default_port,
+                      help='What serial port device to option [default: %default]')
+
+    #speeds=serial.baudEnumToInt.keys()
+    #speeds.sort()
+    speeds = [
+        #0, 50, 75, 110,
+        #134, 150, 200, 
+        300
+        ,600 
+        ,1200, 1800, 2400, 4800, 9600, 19200
+        ,38400, 57600, 115200, 230400
+            ]
+
+    speeds = [str(s) for s in speeds]
+
+    parser.add_option('-b', '--baud', dest='baud',
+                      choices=speeds, type='choice', default='38400',
+                      help='Port speed [default: %default].  Choices: '+', '.join(speeds))
+
+    parser.add_option('-F', '--no-flush', dest='flush', default=True, action='store_false',
+                      help='Do not flush after each write')
+
+    parser.add_option('-l', '--log-prefix', dest='log_prefix', type='string', default='log.',
+                      help='prefix before date of the log file [default: %default]')
+
+    parser.add_option('-m', '--mark-timeouts', dest='mark', default=False, action='store_true',
+                      help='Mark the timeouts in the log file')
+
+    parser.add_option('-t', '--timeout', dest='timeout', type='float', default='300',
+                      help='Number of seconds to timeout after if no data [default: %default]')
+
+    parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
+                      help='Make the test output verbose')
+
+    parser.add_option('-u', '--uscg-format', dest='uscgFormat', default=False, action='store_true',
+                      help='Switch to the USCG N-AIS format with ",station,UTC sec" at the end of each line')
+
+    parser.add_option('-s', '--station-id', type='string', default=None,
+                      help='If uscg format is selected, you can specify a station id to'
+                      +' put as ",r" before the timestamp  [default: %default]')
+
+    parser.add_option('--enable-tcp-out', dest='tcpOutput', default=False, action='store_true',
+                      help='Create a server that clients can connect to and receive data')
+    parser.add_option('-o','--out-port', dest="outPort", type='int',default=31500,
+                      help='Where the data will be available to others [default: %default]')
+    parser.add_option('-O','--out-host',dest='outHost',type='string', default='localhost',
+                      help='What machine the source port is on [default: %default]')
+    parser.add_option('--out-gethostname',dest='outHostname', action='store_true', default=False,
+                      help='Use the default hostname ['+socket.gethostname()+']')
+    parser.add_option('-a','--allow',action='append',dest='hosts_allow'
+                      ,help='Add hosts to a list that are allowed to connect [default: all]')
+
+    nmea.znt.znt_logger_opts(parser)
+
+    (options, args) = parser.parse_args()
+
+    try:
+        options.port = int(options.port)
+    except:
+        pass
+
+    options.baud = int(options.baud)
+
+    if options.daemonMode:
+        create_daemon()
+        if options.pidFile != None:
+            open(options.pidFile, 'w').write(str(os.getpid())+'\n')
+
+    pts=None
+    if options.tcpOutput:
+        pts = PassThroughServer(options)
+        pts.start()
+
+    start(options,pts=pts)
+
+    del(options)

@@ -1,0 +1,34 @@
+
+<aismsg>
+  <notes>Copied right from the spec.  Page 12.  St Lawrence Seaway water level message.</notes>
+  <nmea></nmea>
+  <nmeapayload></nmeapayload>
+  <binary></binary>
+  <uscgnmea></uscgnmea>
+  <fields>
+<!--
+    <field name="MessageID">8</field>
+    <field name="RepeatIndicator">0</field>
+    <field name="UserID"></field>
+    <field name="Spare">0</field>
+-->
+<!--
+    <field name="dac" bits="0100111100">316</field>
+    <field name="fid" bits="000001">1</field>
+    <field name="res" bits="00">0</field>
+    <field name="mid" bits="000011">3</field>
+-->
+    <field name="time_mon" bits="0101">5</field>
+    <field name="time_day" bits="11101">29</field>
+    <field name="time_hr" bits="00000">0</field>
+    <field name="time_min" bits="100010">34</field>
+    <field name="stationid" bits="010100000101010011010100110001100000100000">TEST1  </field>
+    <field name="longitude" bits="0000110001100101110101000"></field> <!-- 27deg 05'E -->
+    
+    <field name="latitude" bits="000001001010011101101000">5 05N</field>
+    <field name="waterleveltype" bits="0">0</field>
+    <field name="waterlevel" bits="0000000000100000">32cm</field>
+    <field name="datum" bits="01">1</field>
+    <field name="reserved" bits="00000000000000">0</field>
+  </fields>
+</aismsg>

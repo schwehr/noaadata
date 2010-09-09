@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<!-- HEADER in front of all St Lawrence Seaway messages -->
+
+<!-- could this also be a msg 6.  and why do I have this file in here? -->
+<ais-binary-message version="1.0">
+  <message name="sls_header" aismsgnum="8" titlefield="UserID">
+    <description>St Lawrance Seaway application id header</description>
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code 366 for US</description>
+      <testvalue>366</testvalue>
+    </field>
+
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Id</description>
+      <required>1</required>
+    </field>
+
+    <field name="reserved" numberofbits="2" type="uint">
+      <description>say what?</description>
+      <required>0</required>
+    </field>
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>Binary message indentifier</description>
+      <testvalue>3</testvalue>
+    </field>
+
+<!--    <field name="bin" numberofbits="200" type="binary">  FIX: make this consume the rest! -->
+    <field name="BinaryData" numberofbits="-1" type="binary">  <!-- FIX: make this consume the rest! -->
+      <description>Binary </description>
+      <testvalue>0</testvalue>
+    </field>
+
+    <!-- binary data up to xxx long -->
+
+  </message>
+</ais-binary-message>

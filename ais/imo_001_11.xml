@@ -1,0 +1,465 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: imo_001_11.xml 13356 2010-04-01 00:00:01Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!-- IMO 236 MetHydro  -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <!-- <xi:include href="structs-inc.xml"/> off for Hydro paper to show values -->
+
+  <struct name="pos_small" postgis_type="POINT">
+
+    <description>Generic representation of position on the WGS84
+    sphereoid.  Smaller number of bits.  Used by SLS and IMO binary
+    messages. WARNING: the IMO Circ 236 and IALA 1.3 10 p 91 do lat/lon which is OPPOSITE other AIS messages.</description>
+
+    <!--  -->
+    <field name="latitude" numberofbits="24" type="decimal">
+      <description>North South location</description>
+      <range min="-90" max="90"/>
+      <unavailable>91</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>37.42446</testvalue>
+    </field>
+
+    <field name="longitude" numberofbits="25" type="decimal">
+      <description>East West location</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>-122.16328</testvalue>
+    </field>
+
+  </struct>
+
+
+  <!-- Stand alone version of a message 8 - includes header  -->
+
+  <message name="imo_met_hydro" aismsgnum="8" dac="001" fid="11" titlefield="UserID">
+
+    <description>IMO meteorological and hydroglogical data.  Specified
+      in SN/Circ.236 Annex 2.  Also defined in IALA Guidelines on AIS,
+      Vol 1, Part 1, Ed. 1.3. Guildeline No 1028.
+    </description>
+    <note>All unavailable values are defined to be the highest
+    possible number in the next following</note>
+
+    <messagesize>352</messagesize> <!-- FIX: question - two slots should be 168+256, right? -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 8</description>
+      <required>8</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <!-- switch from SourceID to match ITU spec -->
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>MMSI number of transmitter broadcasting the message</description>
+      <note> This might be from a basestation or AtoN.
+             The transmitter might not be at the same location as the Met/Hydro station</note>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code - part 1 of the IAI</description>
+      <required>1</required>
+    </field>
+
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Identifier - part 2 of the IAI</description>
+      <required>11</required>
+    </field>
+
+    <include-struct name="Position" struct="pos_small">
+      <do_not_mangle_name/>
+      <description>Location of the vessel.</description>
+    </include-struct>
+
+    <!-- FIX: help - why is expand placing this incorectly? -->
+
+    <field name="day" numberofbits="5" type="uint">
+      <description>Day 0..31</description>
+      <units>days</units>
+      <testvalue>3</testvalue> 
+    </field>
+
+    <field name="hour" numberofbits="5" type="uint">
+      <description>Hour 0..23</description>
+      <unavailable>31</unavailable>
+      <range min="0" max="23"/>
+      <units>hours</units>
+      <testvalue>21</testvalue> 
+    </field>
+
+    <field name="min" numberofbits="6" type="uint">
+      <description>Min</description>
+      <unavailable>63</unavailable>
+      <range min="0" max="59"/>
+      <units>minutes</units>
+      <testvalue>58</testvalue> 
+    </field>
+
+    <field name="avewind" numberofbits="7" type="uint">
+      <description>Average wind speed values for the last 10 minutes.</description>
+      <note>FIX: why is 121-126 not valid???</note>
+      <range min="0" max="120"/>
+      <units>knots</units>
+      <unavailable>127</unavailable>
+      <testvalue>23</testvalue>
+    </field>
+    
+    <field name="windgust" numberofbits="7" type="uint">
+      <description>Wind gust is the max wind speed value reading
+ during the last 10 minutes.</description>
+      <note>FIX: why is 121-126 not valid???</note>
+      <range min="0" max="120"/>
+      <units>knots</units>
+      <unavailable>127</unavailable>
+      <testvalue>35</testvalue>
+    </field>
+
+    <field name="winddir" numberofbits="9" type="uint">
+      <description>Wind direction</description>
+      <note>No idea if this is the latest, ave, median, etc.  FIX: find out!</note>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>329</testvalue>
+    </field>
+
+    <field name="windgustdir" numberofbits="9" type="uint">
+      <description>Wind direction for the gust.</description>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>293</testvalue>
+    </field>
+
+    <field name="airtemp" numberofbits="11" type="decimal">
+      <description>Dry bulb temperature</description>
+      <note>FIX: double check the unavailable value.  is it really the max?</note>
+      <range min="-60.0" max="60.0"/>
+      <units>degrees Celsius</units>
+      <unavailable>102.3</unavailable> 
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>-40.1</testvalue>
+    </field>
+
+    <field name="relhumid" numberofbits="7" type="uint">
+      <description>Relative humidity</description>
+      <range min="0" max="100"/>
+      <units>percent</units>
+      <unavailable>127</unavailable>
+      <testvalue>99</testvalue>
+    </field>
+
+
+    <field name="dewpoint" numberofbits="10" type="decimal">
+      <description>Dew Point</description>
+      <note>FIX: should this be a udecimal??</note>
+      <range min="-20.0" max="50.0"/>
+      <units>degrees Celsius</units>
+      <unavailable>51.1</unavailable>
+      <scale>10</scale>
+      <!-- <offset>30</offset> not needed? --> <!-- FIX: implement offset -->
+      <decimalplaces>1</decimalplaces>
+      <testvalue>-19.2</testvalue>
+    </field>
+
+
+    <field name="airpressure" numberofbits="9" type="udecimal">
+      <description>Air pressure</description>
+      <range min="800" max="1200"/>
+      <units>hPa</units>
+      <unavailable>1311</unavailable>
+      <scale>1</scale> <!-- no scale -->
+      <offset>800</offset> <!-- FIX: implement offset -->
+      <decimalplaces>0</decimalplaces>
+      <testvalue>1150</testvalue>
+    </field>
+
+    <field name="airpressuretrend" numberofbits="2" type="uint">
+      <description>Air pressure trend</description>
+      <lookuptable>
+	<entry key="0">steady</entry>
+	<entry key="1">decreasing</entry>
+	<entry key="2">increasing</entry>
+	<entry key="3">unavailable</entry>
+      </lookuptable>
+      <unavailable>3</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="horizvis" numberofbits="8" type="udecimal">
+      <description>Horizontal visibility</description>
+      <range min="0" max="25.0"/>
+      <units>nm</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>11.9</testvalue>
+    </field>
+
+    <field name="waterlevel" numberofbits="9" type="decimal">
+      <description>Water level (incl. tide)</description>
+      <range min="-10.0" max="30.0"/>
+      <units>m</units>
+      <!-- FIX: what is it? <unvailable>41.1?</unavailable> -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>-8.9</testvalue>
+    </field>
+
+    <field name="waterleveltrend" numberofbits="2" type="uint">
+      <description>Water level trend</description>
+      <lookuptable>
+	<entry key="0">steady</entry>
+	<entry key="1">decreasing</entry>
+	<entry key="2">increasing</entry>
+	<entry key="3">unavailable</entry>
+      </lookuptable>
+      <unavailable>3</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="surfcurspeed" numberofbits="8" type="udecimal">
+      <description>Surface current speed</description>
+      <range min="0" max="25.0"/>
+      <units>knots</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>22.3</testvalue>
+    </field>
+
+    <field name="surfcurdir" numberofbits="9" type="uint">
+      <description>Surface current direction</description>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>321</testvalue>
+    </field>
+
+
+
+    <!-- ===============  LEVEL 2 -->
+    <field name="curspeed2" numberofbits="8" type="udecimal">
+      <description>Level 2 current speed</description>
+      <range min="0" max="25.0"/>
+      <units>knots</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>12.7</testvalue>
+    </field>
+
+    <field name="curdir2" numberofbits="9" type="uint">
+      <description>Level 2 current direction</description>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>122</testvalue>
+    </field>
+
+    <field name="curlevel2" numberofbits="5" type="uint">
+      <description>Measuring level below sea surface for level 2</description>
+      <unavailable>31</unavailable>
+      <units>m</units>
+      <testvalue>29</testvalue>
+    </field>
+
+
+    <!-- ===============  LEVEL 3 -->
+    <field name="curspeed3" numberofbits="8" type="udecimal">
+      <description>Level 3 current speed</description>
+      <range min="0" max="25.0"/>
+      <units>knots</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>19.2</testvalue>
+    </field>
+
+    <field name="curdir3" numberofbits="9" type="uint">
+      <description>Level 3 current direction</description>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>93</testvalue>
+    </field>
+
+    <field name="curlevel3" numberofbits="5" type="uint">
+      <description>Measuring level below sea surface for level 3</description>
+      <unavailable>31</unavailable>
+      <units>m</units>
+      <testvalue>28</testvalue> <!-- FIX: is 3 required to be below 2? -->
+    </field>
+
+    
+
+    <field name="sigwaveheight" numberofbits="8" type="udecimal">
+      <description>Significant wave height</description>
+      <range min="0" max="25.0"/>
+      <units>m</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>22.8</testvalue>
+    </field>
+
+    <field name="waveperiod" numberofbits="6" type="uint">
+      <description>Wave period</description>
+      <note>FIX: How does to fit to the power spectrum?</note>
+      <range min="0" max="60"/>
+      <units>sec</units>
+      <unavailable>63</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="wavedir" numberofbits="9" type="uint">
+      <description>Wave direction</description>
+      <note>FIX: please define this better</note>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>187</testvalue>
+    </field>
+
+    <field name="swellheight" numberofbits="8" type="udecimal">
+      <description>Swell height</description>
+      <range min="0" max="25.0"/>
+      <units>m</units>
+      <unavailable>25.5</unavailable> <!-- FIX: double check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>0.2</testvalue>
+    </field>
+
+    <field name="swellperiod" numberofbits="6" type="uint">
+      <description>Swell period</description>
+      <note>FIX: How does to fit to the power spectrum?</note>
+      <range min="0" max="60"/>
+      <units>sec</units>
+      <unavailable>63</unavailable>
+      <testvalue>59</testvalue>
+    </field>
+
+    <field name="swelldir" numberofbits="9" type="uint">
+      <description>Swell direction</description>
+      <note>FIX: please define this better</note>
+      <range min="0" max="359"/>
+      <units>degrees</units>
+      <unavailable>511</unavailable>
+      <testvalue>1</testvalue>
+    </field>
+
+
+    <field name="seastate" numberofbits="4" type="uint">
+      <description>Sea state according to the Beaufort scale</description>
+      <note>Taken from http://en.wikipedia.org/wiki/Beaufort_scale</note>
+      <range min="0" max="12"/>
+      <units>Beaufort scale</units>
+      <lookuptable>
+	<entry key="0">Calm</entry><!--Flat</entry>-->
+	<entry key="1">Light air</entry><!--Ripples without crests</entry>-->
+	<entry key="2">Light breeze</entry><!--Small wavelets.  Crests of glassy appearance, not breaking</entry>-->
+	<entry key="3">Gentle breeze</entry><!--Large wavelets.  Crests begin to break; scattered whitecaps</entry>-->
+	<entry key="4">Moderate breeze</entry><!--Small waves.</entry>-->
+	<entry key="5">Fresh breeze</entry><!--Moderate (1.2 m) longer waves.  Some foam and spray.</entry>-->
+	<entry key="6">Strong breeze</entry><!--Large waves with foam crests and some spray.</entry>-->
+	<entry key="7">Near gale</entry><!--Sea heaps up and foam begins to streak.</entry>-->
+	<entry key="8">Gale</entry><!--Moderately high waves with breaking crests forming sprindrift.  Streaks of foam.</entry>-->
+	<entry key="9">Strong gale</entry><!--High waves (2.75 m) with dense foam.  Wave crests start to roll over.  Considerable spray.</entry>-->
+	<entry key="10">Storm</entry>
+	<entry key="11">Violent storm</entry>
+	<entry key="12">Hurricane</entry>
+
+	<entry key="15">unavailable</entry>
+      </lookuptable>
+      <unavailable>15</unavailable>
+      <testvalue>12</testvalue>
+    </field>
+
+    <field name="watertemp" numberofbits="10" type="udecimal">
+      <description>Water temperature</description>
+      <note>FIX: at surface?  Any requirements on how measured?</note>
+      <note>FIX: a bit strange to get a negative number out of a udecimal, but possible with an offset</note>
+      <range min="-10.0" max="50.0"/>
+      <units>degrees Celsius</units>
+      <unavailable>92.3</unavailable> <!-- FIX: check -->
+      <scale>10</scale>
+      <offset>-10</offset>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>48.8</testvalue>
+    </field>
+
+    <field name="preciptype" numberofbits="3" type="uint">
+      <description>According to WMO</description>
+      <note>FIX: need a reference to the document describing this!</note>
+      <note>I do not think this is http://badc.nerc.ac.uk/data/surface/code.html</note>
+      <range min="0" max="6"/> <!-- FIX: check this range! -->
+      <units>WMO scale index</units>
+      <lookuptable>
+	<entry key="0">FIX: find the WMO list of types</entry>
+	<entry key="7">unavailable</entry>
+      </lookuptable>
+      <unavailable>7</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+
+    <field name="salinity" numberofbits="9" type="decimal">
+      <description>Salinity</description>
+      <note>FIX: by what standard?  Measured how?</note>
+      <range min="0.0" max="50.0"/>
+      <units>0/00</units>
+      <unavailable>92.3</unavailable> <!-- FIX: check -->
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>0.9</testvalue>
+    </field>
+
+    
+    <field name="ice" numberofbits="2" type="uint">
+      <description>Yes or no for the presence of ice</description>
+      <note>FIX: what types of ice constitute a yes??</note>
+      <lookuptable>
+	<entry key="0">No ice</entry>
+	<entry key="1">Ice present</entry>
+	<entry key="2">Reserved</entry>
+	<entry key="3">Unknown if there is ice present</entry>
+      </lookuptable>
+      <unavailable>3</unavailable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="Spare2" numberofbits="6" type="uint">
+      <description>Must be zero</description>
+      <required>0</required>
+    </field>
+
+    <!-- FIX: This does not seem to be slot aligned 168*2 == 336 and 168*3 == 504-->
+
+
+  </message> <!-- imo_met_hydro" aismsgnum="8" dac="001" fid="11"  -->
+
+</ais-binary-message>

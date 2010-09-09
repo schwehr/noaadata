@@ -1,0 +1,219 @@
+<a-bunch-of-structs>
+
+  <struct name="msg8_header">
+    <description>Standard AIS header for all AIS binary broadcast messages</description>
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 8</description>
+      <required>8</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+  </struct>
+
+  <struct name="position2d" postgis_type="POINT">
+    <description>Generic representation of position on the WGS84 sphereoid</description>
+    <field name="longitude" numberofbits="28" type="decimal">
+      <description>East West location</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>600000</scale>
+      <decimalplaces>5</decimalplaces>
+      <testvalue>-122.16328055555556</testvalue>  <!-- Stanford - Trancos -->
+    </field>
+    
+    <field name="latitude" numberofbits="27" type="decimal">
+      <description>North South location</description>
+      <range min="-90" max="90"/>
+      <unavailable>91</unavailable>
+      <units>degrees</units>
+      <scale>600000</scale>
+      <decimalplaces>5</decimalplaces>
+      <testvalue>37.424458333333334</testvalue>  <!-- Stanford - Trancos -->
+
+    </field>
+  </struct>
+
+
+  <!-- FIX: add ranges -->
+  <struct name="time">
+    <description>UTC Time stamp - more than just msg 4?</description>
+    <field name="year" numberofbits="14" type="uint">
+      <description>year 1-9999</description>
+      <unavailable>0</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="month" numberofbits="4" type="uint">
+      <description>month 1..12</description>
+      <unavailable>0</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+    
+    <field name="day" numberofbits="5" type="uint">
+      <description>day of the month 1..31</description>
+      <unavailable>0</unavailable>
+      <testvalue>28</testvalue>
+    </field>
+
+    <field name="hour" numberofbits="5" type="uint">
+      <description>UTC hours 0..23</description>
+      <unavailable>24</unavailable>
+      <testvalue>23</testvalue>
+    </field>
+
+    <field name="min" numberofbits="6" type="uint">
+      <description>minutes</description>
+      <unavailable>60</unavailable>
+      <testvalue>45</testvalue>
+    </field>
+
+    <field name="sec" numberofbits="6" type="uint">
+      <description>seconds</description>
+      <unavailable>60</unavailable>
+      <testvalue>54</testvalue>
+    </field>
+
+  </struct> <!-- time -->
+
+  <struct name="sotdmaState">
+    <field name="syncstate" numberofbits="2" type="uint">
+      <description>Sycronization state</description>
+      <lookuptable>
+	<entry key="0">UTC direct</entry>
+	<entry key="1">UTC indirect</entry>
+	<entry key="2">synchronized to a base station</entry>
+	<entry key="3">synchronized to another station</entry>
+      </lookuptable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="slottimeout" numberofbits="3" type="uint">
+      <description>Frames remaining until a new slot is selected</description>
+      <units>frames</units>
+      <lookuptable>
+	<entry key="0">Last frame in this slot</entry>
+	<entry key="1">1 frames left</entry>
+	<entry key="2">2 frames left</entry>
+	<entry key="3">3 frames left</entry>
+	<entry key="4">4 frames left</entry>
+	<entry key="5">5 frames left</entry>
+	<entry key="6">6 frames left</entry>
+	<entry key="7">7 frames left</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <!--  ==============================        -->
+    <!--  SOTDMA Sub message in Table 11 14bits -->
+    <!--  ==============================        -->
+
+    <!-- FIX: cannot current handle case statements. -->
+
+    <field name="slotoffset" numberofbits="14" type="uint">
+      <description>In what slot will the next transmission occur. BROKEN</description>
+      <case><fieldname>slottimeout</fieldname><values>0</values></case>
+      <range min="0" max="2249"/> 
+      <testvalue>1221</testvalue>
+    </field> 
+
+
+    <!-- === FIX: Cannot currently handle case statements === -->
+    <turn_this_case_stuff_off>
+      <field name="emptytime" numberofbits="2" type="uint">
+	<description>These bits not defined in the specification.</description>
+	<case><fieldname>slottimeout</fieldname><values>1</values></case>
+	<default>0</default>
+      </field>
+
+      <field name="min" numberofbits="7" type="uint">
+	<description>UTC time minutes field</description>
+	<case><fieldname>slottimeout</fieldname><values>1</values></case>
+	<range min="0" max="59"/>
+	<units>minutes</units>
+      </field>
+
+      <field name="hour" numberofbits="5" type="uint">
+	<description>UTC time hour field</description>
+	<case><fieldname>slottimeout</fieldname><values>1</values></case>
+	<range min="0" max="23"/>
+	<units>hours</units>
+      </field>
+
+      <!-- 	<case values="2 4 6"> -->
+      <field name="slotnumber" numberofbits="14" type="uint">
+	<description>Slot number used for this transmission</description>
+	<case><fieldname>slottimeout</fieldname><values>2 4 6</values></case>
+	<range min="0" max="2249"/>
+      </field>
+
+      <!-- 	<case values="3 5 7"> -->
+      <field name="receivedstations" numberofbits="14" type="uint">
+	<alias>numstations</alias>
+	<description>Number of other stations currently receiving</description>
+	<case><fieldname>slottimeout</fieldname><values>3 5 7</values></case>
+	<range min="0" max="16383"/>
+      </field>
+    </turn_this_case_stuff_off>
+
+
+  </struct> <!-- sotdma state -->
+
+
+  <struct name="pos_small" postgis_type="POINT">
+
+    <description>Generic representation of position on the WGS84
+    sphereoid.  Smaller number of bits.  Used by SLS and IMO binary
+    messages</description>
+
+    <field name="longitude" numberofbits="25" type="decimal">
+      <description>East West location</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>-122.16328</testvalue>  <!-- Stanford - Trancos -->
+    </field>
+    
+    <field name="latitude" numberofbits="24" type="decimal">
+      <description>North South location</description>
+      <range min="-90" max="90"/>
+      <unavailable>91</unavailable>
+      <units>degrees</units>
+      <scale>60000</scale>
+      <decimalplaces>4</decimalplaces>
+      <testvalue>37.42446</testvalue>  <!-- Stanford - Trancos -->
+
+    </field>
+  </struct>
+
+
+  <!-- ====================================================================== -->
+  <!-- BINARY BROADCAST MESSAGE HEADER -->
+  <!-- ====================================================================== -->
+
+  <!-- should this go here ?  And have a no name mangling option?  -->
+
+</a-bunch-of-structs>
+
+

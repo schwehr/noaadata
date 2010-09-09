@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_9.xml 11594 2009-03-22 11:08:13Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <!-- titlefield is what to use when a message needs to by titled (e.g. in kml) -->
+
+  <message name="SARposition" aismsgnum="9" titlefield="UserID">
+    <description>Search and rescue position report</description>
+    <!-- This next block of messages will get ignored... -->
+
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+    <category>F</category>
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <stationtype>mobile</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 9</description>
+      <required>9</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Altitude" numberofbits="12" type="uint">
+      <description>Altitude (GNSS)</description>
+      <range min="0" max="4094"/>
+      <unavailable>4095</unavailable>
+      <units>meters</units>
+      <testvalue>1001</testvalue>
+      <lookuptable>
+	<entry key="4095">4095 or higher</entry>
+      </lookuptable>
+    </field>
+
+    <!-- This is in knots, not tenths like msgs 1-3 -->
+    <field name="SOG" numberofbits="10" type="uint">
+      <description>Speed over ground</description>
+      <unavailable>1023</unavailable>
+      <lookuptable>
+	<entry key="1022">1022 knots or higher</entry>
+      </lookuptable>
+      <units>knots</units>
+      <testvalue>342</testvalue>
+    </field>
+
+    <field name="PositionAccuracy" numberofbits="1" type="uint">
+      <description>Accuracy of positioning fixes</description>
+      <lookuptable>
+	<entry key="0">low (greater than 10 m)</entry>
+	<entry key="1">high (less than 10 m)</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="Position" struct="position2d">
+      <description>Location of the vessel</description>
+    </include-struct>
+
+    <field name="COG" numberofbits="12" type="udecimal">
+      <description>Course over ground</description>
+      <range min="0" max="359.9"/>
+      <unavailable>360</unavailable>
+      <units>degrees</units>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>34.5</testvalue>
+    </field>
+
+    <field name="TimeStamp" numberofbits="6" type="uint">
+      <description>UTC second when the report was generated</description>
+      <range min="0" max="59"/>
+      <unavailable>60</unavailable>
+      <lookuptable>
+	<entry key="60">not available/default</entry>
+	<entry key="61">manual input</entry>
+	<entry key="62">dead reckoning</entry>
+	<entry key="63">inoperative</entry>
+      </lookuptable>
+      <units>seconds</units>
+      <testvalue>35</testvalue>
+    </field>
+
+    <field name="Reserved" numberofbits="8" type="uint">
+      <description>Reserved for regional applications.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="DTE" numberofbits="1" type="bool">
+      <description>Dtta terminal ready</description>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="5" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="RAIM" numberofbits="1" type="bool">
+      <description>Receiver autonomous integrity monitoring flag</description>
+      <lookuptable>
+	<entry key="False">not in use</entry>
+	<entry key="True">in use</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+
+    <include-struct name="state" struct="sotdmaState">
+      <description>Communications State - SOTDMA</description>
+    </include-struct>
+
+
+  </message> <!-- SAR position -->
+
+</ais-binary-message>

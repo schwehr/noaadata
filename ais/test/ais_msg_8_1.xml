@@ -1,0 +1,17 @@
+<aismsg>
+  <notes>
+    Message received on the USCG N-AIS network (Dec 2006).  
+    Random binary message from the Saint Lawrence Seaway.
+    FIX: What to do about > < in nmea strings?  use a CDATA?
+  </notes>
+  <nmea>!BSVDM,1,1,,A,85MwpwQKf22M=5KEn7IONkp9nkF5PtBao=COt6;QOuwk82>:tltI,0*01</nmea>
+         <nmeapayload>85MwpwQKf22M=5KEn7IONkp9nkF5PtBao=COt6;QOuwk82>:tltI<nmeapayload>
+  <binary>001000000101011101111111111000111111100001011011101110000010000010011101001101000101011011010101110110000111011001011111011110110011111000001001110110110011010110000101100000111100010010101001110111001101010011011111111100000110001011100001011111111101111111110011001000000010001110</binary>
+  <uscgnmea>!BSVDM,1,1,,A,85MwpwQKf22M=5KEn7IONkp9nkF5PtBao=COt6;QOuwk82>:tltI,0*01,r003669717,1165850285</uscgnmea>
+  <fields>
+    <field name="MessageID">8</field>
+    <field name="RepeatIndicator">0</field>
+    <field name="UserID"></field>
+    <field name="Spare">0</field>
+  </fields>
+</aismsg>

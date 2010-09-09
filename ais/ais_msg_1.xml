@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_1.xml 10587 2008-10-20 17:47:41Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!-- AIS Msg 1-3  - position message -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <!-- titlefield is what to use when a message needs to by titled (e.g. in kml) -->
+
+  <!-- msg 1 does not have a dac, fid, or efid -->
+  <message name="position" aismsgnum="1" titlefield="UserID">
+    <description>Scheduled position report</description>
+    <note>Need to make much of this an include-struct so that 1-3 are as simple as possible</note>
+    <see-also></see-also>
+
+    <!-- This next block of messages will get ignored... -->
+
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+    <category>F</category>
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AU</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <stationtype>mobile</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 1</description>
+      <required>1</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="NavigationStatus" numberofbits="4" type="uint">
+      <description>What is the vessel doing</description>
+      <unavailable>15</unavailable>
+      <lookuptable>
+	<entry key="0">under way using engine</entry>
+	<entry key="1">at anchor</entry>
+	<entry key="2">not under command</entry>
+	<entry key="3">restricted maneuverability</entry>
+	<entry key="4">constrained by her draught</entry>
+	<entry key="5">moored</entry>
+	<entry key="6">aground</entry>
+	<entry key="7">engaged in fishing</entry>
+	<entry key="8">under way sailing</entry>
+	<entry key="9">reserved for future use (hazmat)</entry>
+	<entry key="10">reserved for future use</entry>
+	<entry key="11">reserved for future use</entry>
+	<entry key="12">reserved for future use</entry>
+	<entry key="13">reserved for future use</entry>
+	<entry key="14">reserved for future use</entry>
+	<entry key="15">not defined = default</entry>
+      </lookuptable>
+      <testvalue>3</testvalue>
+    </field>
+
+    <!-- FIX: this field is FUBAR/SNAFU -->
+    <field name="ROT" numberofbits="8" type="int">
+      <alias>RateOfTurn</alias>
+      <description>Rate of turning.  Positive right; negative left.  BROKEN!</description>
+      <note>This field is completely messed up due to the requirement to do a sqrt.  Need to fix this some day</note>
+      <unavailable>-128</unavailable> <!-- FIX: kludge... this is really the raw value -->
+      <units>4.733*sqrt(val) degrees/min</units>  <!-- FIX: doh! -->
+      <testvalue>-2</testvalue>
+      <!-- Arg... this is painful
+	   <encode>4.733*sqrt(value)</encode>
+	   <decode>(value/4.733)*(value/4.733)</decode> 
+	   -->
+    </field>
+
+    <field name="SOG" numberofbits="10" type="udecimal">
+      <description>Speed over ground</description>
+      <unavailable>102.3</unavailable>
+      <lookuptable>
+	<entry key="102.2">102.2 knots or higher</entry>
+      </lookuptable>
+      <units>knots</units>
+      <scale>10</scale> 
+      <decimalplaces>1</decimalplaces>
+      <testvalue>101.9</testvalue>
+    </field>
+
+
+    <field name="PositionAccuracy" numberofbits="1" type="uint">
+      <description>Accuracy of positioning fixes</description>
+      <lookuptable>
+	<entry key="0">low (greater than 10 m)</entry>
+	<entry key="1">high (less than 10 m)</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="Position" struct="position2d">
+      <do_not_mangle_name/>
+      <description>Location of the vessel</description>
+    </include-struct>
+
+    <field name="COG" numberofbits="12" type="udecimal">
+      <description>Course over ground</description>
+      <range min="0" max="359.9"/>
+      <unavailable>360</unavailable>
+      <units>degrees</units>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>34.5</testvalue>
+    </field>
+
+    <field name="TrueHeading" numberofbits="9" type="uint">
+      <description>True heading (relative to true North)</description>
+      <range min="0" max="359"/>
+      <unavailable>511</unavailable>
+      <units>degrees</units>
+      <testvalue>41</testvalue>
+    </field>
+
+    <field name="TimeStamp" numberofbits="6" type="uint">
+      <description>UTC second when the report was generated</description>
+      <range min="0" max="59"/>
+      <unavailable>60</unavailable>
+      <lookuptable>
+	<entry key="60">not available/default</entry>
+	<entry key="61">manual input</entry>
+	<entry key="62">dead reckoning</entry>
+	<entry key="63">inoperative</entry>
+      </lookuptable>
+      <units>seconds</units>
+      <testvalue>35</testvalue>
+    </field>
+
+    <!-- FIX: version 3 of ITU 1371 has this text for the regional reserved field
+special
+manoeuvre
+indicator
+2 0 = not available = default
+1 = not engaged in special manoeuvre
+2 = engaged in special manoeuvre
+(i.e.: regional passing arrangement on Inland Waterway)
+
+Spare then becomes 3 bits
+-->
+
+    <field name="RegionalReserved" numberofbits="4" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="Spare" numberofbits="1" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="RAIM" numberofbits="1" type="bool">
+      <description>Receiver autonomous integrity monitoring flag</description>
+      <lookuptable>
+	<entry key="False">not in use</entry>
+	<entry key="True">in use</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <!-- FIX: msg 3 needs to be itdma state -->
+    <include-struct name="state" struct="sotdmaState">
+      <description>Communications State - SOTDMA</description>
+    </include-struct>
+
+
+  </message> <!-- position -->
+
+</ais-binary-message>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+Wind message from the SLS specification document.
+
+-->
+<aismsg>
+  <notes>Copied right from the spec.  Page 8.  St Lawrence Seaway wind message (2).</notes>
+<!--  <nmea></nmea>
+  <nmeapayload><![CDATA[Fp42G`8]1Dm<H80i]m09Ce0@1A9@]]></nmeapayload> 
+  <nmealong>!AIVDM,1,1,,A,Fp42G`8]1Dm&lt;H80i]m09Ce0@1A9@,6*39</nmealong>
+  <nmeapayload>Fp42G`8]1Dm&lt;H80i]m09Ce0@1A9@></nmeapayload> 
+-->
+  <binaryWithAis8>010110111000000100000010010110111000000100000010010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000010000000001010001001001010000</binaryWithAis8>
+  <binaryWithHdr>010110111000000100000010010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000010000000001010001001001010000</binaryWithHdr>
+  <binary>010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000010000000001010001001001010000</binary>
+  <fields>
+    <field name="UserID"    bits="">1193046<field>
+
+    <field name="dac"       bits="0101101110">366</field>
+    <field name="fid"       bits="000001">1</field>
+    <field name="res"       bits="00">0</field>
+    <field name="MessageID" bits="000010">2</field>
+
+    <field name="time_mon"  bits="0101">5</field>
+    <field name="time_day"  bits="11101">29</field>
+    <field name="time_hr"   bits="00000">0</field>
+    <field name="time_min"  bits="100010">34</field>
+    <field name="stationid" bits="010100000101010011010100110001100000100000">TEST1</field>
+    <field name="longitude" bits="0000110001100101110101000"></field> <!-- 27 05 E-->
+    <field name="latitude"  bits="000001001010011101101000"></field> <!-- 5 05 N -->
+    <field name="speed"     bits="0000100000">3.2</field>
+    <field name="gust"      bits="0000101000">4.0</field>
+    <field name="direction" bits="100100101">293</field>
+    <field name="reserved"  bits="0000">0</field>
+  </fields>
+</aismsg>

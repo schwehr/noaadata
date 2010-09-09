@@ -1,0 +1,62 @@
+# -*- shell-script -*- for emacs
+# $Revision: 10140 $
+
+# support:
+include VERSION
+include MANIFEST.in ChangeLog.html
+include control.in
+include noaadata-py.info.in
+include Makefile
+include LICENSE README COPYING
+include TODO
+include doc/*
+include doc/*/*
+include doc/data/*
+include doc/templates/*
+include noaadata/*.xml
+
+include nmea/*.py
+
+# extra stuff in ais:
+include ais/*.xsl
+include ais/*.xml 
+include ais/*.html
+include ais/*.wx.py
+include ais/Makefile
+
+include ais/*/*.xml 
+include ais/*/*.html
+include ais/*/*.wx.py
+include ais/*/Makefile
+
+# St. Lawrence Seaway messages
+include ais/sls/*.xml 
+#include ais/sls/*.html
+
+# River Information System in Europe
+include ais/ris/*.xml 
+#include ais/ris/*.html
+
+# Documentation and testing
+#include html/* html-man/* 
+include test/* ais/test/*
+include ChangeLog.html
+
+# Scripts
+include *.bash */*.bash
+include *.py
+include scripts/*
+include init.d/*
+
+include data/*
+
+# Extra stuff.  Less polished and project specific
+#include scraps/*.py scraps/*.pl scraps/gsc*.dat scraps/*.m
+include scraps/*
+
+include aisutils/*.py
+include test/*
+
+include django-ais/* django-ais/*/* django-ais/*/*/*
+include geodjango/* geodjango/*/* geodjango/*/*/*
+

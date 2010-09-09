@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: imo_001_14.xml 8696 2008-02-18 22:13:01Z schwehr $ -->
+<!-- Since: 2007-Oct-17 -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!-- IMO 236 TIDAL WINDOW - Application 4 - 001-14  -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <!-- Stand alone version of a message 8 - includes header  -->
+
+  <message name="imo_tidal_window" aismsgnum="6" dac="001" fid="13" titlefield="UserID">
+    <description>IMO tidal window.  Specified
+      in SN/Circ.236 Annex 2, page 5, Application 3.  Also defined in IALA Guidelines on AIS,
+      Vol 1, Part 1, Ed. 1.3. Guildeline No 1028.
+
+      This message should be used to inform vessels about tidal
+      windows which allow a vessel the safe passage of a fairway.  The
+      message includes predictions of current speed and current
+      direction. In this example, three points of tidal information
+      are given. Attributes of message: addressed, shore station
+      transmitting, acknowledgement required.
+    </description>
+
+    <xi:include href="structs-inc.xml"/>
+
+    <messagesize>376</messagesize>
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 6</description>
+      <required>6</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <!-- switch from SourceID to match ITU spec -->
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>MMSI number of transmitter broadcasting the message</description>
+      <note> Not sure if this matches what IMO stated.</note>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="SeqNum" numberofbits="2" type="uint">
+      <description>Sequence number as described in 5.3.1.  Assigned to each station</description>
+      <!-- FIX: what is this really for?!?!? -->
+      <testvalue>3</testvalue>
+    </field>
+
+    <field name="DestinationID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193047</testvalue>
+    </field>
+
+    <!-- FIX: does this conflict with the description in the main IMO AIS spec? -->
+    <field name="RetransmitFlag" numberofbits="1" type="bool">
+      <description>Should be set upon retransmission</description>
+      <default>0</default>
+      <lookuptable>
+	<entry key="0">no retransmission</entry>
+	<entry key="1">restransmitted</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="1" type="uint">
+      <description>Must be 0</description>
+      <required>0</required>
+    </field>
+
+
+    <!-- Called IAI in the IMO 236 doc -->
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code - part 1 of the IAI</description>
+      <required>1</required>
+    </field>
+
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Identifier - part 2 of the IAI</description>
+      <required>11</required>
+    </field>
+
+    <field name="month" numberofbits="4" type="uint">
+      <description>UTC month</description>
+      <unavailable>0</unavailable>
+      <range min="1" max="12"/>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="day" numberofbits="5" type="uint">
+      <description>UTC day</description>
+      <unavailable>0</unavailable>
+      <range min="1" max="31"/>
+      <testvalue>1</testvalue>
+    </field>
+
+
+    <!-- ==== 1 ==== -->
+
+    <include-struct name="window1" struct="position2d">
+      <description>Not sure what this position is for?  Center?</description>
+    </include-struct>
+
+    <field name="fromhour1" numberofbits="5" type="uint">
+      <description>From UTC hour</description>
+      <unavailable>24</unavailable>
+      <range min="0" max="23"/>
+      <units>hours</units>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="frommin1" numberofbits="6" type="uint">
+      <description>From UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>21</testvalue>
+    </field>
+
+    <field name="tohour1" numberofbits="5" type="uint">
+      <description>To UTC hour</description>
+      <unavailable>24</unavailable>
+      <units>hours</units>
+      <range min="0" max="23"/>
+      <testvalue>23</testvalue>
+    </field>
+
+    <field name="tomin1" numberofbits="6" type="uint">
+      <description>To UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>24</testvalue>
+    </field>
+
+    <field name="curdir1" numberofbits="9" type="uint">
+      <description>Current direction</description>
+      <unavailable>360</unavailable> <!-- WARNING... this is different than msg 001_11 !!! -->
+      <range min="0" max="359"/>
+      <units>degrees</units> 
+      <testvalue>300</testvalue>
+    </field>
+
+    <field name="curspeed1" numberofbits="7" type="udecimal">
+      <description>Current speed</description>
+      <range min="0" max="12.6"/>
+      <decimalplaces>1</decimalplaces>
+      <unavailable>12.7</unavailable>
+      <scale>10</scale>
+      <units>knots</units>
+      <testvalue>12.1</testvalue>
+    </field>
+
+
+
+    <!-- ==== 2 ==== -->
+
+    <include-struct name="window2" struct="position2d">
+      <description>Not sure what this position is for?  Center?</description>
+    </include-struct>
+
+    <field name="fromhour2" numberofbits="5" type="uint">
+      <description>From UTC hour</description>
+      <unavailable>24</unavailable>
+      <range min="0" max="23"/>
+      <units>hours</units>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="frommin2" numberofbits="6" type="uint">
+      <description>From UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>21</testvalue>
+    </field>
+
+    <field name="tohour2" numberofbits="5" type="uint">
+      <description>To UTC hour</description>
+      <unavailable>24</unavailable>
+      <units>hours</units>
+      <range min="0" max="23"/>
+      <testvalue>23</testvalue>
+    </field>
+
+    <field name="tomin2" numberofbits="6" type="uint">
+      <description>To UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>24</testvalue>
+    </field>
+
+    <field name="curdir2" numberofbits="9" type="uint">
+      <description>Current direction</description>
+      <unavailable>360</unavailable> <!-- WARNING... this is different than msg 001_11 !!! -->
+      <range min="0" max="359"/>
+      <units>degrees</units> 
+      <testvalue>300</testvalue>
+    </field>
+
+    <field name="curspeed2" numberofbits="7" type="udecimal">
+      <description>Current speed</description>
+      <range min="0" max="12.6"/>
+      <decimalplaces>1</decimalplaces>
+      <unavailable>12.7</unavailable>
+      <scale>10</scale>
+      <units>knots</units>
+      <testvalue>12.1</testvalue>
+    </field>
+
+
+
+    <!-- ==== 3 ==== -->
+
+    <include-struct name="window3" struct="position2d">
+      <description>Not sure what this position is for?  Center?</description>
+    </include-struct>
+
+    <field name="fromhour3" numberofbits="5" type="uint">
+      <description>From UTC hour</description>
+      <unavailable>24</unavailable>
+      <range min="0" max="23"/>
+      <units>hours</units>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="frommin3" numberofbits="6" type="uint">
+      <description>From UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>21</testvalue>
+    </field>
+
+    <field name="tohour3" numberofbits="5" type="uint">
+      <description>To UTC hour</description>
+      <unavailable>24</unavailable>
+      <units>hours</units>
+      <range min="0" max="23"/>
+      <testvalue>23</testvalue>
+    </field>
+
+    <field name="tomin3" numberofbits="6" type="uint">
+      <description>To UTC minute</description>
+      <unavailable>60</unavailable>
+      <units>minutes</units>
+      <range min="0" max="59"/>
+      <testvalue>24</testvalue>
+    </field>
+
+    <field name="curdir3" numberofbits="9" type="uint">
+      <description>Current direction</description>
+      <unavailable>360</unavailable> <!-- WARNING... this is different than msg 001_11 !!! -->
+      <range min="0" max="359"/>
+      <units>degrees</units> 
+      <testvalue>300</testvalue>
+    </field>
+
+    <field name="curspeed3" numberofbits="7" type="udecimal">
+      <description>Current speed</description>
+      <range min="0" max="12.6"/>
+      <decimalplaces>1</decimalplaces>
+      <unavailable>12.7</unavailable>
+      <scale>10</scale>
+      <units>knots</units>
+      <testvalue>12.1</testvalue>
+    </field>
+
+  </message>
+  
+</ais-binary-message>
+

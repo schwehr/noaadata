@@ -1,0 +1,61 @@
+Here are some notes on creating a postgis/postgres database for
+noaadata/ais.  Please note that the version number are likely old by
+the time you read this.  I am using Mac OSX 10.4.8 PPC with Fink for
+these notes.  -Kurt 3/2007
+
+
+# Install postgres, postgis, and the python interface
+# This will hopefully change to installing the info file soon.
+# also need to add instructions for other oses
+
+fink install psycopg2-py25 postgis83
+
+# See that no database is running
+
+ps -aux | grep post  
+
+
+# Get the database up
+
+sudo /sw/bin/pgsql.sh-8.3 start
+
+ps -aux | grep post
+
+postgres 24862   2.5  0.1    32228   1200  p2  U     9:50AM   0:00.28 /sw/bin/postgres-8.3 -D /sw/var/postgresql-8.3/data
+
+
+# Create the AIS database
+
+sudo -u postgres createdb ais
+
+
+# Configure the database so that it can use the postgis constructs
+
+sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais 	
+
+or
+
+psql -f /sw/share/doc/postgis83/lwpostgis.sql -d ais
+psql -f /sw/share/doc/postgis83/spatial_ref_sys.sql -d ais
+
+
+# Setup a user role so that you can access the database as yourself
+# Consider using -P for passwords
+# For practice, you can make this user a superuser
+
+echo $USER
+sudo -u postgres createuser -U postgres -W $USER
+
+
+
+# Get the create command for the position table
+./ais_msg_1.py -c
+./ais_msg_5.py -c
+
+
+# Now connect to the data create the tables
+psql ais
+
+CREATE TABLE position (key SERIAL PRIMARY KEY, messageid INTEGER, repeatindicator INTEGER, userid INTEGER, navigationstatus INTEGER, rot INTEGER, sog DECIMAL(4,1), positionaccuracy INTEGER, cog DECIMAL(4,1), trueheading INTEGER, timestamp INTEGER, regionalreserved INTEGER, spare INTEGER, raim BOOL, state_syncstate INTEGER, state_slottimeout INTEGER, state_slotoffset INTEGER, cg_r VARCHAR(15), cg_sec INTEGER, cg_timestamp TIMESTAMP ); SELECT AddGeometryColumn('position','position',-1,'POINT',2);
+
+CREATE TABLE shipdata (key SERIAL PRIMARY KEY, messageid INTEGER, repeatindicator INTEGER, userid INTEGER, aisversion INTEGER, imonumber INTEGER, callsign VARCHAR(7), name VARCHAR(20), shipandcargo INTEGER, dima INTEGER, dimb INTEGER, dimc INTEGER, dimd INTEGER, fixtype INTEGER, eta INTEGER, draught DECIMAL(3,1), destination VARCHAR(20), dte INTEGER, spare INTEGER, cg_r VARCHAR(15), cg_sec INTEGER, cg_timestamp TIMESTAMP ); 

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_4.xml 12293 2009-07-21 19:17:19Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!--  Definition for AIS Msg 4 - base station status  -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <!-- msg 4 does not have a dac, fid, or efid -->
+  <message name="bsreport" aismsgnum="4" titlefield="UserID">
+    <description>Base station report</description>
+
+    <!-- This next block of messages will get ignored... -->
+    <!-- FIX: THESE ARE PROBABLY NOT RIGHT!!! -->
+    <category>F</category>
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AS</operationmode>
+    <accessscheme>FATDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 4</description>
+      <required>4</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <include-struct name="Time" struct="time">
+      <description>Current time stamp</description>
+    </include-struct>
+
+    <field name="PositionAccuracy" numberofbits="1" type="uint">
+      <description>Accuracy of positioning fixes</description>
+      <lookuptable>
+	<entry key="0">low (greater than 10 m)</entry>
+	<entry key="1">high (less than 10 m)</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="Position" struct="position2d">
+      <description>Location of base station</description>
+    </include-struct>
+
+    <!-- FIX: this could go in the include structs -->
+    <field name="fixtype" numberofbits="4" type="uint">
+      <description>Method used for positioning</description>
+      <range min="0" max="7"/>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">undefined</entry>
+	<entry key="1">GPS</entry>
+	<entry key="2">GLONASS</entry>
+	<entry key="3">combined GPS/GLONASS</entry>
+	<entry key="4">Loran-C</entry>
+	<entry key="5">Chayka</entry>
+	<entry key="6">integrated navigation system</entry>
+	<entry key="7">surveyed</entry>
+	<entry key="8">Galileo</entry>
+	<!-- <entry startkey="8" endkey="15">not used</entry> -->
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="10" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="RAIM" numberofbits="1" type="bool">
+      <description>Receiver autonomous integrity monitoring flag</description>
+      <lookuptable>
+	<entry key="False">not in use</entry>
+	<entry key="True">in use</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <!-- FIX: make an struct-inc of SOTDMA comm state for table 3.3.7.2.2 -->
+
+    <field-off name="commstate" numberofbits="19" type="uint">
+      <description>FIX: broken</description>
+      <testvalue>2</testvalue>
+    </field-off>
+
+    <include-struct name="state" struct="sotdmaState">
+      <description>Communications State - SOTDMA</description>
+    </include-struct>
+
+
+  </message> <!-- position -->
+
+</ais-binary-message>

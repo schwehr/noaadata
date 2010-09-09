@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- <!DOCTYPE doc SYSTEM "http://vislab-ccom.unh.edu/~schwehr/somewhere"
+[
+	  <!ENTITY slsinc SYSTEM "sls_structures.xml">
+]> 
+-->
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<!-- FIX: what is the messages could be a 6 or 8... broadcast and or addressed? -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="../structs-inc.xml"/>
+  <xi:include href="structures.xml"/>
+
+  <!-- ============================================================ -->
+  <!-- &slsinc;-->
+  <!-- ============================================================ -->
+
+  <message name="sls_lockorder" aismsgnum="8" dac="366 316" fid="1" efid="2" titlefield="lockid">
+    <description>St Lawrance Seaway wind information</description>
+
+    <include-struct name="time" struct="sls_time">
+      <description>Time tag of measurement</description>
+    </include-struct>
+
+    <field name="lockid" numberofbits="6" arraylength="7" type="aisstr6">
+      <description>Character identifier of the station</description>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>A345678</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="pos" struct="sls_pos">
+      <description>Location of measurement</description>
+    </include-struct>
+
+    <field name="reserved" numberofbits="19" type="uint">
+      <description>Reserved bits for future use</description>
+      <required>0</required>
+    </field>
+
+    <field name="lockschedules" numberofbits="-1" type="binary">
+      <description>up to 6 lock schedule reports</description>
+      <!-- FIX:!!! This is not a real test value -->
+      <testvalue>0001010101010000</testvalue>
+    </field>
+
+  </message> <!-- sls_waterlevel -->
+
+</ais-binary-message>

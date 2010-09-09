@@ -1,0 +1,153 @@
+Using a Combination AIS/GPS Receiver for Logging AIS Reports
+A. Maitland Bottoms
+January 2008
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Several AIS receivers on the market either include a GPS
+receiver or have the option of passing GPS NEMA serial
+data from a separate GPS unit. Either way, the NEMA serial
+data includes a mix of GPS and AIS information. There may
+be other sources of marine electronic gear that provide
+aggregate NEMA streams. This article describes the issues
+and opportunities for effectively logging and timestamping
+AIS data.
+
+NMEA data
+
+The National Marine Electronics Association provides a specification
+known as NMEA 0183. That specification is different from RS-232, but
+in practice common computer serial port hardware does interoperate
+with available AIS/GPS units. The baud rate of the serial data can
+often be set to one of the standard rates. Traditional NMEA 0183 is
+4800, but NMEA version 3 adds 38400 and some GPS and AIS receivers
+provide some way to configure and support any standard rate.
+
+What data that arrives over the serial link is best thought of as
+lines of ASCII text. GPS devices emit lines beginning with
+$GPRMC, $GPGGA, and $GPGLL. AIS receivers emit lines beginning
+with !AIVDM and !AIVDO. Combination units will interleave these lines.
+
+Other spurious data can be expected. Electrical noise will cause
+spurious characters, and is a problem that needs to be tracked down
+and minimized by shielding and proper signal conditioning. There
+may be 'power on' glitches that are inherent to some devices that
+may be acceptable because they don't corrupt the flow of valid data.
+Many devices also announce at power on the device name model and
+manufacturer and hardware and firmware version numbers.
+
+Some examples of GPS/AIS data:
+
+___ SR162G ___
+default 38400,N,8,1
+
+$AITXT,01,01,91,FREQ,2087,2088*57
+
+&
+
+        RX YACHT AIS Receiver v1.3
+
+        RECE FRQ        R1F1619750
+        RECE FRQ        R2F1620250
+        INT RATE        IED00
+&$GPRMC,165032.86,V,3848.5893,N,07704.3969,W,0.00,0.0,110307,9.3,W,N*1F
+!AIVDO,1,1,,,13tfD@?P00JO;stF=@Q@0?w00000,0*45
+ ...
+$GPRMC,165724.37,A,3848.5960,N,07704.3956,W,0.51,0.0,110307,9.3,W,A*08
+!AIVDO,1,1,,,13tfD@?P05JO;tFF=@j00?vh0000,0*67
+
+___ NASA AIS Engine ___
+
+NASA Marine Ltd. AIS Engine
+IDs: A1 - A5, A11, B18, B24
+$PNMLV,T1127.2*28
+
+!AIVDM,1,1,,A,5>eq`d@000020PDhhv0p5<60l58TpF0i@Br2220000Dt000Ht00BDp10E0H53p6CmD`40p0,2*30
+$PNMLS,00,19,3*5B
+!AIVDM,1,1,,A,15MnG80P0uJOGeBF?KoLd?v@0L01,0*3F
+$PNMLS,28,19,3*51
+
+Additional information from receivers
+
+AIS receivers may also report received signal strength and signal to noise
+parameters for each reported AIS message. This may be useful for diagnosing
+antenns, feedline and radio propagation issues of an AIS receiver installation.
+(In addition to time, position course and speed, GPS receivers also report
+ephemeris data and satellite signal parameters.)
+
+Logging raw AIS data
+
+Though it may be tempting to just `cat /dev/ttyS0 > ais.log` and be done, there
+are smarter ways to approach the problem. Kurt Schwehr's original serial_logger.py
+runs as a daemon, suitable for starting at boot time of the logging system and
+handling creating new log files every day and shutting down cleanly.
+
+With a combination AIS/GPS, one can infer that the AIS messages arrived in the
+times between surrounding GPS messages. If only AIS messages are being logged,
+then it is handy to add a timestamp to the recevied line. The serial_logger.py
+either adds a '# timestamp' or extends the line with a stationid and timestamp
+in USGC format. These timestamps are floating point seconds since epoch. The
+USCG format is useful when aggregating AIS reports, as it allows keeping track
+of the receiving station and received time associated with each log entry.
+
+Keeping timestamps accurate
+
+For a shore-based logging system with reliable Internet connectivity, running
+NTP (Network Time Protocol) will keep its system clock accurate. It is also
+possible to run the NTP daemon in a way that uses the GPS serial data reports
+to keep the computer's time from drifting. The Network Time Protocol (NTP) daemon
+is know as ntpd.
+
+gpsd - a GPS service daemon
+
+Rather than dedicate the GPS connection to NTP for timing, it is helpful to
+run gpsd. Other gpsd aware applications running on the system then have
+access to the position, course and speed, over a network connection - while
+gpsd also works with ntpd using a shared memory interface. For security, gpsd
+is configured to only listen for client connections on the loopback interface
+using the 127.0.0.1 address. The man page for gpsd has a 'USE WITH NTP' section
+that describes configuration of both gpsd and ntpd.
+
+Versions of gpsd 2.35 and newer have the ability to pass AIS messages. (Earlier
+versions surpressed non GPS-like messages.) The noaadata-py logging from gpsd
+makes a TCP connection to the local gpsd network service, and asks for the raw
+input lines. (In fact it was the desire to use gpsd with ntpd and noaadata-py
+that motivated the change to gpsd.)
+
+So a quick checklist for logging timestamped AIS raw messages on a system
+using both ntpd and gpsd would be:
+
+ - install gpsd, ntp and noaadata-py software
+ - attach combination AIS/GPS receiver
+ - configure ntpd to accept gpsd using 127.127.28.x pseudo server addresses
+ - configure gpsd to run as root (so that it has shared memory with ntpd)
+ - tell gpsd to run with useful options, either by setting values in
+   /etc/default/gpsd of otherwise having the startup scripts pass the
+   -n option and correct serial port
+ - likewise have the noaadata-py start up to connect to gpsd rather than
+   the serial port and put the log files in some useful directory.
+
+Using logged data
+
+Some AIS messages are contained in multiple lines of raw log data. The
+noaadata-py script ais_normalize is a tool that accepts the timestamped
+or USCG format log files and outputs a normailzed form with each AIS
+message represented by one line of text. The normalized form is what
+the parsing tools need, and handle decoding for display of for populating
+a database.
+
+Summary
+
+With a small investment in the inital configuration it is possible to have
+useful logs of AIS messages. By incorporating timestamps and receiver location
+into the raw data logs, it is possible to aggregate logs from multiple sources.
+Even if the sources are a combination of land, maritime mobile and even satellite
+based, the GPS time synchronization makes the log data consistant. Combination
+of ntpd, gpsd and noaadata-py is possible and practical.
+
+References:
+1 - gpsd - http://gpsd.berlios.de/
+2 - ntpd - http://www.ntp.org/
+3 - noaadata-py - http://vislab-ccom.unh.edu/~schwehr/software/noaadata/

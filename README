@@ -1,0 +1,12 @@
+Python library for talking to NOAA co-ops data servers and generating
+AIS waterlevel messages.
+
+WARNING: This is research code.  Do not expect things to work nicely
+and no support unless you work for NOAA or the USCG.
+
+http://opendap.co-ops.nos.noaa.gov/axis/
+
+NOAA uses the apache java based Axis engine for SOAP.
+http://ws.apache.org/axis
+
+kurt@ccom.unh.edu

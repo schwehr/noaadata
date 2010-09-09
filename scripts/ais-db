@@ -1,0 +1,177 @@
+#!/usr/bin/env python
+__author__ = 'Kurt Schwehr'
+__version__ = '$Revision: 13852 $'.split()[1]
+__revision__  = __version__ # For pylint
+__date__ = '$Date: 2010-05-31 19:41:35 -0400 (Mon, 31 May 2010) $'.split()[1]
+__copyright__ = '2008'
+__license__   = 'GPL v3'
+__contact__   = 'kurt at ccom.unh.edu'
+
+__doc__='''
+Command line AIS database utilities.
+
+@requires: U{psycopg2<http://http://initd.org/projects/psycopg2/>} >= 2.0.6
+@requires: U{Python<http://python.org/>} >= 2.5
+@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0.1
+
+@status: under development
+@since: 2008
+@undocumented:  __doc__ parser
+@todo: move the create strings here to aisutils.database or similiar
+@todo: what indices need to get created?
+'''
+
+
+import os
+import sys
+import aisutils.database
+
+############################################################
+if __name__=='__main__':
+    from optparse import OptionParser
+    parser = OptionParser(usage="%prog [options]",version="%prog "+__version__)
+    parser.add_option('-t','--database-type',dest='dbType',default=aisutils.database.dbTypes[0]
+                      ,choices=aisutils.database.dbTypes
+                      ,help='Which database type to use [default: %default]')
+    parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
+                      ,help='Make program output more verbose info as it runs')
+
+    aisutils.database.stdCmdlineOptions(parser,'all')
+
+    parser.add_option('-c','--create-database',dest='createDB',default=False, action='store_true'
+                      ,help='Create the database.  Sqlite does not need this.')
+
+    parser.add_option('--add-postgis',dest='addPostgis',default=False, action='store_true'
+                      ,help='Add Postgis capabilities to the database.  Sqlite can not do this.')
+
+    parser.add_option('--add-google-postgis',dest='addGooglePostgis',default=False, action='store_true'
+                      ,help='Add the funky Google projection.  Sqlite can not do this.')
+
+    parser.add_option('--add-google-proj',dest='addGoogleProj',default=False, action='store_true'
+                      ,help='Add the funky Google projection.  Sqlite can not do this.')
+
+    #
+    # DB table creations
+    #
+    parser.add_option('-C','--create-tables',dest='createTables',default=False, action='store_true'
+                      ,help='Create the tables in the database')
+
+    parser.add_option('--drop-tables',dest='dropTables',default=False, action='store_true'
+                      ,help='Remove the tables in the database.  DANGER - destroys data')
+
+    parser.add_option('-i','--include-msg', action='append', dest='includeMsgs'
+                      ,type='int',default=None
+                      ,help='Make a list of messages to put in the db [default: %default]')
+    parser.add_option('-e','--exclude-msg', action='append', dest='excludeMsgs'
+                      ,type='int', default=None
+                      ,help='Make a list of messages to put in the db [default: %default]')
+
+    parser.add_option('--create-track-lines', action='store_true', dest='createTrackLinesTable'
+                      ,default=False, help='Add a track lines table for postgis')
+
+    parser.add_option('--drop-track-lines', action='store_true', dest='dropTrackLinesTable'
+                      ,default=False, help='Remove the track lines table for postgis')
+
+    parser.add_option('--create-last-position', action='store_true', dest='createLastPositionTable'
+                      ,default=False,help='Add a last position table for postgis')
+
+    parser.add_option('--drop-last-position', action='store_true', dest='dropLastPositionTable'
+                      ,default=False, help='Remove the last position table for postgis')
+
+    (options,args) = parser.parse_args()
+    v = options.verbose
+    #if options.createDB and options.dbType!='sqlite':
+    #    sys.exit('Have not yet implemented creating the database for non-sqlite dbs')
+
+    if options.createDB and options.dbType!='sqlite':
+        if v: sys.stderr.write('Creating database\n')
+        r=os.system('createdb -U postgres '+options.databaseName)
+        if 0 != r:
+            sys.exit('Unable to create the database.  Exit code: '+str(r))
+        r=os.system('createlang plpgsql '+options.databaseName)
+
+    cx = aisutils.database.connect(options)
+
+    if options.addPostgis :
+        if options.dbType=='sqlite':
+            sys.stderr.write('WARNING: postgis not available for sqlite.  Ignoring request\n')
+        else:
+            # FIX: make this not fink mac osx specific!
+            # FIX: add proper error checking
+#            r=os.system('psql -f /sw/share/doc/postgis82/lwpostgis.sql -d '+options.databaseName)
+#            r=os.system('psql -f /sw/share/doc/postgis82/spatial_ref_sys.sql -d '+options.databaseName)
+
+            r=os.system('psql -f /sw/share/doc/postgis83/contrib/postgis-1.5/postgis.sql -d '+options.databaseName)
+            r=os.system('psql -f /sw/share/doc/postgis83/contrib/postgis-1.5/spatial_ref_sys.sql -d '+options.databaseName)
+
+
+
+    if options.addGooglePostgis:
+        if options.dbType=='sqlite':
+            sys.stderr.write('WARNING: postgis not available for sqlite.  Ignoring request\n')
+        else:
+            sql = 'INSERT into spatial_ref_sys (srid, auth_name, auth_srid, proj4text, srtext) values ( 900913, \'spatialreference.org\', 6, \'+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs\', \'PROJCS["unnamed",GEOGCS["unnamed ellipse",DATUM["unknown",SPHEROID["unnamed",6378137,0]],PRIMEM["Greenwich",0],UNIT["degree",0.0174532925199433]],PROJECTION["Mercator_2SP"],PARAMETER["standard_parallel_1",0],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",0],PARAMETER["false_easting",0],PARAMETER["false_northing",0],UNIT["Meter",1],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"]]\');'
+            cu = cx.cursor()
+            cu.execute(sql)
+            cx.commit()
+
+    if options.addGoogleProj:
+        # FIX: put checking here to find the epsg file and to make sure 900913 is not already in the file
+        # Specify file location... this is hard coded default fink location
+        o = file('/sw/share/proj/epsg','a')
+        o.write('# Google Mercator projection\n')
+        o.write('#<900913> +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs\n')
+
+
+    if options.createTables:
+        if v: sys.stderr.write('Creating tables\n')
+        aisutils.database.createTables(cx
+                                       ,dbType=options.dbType
+                                       ,includeList=options.includeMsgs
+                                       ,excludeList=options.excludeMsgs
+                                       ,verbose=v)
+
+    if options.dropTables:
+        if v: sys.stderr.write('Dropping tables.  Say goodbye to your data\n')
+        aisutils.database.dropTables(cx
+#                                     ,dbType=options.dbType
+                                     ,includeList=options.includeMsgs
+                                     ,excludeList=options.excludeMsgs
+                                     ,verbose=v)
+
+    if options.createTrackLinesTable:
+        sqlCreate = 'CREATE TABLE track_lines ( ogc_fid SERIAL PRIMARY KEY, userid INTEGER, name CHARACTER VARYING(20), update_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now());' 
+        sqlCreate += " SELECT AddGeometryColumn('track_lines','track',4326,'LINESTRING',2);"
+        if v: sys.stderr.write('Creating track_lines table\n')
+        if v: sys.stderr.write(sqlCreate+'\n')
+        cu = cx.cursor()
+        cu.execute(sqlCreate)
+        cx.commit()
+
+    if options.createLastPositionTable:
+        # cog is a decimal in the position table.  ... cog == course over ground
+        sqlCreate = 'CREATE TABLE  last_position ( key SERIAL PRIMARY KEY, userid INTEGER, name character varying(20), cog INTEGER, sog REAL, cg_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now(), cg_r VARCHAR(15), navigationstatus VARCHAR(30), shipandcargo VARCHAR(30) );' 
+        sqlCreate += " SELECT AddGeometryColumn('last_position','position',4326,'POINT',2);"
+        if v: sys.stderr.write('Creating last position table\n')
+        if v: sys.stderr.write(sqlCreate+'\n')
+        cu = cx.cursor()
+        cu.execute(sqlCreate)
+        cx.commit()
+
+
+    if options.dropTrackLinesTable:
+        if v: sys.stderr.write('Dropping track_lines table ... \n')
+        cu = cx.cursor()
+        cu.execute('DROP TABLE track_lines;')
+        cx.commit()
+
+
+    if options.dropLastPositionTable:
+        if v: sys.stderr.write('Dropping last_position table ... \n')
+        cu = cx.cursor()
+        cu.execute('DROP TABLE last_position;')
+        cx.commit()
+
+
+    if v:
+        sys.stderr.write('Done.\n')

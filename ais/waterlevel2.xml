@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: waterlevel2.xml 8347 2008-01-23 17:58:58Z schwehr $ -->
+<!-- $Revision: 8347 $ -->
+<!-- $Date: 2008-01-23 12:58:58 -0500 (Wed, 23 Jan 2008) $ -->
+
+<!-- Example by Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+
+  <struct name="utcdatetime">
+    <description>Time stamp in UTC</description>
+    <field name="month" numberofbits="4" type="uint">
+      <description>month 1..12</description>
+      <testvalue>2</testvalue>
+    </field>
+ 	
+    <field name="day" numberofbits="5" type="uint">
+      <description>day of the month 1..31</description>
+      <testvalue>28</testvalue>
+    </field>
+    <field name="hour" numberofbits="5" type="uint">
+      <description>UTC hours 0..23</description>
+      <testvalue>23</testvalue>
+    </field>
+    <field name="min" numberofbits="6" type="uint">
+      <description>minutes</description>
+      <testvalue>45</testvalue>
+    </field>
+<!--
+    <field name="sec" numberofbits="6" type="uint">
+      <description>seconds</description>
+      <testvalue>58</testvalue>
+    </field>
+-->
+  </struct> <!-- utcdatetime -->
+
+
+  <!-- ============================================================ -->
+  <!-- efid="2" Not using based on discussion with Jorge A. -->
+
+  <message name="waterlevel" aismsgnum="8" dac="366" fid="63"  titlefield="stationid">
+
+    <description>Water level report.  This is <b>DRAFT/PROPOSED</b> message
+format and should not be considered any sort of standard.  The main
+goal is to illustrated the Tide Aware ENC and the AIS XML engine.
+    </description>
+    <note>This is based on discussions with the NOAA PORTS group.  2nd generation water level message prototype</note>
+    <see-also>http://opendap.co-ops.nos.noaa.gov/axis/</see-also>
+    <see-also>http://vislab-ccom.unh.edu/~schwehr/software/noaadata/ais-messages/waterlevel.html</see-also>
+    <see-also>http://http://vislab-ccom.unh.edu/~schwehr/ais/waterlevel/</see-also>
+    <see-also>http://co-ops.nos.noaa.gov/corms.html</see-also>
+    <!-- <see-also>http://opendap.co-ops.nos.noaa.gov/axis/doc.html</see-also> -->
+
+    <!-- leave this one line so that it may be used just for the payload with a "grep -v ais_header" -->
+    <!-- do not do name mangling on the header.  That would be strange -->
+    <include-struct name="ais_header" struct="msg8_header"><do_not_mangle_name/><description></description></include-struct>
+
+    <!-- binary broadcast message (bbm) header -->
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code</description>
+      <required>366</required>
+    </field>
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Identifier</description>
+      <required>63</required>
+    </field>
+
+    <!-- Kurt Schwehr's suggestion for a much larger name space 0f 4096 message types -->
+<!--
+    <field name="efid" numberofbits="12" type="uint">
+      <description>extended functional identifier</description>
+      <required>2</required>
+    </field>
+-->
+
+    <!-- body -->
+
+    <include-struct name="timetag" struct="utcdatetime">
+      <do_not_mangle_name/>
+      <description>Time the measurement represents</description>
+    </include-struct>
+    
+    <!-- number of bits of station id is just to match St. Lawrence Seaway -->
+    <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
+      <description>Character identifier of the station.  Usually a number.</description>
+      <note>station name should be taken from an external lookup table based on stationid</note>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>A234567</testvalue> <!-- must be uppercase -->
+    </field>
+<!--
+    <include-struct name="stationloc" struct="position2d">
+      <do_not_mangle_name/>
+      <description>Location of the sensor taking the water level measurement or position of prediction.</description>
+    </include-struct>
+-->
+    <!-- <field name="waterlevel" numberofbits="16" type="decimal"> -->
+    <field name="waterlevel" numberofbits="16" type="int">
+      <description>Water level in centimeters</description>
+      <units>cm</units>
+      <unavailable>-32768</unavailable>
+      <testvalue>-97</testvalue>
+    </field>
+
+    <field name="datum" numberofbits="5" type="uint">
+      <description>What reference datum applies to the value</description>
+      <note>Tries to match the first 2 along with the St. Lawrence Seaway.  2 is for Water Level Type of 1?!?</note>
+      <note>Need a good reference to the definition of each</note>
+      <lookuptable>
+	<!-- FIX: need to doc these! -->
+	<entry key="0">MLLW</entry>
+	<entry key="1">IGLD-85</entry>
+	<entry key="2">WaterDepth</entry>
+	<entry key="3">STND</entry>
+	<entry key="4">MHW</entry>
+	<entry key="5">MSL</entry>
+	<entry key="6">NGVD</entry>
+	<entry key="7">NAVD</entry>
+	<entry key="8">WGS-84</entry>
+	<entry key="9">LAT</entry>
+	<entry key="10">Pool</entry>   <!-- ACOE uses for inland waterways -->
+	<entry key="11">Gauge</entry>  <!-- ACOE uses for inland waterways -->
+	<entryrange start="12" end="30">Reserved for future use</entryrange>
+	<entry key="31">Unknown/Unavailable</entry> <!-- good luck -->
+      </lookuptable>
+      <unavailable>31</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="sigma" numberofbits="7" type="uint">
+      <description>Standard deviation of 1 second samples used to compute the water level height.  FIX: is this the correct description of sigma?</description>
+      <unavailable>127</unavailable>
+      <units>cm</units>
+      <testvalue>97</testvalue>
+    </field>
+
+
+    <field name="source" numberofbits="3" type="uint">
+      <description>How the water level was derived</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">No data</entry>
+	<entry key="1">Realtime sensor data</entry>
+	<entry key="2">Raw realtime sensor data - no validation</entry> <!-- e.g. Not monitored by CORMS or related service -->
+	<entry key="3">Predicted water level - tidal data generated by using harmonic analysis</entry>
+	<entry key="4">Forecast water level - tidal data generated by use of a hydrodynamic model</entry>
+	<entry key="5">Reserved</entry>
+	<entry key="6">Reserved</entry>
+	<entry key="7">Reserved</entry>
+      </lookuptable>
+      <testvalue>2</testvalue>
+    </field>
+
+  </message> <!-- waterlevel -->
+
+</ais-binary-message>

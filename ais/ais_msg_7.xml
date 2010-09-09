@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_7.xml 13621 2010-05-04 18:57:50Z schwehr $ -->
+<!-- $Revision: 13621 $ -->
+<!-- $Date: 2010-05-04 14:57:50 -0400 (Tue, 04 May 2010) $ -->
+
+<!-- AUTHOR: Kurt Schwehr -->
+
+<ais-binary-message version="1.0">
+  
+  <message name="binack" aismsgnum="8">
+    <description>Binary acknowledgement of addressed message</description>
+
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <operationmode>IN</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>MOBILE</stationtype>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 7</description>
+      <required>7</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI).  Also known as the Source ID</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+
+    <field name="DestID1" numberofbits="30" type="uint">
+      <description>MMSI destication to ACK</description>
+      <testvalue>1193001</testvalue>
+    </field>
+
+    <field name="SeqID1" numberofbits="2" type="uint">
+      <description>Sequence ID of the message to be acknowledged</description>
+      <testvalue>1</testvalue>
+    </field>
+
+
+    <field name="DestID2" numberofbits="30" type="uint">
+      <description>MMSI destication to ACK</description>
+      <testvalue>1193002</testvalue>
+    </field>
+
+    <field name="SeqID2" numberofbits="2" type="uint">
+      <description>Sequence ID of the message to be acknowledged</description>
+      <testvalue>2</testvalue>
+    </field>
+
+
+    <field name="DestID3" numberofbits="30" type="uint">
+      <description>MMSI destication to ACK</description>
+      <testvalue>1193003</testvalue>
+    </field>
+
+    <field name="SeqID3" numberofbits="2" type="uint">
+      <description>Sequence ID of the message to be acknowledged</description>
+      <testvalue>3</testvalue>
+    </field>
+
+
+    <field name="DestID4" numberofbits="30" type="uint">
+      <description>MMSI destication to ACK</description>
+      <testvalue>1193004</testvalue>
+    </field>
+
+    <field name="SeqID4" numberofbits="2" type="uint">
+      <description>Sequence ID of the message to be acknowledged</description>
+      <testvalue>0</testvalue>
+    </field>
+
+
+
+  </message> <!-- binary broadcast acknowledgement -->
+
+</ais-binary-message>

@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_18.xml 11975 2009-05-27 15:18:30Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!-- AIS Class B  - position message -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <!-- titlefield is what to use when a message needs to by titled (e.g. in kml) -->
+
+  <!-- msg 1 does not have a dac, fid, or efid -->
+  <message name="positionb" aismsgnum="18" titlefield="UserID">
+    <description>Standard Class B equipment position report</description>
+    <see-also></see-also>
+
+    <!-- This next block of messages will get ignored... -->
+
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+<!--    <category>F</category>
+    <category>S</category> -->
+    <priority>1</priority>
+    <operationmode>AU</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>CSTDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <comstate>ITDMA</comstate>
+    <stationtype>mobile</stationtype>
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 18</description>
+      <required>18</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Reserved1" numberofbits="8" type="uint">
+      <description>Reseverd for definition by a compentent regional or local authority.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="SOG" numberofbits="10" type="udecimal">
+      <description>Speed over ground</description>
+      <unavailable>102.3</unavailable>
+      <lookuptable>
+	<entry key="102.2">102.2 knots or higher</entry>
+      </lookuptable>
+      <units>knots</units>
+      <scale>10</scale> 
+      <decimalplaces>1</decimalplaces>
+      <testvalue>101.9</testvalue>
+    </field>
+
+    <field name="PositionAccuracy" numberofbits="1" type="uint">
+      <description>Accuracy of positioning fixes</description>
+      <lookuptable>
+	<entry key="0">low (greater than 10 m)</entry>
+	<entry key="1">high (less than 10 m)</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="Position" struct="position2d">
+      <do_not_mangle_name/>
+      <description>Location of the vessel</description>
+    </include-struct>
+
+    <field name="COG" numberofbits="12" type="udecimal">
+      <description>Course over ground</description>
+      <range min="0" max="359.9"/>
+      <unavailable>360</unavailable>
+      <units>degrees</units>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>34.5</testvalue>
+    </field>
+
+    <field name="TrueHeading" numberofbits="9" type="uint">
+      <description>True heading (relative to true North)</description>
+      <range min="0" max="359"/>
+      <unavailable>511</unavailable>
+      <units>degrees</units>
+      <testvalue>41</testvalue>
+    </field>
+
+    <field name="TimeStamp" numberofbits="6" type="uint">
+      <description>UTC second when the report was generated</description>
+      <range min="0" max="59"/>
+      <unavailable>60</unavailable>
+      <lookuptable>
+	<entry key="60">not available/default</entry>
+	<entry key="61">manual input</entry>
+	<entry key="62">dead reckoning</entry>
+	<entry key="63">inoperative</entry>
+      </lookuptable>
+      <units>seconds</units>
+      <testvalue>35</testvalue>
+    </field>
+
+<!-- ITU 1371-1 was:
+    <field name="RegionalReserved" numberofbits="4" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="Spare" numberofbits="4" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field> -->
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="cs_unit" numberofbits="1" type="bool">
+      <description>Does this unit do Carrier Sense?</description>
+      <lookuptable>
+	<entry key="False">Class B SOTDMA unit</entry>
+	<entry key="True">Class B CS unit</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="display_flag" numberofbits="1" type="bool">
+      <description>Does this class B unit have an integrated display?</description>
+      <lookuptable>
+	<entry key="False">No display</entry>
+	<entry key="True">Integrated Display</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="dsc_flag" numberofbits="1" type="bool">
+      <description>Does it have dedicated or time-shared DSC radio function?</description>
+      <lookuptable>
+	<entry key="False">No DSC function</entry>
+	<entry key="True">Has DSC</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="band_flag" numberofbits="1" type="bool">
+      <description>How flexible is the freq handling of the unit?</description>
+      <lookuptable>
+	<entry key="False">Upper 525 kHz band</entry>
+	<entry key="True">Whole marine band</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="msg22_flag" numberofbits="1" type="bool">
+      <description>Can the unit handle msg 22?</description>
+      <lookuptable>
+	<entry key="False">No freq management</entry>
+	<entry key="True">Freq management with msg 22</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="mode_flag" numberofbits="1" type="bool">
+      <description>Assigned mode wrt to VDL slots</description>
+      <lookuptable>
+	<entry key="False">Autonomous and continuous mode</entry>
+	<entry key="True">Assigned mode</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="RAIM" numberofbits="1" type="bool">
+      <description>Receiver autonomous integrity monitoring flag</description>
+      <lookuptable>
+	<entry key="False">not in use</entry>
+	<entry key="True">in use</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="CommStateSelector" numberofbits="1" type="uint">
+      <description>SOTDMA or ITDMA</description>
+      <lookuptable>
+	<entry key="0">SOTDMA</entry>
+	<entry key="1">ITDMA</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <!-- FIX: decode this -->
+    <field name="CommState" numberofbits="19" type="uint">
+      <description>Not decoded by this software yet</description>
+      <testvalue>0</testvalue>
+    </field>
+
+  </message> <!-- position -->
+
+</ais-binary-message>

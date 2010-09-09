@@ -1,0 +1,16 @@
+Package: python-noaadata
+Source: noaadata
+Version: @VERSION@-1
+Section: sci
+Installed-Size: 3456
+Architecture: all
+Priority: optional
+Depends: python, python-serial
+Maintainer: Kurt Schwehr <kurt@ccom.unh.edu>
+Description: Python marine AIS library
+ Marine Automatic Indentification System networking library.  noaadata-py
+ provides routines to encode and decode bitstreams need to send and
+ receive AIS messages.  The package also contains code to talk to
+ the NOAA PORTS/CO-OPS waterlevel data through both SOAP and OpenDAP.
+ .
+ Web site: http://vislab-ccom.unh.edu/~schwehr/software/noaadata

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_12.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
+<!-- $Revision: 7473 $ -->
+<!-- $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $ -->
+
+<!-- AUTHOR: Kurt Schwehr -->
+
+<!-- Addressed binary message - 6 -->
+
+<ais-binary-message version="1.0">
+  
+  <message name="asrm" aismsgnum="8">
+    <description>Addressed safety related message.  FIX: need to handle the -1 string length at the end</description>
+
+    <!-- can be 1 to 5 slots -->
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+    <messagesize>336</messagesize>
+    <messagesize>504</messagesize>
+    <messagesize>672</messagesize>
+    <messagesize>840</messagesize>
+
+    <category>F</category>
+    <priority>4</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <operationmode>IN</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>MOBILE</stationtype>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 6</description>
+      <required>6</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI).  Also known as the Source ID</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="SeqNum" numberofbits="2" type="uint">
+      <description>Sequence number as described in 5.3.1.  Assigned to each station</description>
+      <!-- FIX: what is this really for?!?!? -->
+      <testvalue>3</testvalue>
+    </field>
+
+    <field name="DestinationID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI).</description>
+      <testvalue>1193047</testvalue>
+    </field>
+
+    <field name="RetransmitFlag" numberofbits="1" type="bool">
+      <description>Should the message be restransmitted?</description>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="1" type="uint">
+      <description>Must be 0</description>
+      <required>0</required>
+    </field>
+
+    <!-- FIX: implement unbounded array length.  Also add a max num bits/bytes
+    <field name="safetytext" arraylength="-1" numberofbits="6" type="aisstr6">
+      <description>Bits for a binary broadcast message</description>
+      <testvalue>HELLO</testvalue>
+    </field>
+    -->
+
+  </message> <!-- addressed safety related message -->
+
+</ais-binary-message>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Placemark>
+<description>Transparent green wall with yellow outlines</description>
+  <name>Absolute Extruded</name>
+  <LookAt>
+    <longitude>-70.3730166</longitude>
+    <latitude>42.395053</latitude>
+    <range>4451.842204068102</range>
+    <tilt>44.61038665812578</tilt>
+    <heading>-125.7518698668815</heading>
+  </LookAt>
+  <visibility>1</visibility>
+  <open>0</open>
+  <Style>
+    <LineStyle>
+      <color>ff00ffff</color>
+    </LineStyle>
+    <PolyStyle>
+      <color>7f00ff00</color>
+    </PolyStyle>
+  </Style>
+  <LineString>
+    <extrude>1</extrude>
+    <tessellate>1</tessellate>
+    <altitudeMode>absolute</altitudeMode>
+    <coordinates>
+        -69.56000000000,41.74000000000,10
+        -69.07000000000,41.02000000000,10
+        -69.16407331100,40.95597788560,10
+        -69.66570385450,41.69306766380,10
+        -69.56000000000,41.74000000000,10
+    </coordinates>
+  </LineString>
+</Placemark>
+</kml>

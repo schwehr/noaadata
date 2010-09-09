@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_20.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!-- Definition for AIS Msg 20 - Data Link Management  -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <!-- <xi:include href="structs-inc.xml"/> -->
+
+  <!-- msg 20 does not have a dac, fid, or efid -->
+  <message name="datalinkmng" aismsgnum="20" titlefield="UserID">
+
+    <description>Data Link Management - D.  This message uses an
+    optional tag that should not be reused.  The spare at the end
+    is used to byte align the message.
+    </description>
+
+    <!-- This next block of messages will get ignored by the compiler  -->
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AS</operationmode>
+    <accessscheme>FATDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 20</description>
+      <required>20</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <!--  ========== 1  ========== -->
+    <field name="offset1" numberofbits="12" type="uint">
+      <description>Reserved offset number</description>
+      <unavailable>0</unavailable>
+      <testvalue>10</testvalue>
+    </field>
+
+    <field name="numslots1" numberofbits="4" type="uint">
+      <description>Number of reserved consecutive slots</description>
+      <unavailable>0</unavailable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="timeout1" numberofbits="3" type="uint">
+      <description>Time-out value in minutes</description>
+      <units>min</units>
+      <unavailable>0</unavailable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="increment1" numberofbits="11" type="uint">
+      <description>Increment to repeast reservation of this block</description>
+      <unavailable>0</unavailable>
+      <testvalue>14</testvalue>
+    </field>
+
+    <!--  ========== 2  ========== -->
+    <field name="offset2" numberofbits="12" type="uint">
+      <description>Reserved offset number (optional)</description>
+      <unavailable>0</unavailable>
+      <optional/> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>20</testvalue>
+    </field>
+
+    <field name="numslots2" numberofbits="4" type="uint">
+      <description>Number of reserved consecutive slots (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="timeout2" numberofbits="3" type="uint">
+      <description>Time-out value in minutes (optional)</description>
+      <units>min</units>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="increment2" numberofbits="11" type="uint">
+      <description>Increment to repeast reservation of this block (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>24</testvalue>
+    </field>
+
+    <!--  ========== 3  ========== -->
+    <field name="offset3" numberofbits="12" type="uint">
+      <description>Reserved offset number (optional)</description>
+      <unavailable>0</unavailable>
+      <optional/> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>30</testvalue>
+    </field>
+
+    <field name="numslots3" numberofbits="4" type="uint">
+      <description>Number of reserved consecutive slots (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>3</testvalue>
+    </field>
+
+    <field name="timeout3" numberofbits="3" type="uint">
+      <description>Time-out value in minutes (optional)</description>
+      <units>min</units>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>3</testvalue>
+    </field>
+
+    <field name="increment3" numberofbits="11" type="uint">
+      <description>Increment to repeast reservation of this block (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>34</testvalue>
+    </field>
+
+    <!--  ========== 4  ========== -->
+    <field name="offset4" numberofbits="12" type="uint">
+      <description>Reserved offset number (optional)</description>
+      <unavailable>0</unavailable>
+      <optional/> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>40</testvalue>
+    </field>
+
+    <field name="numslots4" numberofbits="4" type="uint">
+      <description>Number of reserved consecutive slots (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>4</testvalue>
+    </field>
+
+    <field name="timeout4" numberofbits="3" type="uint">
+      <description>Time-out value in minutes (optional)</description>
+      <units>min</units>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>4</testvalue>
+    </field>
+
+    <field name="increment4" numberofbits="11" type="uint">
+      <description>Increment to repeast reservation of this block (optional)</description>
+      <unavailable>0</unavailable>
+      <optional>NoReturn</optional> <!-- Do NOT use optional in new messages!!!! -->
+      <testvalue>44</testvalue>
+    </field>
+
+    <!-- FIX: ARG... shoot me now.  Need to somehow specify that this is 2,4, or 6 bits -->
+    <field name="variablespare" numberofbits="6" type="uint">
+      <description>This field is a serious pain.  This padding makes the message byte aligned</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- DataLinkManagement 20 -->
+
+</ais-binary-message>

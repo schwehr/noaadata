@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<!-- FIX: what is the messages could be a 6 or 8... broadcast and or addressed? -->
+
+<!-- http://www.unece.org/trans/doc/finaldocs/sc3/TRANS-SC3-165e.pdf 2.4.4.2.6 page 42/43 Table 2.15 -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="../structs-inc.xml"/>
+
+  <struct name="gauge">
+    <field name="id" numberofbits="11" type="uint">
+      <description>Station ID defined by ERI for each country</description>
+      <testvalue>4</testvalue>
+    </field>
+
+    <field name="sign" numberofbits="1" type="uint">
+      <description>sign of the number in the waterlevel</description>
+      <testvalue>0</testvalue>
+      <lookuptable>
+	<entry key="0">-1</entry>
+	<entry key="1">1</entry>
+      </lookuptable>
+    </field>
+
+    <field name="waterlevel" numberofbits="11" type="decimal">
+      <description>Water level at the sensor</description>
+      <units>m</units>
+      <scale>100</scale>
+      <decimalplaces>2</decimalplaces>
+      <testvalue>3.21</testvalue>
+    </field>
+
+    <field name="i_have_no_idea" numberofbits="2" type="uint">
+      <description>What are these bits for?  They do not seem to be specified</description>
+      <required>0</required>  <!-- Not really, but what the heck is this? -->
+    </field>
+
+  </struct>
+
+  <!-- FIX: which dacs is this okay for? -->
+ <message name="ris_waterlevel" aismsgnum="8" dac="000" fid="24" titlefield="stationid">
+    <description>RIS ECE/TRANS/SC.3/2006/10 Table 2.15: Water level report</description>
+
+    <!-- leave this one line so that it may be used just for the payload with a "grep -v ais_header" -->
+    <!-- do not do name mangling on the header.  That would be strange -->
+    <include-struct name="ais_header" struct="msg8_header"><do_not_mangle_name/><description></description></include-struct>
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code</description>
+      <required>000</required> <!-- FIX: can be a range??? -->
+    </field>
+
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional Identifier</description>
+      <required>1</required>
+    </field>
+
+    <field name="country" numberofbits="6" arraylength="2" type="aisstr6"> 
+      <description>UN country code using 2*6-Bit ASCII characters according to ERI specification</description>
+      <testvalue>ZZ</testvalue>
+    </field>
+
+    <include-struct name="id1" struct="gauge">
+      <description>One tide gauge measurement.</description>
+    </include-struct>
+
+    <include-struct name="id2" struct="gauge">
+      <description>One tide gauge measurement.</description>
+    </include-struct>
+
+    <include-struct name="id3" struct="gauge">
+      <description>One tide gauge measurement.</description>
+    </include-struct>
+
+    <include-struct name="id4" struct="gauge">
+      <description>One tide gauge measurement.</description>
+    </include-struct>
+
+ </message>
+
+</ais-binary-message>   

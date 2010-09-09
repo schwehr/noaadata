@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_8.xml 13756 2010-05-21 12:18:06Z schwehr $ -->
+<!-- $Revision: 13756 $ -->
+<!-- $Date: 2010-05-21 08:18:06 -0400 (Fri, 21 May 2010) $ -->
+
+<!-- AUTHOR: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
+
+<!--
+
+Attempt to read an AIS Msg 8.  Binary broadcast message
+
+
+test message from N-AIS Dec 2006... 
+!BSVDM,1,1,,A,85MwpwQKf22M=5KEn7IONkp9nkF5PtBao=COt6;QOuwk82>:tltI,0*01,r003669717,1165850285
+
+
+-->
+
+<ais-binary-message version="1.0">
+
+
+
+  <!-- msg 8 - AIS primary messages  do not have a dac, fid, or efid -->
+  <message name="bin_broadcast" aismsgnum="8">
+    <description>Variable length broadcast taking 1..5 slots</description>
+    <note>Need to make much of this an include-struct so that 1-3 are as simple as possible</note>
+    <see-also></see-also>
+
+    <!-- This next block of messages will get ignored... -->
+
+    <!-- can be 1 to 5 slots -->
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+    <messagesize>336</messagesize> <!-- FIX: all wrong? -->
+    <messagesize>504</messagesize>
+    <messagesize>672</messagesize>
+    <messagesize>840</messagesize>
+
+    <category>F</category>
+    <priority>4</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <operationmode>IN</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>MOBILE</stationtype>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 8</description>
+      <required>8</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Appid designated area code (country)</description>
+      <testvalue>366</testvalue>
+    </field>
+
+    <field name="fi" numberofbits="6" type="uint">
+      <description>Appid functional identifier</description>
+      <testvalue>42</testvalue>
+    </field>
+
+    <field name="BinaryData" numberofbits="-1" type="binary">
+      <description>Bits for a binary broadcast message</description>
+      <testvalue>110000101100000111100010010101001110111001101010011011111111100000110001011100001011111111101111111110011001000000010001110</testvalue> <!-- Who knows what this codes!!!! -->
+    </field>
+
+
+
+  </message> <!-- binary broadcast -->
+
+</ais-binary-message>

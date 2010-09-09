@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_21.xml 13791 2010-05-25 22:11:39Z schwehr $ -->
+<!-- $Revision: 13791 $ -->
+<!-- $Date: 2010-05-25 18:11:39 -0400 (Tue, 25 May 2010) $ -->
+
+<!-- AUTHOR: Kurt Schwehr -->
+
+
+<ais-binary-message version="1.0"  xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+
+  <!-- msg 21 - AIS primary messages do not have a dac, fid, or efid -->
+  <message name="AidsToNavReport" aismsgnum="21" titlefield="UserID">
+    <description>Used by a station mounted on an aid-to-navigation.  Note IALA A-124 P.19 for more bits than are here.  Also covered in A-126 in ANNEX 1 - MESSAGE 21 in IALA Recommendation A-126 on the use of AIS in Marine Aids to Navigation Serves Ed 1.1.  This has optional extensions.  What is the IALA Page 7 that Mueller refered to for the RegioanlApp field?</description>
+    <note>aka AtoN</note>
+    <note>Not tested</note>
+    <see-also></see-also>
+
+    <!-- This next block of messages will get ignored... -->
+
+    <messagesize>272</messagesize> <!-- number of bits in the message -->
+    <category>F</category>
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AS</operationmode>
+    <accessscheme>FATDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <stationtype>base</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 21 aka 'F'</description>
+      <required>21</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="type" numberofbits="5" type="uint">
+      <description>IALA type of aid-to-navigation</description>
+      <note>Page 136 of the 2001 edition of the IALA NavGuide.</note>
+      <note>Items 1-15 are fixed, 16-31 are floating according to the spec, but think that fixed go from 5-19.</note>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">Default, Type of A to N not specified</entry>
+	<entry key="1">Reference point</entry>
+	<entry key="2">RACON</entry>
+	<entry key="3">Off Shore Structure</entry>
+	<entry key="4">Spare</entry>
+	<entry key="5">Light, without sectors</entry>
+	<entry key="6">Light, with sectors</entry>
+	<entry key="7">Leading Light Front</entry>
+	<entry key="8">Leading Light Rear</entry>
+	<entry key="9">Beacon, Cardinal N</entry>
+	<entry key="10">Beacon, Cardinal E</entry>
+	<entry key="11">Beacon, Cardinal S</entry>
+	<entry key="12">Beacon, Cardinal W</entry>
+	<entry key="13">Beacon, Port hand</entry>
+	<entry key="14">Beacon, Starbord hand</entry>
+	<entry key="15">Beacon, Preferred channel port hand</entry>
+	<entry key="16">Beacon, Preferred channel starboard hand</entry>
+	<entry key="17">Beacon, Isolated danger</entry>
+	<entry key="18">Beacon, Safe water</entry>
+	<entry key="19">Beacon, Special mark</entry>
+	<entry key="20">Cardinal Mark N</entry>
+	<entry key="21">Cardinal Mark E</entry>
+	<entry key="22">Cardinal Mark S</entry>
+	<entry key="23">Cardinal Mark W</entry>
+	<entry key="24">Port hand Mark</entry>
+	<entry key="25">Starbord hand Mark</entry>
+	<entry key="26">Preferred Channel Port hand</entry>
+	<entry key="27">Preferred Channel Starboard hand</entry>
+	<entry key="28">Isolated danger</entry>
+	<entry key="29">Safe water</entry>
+	<entry key="30">Special Mark</entry>
+	<entry key="31">Light Vessel/LANBY</entry>
+      </lookuptable>
+      <testvalue>28</testvalue> <!-- Isolated danger -->
+    </field>
+
+    <field name="name" numberofbits="6" arraylength="20" type="aisstr6">
+      <description>Name of the aid-to-navigation</description>
+      <unavailable>@@@@@@@@@@@@@@@@@@@@</unavailable>
+      <testvalue>BUNCH OF ROCKS ATON@</testvalue>
+    </field>
+
+    <field name="PositionAccuracy" numberofbits="1" type="uint">
+      <description>Accuracy of positioning fixes</description>
+      <lookuptable>
+	<entry key="0">low (greater than 10 m)</entry>
+	<entry key="1">high (less than 10 m)</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <include-struct name="Position" struct="position2d">
+      <do_not_mangle_name/>
+      <description>Location of the AtoN</description>
+    </include-struct>
+
+    <!-- FIX: need to figure out this field 
+	 fig 18 3.3.8.2.3.3
+	 -->
+<!-- 
+    <field name="dim" numberofbits="30" type="uint">
+    </field>
+-->
+    <field name="dimA" numberofbits="9" type="uint">
+      <description>Distance from bow to reference position</description>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <testvalue>10</testvalue>
+    </field>
+
+    <field name="dimB" numberofbits="9" type="uint">
+      <description>Distance from reference position to stern</description>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <testvalue>11</testvalue>
+    </field>
+
+    <field name="dimC" numberofbits="6" type="uint">
+      <description>Distance from port side to reference position</description>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="63">63 m or greater</entry>
+      </lookuptable>
+      <testvalue>12</testvalue>
+    </field>
+
+    <field name="dimD" numberofbits="6" type="uint">
+      <description>Distance from reference position to starboard side</description>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="63">63 m or greater</entry>
+      </lookuptable>
+      <testvalue>13</testvalue>
+    </field>
+
+    <field name="FixType" numberofbits="4" type="uint">
+      <description>Type of electronic position fixing device</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">Undefined (default)</entry>
+	<entry key="1">GPS</entry>
+	<entry key="2">GLONASS</entry>
+	<entry key="3">Combined GPS/GLONASS</entry>
+	<entry key="4">Loran-C</entry>
+	<entry key="5">Chayka</entry>
+	<entry key="6">Integrated Navigation System</entry> <!-- what??? -->
+	<entry key="7">surveyed</entry>  <!-- how and by what? -->
+	<entry key="8">not used - 8</entry>
+	<entry key="9">not used - 9</entry>
+	<entry key="10">not used - 10</entry>
+	<entry key="11">not used - 11</entry>
+	<entry key="12">not used - 12</entry>
+	<entry key="13">not used - 13</entry>
+	<entry key="14">not used - 14</entry>
+	<entry key="15">not used - 15</entry>
+      </lookuptable>
+      <testvalue>2</testvalue> <!-- glonass -->
+    </field>
+
+    <field name="timestamp" numberofbits="6" type="uint">
+      <description>UTC second when report was generated</description>
+      <lookuptable>
+	<entry key="61">Positioning system is in manual mode</entry>
+	<entry key="62">Electronic position fixing system operates in estimated mode</entry>
+	<entry key="63">Positioning system is inoperative</entry>
+      </lookuptable>
+     <testvalue>62</testvalue>
+    </field>
+
+    <field name="OffPosition" numberofbits="1" type="bool">
+      <description>True when the AtoN is off station</description>
+      <lookuptable>
+	<entry key="False">On position</entry>
+	<entry key="True">Off position</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="status" numberofbits="8" type="uint">
+      <description>Unknown</description>
+      <note>What should this contain?</note>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="RAIM" numberofbits="1" type="bool">
+      <description>Receiver autonomous integrity monitoring flag</description>
+      <lookuptable>
+	<entry key="False">not in use</entry>
+	<entry key="True">in use</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="virtual_aton_flag" numberofbits="1" type="bool">
+      <description>Does the unit physically exist?</description>
+      <lookuptable>
+	<entry key="False">Unit physically exists</entry>
+	<entry key="True">Virtual AtoN</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="assigned_mode_flag" numberofbits="1" type="bool">
+      <description>autonomous or controlled</description>
+      <lookuptable>
+	<entry key="False">autonomous and continuous mode</entry>
+	<entry key="True">in assigned mode</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="spare" numberofbits="1" type="uint">
+      <description>Not Used</description>
+      <required>0</required>
+    </field>
+
+    <!-- FIX: handle the Name of Aid-to-Navigation Extension 0..84 bits -->
+    <!-- FIX: handle 0,2,4 or 6 spare bits to byte align -->
+
+  </message> <!-- binary broadcast -->
+
+</ais-binary-message>

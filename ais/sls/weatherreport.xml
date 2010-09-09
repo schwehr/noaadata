@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+<!DOCTYPE doc SYSTEM "http://vislab-ccom.unh.edu/~schwehr/somewhere"
+[
+	  <!ENTITY slsinc SYSTEM "sls_structures.xml">
+]>
+-->
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr  -->
+
+<!-- FIX: what is the messages could be a 6 or 8... broadcast and or addressed? -->
+
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="../structs-inc.xml"/>
+  <xi:include href="structures.xml"/>
+
+  <!-- ============================================================ -->
+  <!-- &slsinc; -->
+  <!-- ============================================================ -->
+
+  <message name="sls_weatherreport" aismsgnum="8" dac="366 316" fid="1" efid="2" titlefield="stationid">
+    <description>St Lawrance Seaway wind information</description>
+
+    <include-struct name="time" struct="sls_time">
+      <description>Time tag of measurement</description>
+    </include-struct>
+
+    <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
+      <description>Character identifier of the station</description>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>A345678</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="pos" struct="sls_pos">
+      <description>Location of measurement</description>
+    </include-struct>
+
+    <field name="speed" numberofbits="10" type="udecimal">
+      <description>Average wind speed</description>
+      <units>kts</units> <!-- knots -->
+      <lookuptable>
+	<entry key="102.2">102.2 kts or greater</entry>
+      </lookuptable>
+      <unavailable>102.3</unavailable>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>0.7</testvalue>
+    </field>
+
+    <field name="gust" numberofbits="10" type="udecimal">
+      <description>Wind gust</description>
+      <units>kts</units> <!-- knots -->
+      <lookuptable>
+	<entry key="102.2">102.2 kts or greater</entry>
+      </lookuptable>
+      <unavailable>102.3</unavailable>
+      <testvalue>0.7</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+    </field>
+
+    <field name="direction" numberofbits="9" type="uint">
+      <description>Wind direction</description>
+      <note>Quantized to 16 compass points for the SLS</note>
+      <units>degrees</units> <!-- knots -->
+      <unavailable>511</unavailable>
+      <testvalue>41</testvalue>
+<!--
+    Put in the SLS lookup table.?
+-->
+
+    </field>
+
+    <field name="atmpressure" numberofbits="14" type="udecimal">
+      <description>Atmospheric pressure</description>
+      <units>millibars</units> <!-- knots -->
+      <unavailable>16383</unavailable>
+      <testvalue>0.7</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+    </field>
+
+    <field name="airtemp" numberofbits="10" type="decimal">
+      <description>Air temperature</description>
+      <units>Celsius</units> <!-- knots -->
+      <unavailable>-51.2</unavailable>
+      <testvalue>-8</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <lookuptable>
+	<entry key="-51.1">-51.1 degrees C or lower</entry>
+	<entry key="51.1">51.1 degrees C or greater</entry>
+      </lookuptable>
+    </field>
+
+
+    <field name="dewpoint" numberofbits="10" type="decimal">
+      <description>Dew Point</description>
+      <units>Celsius</units> <!-- knots -->
+      <unavailable>-51.2</unavailable>
+      <testvalue>-7</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <lookuptable>
+	<entry key="-51.1">-51.1 degrees C or lower</entry>
+	<entry key="51.1">51.1 degrees C or greater</entry>
+      </lookuptable>
+    </field>
+
+
+    <field name="visibility" numberofbits="8" type="udecimal">
+      <description>Visibility</description>
+      <units>km</units> <!-- knots -->
+      <unavailable>25.5</unavailable>
+      <testvalue>12.3</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <lookuptable>
+	<entry key="25.4">25.4 km or greater</entry>
+      </lookuptable>
+    </field>
+
+    <field name="watertemp" numberofbits="10" type="decimal">
+      <description>Water Temperature</description>
+      <units>Celsius</units> <!-- knots -->
+      <unavailable>-51.2</unavailable>
+      <testvalue>-0.2</testvalue>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <lookuptable>
+	<entry key="-51.1">-51.1 degrees C or lower</entry>
+	<entry key="51.1">51.1 degrees C or greater</entry>
+      </lookuptable>
+    </field>
+
+
+    <field name="reserved" numberofbits="4" type="uint">
+      <description>Reserved bits for future use</description>
+      <required>0</required>
+    </field>
+
+  </message> <!-- sls_waterlevel -->
+
+</ais-binary-message>

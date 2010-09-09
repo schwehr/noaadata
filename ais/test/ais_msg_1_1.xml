@@ -1,0 +1,36 @@
+<aismsg>
+  <notes>
+    Message received on the USCG N-AIS network (Dec 2006).  
+    This Kurt's idea of what "AIS data XML" might look like.
+    All sections are optional.  Any one of nmea, nmeapayload, binary,
+    uscgnmea, or fields is sufficient to encode/decode the packet.
+  </notes>
+  <nmea>!AIVDM,1,1,,B,15Mt9B001;rgAFhGKLaRK1v2040@,0*2A</nmea>
+  <nmeapayload>15Mt9B001;rgAFhGKLaRK1v2040@<nmeapayload>
+  <binary>000001000101011101111100001001010010000000000000000001001011111010101111010001010110110000010111011011011100101001100010011011000001111110000010000000000100000000010000</binary>
+  <uscgnmea>!AIVDM,1,1,,B,15Mt9B001;rgAFhGKLaRK1v2040@,0*2A,s26328,d-112,T00.77696299,r003669967,1165709039</uscgnmea>
+  <fields>
+    <field name="MessageID">1</field>
+    <field name="RepeatIndicator">0</field>
+    <field name="UserID">366938440</field>
+    <field name="NavigationStatus">0</field>
+    <field name="ROT">0.0</field> <!-- FIX: Can't currently handle the required sqrt transform -->
+    <field name="SOG">7.5</field>
+    <field name="PositionAccuracy">1</field>
+    <field name="positionLongitude">-73.55953333</field>
+    <field name="positionLatitude">40.944916666</field>
+    <field name="COG">62</field>
+    <field name="TrueHeading">63</field>
+    <field name="TimeStamp">1</field>
+    <field name="RegionalReserved">0</field>
+    <field name="Spare">0</field>
+    <field name="RAIM">False</field>
+    <field name="syncstate">0</field>
+<!-- FIX: can't currently decode this case statements...
+    <field name="slottimeout">1</field>
+    <field name="min">0</field>
+    <field name="hour">16</field>
+    <field name="emptytime">0</field>
+-->
+  </fields>
+</aismsg>

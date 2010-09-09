@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_10.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <!-- titlefield is what to use when a message needs to by titled (e.g. in kml) -->
+
+  <message name="utcquery" aismsgnum="10" titlefield="UserID">
+    <description>Search and rescue position report</description>
+    <!-- This next block of messages will get ignored... -->
+
+    <messagesize>72</messagesize> <!-- number of bits in the message -->
+    <category>F</category>
+    <category>S</category>
+    <priority>3</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>base</stationtype>
+    <stationtype>mobile</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 10</description>
+      <required>10</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare1" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="DestID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare2" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- SAR position -->
+
+</ais-binary-message>

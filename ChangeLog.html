@@ -1,0 +1,495 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+  <title>noaadata changelog and release history</title>
+</head>
+<body>
+  <ul> <!-- list of all releases -->
+
+    <li>0.45 - 2010-
+      <ul>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li></li>
+       <li>Msg 21 now has dim broken out and regional because status</li>
+    </ul>
+    </li>
+      
+    <li>0.44 - 2010-05-21
+      <ul>
+        <li>Started working on the new and separate libais C++ library for AIS with C-Python bridge for Deepwater Horizon</li>
+        <li>Allow ais_bin_msgs.py to print out the corresponding AIVDM line</li>
+        <li>Msgs 6 and 8 decode dac and fi</li>
+	<li>Msg 21 fixed for ATONS to handle two new flags</li>
+	<li>Msg 21 handcoded can now deal with the extended name</li>
+	<li>ZNT NMEA string for NTP time quality</li>
+	<li>ais_normalize can handle data w/out timestamps</li>
+	<li>Add first C++ AIS code - ais_filter_by_mmsi</li>
+	<li>In ais.binary, fixed a 2's complement bug for the lowest negative number... this was bad!</li>
+	<li>Msg 7 had the spare as 1 bit when it should have been 2.
+      Creating a handcoded version to deal with shorter messages</li>
+	<li>This version corresponds to working on libais-0.1 to libais-0.2</li>
+        <li>New INSTALL file base on report from gemiller on irc:gpsd</li>
+        <li>NEW FILES: ais_msg_21_handcoded.py ais_msg_7_handcoded.py imo_001_11_handcoded.py </li>
+        <li>NEW FILES: template.bash nmea_error.py znt.py ais_filter_by_mmsi.cxx ais_bin_msgs.py </li>
+        <li>NEW FILES: ais_decimate_traffic.py ais_distance.py ais_info.py ais_nmea_find_matches.py </li>
+        <li>NEW FILES: ais_nmea_uptime2.py ais_nmea_uscg_timeshift.py ais_pg_grid_transits.py </li>
+        <li>NEW FILES: find_missing_logs.py logger_handlers.py serial-logger2.py </li>
+     </ul>
+    </li>
+      
+    <li>0.43 - 2009-08-22
+      <ul>
+	<li>ais_normalize now generates proper checksums.  plus code cleanup</li>
+	<li>ais_build_sqlite:</li>
+          <ul>
+	    <li>Now validates checksums</li>
+	    <li>Msgs 1-4 now do commstate</li>
+	    <li>suggest at least one sql index</li>
+	    <li>Don't crash on short lines</li>
+	    <li>Added messge 19 for class B</li>
+	    <li>Better handling of uscg metadata.  Still not handling them all</li>
+          </ul>
+	<li>Added ais msg 11 to decoding</li>
+	<li>Msgs 1-4 are now hand coded to read comm state</li>
+	<li>ais/__init__.py now has proper names for messages 11,13,16,17, and 22</li>
+	<li>Added these uscg metadata fields to db: cg_s_rssi, cg_d_strength, cg_t_arrival, cg_s_slotnum</li>
+	<li>aisutils/uscg.py: loosed regex to match bad T messages.  Doced all field types</li>
+	<li>Template is more better.  Input from Trey Smith</li>
+	<li>ais_liststations.  cleanup and progress counts</li>
+	<li>ais_position_in_polygon gives a better error message when pcl-core is missing.  STill need to switch to shapely</li>
+	<li>New scripts: ais_nmea_info.py, ais_nmea_remove_dups.py, ais_nmea_uptime.py, ais_sqlite_bsreport_analysis.py</li>
+	<li>ais/commstate handles parsing of the SOTDMA and ITDMA commstates</li>
+      </ul>
+    </li>
+
+    <li>0.42 - 2009-05-26
+      <ul>
+	<li>msg 5 ETA was backwards.  Reported by ESR</li>
+	<li>msg 9 - Fixed speed over ground (SOG).  Bug reported by Anders Olsson.</li>
+	<li>msg 18 - Added the new class b flags from ITU 1371-3</li>
+	<li>msg 19 - Maybe okay.  Removed "broken" from the message name</li>
+	<li>msg 24 Handcoded for AIS Class B targets</li>
+	<li>aisutils/database.py - imprived track_lines, but really just moved to a simpler multi process setup</li>
+	<li>aisutils/uscg.py - trap bogus arrivals from a grouchy N-AIS station</li>
+	<li>ais-net-to-postgis - still not totally stable</li>
+	<li>ais_build_sqlite.py - added class b message, better bit checking for corrupted messages, "R" is also for receive </li>
+	<li>data/mmsi_prefix.sql: New: table of MMSI prefix country mapping</li>
+	<li>doc/esr-review.tx: New: ESR review of noaadata AIS</li>
+	<li>test_ais_server.py - New: feed AIS data from a file to anything that connects</li>
+	<li>nais_pg_realtime_reaper.py - New: cleanup for live web sites driven by postgis</li>
+	<li>nais2postgis.py - New: simpler replacement for feeding from an AIS server to postgis</li>
+	<li>aisutils/rmc.py - New</li>
+      </ul>
+    </li>
+
+    <li>0.41 - 2009-01-04
+      <ul>
+	<li>Added missing close of tr tag in HTML message output reported by Hubert Bischoff</li>
+	<li>port-server now can add uscg style per line timestamps and station</li>
+	<li>port-server logs the start/stop times, the host info, and the ntp status for each log file</li>
+	<li>Think I've fixed the AIS NMEA regex</li>
+	<li>Added log_udp script</li>
+	<li>New in aisutils: nmea_ait.py (AIS text format), nmea_cnc.py (IVS Vessel Monitor Format), server.py</li>
+	<li>New in scripts: decimate, log_udp, and xy2kmlline</li>
+	<li>ais_liststations improved</li>
+      </ul>
+    </li>
+
+    <li>0.40 - 2008-08-25
+      <ul>
+	<li>aitutils/uscg.py - added a REGEX for AIS NMEA messages - This is very cool!</li>
+	<li>ais_positions.py works again - Bug report by Joe Healy</li>
+	<li>aisutils.uscg - added a regular expression for the USCG format.  Now need to move code to using this</li>
+	<li>Fixed AIS NMEA encoding bug report by Miguel Eduardo Gil Biraud</li>
+	<li>Added scripts/jpegexif2kml.py for geo tagged photos</li>
+	<li>ais-net-to-postgis - better exception logging, </li>
+	<li>ais-dumpnames - uses the uscg regex now to parse the nmea lines</li>
+	<li>ais_pg_transitlines_noMakeLine - removed bug on vessels with no points</li>
+	<li>ais_positions - lots of changes, but still not flexible</li>
+	<li>six_min_avg.m - Matlab code by Val for tide stations</li>
+	<li>ais_pg_transitsummary - timezone management with pytz.  Now not specific to 2006</li>
+	<li>tideconvert - hopefully this is right for the memme station for June 2008 summer hydro class</li>
+	<li>ais_pg_vesselsummary - new program to write excel spreadsheets </li>
+	<li>database.py - fixed name handling bug with empty ship names.  Traceback on trouble</li>
+	<li>template.py - more examples</li>
+	<li>binary.py - minor cleanup</li>
+      </ul>
+    </li>
+
+    <li>0.39 - 2008-06-18
+      <ul>
+	<li>ais.nmea module gone.  bbm.py moved to scraps for now.  This was causing major bugs.</li>
+	<li>ais-port-forward now might actually work.  Exception reporting more better</li>
+	<li>new file: scraps/tideconvert.py for the tide3 station data processing</li>
+	<li>new file: timetest.py</li>
+	<li>ais_normalize.py can now treat A and B AIS channels as the same for USCG feed (-t) </li>
+	<li>ais_normalize.py removed the stripDecimalTime option code</li>
+	<li>ais_normalize.py - better station handling</li>
+      </ul>
+    </li>
+
+    <li>0.38 - 2008-05-23
+      <ul>
+	<li>nmea module now being installed.  I realize that this needs to be under another namespace to avoid clashes.</li>
+      </ul>
+    </li>
+
+    <li>0.37 - 2008-05-23
+      <ul>
+	<li>Add <a href="http://code.djangoproject.com/wiki/GeoDjango">GeoDjango</a> subdir</li>
+	<li>setup.py: fixed URLs from a bug report by Joe Healy</li>
+	<li>setup.py: switch to using the VERSION file</li>
+	<li>VERSION: new file.  superseeds version from AIS which made no sense as the home of the master version id</li>
+	<li>ais/__init__.py: dropped the version from this file</li>
+	<li>Switching to postgresql/postgis 83</li>
+	<li>ais_normalize now handles basestations</li>
+	<li>serial_send now supports timeout and number of listens </li>
+      </ul>
+    </li>
+
+    <li>0.36 - 2008-Mar-09
+      <ul>
+	<li>All AIS messages can now generate a NMEA message</li>
+	<li>timed_circular_notice: Released to external development.  
+	  Minor tweaks and cleanup to the xml for cleanup.
+	  Added a few more area types for visibility, AUV, ROV, divers and swimmers.
+	  Changed the radius to a Decimal type to allow 10 m increments.
+	</li>
+	<li>whalenotice1: this msg is not under consideration, but did some tweaking as a thought experiment</li>
+	<li>aisutils/uscg.py: added create_nmea for all AIS messages to use</li>
+	<li>django: Added DAC for countries.  Added dac.sql with the db entries</li>
+	<li>Minor cleanup on the init scripts.  Still needs more help</li>
+	<li>ais-net-to-postgis: cleanTime can be set</li>
+	<li>data/sbnms.kml: added the sanctuary boundaries</li>
+      </ul>
+    </li>
+
+    <li>0.35 - 2008-Feb-25
+      <ul>
+	<li>No longer packaging the epydoc html in the tar.  Create it locally if you want it.</li>
+	<li>Cleanup of IMO met hydro message ice field.  Description name fixes for other IMOs</li>
+	<li>database.py: more verbose</li>
+	<li>uscg.py: add get_station, get_contents</li>
+	<li>django: add define_ais for creating AIS binary messages.  Lots of work left to do</li>
+	<li>doc/ais.bib: lots more references</li>
+	<li>doc/templates: now includes python template/boilerplate file</li>
+	<li>doc/configure-ais-logging.txt - new howto</li>
+	<li>init.d/ais-forward: cleanup messages</li>
+	<li>init.d/logais: added -m to mark time with no messages</li>
+	<li>ais-db-rebuild-cache-tables: cleanup magicdate usage</li>
+	<li>ais-net-to-postgis: add magicdate usage, add periodic clean even if nothing received</li>
+	<li>ais-port-forward: minor cleanup, fix SBNMS stations, tweak bounding box</li>
+	<li>ais_build_sqlite3.py is not working.  why?</li>
+      </ul>
+    </li>
+
+    <li>0.34 - 2008-Feb-08
+      <ul>
+	<li>Real-time AIS works, but needs a little bit more tweaking to get time thresholding </li>
+	<li>Dropped the .py for an initial batch of scripts including serial-logger, xy2kml, xy_pos_filter, and xymt2kml.  Need to do the rest</li>
+	<li>Moved from scripts to data subdir: gsc.dat, merg5.dat, sbnms-*.dat, stellwagen*.dat</li>
+	<li>Created a contrib directory.  Added doc from Maitland Bottoms</li>
+	<li>Changed around the MANIFEST.in.  Can anyone suggest a better way to build the MANIFEST.in?</li>
+	<li>Working on switching from GPL v2 to v3</li>
+	<li>Minor updates to the waterlevel2 message based on feedback from ACOE - additional datums</li>
+	<li>Starting on updates for epydoc 3.0.1 - better front matter tagging in python files.  e.g. see database.py</li>
+	<li>database.py: added rebuild_track_lines and rebuild_last_position functions</li>
+	<li>uscg.py: added __eq__ method and a return BitVector; can now rebuild the NMEA</li>
+	<li>Renaming of the ais-db* and ais-port-forward command.  Moved from scraps to scripts</li>
+	<li>Moved aisxml2wxpy and aisxmlbinmsg2py from ais to scripts.  They should not a part of the ais module!</li>
+	<li>Added initial django-ais subdir that doesn't yet do anything</li>
+	<li>Much improved fink info file.  Still needs a lot of work</li>
+      </ul>
+    </li>
+
+    <li>0.33 - 2008-Jan-16
+      <ul>
+	<li>Draft live AIS feed to postgis with track_lines</li>
+	<li>waterlevel2.xml draft message for NOAA PORTS</li>
+	<li>Improved description in setup.py</li>
+	<li>Parses more fields in uscg.py</li>
+	<li>Added an AIS endnote library and bibtex</li>
+	<li>ais_port_forward does a better job of reconnecting to destination port</li>
+	<li>ais_db.py now can add or remove the track_lines postgis table</li>
+      </ul>
+    </li>
+
+    <li>0.32 - 2008-Jan-11
+      <ul>
+	<li>Preliminary release of live AIS feeds</li>
+	<li>Lots of documentation cleanup</li>
+	<li>Added ais_db.py for creating and destroying database tables</li>
+	<li>ais/__init__.py changed to provide lists of messages for more automation</li>
+	<li>Added ais message 15 - interrogation</li>
+	<li>Now builds with ais messages 15, 23-26</li>
+	<li>Added timed_circular_notice.xml to replace the right whale specific message</li>
+	<li>Fixed messages 15 and 22 so the do not have field collisions</li>
+	<li>All ais messages now have a dbTableName in their module</li>
+	<li>cleanup xymt2kml.py</li>
+	<li>port-server renamed to port_server</li>
+	<li>ais_build_{sqlite3,postgis} are getting better, but still need work to handle more message types</li>
+	<li>ais_build_sqlite3 uses the python 2.5 built in sqlite interface.  Better than using pysqlite2</li>
+	<li>Added ais_port_forward.py and ais_net_to_postgis.py to scraps.  These will get moved over to scripts soon</li>
+	<li>Added uscg.py to aisutils for parsing the uscg fields from nmea strings</li>
+	<li>Added database.py to aisutils.  Makes working with ais and databases much simpler</li>
+	<li>Fixed the serial logger to report 'r' in front of station.  Doesn't yet handle r or b</li>
+      </ul>
+    </li>
+
+    <li>0.31 - 2007-Dec-04
+      <ul>
+	<li>Added Class B 18 &amp; 19 position report messages.  19 does not work yet</li>
+	<li>Improved the msg 21 documentation</li>
+	<li>Some cleanup of msg 5</li>
+	<li>Added whalenotice3</li>
+	<li>New scaps: ais_pg_{dailyvessels,monthhistogram,speedsummary}.py</li>
+	<li>ais_pg_transitsummary has new --mmsi option to only check one vessel</li>
+      </ul>
+    </li>
+
+    <li>0.30 - 2007-Nov-07
+      <ul>
+	<li>Pre eNavigation 2007 release</li>
+	<li>xymt2kml now an optparse program that plays nicer</li>
+	<li>svn propedit svn:keywords on all the scripts/*.py files for better tracking</li>
+	<li>Added IMO messages 13 and 14 for RTCM meeting</li>
+	<li>Reworking whalenotice message.  Added a whalenotice2.xml that fully fills two slots</li>
+	<li>Added basestation messages (msg 4) to the sqlite database</li>
+	<li>Added gridding code in scripts: ais_pg*.py</li>
+	<li>Added ais_traffic_analysis program</li>
+      </ul>
+    </li>
+
+    <li>0.29 - 2007-Aug-10
+      <ul>
+	<li>Added ship traffic gridding using postgis.  grid.py and ais_pg_grid.py</li>
+	<li>Transit summary support for SBNMS work</li>
+	<li>ais_pg_create_transit_table.py and ais_pg_transitlines_noMakeLine for building the tpath table used for summary reports</li>
+      </ul>
+    </li>
+
+    <li>0.28 - 2007-June-20
+      <ul>
+	<li>PostGIS now uses WGS84 explicitly so that it works with mapserver</li>
+	<li>PostGIS import of AIS now warns (not fails) on bad insertions</li>
+	<li>ais_normalize now has a configurable time window for joining messages</li>
+      </ul>
+    </li>
+
+    <li>0.27 - 2007-June-13
+      <ul>
+	<li>Minor doc fixups here and then</li>
+	<li>Added doc/data for example AIS using NH JEL data from May 2007</li>
+	<li>Looks like a few of the new scripts did not make the last release</li>
+	<li>New scripts: ais_filter.py, serial_send.py, and xymt2kml.py</li>
+      </ul>
+    </li>
+
+    <li>0.26 - 2007-June-05
+      <ul>
+	<li>Post U.S. Hydro 2007 in Norfolk, VA.  Tweaks to water level messages</li>
+	<li>Fixed ais_build_postgis.py to work for other users</li>
+	<li>Fixed some scripts to work with timestamps that have decimals</li>
+	<li>ais_normalize can cope with parts that span 2 different second timestamps </li>
+	<li>Added great south channel and tss regions to the ais_position_in_polygon</li>
+      </ul>
+    </li>
+
+    <li>0.25 - 2007-May-01
+      <ul>
+	<li>individual ais message scripts can now use stdin</li>
+	<li>Fixes to imo waterlevel</li>
+	<li>MSL type fixed</li>
+	<li>General code cleanup</li>
+	<li>Added scraps directory with random utilities</li>
+	<li>ais_position_in_polygon.py has a 5nm Stellwagen buffered zone and bbox speed up</li>
+	<li>Makefile for the scripts directory</li>
+	<li>New script: ais_transits</li>
+	<li>Buoy data for Stellwagen area</li>
+      </ul>
+    </li>
+
+    <li>0.24 - 2007-Apr-07
+      <ul>
+	<li>Improved setup.py and ais/__init__.py towards US Hydro 2007 conference release</li>
+	<li>More do_not_name_mange tags added.  Really seems like mangling should be used sparingly.</li>
+	<li>Cleanup msg 21 to using XInclude</li>
+	<li>Cleaned up msg 5</li>
+	<li>Added text table generation for MS Office importing (Word tables or Excel sheets).  Now computes number of slots</li>
+	<li>Major cleanup of imo_001_11 Met/Hydro message.  Still has
+	  issues... see waterlevel.  Lat/Lon order now right.  Pulled FIX
+	  comments to notes so the tables are cleaner.  What is the solution for Ice?</li>
+	<li>Implemented offsets for decimal/udecimal</li>
+	<li>struct-inc now has pos_small as a postgis_type of POINT</li>
+      </ul>
+    </li>
+
+
+    <li>0.23 - 2007-Mar-30
+      <ul>
+	<li>Fixed the broken build that ended up in forever calling epydoc</li>
+	<li>Now builds the IMO water level message</li>
+	<li>ITU message 22 should now build, but needs descriptions</li>
+	<li>Started cleaning up the SLS messages.  Now all compile</li>
+	<li>Added a number of "do_not_mangle_name" to cleanup include-structs</li>
+	<li>Added ris subdir to ais</li>
+	<li>Added a makefile to sls subdir</li>
+	<li>Added latex output to aisxmlbinmsg2py.py</li>
+	<li>Added __init__.py files to sls and ris subdirs so they import</li>
+	<li>Many improvements to epydoc format docs.  No more warnings</li>
+	<li>removed prototype.py.  Don't need this anymore</li>
+	<li>Added a msg 8 header to structs-inc.xml</li>
+      </ul>
+    </li>
+
+
+    <li>0.22 - 2007-Mar-18
+      <ul>
+	<li>Working on setup.py - it now installs the scripts.  But still does not install the per message code.</li>
+	<li>Seem to have a make recursion issue in the documentation</li>
+      </ul>
+    </li>
+
+
+    <li>0.21 - 2007-Mar-08
+      <ul>
+	<li>Added ais/ais.xsl to the MANIFEST.in so that people can actually get the stylesheet.</li>
+	<li>Fixed manifest to include Makefiles and doc/*</li>
+	<li>Added to ais/nmea.py: encodeQuery, acaEncode, bcfEncode/Decode </li>
+	<li>Fixed the socket_send program to actually work</li>
+	<li>Fixed minor bug in message 14.</li>
+	<li>More doctests in ais/nmea.py</li>
+      </ul>
+    </li>
+
+    <li>0.20 - 2007-Mar-05
+      <ul>
+	<li>Cleanup of message 5 (ship and cargo).  Broke out ETA.  Described dimensions.  Expand ship and cargo field, but it still needs more work</li>
+	<li>Added more AIS messages: 4, 6, 7, 9, 10, 12, 14, imo_001_11 (met/hydro)</li>
+      </ul>
+    </li>
+
+    <li>0.19 - 2007-Mar-03
+      <ul>
+	<li>Added NMEA messages ACA, BBM, CAB, CBM, and DLM for AIS Base Station support.  Needs more testing.</li>
+	<li>Found and fixed some bugs with NMEA checksums thanks to Val Schmidt</li>
+	<li>Fixed a bug with waterlevel.xml.  Still not to it's final form.</li>
+	<li>serial_logger improvements - can mark time with no data similiar to syslog</li>
+      </ul>
+    </li>
+
+    <li>0.19 - 2007-Mar-03
+      <ul>
+	<li>Added NMEA messages ACA, BBM, CAB, CBM, and DLM for AIS Base Station support.  Needs more testing.</li>
+	<li>Found and fixed some bugs with NMEA checksums thanks to Val Schmidt</li>
+	<li>Fixed a bug with waterlevel.xml.  Still not to it's final form.</li>
+	<li>serial_logger improvements - can mark time with no data similiar to syslog</li>
+      </ul>
+    </li>
+
+    <li>0.18 - 2007-Feb-26
+      <ul>
+	<li>Added base station messages 4, 20, and 22</li>
+	<li>Now using xinclude to pull in structs to xml</li>
+	<li>Added ais_build_postgis.py to scripts</li>
+	<li>ais_normalize.py script handles normalization of nmea messages so that they are one complete message per line</li>
+	<li>sls messages moved to a subdir of ais.  Work-in-progress</li>
+      </ul>
+    </li>
+
+    <li>0.17 - 2007-Feb-18
+      <ul>
+	<li>Added serial_logger.py script for data logging</li>
+	<li>Fixed bug with titling of decoded messages</li>
+	<li>Can now log USCG N-AIS UTC seconds stamps into SQL TIMESTAMP type</li>
+      </ul>
+    </li>
+
+    <li>0.16 - 2007-Feb-16
+      <ul>
+	<li>Postgres 8.2/PostGIS 1.2.1 support</li>
+      </ul>
+    </li>
+
+    <li>0.15 - 2007-Feb-08
+      <ul>
+	<li>Able to build sqlite3 databases</li>
+	<li>Added ais_normalize and ais_build_db scripts</li>
+	<li>Fixed slottimeout bug in definition of messages 1-3</li>
+      </ul>
+    </li>
+
+    <li>0.14 - 2007-Feb-05
+      <ul>
+	<li>Putting the scripts in a proper scripts subdirectory</li>
+	<li>Started aisxml2wxpy.py to greate WX python GUIs</li>
+	<li>Including initial tools to start making reports</li>
+      </ul>
+    </li>
+
+    <li>0.13 - 2007-Jan-23
+      <ul>
+	<li>Now sql seems to build for all messages</li>
+	<li>Fixed up the decimalplaces that were missing</li>
+	<li>Added binary, float and aisstr6 types to SQL support</li>
+      </ul>
+    </li>
+    <li>0.12 - 2007-Jan-18
+      <ul>
+	<li>Added CSV output support to make report generation easier</li>
+      </ul>
+    </li>
+    <li>0.11 - 2007-Jan-18
+      <ul>
+	<li>Bug fixes so the sdist might actually work.</li>
+      </ul>
+    </li>
+    <li>0.10 - 2007-Jan-17
+      <ul>
+	<li>make_waterlevel_ais.py was missing from the MANIFEST</li>
+	<li>Added msg 21, but it does not seem to be working.  Do I have valid sample data?</li>
+	<li>Working on other St Lawrence Seaway (sls_*.xml) messages ... only just beginning</li>
+      </ul>
+    </li>
+    <li>0.9 - 2007-Jan-05
+      <ul>
+	<li>GoogleEarth output</li>
+	<li>Now can output kml and kml-full.  kml skips the xml header and tail to concat multiple Placemarks</li>
+	<li>Added titlefield to the message attributes that is now required if a message has lon/lat</li>
+      </ul>
+    </li>
+    <li>0.8 - 2007-Jan-04
+      <ul>
+	<li>First release to privde the ability to generate AIS waterlevel meassage straight from the NOAA CO-OPS server</li>
+	<li>Now able to generate html dumps of messages</li>
+	<li>Added dump_wl.py to stand in until I have a generic message 8 handler</li>
+	<li>ais-process-day.bash is a start on N-AIS processing</li>
+	<li>noaa_waterlevel_ais.bash pulls the Elizabeth River area and makes the AIS messages.  SLOW</li>
+      </ul>
+    </li>
+    <li>0.7 - 2007-Jan-04
+      <ul>
+	<li>Added OPeNDAP Waterlevel query ability.  waterelevel_dap.py</li>
+	<li>Big improvement in the ais generated code with command line args</li>
+	<li>Added ais messages 1-3 (loc) and 8 (binary broadcast message)</li>
+	<li>Started adding Saint Lawrence Seaway Messages.  Only waterlevel tested.</li>
+	<li>Added initial prototype for Right Whale notice</li>
+	<li>Started working on N-AIS processing scripts</li>
+	<li>Now includes BitVector.py version 1.3 (with permission) to make deployment easier</li>
+	<li><a href="docs">epydoc docs</a> are now online</li>
+      </ul>
+    </li>
+    <li>0.6 - 2006-12-20</li>
+    <li>0.5 - 2006-12-18</li>
+    <li>0.4 - 2006-12-18</li>
+    <li>0.3 - 2006-12-12</li>
+  </ul>
+</body>
+</html>

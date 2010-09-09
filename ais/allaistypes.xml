@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ais-binary-message version="1.0">
+  <!-- Example that uses all of the AIS types and arrays of those types 
+       $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $
+       $Revision: 7473 $
+    -->
+
+  <message name="alltypesmsg" aismsgnum="8" dac="366" fid="63" efid="1">
+    <description>Message to demonstrate all the ais types.  Good for testing</description>
+
+    <!-- required fields for all types  These can not come or go without these values -->
+
+    <field name="dac" numberofbits="16" type="uint">
+      <description>Designated Area Code</description>
+      <required>366</required>
+    </field>
+
+    <field name="reqDecimal" numberofbits="8" type="decimal">
+      <description>required decimal value... FIX: scale or no?</description>
+      <decimalplaces>0</decimalplaces>
+      <scale>1</scale> <!-- no scaling -->
+      <required>122</required>
+    </field>
+
+    <!-- Normal values with unavailables -->
+
+    <field name="unavail_uint" numberofbits="2" type="uint">
+      <description>Unavailable unsigned integer</description>
+      <unavailable>3</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <!-- Normal values withOUT unavailables -->
+
+    <field name="anUInt" numberofbits="2" type="uint">
+      <description>NO unavailable unsigned integer</description>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="anInt" numberofbits="3" type="int">
+      <description>NO unavailable signed integer</description>
+      <testvalue>-1</testvalue>
+    </field>
+
+    <field name="aBool" numberofbits="1" type="bool">
+      <description>Simple bool</description>
+      <testvalue>1</testvalue><!-- true -->
+    </field>
+
+    <field name="aStr" numberofbits="6" arraylength="5" type="aisstr6">
+      <description>An ais string of 5 characters</description>
+      <testvalue>ASDF1</testvalue>
+    </field>
+
+    <field name="anUDecimal" numberofbits="16" type="udecimal">
+      <description>An unsigned decimal.  Allow smaller numbers</description>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <testvalue>9.5</testvalue>
+    </field>
+
+    <field name="aDecimal" numberofbits="16" type="decimal">
+      <description>A decimal</description>
+      <scale>10</scale>
+      <decimalplaces>0</decimalplaces>
+      <testvalue>-9.6</testvalue>
+    </field>
+
+
+    <field name="aFloat" numberofbits="32" type="float">
+      <description>An IEEE floating point number</description>
+      <testvalue>-1234.5678</testvalue>
+    </field>
+   
+  </message>
+  <!-- waterlevel -->
+
+
+</ais-binary-message>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_1.xml 7483 2007-11-07 18:29:15Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <message name="interrogation" aismsgnum="15" titlefield="UserID">
+    <description>FIX: need a description</description>
+    <note>other than requests for UTC and date</note>
+    <see-also>FIX: link to UTC and date get messages</see-also>
+    <see-also>ITU-R M.1371-3, p. 110-110, Table 63</see-also>
+    <note>FIX: make the decode okay with multiple lengths. HOW??</note>
+
+    <messagesize>88</messagesize> <!-- number of bits in the message -->
+    <messagesize>FIX.  Some middle value</messagesize> <!-- number of bits in the message -->
+    <messagesize>168</messagesize> <!-- number of bits in the message -->
+<!--    <category>F</category>
+    <category>S</category> -->
+    <priority>3</priority>
+    <!--<operationmode>AU</operationmode>-->
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <stationtype>mobile</stationtype>
+    <stationtype>base</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 15</description>
+      <required>15</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <!-- Called SourceID in ITU 1371-3 -->
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>MMSI number of interrogating station</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+
+    <!-- =========== 1 ===========  -->
+    <field name="DestID" numberofbits="30" type="uint">
+      <description>MMSI number of interrogated station</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <!-- FIX: check naming of fields makes sense -->
+    <field name="MessageID1" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>7</testvalue>
+    </field>
+
+    <field name="SlotOffset" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>4</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <required>0</required>
+    </field>
+
+    <field name="MessageID12" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>9</testvalue>
+    </field>
+
+    <field name="SlotOffset12" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>5</testvalue>
+    </field>
+
+    <field name="Spare2" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <required>0</required>
+    </field>
+
+    <!-- ============ 2  ============== -->
+    <field name="DestID2" numberofbits="30" type="uint">
+      <description>MMSI number of interrogated station</description>
+      <testvalue>1193045</testvalue>
+    </field>
+
+    <field name="MessageID2" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>12</testvalue>
+    </field>
+
+    <field name="SlotOffset2" numberofbits="6" type="uint">
+      <description>requested message type from interrogated station</description>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="Spare3" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- position -->
+
+</ais-binary-message>

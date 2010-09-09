@@ -1,0 +1,171 @@
+In March 2009, Eric S. Raymond implemented a parser for AIS messages
+for gpsd.  He looked at the noaadata code base and was kind enough to
+offer some observations and suggestions.  This is the kind of review
+that make the open source world of software so important.  I welcome
+other reviews and comments.
+
+These comments from ESR are included with permission.
+
+-kurt 
+17-Mar-2009
+
+----------------------------------------------------------------------
+About BitVector
+----------------------------------------------------------------------
+
+I'm completely unsurprised that you're bottlenecked on it.
+
+Replacing it would not be very hard.  Look at this:
+
+#define BITS_PER_BYTE	8
+
+unsigned long long ubits(char buf[], unsigned int start, unsigned int width)
+/* extract a bitfield from the buffer as an unsigned big-endian long long */
+{
+    unsigned long long fld = 0;
+    unsigned int i;
+    unsigned end;
+
+    assert(width <= sizeof(long long) * BITS_PER_BYTE);
+    for (i = start / BITS_PER_BYTE; i < (start + width + BITS_PER_BYTE - 1) / BITS_PER_BYTE; i++) {
+	fld <<= BITS_PER_BYTE;
+	fld |= (unsigned char)buf[i];
+    }
+    end = (start + width) % BITS_PER_BYTE;
+    if (end != 0) {
+	fld >>= (BITS_PER_BYTE - end);
+    }
+
+    fld &= ~(-1LL << width);
+
+    return fld;
+}
+
+signed long long sbits(char buf[], unsigned int start, unsigned int width)
+/* extract a bitfield from the buffer as a signed big-endian long long */
+{
+    unsigned long long fld = ubits(buf, start, width);
+
+    if (fld & (1 << (width-1))) {
+	fld |= (-1LL << (width-1));
+    }
+    return (signed long long)fld;
+}
+
+That's the basic engine of a BitVector package right there; a setbits
+function would be a nearly trivial addition.  Just wrap this as a
+Python extension and you're good to go.  (I can supply a C unit test
+for it.)  OK, so you'd have some fixed maximum limit on vector size;
+for your application, this is hardly an issue.
+
+Alternatively, you could run something up in pure Python using either
+the built-in array module or the NumPy numerical arrays extension (see
+<http://numpy.scipy.org/>).  That's probably what I'd do, actually -
+it's designed for stuff like this.
+
+----------------------------------------------------------------------
+General comments
+----------------------------------------------------------------------
+
+Your concept is excellent.  You have identified a real problem, and your
+instinct about the general shape of the solution is in my opinion sound.
+I wouldn't change a single thing about the way you wrote the XML profile.
+(I now wave my thirty-two years of software engineering experience and stature
+as the author of "The Art of Unix Programming" at you, just so you'll know
+you're not being idly patronized or something.)
+
+Your *implementation* of the concept has some serious issues.  The
+fact that I found attempting to modify your code too painful is a
+symptom; the actual disease is that you have excessively large amounts
+of duplicative generated code in the ais_msg*.py utilities, and the
+etiology of the disease is that you moved from declarative to
+procedural knowledge representation too early.
+
+Generating code from a declarative spec is generally a good idea - I
+do things like that all the time -- but the way you've done it is too
+heavyweight.  What I would have done in your place is generate from
+XML not twenty-odd pieces of code but a single large data structure,
+parts of which (such as the scaling functions for quantities like ROT)
+would actually be generated lambda expressions.
+
+The shape of that data structure would be roughly like this: an array
+of 26 message type description objects, each one of which is a list of
+bitfeld-description tuples associating with each field an offset, a
+width, a data type, a scaling lambda function for report generation,
+and whatever other per-field and per-message metadata I needed.  If there
+were conditional alternatives for the interpretation of bitfield spans, I 
+would have expressed them as vectors of field sublists guarded by a
+selection predicate (again a lambda expression). 
+
+I would then have written a single driver program, *not* generated
+from XML, that would do message parsing and report generation by
+walking the generated structure, dispatching on its contents, and
+firing the embedded lambdas as callbacks.
+
+With an organization like that, stuff like additional debugging
+machinery and report formats would only have to be written once and
+would be *completely orthogonal* to what your XML-to-data-structure
+compiler is doing.  (You would have to bite the bullet and include the
+lambda expressions in your XML under some circumstances, but you'd
+have had to do that anyway; trying to write a Turing-complete
+specification sublanguage just for that corner of the spec XML would
+be silly and overkill.)
+
+Here are some consequences of that organization:
+
+1. The global complexity and LLOC volume of your code would go *way*
+down.  Like (he said, doing some quick stats) by about a factor of 20.
+
+2. Writing a stream parser that could take any message type on input,
+like I've just done, would be trivial. Big improvement over your
+present organization, which pretty much welds you to having 26
+separate blobs of generated code that can't readily be merged.
+
+3. Retargeting the structure compiler so it could produce the core structure
+for implementation in a different language (Ruby, Perl, Java, etc.) would
+become practical.  (No, this almost certainly wouldn't work for C or C++, their 
+type ontologies aren't strong enough to bear the weight.)
+
+4. Your problem with nonlinear scaling for report generation on stuff like ROT 
+would be much more easily solved.  It's a bitch with your present organization
+because you haven't got the procedural knowledge embodied in generated parser 
+code separated from what is actually a different *kind* of procedural knowledge,
+about report-generator callbacks.
+
+5. New reporting formats would get far easier to write.  I wanted very badly
+to hack your code so it could turn this:
+
+!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A
+!AIVDM,1,1,,A,16SteH0P00Jt63hHaa6SagvJ087r,0*42
+!AIVDM,1,1,,B,25Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*60
+!AIVDM,1,1,,A,38Id705000rRVJhE7cl9n;160000,0*40
+!AIVDM,1,1,,A,403OviQuMGCqWrRO9>E6fE700@GO,0*4D
+!AIVDM,2,1,1,A,55?MbV02;H;s<HtKR20EHE:0@T4@Dn2222222216L961O5Gf0NSQEp6ClRp8,0*1C
+!AIVDM,2,2,1,A,88888888880,2*25
+!AIVDM,1,1,,B,9wsh:3?h>TdcWHftni=J0d5fs?8WT852,5*74
+!AIVDM,1,1,,A,B52K>;h00Fc>jpUlNV@ikwpUoP06,0*4C
+
+into this:
+
+1,0,371798000,Under way using engine,fastleft,12.3,1,-123.3954,48.3816,2240,215,33,0,0,84e1
+1,0,440348000,Under way using engine,nan,0.0,0,-70.7582,43.0802,934,511,13,0,0,81fa
+2,0,356302000,Under way using engine,fastright,13.9,0,-71.6261,40.3924,877,91,41,0,0,c006
+3,1,563808000,Moored,0,0.0,1,-76.3275,36.9100,2520,352,35,0,0,0
+4,0,003669702,2007:05:14T19:57:39Z,1,36.8838,-76.3524,Surveyed,0,82ef
+4,0,003669702,2007:05:14T19:57:39Z,1,36.8838,-76.3524,Surveyed,0,82ef
+9,3,1069287948,4032,932,1,177.3001,106.3532,256.2,48,5b,1,3,2cf227
+18,0,338087471,0,0.1,0,-74.0721,40.6845,79.6,511,49,0,23,1e0006
+
+Despite the fact that you've apparently implemented some roughly similar
+CSV feature, this proved too painful to actually do.
+
+The overall theme I'm urging on you is a cleaner separation of
+declarative from procedural knowledge.  Clearly what happened here is
+that you got fascinated by the code-generation approach and threw out
+the declarativeness of the XML too early, with bad second-order
+consequences in complexity and maintainability.
+
+I want to emphasize (because I suspect you might be feeling a bit
+abraded about now) that this was not a *stupid* mistake.  It was
+actually a hyper-intelligent mistake - too much cleverness rather than
+too little.

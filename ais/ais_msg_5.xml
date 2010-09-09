@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_5.xml 11970 2009-05-26 18:10:08Z schwehr $ -->
+<!-- $Revision: 11970 $ -->
+<!-- $Date: 2009-05-26 14:10:08 -0400 (Tue, 26 May 2009) $ -->
+
+<!-- AUTHOR: Kurt Schwehr -->
+
+<!--
+
+Attempt to read an AIS Msg 5 position message with the new xml to python compiler.
+
+See ais-py/ais/ais.xml for the original
+
+-->
+
+<ais-binary-message version="1.0">
+
+  <message name="shipdata" aismsgnum="5">
+    <description>Class A vessel data report</description>
+
+    <!-- This next block of messages will get ignored... -->
+
+    <category>F</category>
+    <priority>4</priority>
+    <operationmode>AU</operationmode>
+    <operationmode>AS</operationmode>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>N/A</comstate>
+    <stationtype>mobile</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 5</description>
+      <required>5</required>
+    </field>
+
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="AISversion" numberofbits="2" type="uint">
+      <description>Compliant with what edition.  0 is the first edition.</description>
+      <unavailable>0</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="IMOnumber" numberofbits="30" type="uint">
+      <description>vessel identification number (different than mmsi)</description>
+      <unavailable>0</unavailable>
+      <testvalue>3210</testvalue>
+    </field>
+
+    <field name="callsign" numberofbits="6" arraylength="7" type="aisstr6"> 
+      <description>Ship radio call sign</description>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>PIRATE1</testvalue>
+    </field>
+
+    <field name="name" numberofbits="6" arraylength="20" type="aisstr6"> 
+      <description>Vessel name</description>
+      <unavailable>@@@@@@@@@@@@@@@@@@@@</unavailable>
+      <testvalue>BLACK PEARL@@@@@@@@@</testvalue>
+    </field>
+
+    <field name="shipandcargo" numberofbits="8" type="uint"> 
+      <alias>what</alias>
+      <description>Type of ship and cargo type</description>
+      <note>  FIX: need to verify that I got this lookup table right.  Also need to handle entryranges in the lookup table</note>
+      <note>
+	http://www.imo.org/Environment/mainframe.asp?topic_id=236
+
+	* Category A - Noxious liquid substances which if discharged
+	into the sea from tank cleaning or deballasting operations
+	would present a major hazard to either marine resources or
+	human health or cause serious harm to amenities or other
+	legitimate uses of the sea and therefore justify the
+	application of stringent anti-pollution measures.  Examples
+	are acetone cyanohydrin, carbon disulphide, cresols,
+	naphthalene and tetraethyl lead.
+
+	* Category B - Noxious liquid substances which if discharged
+	into the sea from tank cleaning or deballasting operations
+	would present a hazard to either marine resources or human
+	health or cause harm to amenities or other legitimate uses of
+	the sea and therefore justify the application of special
+	anti-pollution measures.  Examples are acrylonitrile, carbon
+	tetrachloride, ethylene dichloride and phenol.
+
+	* Category C - Noxious liquid substances which if discharged
+	into the sea from tank cleaning or deballasting operations
+	would present a minor hazard to either marine resources or
+	human health or cause minor harm to amenities or other
+	legitimate uses of the sea and therefore require special
+	operational conditions.  Examples are benzene, styrene,
+	toluene and xylene.
+
+	* Category D - Noxious liquid substances which if discharged
+	into the sea from tank cleaning or deballasting operations
+	would present a recognizable hazard to either marine resources
+	or human health or cause minimal harm to amenities or other
+	legitimate uses of the sea and therefore require some
+	attention in operational conditions.  Examples are acetone,
+	phosphoric acid and tallow.
+      </note>
+
+      <range min="0" max="99"/>
+      <unavailable>0</unavailable>
+      <!-- FIX: use table 3.3.8.2.3.2 to build lookuptable -->
+      <!-- 100-199 preserved for regional use -->
+      <!-- 200-255 preserved for future use -->
+      <lookuptable>
+	<!-- FIX: what about 0..9?? -->
+	<entryrange start="10" end="19">Reserved for future use</entryrange>
+
+	<!-- http://www.navcen.uscg.gov/mwv/regulations/wig/wig.htm -->
+	<entry key="20">Wing in ground (WIG), all ships of this type</entry>
+	<entry key="21">Wing in ground (WIG), Hazardous catagory A</entry>
+	<entry key="22">Wing in ground (WIG), Hazardous catagory B</entry>
+	<entry key="23">Wing in ground (WIG), Hazardous catagory C</entry>
+	<entry key="24">Wing in ground (WIG), Hazardous catagory D</entry>
+	<entry key="25">Wing in ground (WIG), Reserved for future use</entry>
+	<entry key="26">Wing in ground (WIG), Reserved for future use</entry>
+	<entry key="27">Wing in ground (WIG), Reserved for future use</entry>
+	<entry key="28">Wing in ground (WIG), Reserved for future use</entry>
+	<entry key="29">Wing in ground (WIG), No additional information</entry>
+
+	<entry key="30">fishing</entry>
+	<entry key="31">towing</entry>
+	<entry key="32">towing length exceeds 200m or breadth exceeds 25m</entry>
+	<entry key="33">dredging or underwater ops</entry>
+	<entry key="34">diving ops</entry>
+	<entry key="35">military ops</entry>
+	<entry key="36">sailing</entry>
+	<entry key="37">pleasure craft</entry>
+	<entry key="38">reserved</entry>
+	<entry key="39">reserved</entry>
+
+	<entry key="40">High speed craft (HSC), all ships of this type</entry>
+	<entry key="41">High speed craft (HSC), Hazardous catagory A</entry>
+	<entry key="42">High speed craft (HSC), Hazardous catagory B</entry>
+	<entry key="43">High speed craft (HSC), Hazardous catagory C</entry>
+	<entry key="44">High speed craft (HSC), Hazardous catagory D</entry>
+	<entry key="45">High speed craft (HSC), Reserved for future use</entry>
+	<entry key="46">High speed craft (HSC), Reserved for future use</entry>
+	<entry key="47">High speed craft (HSC), Reserved for future use</entry>
+	<entry key="48">High speed craft (HSC), Reserved for future use</entry>
+	<entry key="49">High speed craft (HSC), No additional information</entry>
+
+	<entry key="50">pilot vessel</entry>
+	<entry key="51">search and rescue vessel</entry>
+	<entry key="52">tug</entry>
+	<entry key="53">port tender</entry>
+	<entry key="54">anti-polution equipment</entry>
+	<entry key="55">law enforcement</entry>
+	<entry key="56">spare - local vessel</entry>
+	<entry key="57">spare - local vessel</entry>
+	<entry key="58">medical transport</entry>
+	<!-- http://www.icrc.org/ihl.nsf/COM/470-750140?OpenDocument
+	     Protection of Victims of International Armed Conflicts -->
+	<entry key="59">ship according to RR Resolution No. 18</entry>
+
+	<entry key="60">passenger, all ships of this type</entry>
+	<entry key="61">passenger, Hazardous catagory A</entry>
+	<entry key="62">passenger, Hazardous catagory B</entry>
+	<entry key="63">passenger, Hazardous catagory C</entry>
+	<entry key="64">passenger, Hazardous catagory D</entry>
+	<entry key="65">passenger, Reserved for future use</entry>
+	<entry key="66">passenger, Reserved for future use</entry>
+	<entry key="67">passenger, Reserved for future use</entry>
+	<entry key="68">passenger, Reserved for future use</entry>
+	<entry key="69">passenger, No additional information</entry>
+	<entry key="70">cargo, all ships of this type</entry>
+	<entry key="71">cargo, Hazardous catagory A</entry>
+	<entry key="72">cargo, Hazardous catagory B</entry>
+	<entry key="73">cargo, Hazardous catagory C</entry>
+	<entry key="74">cargo, Hazardous catagory D</entry>
+	<entry key="75">cargo, Reserved for future use</entry>
+	<entry key="76">cargo, Reserved for future use</entry>
+	<entry key="77">cargo, Reserved for future use</entry>
+	<entry key="78">cargo, Reserved for future use</entry>
+	<entry key="79">cargo, No additional information</entry>
+	<entry key="80">tanker, all ships of this type</entry>
+	<entry key="81">tanker, Hazardous catagory A</entry>
+	<entry key="82">tanker, Hazardous catagory B</entry>
+	<entry key="83">tanker, Hazardous catagory C</entry>
+	<entry key="84">tanker, Hazardous catagory D</entry>
+	<entry key="85">tanker, Reserved for future use</entry>
+	<entry key="86">tanker, Reserved for future use</entry>
+	<entry key="87">tanker, Reserved for future use</entry>
+	<entry key="88">tanker, Reserved for future use</entry>
+	<entry key="89">tanker, No additional information</entry>
+	<entry key="90">other type, all ships of this type</entry>
+	<entry key="91">other type, Hazardous catagory A</entry>
+	<entry key="92">other type, Hazardous catagory B</entry>
+	<entry key="93">other type, Hazardous catagory C</entry>
+	<entry key="94">other type, Hazardous catagory D</entry>
+	<entry key="95">other type, Reserved for future use</entry>
+	<entry key="96">other type, Reserved for future use</entry>
+	<entry key="97">other type, Reserved for future use</entry>
+	<entry key="98">other type, Reserved for future use</entry>
+	<entry key="99">other type, No additional information</entry>
+
+	<entryrange start="100" end="199">Reserved for regional use</entryrange> <!-- FIX: does this seem good for ranges? -->
+	<entryrange start="200" end="255">Reserved for future use</entryrange> <!-- FIX: does this seem good for ranges? -->
+      </lookuptable>
+      <testvalue>55</testvalue>
+    </field>
+
+    <!-- See figure 17 in section 3.3.8.2.3.3 on page 48-->
+    <field name="dimA" numberofbits="9" type="uint">
+      <description>Distance from bow to reference position</description>
+      <note>See 3.3.8.2.3.3 Figure 17 page 48 of ITU-R M.1371-1</note>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <testvalue>10</testvalue>
+    </field>
+
+    <field name="dimB" numberofbits="9" type="uint">
+      <description>Distance from reference position to stern</description>
+      <note>See 3.3.8.2.3.3 Figure 17 page 48 of ITU-R M.1371-1</note>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <testvalue>11</testvalue>
+    </field>
+
+    <field name="dimC" numberofbits="6" type="uint">
+      <description>Distance from port side to reference position</description>
+      <note>See 3.3.8.2.3.3 Figure 17 page 48 of ITU-R M.1371-1</note>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="63">63 m or greater</entry>
+      </lookuptable>
+      <testvalue>12</testvalue>
+    </field>
+
+    <field name="dimD" numberofbits="6" type="uint">
+      <description>Distance from reference position to starboard side</description>
+      <note>See 3.3.8.2.3.3 Figure 17 page 48 of ITU-R M.1371-1</note>
+      <units>m</units>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="63">63 m or greater</entry>
+      </lookuptable>
+      <testvalue>13</testvalue>
+    </field>
+
+    <field name="fixtype" numberofbits="4" type="uint">
+      <description>Method used for positioning</description>
+      <range min="0" max="7"/>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">undefined</entry>
+	<entry key="1">GPS</entry>
+	<entry key="2">GLONASS</entry>
+	<entry key="3">combined GPS/GLONASS</entry>
+	<entry key="4">Loran-C</entry>
+	<entry key="5">Chayka</entry>
+	<entry key="6">integrated navigation system</entry>
+	<entry key="7">surveyed</entry>
+	<!-- <entry startkey="8" endkey="15">not used</entry> -->
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <!--
+    <field name="ETA" numberofbits="20" type="uint">
+      <description>FIX: break this out</description>
+      <testvalue>0</testvalue>
+    </field>
+    -->
+
+    <!-- FIX: make sure these fields are in the right order.  They are now swapped based on a report from ESR 5/2009 -->
+
+    <field name="ETAmonth" numberofbits="4" type="uint">
+      <description>Estimated time of arrival - month</description>
+      <range min="1" max="12"/>
+      <unavailable>0</unavailable>
+      <testvalue>2</testvalue>
+    </field>
+
+    <field name="ETAday" numberofbits="5" type="uint">
+      <description>Estimated time of arrival - day</description>
+      <range min="1" max="31"/>
+      <unavailable>0</unavailable>
+      <testvalue>28</testvalue>
+    </field>
+
+    <field name="ETAhour" numberofbits="5" type="uint">
+      <description>Estimated time of arrival - hour</description>
+      <range min="0" max="23"/>
+      <unavailable>24</unavailable>
+      <testvalue>9</testvalue>
+    </field>
+
+    <field name="ETAminute" numberofbits="6" type="uint">
+      <description>Estimated time of arrival - minutes</description>
+      <range min="0" max="59"/>
+      <unavailable>60</unavailable>
+      <testvalue>54</testvalue>
+    </field>
+
+
+
+    <field name="draught" numberofbits="8" type="udecimal">
+      <description>Maximum present static draught</description>
+      <unavailable>0</unavailable>
+      <default>0</default>
+      <units>m</units>
+      <scale>10</scale>
+      <decimalplaces>1</decimalplaces>
+      <lookuptable>
+	<entry key="25.5">25.5 m or greater</entry>
+      </lookuptable>
+      <testvalue>21.1</testvalue>
+    </field>
+
+    <field name="destination" numberofbits="6" arraylength="20" type="aisstr6">
+      <description>Where is the vessel going</description>
+      <unavailable>@@@@@@@@@@@@@@@@@@@@</unavailable>
+      <testvalue>NOWHERE@@@@@@@@@@@@@</testvalue>
+    </field>
+
+    <field name="dte" numberofbits="1" type="uint">
+      <description>Data terminal ready</description>
+      <unavailableraw>1</unavailableraw>
+      <default>1</default>
+      <lookuptable>
+	<entry key="0">available</entry>
+	<entry key="1">not available</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="Spare" numberofbits="1" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- position -->
+
+</ais-binary-message>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- THIS MESSAGE IS BROKEN -->
+
+
+
+<!-- $Id: waterlevel.xml 5052 2006-11-28 22:44:16Z schwehr $ -->
+<!-- $Revision: 5052 $ -->
+<!-- $Date: 2006-11-28 17:44:16 -0500 (Tue, 28 Nov 2006) $ -->
+
+<!-- Author: Kurt Schwehr -->
+
+<!-- FIX: what is the messages could be a 6 or 8... broadcast and or addressed? -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="../structs-inc.xml"/>-->
+  <!--<xi:include href="../structures.xml"/>-->
+
+
+  <!-- ============================================================ -->
+
+  <message name="sls_waterlevel" aismsgnum="8" dac="366 316" fid="1" efid="3" titlefield="stationid">
+    <description>St Lawrance Seaway water level message</description>
+
+    <include-struct name="time" struct="sls_time">
+      <description>Time tag of measurement</description>
+    </include-struct>
+
+    <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
+      <description>Character identifier of the station.  Usually a number.</description>
+      <unavailable>@@@@@@@</unavailable>
+      <testvalue>A234567</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="pos" struct="sls_pos">
+      <description>Location of measurement</description>
+    </include-struct>
+
+    <field name="type" numberofbits="1" type="uint">
+      <description>How to interpret the water level</description>
+      <lookuptable>
+	<entry key="0">Relative to datum</entry>
+	<entry key="1">Water depth</entry>
+      </lookuptable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="waterlevel" numberofbits="16" type="int">
+      <description>Water level in centimeters</description>
+      <units>cm</units>
+      <unavailable>-32768</unavailable>
+      <testvalue>-97</testvalue>
+    </field>
+
+    <field name="datum" numberofbits="2" type="uint">
+      <description>What reference datum applies to the value</description>
+      <lookuptable>
+	<entry key="0">MLLW</entry>
+	<entry key="1">IGLD-85</entry>
+	<entry key="2">Reserved</entry>
+	<entry key="3">Reserved</entry>
+      </lookuptable>
+      <unavailable>31</unavailable>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="reserved" numberofbits="14" type="uint">
+      <description>Reserved bits for future use</description>
+      <required>0</required>
+    </field>
+
+  </message> <!-- sls_waterlevel -->
+
+</ais-binary-message>

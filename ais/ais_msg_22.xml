@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: ais_msg_22.xml 8155 2008-01-08 20:10:31Z schwehr $ -->
+<!-- AUTHOR: Kurt Schwehr -->
+<!--  Definition for AIS Msg 22 - base station channel  -->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+  <struct name="corner" postgis_type="POINT">
+    <!-- FIX: make these work for PostGIS -->
+    <field name="lon" numberofbits="18" type="decimal">
+      <description>longitude of corner</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>600</scale>
+      <decimalplaces>2</decimalplaces>
+      <testvalue>-122.16</testvalue>  <!-- Stanford - Trancos -->
+    </field>
+
+    <field name="lat" numberofbits="17" type="decimal">
+      <description>latitude of corner</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>600</scale>
+      <decimalplaces>2</decimalplaces>
+      <testvalue>37.42</testvalue>
+    </field>
+  </struct> <!-- corner -->
+
+  <!-- msg 22 does not have a dac, fid, or efid -->
+  <message name="ChanMngmt" aismsgnum="22" titlefield="UserID">
+    <description>Base station report - F</description>
+
+    <!-- This next block of messages will get ignored... -->
+    <!-- FIX: THESE ARE PROBABLY NOT RIGHT!!! -->
+    <category>F</category>
+    <category>S</category>
+    <priority>1</priority>
+    <operationmode>AS</operationmode>
+    <accessscheme>FATDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <accessscheme>ITDMA</accessscheme>
+    <comstate>SOTDMA</comstate>
+    <stationtype>BASE</stationtype>
+
+    <!-- Back to tags that the compiler knows about -->
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 22</description>
+      <required>22</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Unique ship identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+    <field name="ChanA" numberofbits="12" type="uint">
+      <description>Channel number from ITU-R M.1084 Annex 4</description>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="ChanB" numberofbits="12" type="uint">
+      <description>Channel number from ITU-R M.1084 Annex 4</description>
+      <testvalue>0</testvalue>
+    </field>
+
+    <field name="TxRxMode" numberofbits="4" type="uint">
+      <description>FIX: find the description</description>
+      <lookuptable>
+	<entry key="0">Tx A/Tx B, Rx A/RX B</entry>
+	<entry key="1">Tx A, Rx A/Rx B</entry>
+	<entry key="2">Tx B, Rx A/Rx B</entry>
+      </lookuptable>
+      <default>0</default>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="power" numberofbits="1" type="uint">
+      <description>FIX: put in a description</description>
+      <lookuptable>
+	<entry key="0">high</entry>
+	<entry key="1">low</entry>
+      </lookuptable>
+      <default>0</default>
+      <testvalue>1</testvalue>
+    </field>
+
+
+    <include-struct name="corner1" struct="corner">
+      <description>north-east corner of area for assignment</description>
+    </include-struct>
+
+    <include-struct name="corner2" struct="corner">
+      <description>south-west corner of area for assignment</description>
+    </include-struct>
+
+    <field name="IndicatorType" numberofbits="1" type="uint">
+      <description>FIX: put in a description</description>
+      <lookuptable>
+	<entry key="0">broadcast</entry>
+	<entry key="1">addressed</entry>
+      </lookuptable>
+      <default>0</default>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="ChanABandwidth" numberofbits="1" type="uint">
+      <description>FIX: put in a description</description>
+      <lookuptable>
+	<entry key="0">specified by channel number</entry>
+	<entry key="1">12.5kHz</entry>
+      </lookuptable>
+      <default>0</default>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="ChanBBandwidth" numberofbits="1" type="uint">
+      <description>FIX: put in a description</description>
+      <lookuptable>
+	<entry key="0">specified by channel number</entry>
+	<entry key="1">12.5kHz</entry>
+      </lookuptable>
+      <default>0</default>
+      <testvalue>1</testvalue>
+    </field>
+
+    <!-- FIX: transitional zone needs to have one added??? -->
+    <field name="TransZoneSize" numberofbits="3" type="uint">
+      <description>FIX: put in a description</description>
+      <lookuptable>
+	<entry key="0">1</entry>
+	<entry key="1">2</entry>
+	<entry key="2">3</entry>
+	<entry key="3">4</entry>
+	<entry key="4">5</entry>
+	<entry key="5">6</entry>
+	<entry key="6">7</entry>
+	<entry key="7">8</entry>
+      </lookuptable>
+      <units>nm</units>
+      <default>4</default>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="Spare2" numberofbits="23" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- ChanMngt 22 -->
+
+</ais-binary-message>

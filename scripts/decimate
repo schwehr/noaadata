@@ -1,0 +1,108 @@
+#!/usr/bin/env python
+"""
+
+Command line utility to reduce the number of lines in a file by
+skipping and keeping groups of lines.
+
+     Copyright (C) 2005  Kurt Schwehr
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+$Id: decimate 343 2006-03-31 13:30:40Z schwehr $
+
+
+This is a handy program for coping with very large data ascii
+datasets.  Use this program to subsample lines in files.
+"""
+
+# These values end up in the pydoc web page
+__version__ = '$Revision: 343 $'.split()[1] # See man ident
+__date__ = '$Date: 2006-03-31 06:30:40 -0700 (Fri, 31 Mar 2006) $'.split()[1]
+__author__ = 'Kurt Schwehr'
+__credits__ = """PaleoIV/xcore derivative"""
+
+import os
+import sys
+
+from optparse import OptionParser
+
+VERSION='0'
+
+myparser = OptionParser(usage="%prog [options] files",
+                      version="%prog "+VERSION+' - '+__version__)
+
+myparser.add_option('-l','--skip-lines',dest='skipLines',type='int',default='1',
+                    help='Skip this many lines between groups [default: %default]')
+
+myparser.add_option('-L','--keep-lines',dest='keepLines',type='int',default='1',
+                    help='Keep this many lines in each group [default: %default]')
+
+myparser.add_option('-S','--start-skipping',dest='startSkip',default=False,
+                    action="store_true",
+                    help='Start off by immediately skipping [default: %default]')
+
+myparser.add_option('-p','--preserve',dest='preserveStr',default=None,
+                    help="Lines starting with this string will be kept no matter what [default : '%default']")
+
+myparser.add_option('-b','--preserve-begin',dest='preserveBegin',default=False,
+                    action="store_true",
+                    help="Cause the line counting to start over at a preserve marker [default : '%default']")
+
+myparser.add_option('-e','--preserve-end',dest='preserveEnd',default=False,
+                    action="store_true",
+                    help="Keep the last line before a separator [default : '%default']")
+
+myparser.add_option('-B','--blank-line',dest='blankLine',default=False,action='store_true',
+                    help='Put a blank line between blocks of keep points')
+
+
+
+# FIX: make an option to output to a file, but default to stdout
+# How do I do this?
+
+if __name__ == "__main__":
+    (options,args) = myparser.parse_args()
+
+    for filename in args:
+        count = 1
+        skipping = options.startSkip
+        previousLine = None
+        for line in open(filename,'r').xreadlines():
+            if None != options.preserveStr:
+                if line[:len(options.preserveStr)] == options.preserveStr:
+                    if options.preserveEnd:
+                        if None != previousLine:
+                            print previousLine,
+                            previousLine = None
+                    print line,
+                    if options.preserveBegin:
+                        count = 1
+                        skipping = options.startSkip
+                    continue
+            if not skipping:
+                print line,
+                previousLine = None
+                count += 1
+                if count > options.keepLines:
+                    skipping=True
+                    if options.blankLine: print
+                    count = 1
+            else: # Skipping is true
+                count += 1
+                if count > options.skipLines:
+                    skipping=False
+                    count = 1
+                else:
+                    previousLine = line

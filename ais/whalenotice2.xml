@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: whalenotice2.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
+<!-- $Revision: 7473 $ -->
+<!-- $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $ -->
+
+<!-- Example by Kurt Schwehr for the project with Dave Whiley and Chris C.-->
+
+<ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+  <xi:include href="structs-inc.xml"/>
+
+
+  <!-- FIX: put in units tag? for each field? -->
+  <!-- can have either sec or month, but not both to fit into two slots -->
+  <struct name="utcdatetime">
+    <description>Time stamp in UTC</description>
+<!--
+    <field name="month" numberofbits="4" type="uint">
+      <description>month 1..12</description>
+      <testvalue>2</testvalue>
+    </field>
+-->
+    <field name="day" numberofbits="5" type="uint">
+      <description>UTC day of the month 1..31</description>
+      <testvalue>28</testvalue>
+    </field>
+    <field name="hour" numberofbits="5" type="uint">
+      <description>UTC hours 0..23</description>
+      <testvalue>23</testvalue>
+    </field>
+    <field name="min" numberofbits="6" type="uint">
+      <description>UTC minutes</description>
+      <testvalue>45</testvalue>
+    </field>
+<!--
+    <field name="sec" numberofbits="6" type="uint">
+      <description>UTC seconds</description>
+      <testvalue>58</testvalue>
+    </field>
+-->
+  </struct> <!-- utcdatetime -->
+
+
+  <!-- ============================================================ -->
+
+  <message name="whalenotice" aismsgnum="8" dac="366" fid="63" efid="1" titlefield="stationsid">
+
+    <description>Endangered whale notification binary message</description>
+    <note>LNG terminal project.  This is a draft.  Please comment on the content of this message</note>
+    <!--<see-also>http://http://vislab-ccom.unh.edu/~schwehr/ais/waterlevel/</see-also> -->
+
+    <!-- leave this one line so that it may be used just for the payload with a "grep -v ais_header" -->
+    <!-- do not do name mangling on the header.  That would be strange -->
+    <include-struct name="ais_header" struct="msg8_header"><do_not_mangle_name/><description></description></include-struct>
+
+    <!-- header -->
+
+    <field name="dac" numberofbits="10" type="uint">
+      <description>Designated Area Code - 366 for the United States</description>
+      <required>366</required>
+    </field>
+    <field name="fid" numberofbits="6" type="uint">
+      <description>Functional IDentifier - 63 for the Whale Notice</description>
+      <required>63</required>
+    </field>
+    <field name="efid" numberofbits="12" type="uint">
+      <description>Extended Functional IDentifier.  1 for the Whale Notice (dac+fid+efid defines the exact message type)</description>
+      <required>1</required>
+    </field>
+
+    <!-- body -->
+
+    <field name="numreports" numberofbits="2" type="uint">
+      <description>Number of detection reports filled out in this message</description>
+      <unavailable>0</unavailable> <!-- uh... this would be bad if we did not know -->
+      <testvalue>3</testvalue> <!-- must be uppercase -->
+    </field>
+
+
+    <!-- ==================== 1 ==================== -->
+    <include-struct name="time1" struct="utcdatetime">
+      <!--<do_not_mangle_name/>-->
+      <description>Time of most recent whale detection.</description>
+    </include-struct>
+    
+    <field name="stationid1" numberofbits="8" type="uint">
+      <description>Identifier of the station that recorded the whale.  Usually a number.</description>
+      <note>It is unlikely that a local area is likely to have more than 256 stations</note>
+      <note>station name where whale was identified</note>
+      <unavailable>0</unavailable>
+      <testvalue>76</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="center1" struct="position2d">
+      <!-- <do_not_mangle_name/>-->
+      <description>Center of the detection zone.</description>
+    </include-struct>
+
+    <field name="timetoexpire1" numberofbits="16" type="uint">
+      <description>Seconds from the detection time until the notice expires</description>
+      <units>seconds</units>
+      <unavailable>65535</unavailable>
+      <lookuptable>
+	<entry key="0">No detection/notice active in region</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="radius1" numberofbits="16" type="uint">
+      <description>Distance from center of detection zone (lat/lon above)</description>
+      <units>m</units>
+      <unavailable>65534</unavailable> <!-- or should it be zero and what would this mean? -->
+      <testvalue>5000</testvalue>
+    </field>
+
+
+    <!-- ==================== 2 ==================== -->
+
+    <include-struct name="time2" struct="utcdatetime">
+      <!-- <do_not_mangle_name/> -->
+      <description>Time of most recent whale detection.</description>
+    </include-struct>
+    
+    <field name="stationid2" numberofbits="8" type="uint">
+      <description>Identifier of the station that recorded the whale.  Usually a number.</description>
+      <note>It is unlikely that a local area is likely to have more than 256 stations</note>
+      <note>station name where whale was identified</note>
+      <unavailable>0</unavailable>
+      <testvalue>76</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="center2" struct="position2d">
+      <!-- <do_not_mangle_name/> -->
+      <description>Center of the detection zone.</description>
+    </include-struct>
+
+    <field name="timetoexpire2" numberofbits="16" type="uint">
+      <description>Seconds from the detection time until the notice expires</description>
+      <units>seconds</units>
+      <unavailable>65535</unavailable>
+      <lookuptable>
+	<entry key="0">No detection/notice active in region</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="radius2" numberofbits="16" type="uint">
+      <description>Distance from center of detection zone (lat/lon above)</description>
+      <units>m</units>
+      <unavailable>65534</unavailable> <!-- or should it be zero and what would this mean? -->
+      <testvalue>5000</testvalue>
+    </field>
+
+    <!-- ==================== 3 ==================== -->
+
+    <include-struct name="time3" struct="utcdatetime">
+      <!-- <do_not_mangle_name/> -->
+      <description>Time of most recent whale detection.</description>
+    </include-struct>
+    
+    <field name="stationid3" numberofbits="8" type="uint">
+      <description>Identifier of the station that recorded the whale.  Usually a number.</description>
+      <note>It is unlikely that a local area is likely to have more than 256 stations</note>
+      <note>station name where whale was identified</note>
+      <unavailable>0</unavailable>
+      <testvalue>76</testvalue> <!-- must be uppercase -->
+    </field>
+
+    <include-struct name="center3" struct="position2d">
+      <!-- <do_not_mangle_name/> -->
+      <description>Center of the detection zone.</description>
+    </include-struct>
+
+    <field name="timetoexpire3" numberofbits="16" type="uint">
+      <description>Seconds from the detection time until the notice expires</description>
+      <units>seconds</units>
+      <unavailable>65535</unavailable>
+      <lookuptable>
+	<entry key="0">No detection/notice active in region</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="radius3" numberofbits="16" type="uint">
+      <description>Distance from center of detection zone (lat/lon above)</description>
+      <units>m</units>
+      <unavailable>65534</unavailable> <!-- or should it be zero and what would this mean? -->
+      <testvalue>5000</testvalue>
+    </field>
+
+
+    <!-- ==================== PADDING AT THE END ==================== -->
+
+    <field name="Spare2" numberofbits="21" type="uint">
+      <description>Not used.  Should be set to zero.</description>
+      <required>0</required>
+    </field>
+
+
+  </message> <!-- waterlevel -->
+
+</ais-binary-message>
