@@ -46,12 +46,12 @@ import re
 #   | (,x(?P<x_station_counter>[0-9]*))
 #   | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9]*))
 
-
+# AIVDO might not have a channel associated.
 uscg_ais_nmea_regex_str = r'''[!$](?P<talker>AI)(?P<stringType>VD[MO])
 ,(?P<total>\d?)
 ,(?P<senNum>\d?)
 ,(?P<seqId>[0-9]?)
-,(?P<chan>[AB])
+,(?P<chan>[AB]?)
 ,(?P<body>[;:=@a-zA-Z0-9<>\?\'\`]*)
 ,(?P<fillBits>\d)\*(?P<checksum>[0-9A-F][0-9A-F])
 (  
@@ -61,7 +61,7 @@ uscg_ais_nmea_regex_str = r'''[!$](?P<talker>AI)(?P<stringType>VD[MO])
   | (,t(?P<t_recver_hhmmss>(?P<t_hour>\d\d)(?P<t_min>\d\d)(?P<t_sec>\d\d.\d*)))
   | (,T(?P<time_of_arrival>[^,]*))
   | (,x(?P<x_station_counter>[0-9]*))
-  | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9_]*))
+  | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9_-]*))
 )*
 ,(?P<timeStamp>\d+([.]\d+)?)?
 '''
