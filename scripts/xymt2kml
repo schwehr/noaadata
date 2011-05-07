@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = '$Revision: 12492 $'.split()[1]
-__date__ = '$Date: 2009-08-20 17:23:37 -0400 (Thu, 20 Aug 2009) $'.split()[1]
+__version__ = '$Revision: 15974 $'.split()[1]
+__date__ = '$Date: 2011-05-07 07:27:13 -0400 (Sat, 07 May 2011) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__="""
@@ -122,7 +122,10 @@ if __name__ == '__main__':
         sys.stderr.write('num_ships = %d\n' % len(ships))
         sys.stderr.write('num_positions = %d\n' % position_count)
 
-    for ship in ships.keys():
+    ship_list = ships.keys()
+    ship_list.sort()
+    #for ship in ships.keys():
+    for ship in ship_list:
         last = None
         if len (ships[ship])<2:
             continue # not enough data for ship
