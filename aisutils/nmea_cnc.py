@@ -19,7 +19,7 @@ Convert AIS messages from AIVDM binary to IVS C&C NMEA strings
 @undocumented: __doc__
 @since: 2008-Oct-20
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 
 
 '''
@@ -42,7 +42,7 @@ def msg_1_to_cnc(nmea_str):
     body = ais.ais_msg_1.decode(bv)
 
     #ais.ais_msg_1.printFields(body)
-    
+
     r = ['$C&C',]
     r.append(str(body['UserID'])) # Vehicle name
     r.append(datetime.datetime.utcfromtimestamp(float(grp('timeStamp'))).strftime('%H:%M:%S.0'))

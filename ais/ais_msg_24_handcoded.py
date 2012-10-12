@@ -6,7 +6,7 @@ __author__ = 'xmlbinmsg'
 
 __doc__='''
 
-Hand coded processing of ais msg 24 
+Hand coded processing of ais msg 24
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
 @requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
@@ -176,7 +176,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 	  - RAIM(bool): Receiver autonomous integrity monitoring flag
 	  - DTE(uint): Data terminal ready
 	  - Spare3(uint): Not used. Should be set to zero (field automatically set to "0")
-	@param params: Dictionary of field names/values.  
+	@param params: Dictionary of field names/values.
 	@param out: File like object to write to
 	@rtype: stdout
 	@return: text to out
@@ -203,7 +203,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 '''.format(**params))
 	elif 'sql'==format:
 		sqlInsertStr(params,out,dbType=dbType)
-	else: 
+	else:
 		print "ERROR: unknown format:",format
 		assert False
 
@@ -339,12 +339,12 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 	import sqlhelp
 	i = sqlhelp.insert('b_staticdata',dbType=dbType)
 
-	for key in params: 
+	for key in params:
 		if type(params[key])==Decimal: i.add(key,float(params[key]))
 		else: i.add(key,params[key])
 
 	if None != extraParams:
-		for key in extraParams: 
+		for key in extraParams:
 			i.add(key,extraParams[key])
 
 	return i
@@ -431,7 +431,7 @@ if __name__=='__main__':
 		import doctest
 		numfail,numtests=doctest.testmod()
 		if numfail==0: print 'ok'
-		else: 
+		else:
 			print 'FAILED'
 			success=False
 
@@ -478,4 +478,3 @@ if __name__=='__main__':
 				    ,fieldList=options.fieldList
 				    ,dbType=options.dbType
 				    )
-

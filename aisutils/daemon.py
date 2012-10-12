@@ -11,7 +11,7 @@ Daemon tool to detach from the terminal
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
 @status: under development
 @since: 2008-Feb-04
-@undocumented: __doc__ 
+@undocumented: __doc__
 @todo: Clean way to shut down
 '''
 
@@ -55,7 +55,7 @@ def start(pid_file=None):
     create()
     if pid_file != None:
         open(pid_file, 'w').write(str(os.getpid())+'\n')
-    
+
 
 def create():
     """
@@ -86,7 +86,7 @@ def create():
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
         maxfd = 1024
-  
+
     # Iterate through and close all file descriptors.
     if True:
         for fd in range(0, maxfd):
@@ -101,4 +101,3 @@ def create():
     os.dup2(0, 2)
 
     return (0)
-

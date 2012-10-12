@@ -118,20 +118,20 @@ def isChecksumValid(nmeaStr, allowTailData=True,verbose=False):
 
     if allowTailData:
 	match = nmeaChecksumRE.search(nmeaStr)
-	if not match: 
+	if not match:
             if verbose: print 'Match failed'
             return False
 	nmeaStr = nmeaStr[:match.end()]
 	#if checksum.upper()==checksumStr(nmeaStr[match.end()
 
 
-    if nmeaStr[-3]!='*': 
+    if nmeaStr[-3]!='*':
 	print 'FIX: warning... bad nmea string'
 	return False  # Bad string without proper checksum
     checksum=nmeaStr[-2:]
     if checksum.upper()==checksumStr(nmeaStr).upper():
         return True
-    if verbose: 
+    if verbose:
         print 'mismatch checksums:', checksum.upper(),checksumStr(nmeaStr).upper()
     return False
 
@@ -192,7 +192,7 @@ def cabEncode(TransA=False, TransB=False, Restart=False, Reset=False, prefix='AI
     @type TransB: bool
     @param Restart: If true, command AIS Base station to restart operations in last known configuration
     @type Restart: bool
-    @param Reset: 
+    @param Reset:
     @type Reset: bool
     @param prefix: string to put between the $ and CAB
     @type prefix: str
@@ -241,7 +241,7 @@ def cabDecode(msg,validate=True):
         # check for USCG log tail
         print 'FIX: this should be an exception in cabDecode.  wrong number of fields'
         return False
-        
+
     # FIX: for validate... make sure that the other case from 1 is an empty string
     r = {}
     if '1'==fields[1]: r['TransA']=True
@@ -255,7 +255,7 @@ def cabDecode(msg,validate=True):
     r['nmeaCmd']='CAB'
     r['nmeaPrefix']=fields[0][1:3]
     return r
-    
+
 def verQuery(prefix='xx',appendEOL=True):
     '''
     Ask for the version string from a base station
@@ -267,12 +267,12 @@ def verQuery(prefix='xx',appendEOL=True):
     '$AIBSQ,VER*25'
 
     '''
-    
+
     rStr =  '$' + prefix+'BSQ,VER'
     rStr += '*' + checksumStr(rStr)
-    
+
     if appendEOL: rStr += EOL
-    return rStr 
+    return rStr
 
 def encodeQuery(query, prefix='xx',appendEOL=True):
     '''
@@ -305,18 +305,17 @@ def encodeQuery(query, prefix='xx',appendEOL=True):
     >>> encodeQuery('CAB', prefix='L3', appendEOL=False)
     '$L3BSQ,CAB*53'
 
-    
     '''
 
 #    >>> encodeQuery('SID',appendEOL=False)
 #    '$xxBSQ,SID*32'
 
-    
+
     rStr =  '$' + prefix+'BSQ,'+query
     rStr += '*' + checksumStr(rStr)
-    
+
     if appendEOL: rStr += EOL
-    return rStr 
+    return rStr
 
 
 # FIX: generic encode query function goes here
@@ -371,7 +370,7 @@ def acaEncode(seqnum='',north='',east='',south='',west='',transitionSize=''
 
     >>> acaEncode(appendEOL=False)
     '$xxACA,,,,,,,2087,0,2088,0,,,,*4C'
-    
+
     Set to high power
 
     >>> acaEncode(power=powerEncode['high'],appendEOL=False)
@@ -400,7 +399,7 @@ def acaEncode(seqnum='',north='',east='',south='',west='',transitionSize=''
     @param chanAbandwidth: 0 is the default, 1 is 12.5 kHz
     @type chanAbandwidth: int
     @param chanB: Channel B number
-    @type chanB: int 
+    @type chanB: int
     @param chanBbandwidth: 0 is the default, 1 is 12.5 kHz
     @type chanBbandwidth: int
     @param txrxMode: See txrxLUT for the numbers
@@ -410,7 +409,7 @@ def acaEncode(seqnum='',north='',east='',south='',west='',transitionSize=''
     @param infosrc: should be empty for sending to an AIS device.  See acaInfoSrcLUT
     @type infosrc: letter
     @param timeinuse: should be empty for sending to an AIS device.  Time in UTC that the device changed to this state
-    @type timeinuse: hhmmss.ss 
+    @type timeinuse: hhmmss.ss
     @param prefix: Vendor specific prefix.  FIX: what should be used here?
     @type prefix: Two letters
     @param appendEOL: Do you want a DOS end of line appended?
@@ -434,7 +433,7 @@ def acaEncode(seqnum='',north='',east='',south='',west='',transitionSize=''
         if txrxMode!='': assert int(txrxMode) in range(6)
         if power!='': assert int(power) in (0,1)
         if infosrc!='': assert infosrc in ('A','B','C','D','M')  # Sorry L-3, but I does not appear to be valid
-        if timeinuse!='': 
+        if timeinuse!='':
             v = float(timeinuse)
             assert v>=0. and v<24.
 
@@ -568,7 +567,7 @@ def dlmDecode(msg, validate=True):
     '''
     Decode Data Link Management slot allocation for Base Station nmea message
 
-    
+
     >>> dlmDecode ('$AIDLM,0,A,L,0,2,7,540,L,4,1,7,250,L,2511,1,7,0,,,,,*40,1172787005.5')
     {'nmeaPrefix': 'AI', 'timeout3': '7', 'timeout2': '7', 'timeout1': '7', 'timeout4': '', 'startslot2': '4', 'startslot3': '2511', 'incr4': '*40', 'incr3': '0', 'incr2': '250', 'incr1': '540', 'aisChannel': 'A', 'seqNum': '0', 'startslot1': '0', 'startslot4': '', 'nmeaCmd': 'DLM', 'ownership4': '', 'ownership3': 'L', 'ownership2': 'L', 'ownership1': 'L', 'numslots4': '', 'numslots1': '2', 'numslots2': '1', 'numslots3': '1'}
 
@@ -616,7 +615,7 @@ def dlmDecode(msg, validate=True):
 
     return r
 
-def bbmEncode(totSent, sentNum, seqId, aisChan, msgId, data, numFillBits 
+def bbmEncode(totSent, sentNum, seqId, aisChan, msgId, data, numFillBits
               ,prefix='xx',appendEOL=True
               ,validate=True
               ):
@@ -628,9 +627,6 @@ def bbmEncode(totSent, sentNum, seqId, aisChan, msgId, data, numFillBits
 
     >>> bbmEncode(1,1,0,3,8,'Fs[Ifs?:=2h:ec]dc3?HKI0f3?eFHa4[MGAMO6I2vqG0g',4)
     '!xxBBM,1,1,0,3,8,Fs[Ifs?:=2h:ec]dc3?HKI0f3?eFHa4[MGAMO6I2vqG0g,4*32'
-
-
-    
 
 
     Here are the test messages from 62320-1 80/427/CDV Page 58, 10.2.2.1.2:
@@ -661,7 +657,7 @@ def bbmEncode(totSent, sentNum, seqId, aisChan, msgId, data, numFillBits
     @type aisChan: str
     @param msgId: AIS message 8 (binary broadcast message) or 14 (safety related broadcast)
     @type msgId: int
-    @param data: Content of the binary data.  First sentence must be 58 characters or less.  
+    @param data: Content of the binary data.  First sentence must be 58 characters or less.
     The rest can be up to 60 characters.
     @param numFillBits: Number of bits of padding in the last character of the data (0-5)
     @type numFillBits: int
@@ -722,7 +718,7 @@ def bbmDecode(msg,validate=True):
     r['nmeaPrefix']=fields[0][1:3]
     i = 1
     # FIX: convert from strings or not??
-    r['totSent'] = fields[1]; i+= 1 
+    r['totSent'] = fields[1]; i+= 1
     r['sentNum'] = fields[2]; i+= 1
     r['seqId'] = fields[3]; i+= 1
     r['aisChan'] = fields[4]; i+= 1
@@ -797,7 +793,7 @@ def bcfDecode(msg,validate=True):
 
 posSrcLUT = {
     0:'surveyed'
-    ,1:'internal EPFD in use' 
+    ,1:'internal EPFD in use'
     ,2:'external EPFD in use'
     ,3:'internal EPFD in use with auto fallback to surveyed'
     ,4:'internal EPFD in use with auto fallback to external EPFD'
@@ -847,7 +843,7 @@ def bcfEncode(mmsi='',posSrc=''
     '!AIBCF,,,,,,,,,,,,1,1,,,AI*47'
 
     My MMSI that is registered for testing at UNH
-    
+
     >>> bcfEncode(mmsi=338040883, appendEOL=False,prefix='L3')
     '!L3BCF,338040883,,,,,,,,,,,,,,,L3*78'
 
@@ -875,11 +871,11 @@ def bcfEncode(mmsi='',posSrc=''
     @type  TxChanA: int
     @param TxChanB: Transmit channel to use (default is 2089)
     @type  TxChanB: int
-    @param PowerA: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts). 
+    @param PowerA: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
                    2 or 5 watts for low?  2..9 reservered
     @type  PowerA: int
-    @param PowerB:Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts). 
+    @param PowerB:Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
                    2 or 5 watts for low?  2..9 reservered
     @type  PowerB: int
@@ -941,7 +937,7 @@ if __name__=='__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 	sys.argv = argvOrig # Restore the original args

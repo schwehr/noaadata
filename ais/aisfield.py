@@ -37,9 +37,9 @@ import sys
 # Module Variables
 ######################################################################
 
-typeBitsGuess = { 'bool':1, 
-		  'uint':8, 'sint':8, 
-		  'udecimal':8, 'sdecimal':8, 
+typeBitsGuess = { 'bool':1,
+		  'uint':8, 'sint':8,
+		  'udecimal':8, 'sdecimal':8,
 		  'float':32, 'double':64,   # These are mandatory
 		  'aisstr6':6, 'ascii7':7,   # These are mandatory
 }
@@ -77,11 +77,11 @@ def getStubFieldDict():
     @return: example dictionary that can then be added to.
     '''
 
-    return  {'maxRange': None, 'outputFile': None, 'lut': None, 
-	     'description': None, 'notes': None, 'required': None, 
-	     'minRange': None, 'numberOfBits': 1, 'units': None, 
-	     'scale': None, 'arrayLength': None, 'completeXml': False, 
-	     'decimalPlaces': None, 'unavailable': None, 
+    return  {'maxRange': None, 'outputFile': None, 'lut': None,
+	     'description': None, 'notes': None, 'required': None,
+	     'minRange': None, 'numberOfBits': 1, 'units': None,
+	     'scale': None, 'arrayLength': None, 'completeXml': False,
+	     'decimalPlaces': None, 'unavailable': None,
 	     'type': 'bool', 'name': None}
 
 ######################################################################
@@ -114,14 +114,14 @@ def makeField(options,out=sys.stdout):
 	indent+='\t'
 
 	out.write(indent+'<description>'+o.description+'</description>\n')
-	if o.notes: 
+	if o.notes:
 	    for note in o.notes:
 		out.write(indent+'<note>'+note+'</note>\n')
 
 	if o.minRange: out.write(indent+'<range min="'+str(o.minRange)+'" max="'+str(o.maxRange)+'">\n')
 	if o.unavailable: tag(out,'unavailable',o.unavailable,indent)
 	if o.scale: tag(out,'scale',o.scale,indent)
-	
+
 	if o.decimalPlaces: tag(out,'decimalplaces',o.decimalPlaces,indent)
 	if o.units: tag(out,'units',o.units,indent)
 
@@ -130,7 +130,7 @@ def makeField(options,out=sys.stdout):
 	if o.lut:
 	    out.write(indent+'<lookuptable>\n')
 	    indent += '\t'
-	    
+
 	    for i in range(len(o.lut)):
 		out.write(indent+'<entry key="'+str(i)+'">'+str(o.lut[i])+'</entry>\n')
 	    indent=indent[:-1]
@@ -155,7 +155,7 @@ def validate(options,notify=True):
     '''
     o = options
     ok=True
-    if not o.name: 
+    if not o.name:
 	ok=False
 	if notify: print 'Must specify the "name" of the variable'
     # FIX: check the name field, maybe with a regex
@@ -178,7 +178,7 @@ def validate(options,notify=True):
 	except ValueError:
 	    ok=False
 	    if notify: print 'unavailable must be an number'
-	    
+
     # If unavailable and a string type , make sure that the string length fills the whole buffer
     if o.scale:
 	try:
@@ -210,7 +210,6 @@ if __name__=='__main__':
     myparser.add_option('-c','--complete',dest='completeXml',default=False,action='store_true',
 			help='Write out a complete xml file for a message.'
 			+'Not really good for an ais message')
-			
 
     myparser.add_option('-n','--name',dest='name',default=None,type='string',
 			help='Name of the field [required]')
@@ -223,13 +222,13 @@ if __name__=='__main__':
 			+'  ints and decimal can be in the range of 1..32.  [default: best guess]  ('+
 			(''.join([choice+':'+str(typeBitsGuess[choice])+' ' for choice in typeBitsGuess])[:-1])
 			+')')
-    
+
     myparser.add_option('-t','--type',dest='type', type='choice', default='bool',
 			choices=typeChoices,
 			help='What type of data will the option represent? "u" for unsigned, "s" for signed. ('+
 			(''.join([choice +' ' for choice in typeChoices]))[:-1]+')'
 			)
-    
+
     myparser.add_option('-d','--description',dest='description',default=None,type='string',
 			help='Description of the field [required]')
     myparser.add_option('--note',dest='notes',action='append',type='string',default=None,
@@ -272,7 +271,7 @@ if __name__=='__main__':
     if not validate(options):
 	sys.exit('ERROR: Options not ok.')
 
-    if options.outputFile: 
+    if options.outputFile:
 	makeField(options,file(options.outputFile,'a'))
     else:
 	makeField(options)

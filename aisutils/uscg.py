@@ -54,7 +54,7 @@ uscg_ais_nmea_regex_str = r'''[!$](?P<talker>AI)(?P<stringType>VD[MO])
 ,(?P<chan>[AB]?)
 ,(?P<body>[;:=@a-zA-Z0-9<>\?\'\`]*)
 ,(?P<fillBits>\d)\*(?P<checksum>[0-9A-F][0-9A-F])
-(  
+(
   (,S(?P<slot>\d*))
   | (,s(?P<s_rssi>\d*))
   | (,d(?P<signal_strength>[-0-9]*))
@@ -127,7 +127,7 @@ def get_station(nmeaStr):
     fields = nmeaStr.split(',')
     station = None
     for i in range(len(fields)-1,5,-1):
-        if len(fields[i])==0: 
+        if len(fields[i])==0:
             continue # maybe it should throw a parse exception instead?
         if fields[i][0] in ('b','r'):
             station = fields[i]
@@ -163,13 +163,13 @@ class UscgNmea:
             #if len(nmeaStr)<6:
             #    # FIX: throw exception
             #    sys.stderr.write('Not a AIVDM... too short\n')
-            
+
             fields = nmeaStr.split(',')
             self.cg_sec=float(fields[-1])
             self.timestamp = datetime.datetime.utcfromtimestamp(self.cg_sec)
             self.sqlTimestampStr = ais.sqlhelp.sec2timestamp(self.cg_sec)
             # See 80_330e_PAS
-            # 
+            #
             self.nmeaType=fields[0][1:]
             self.totalSentences = int(fields[1])
             self.sentenceNum = int(fields[2])
@@ -190,7 +190,7 @@ class UscgNmea:
                 self.msgTypeChar=None
 
             for i in range(len(fields)-1,5,-1):
-                if len(fields[i])==0: 
+                if len(fields[i])==0:
                     continue # maybe it should throw a parse exception instead?
                 f = fields[i]
                 c = f[0] # first charater determines what the field is
@@ -274,7 +274,7 @@ class UscgNmea:
 #        Return the python module that handles this message type
 #        '''
         # FIX: where did I do this nicely?
-        
+
 class TestUscgNmea(unittest.TestCase):
     def testUscgNmea(self):
         un = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
@@ -330,7 +330,7 @@ class TestUscgNmea(unittest.TestCase):
         self.failUnless(m1!=m12)
         #self.failUnless(m1!=m13)
         self.failUnless(m1!=m14)
-       
+
 
 ############################################################
 if __name__=='__main__':
@@ -356,7 +356,7 @@ if __name__=='__main__':
         import doctest
         numfail,numtests=doctest.testmod()
         if numfail==0: print 'ok'
-        else: 
+        else:
             print 'FAILED'
             success=False
 
@@ -401,7 +401,7 @@ def create_nmea(bits
     '''
     bitLen=len(bits)
     assert (bitLen <= 168)  # If larger, this needs to be a multi-line set of nmea msgs
-    if totalSentences is not None: 
+    if totalSentences is not None:
         # FIX: what is the right max number for a 5 slot message?
         assert(totalSentences < 5)
     else:
@@ -413,7 +413,7 @@ def create_nmea(bits
     else:
         sentenceNum=1
 
-    if sequentialMsgId is not None: 
+    if sequentialMsgId is not None:
         assert (sequentialMsgId<10)
         sequentialMsgId = str(sequentialMsgId)
     else:
@@ -446,7 +446,7 @@ def create_nmea(bits
 
 def test():
     #if options.doctest:
-    #import os; print os.path.basename(sys.argv[0]), 
+    #import os; print os.path.basename(sys.argv[0]),
     print 'doctests ...',
     #sys.argv= [sys.argv[0]]
     #if options.verbose: sys.argv.append('-v')
@@ -454,7 +454,7 @@ def test():
     numfail,numtests=doctest.testmod()
     if numfail==0:
         print 'ok'
-    else: 
+    else:
         print 'FAILED'
         success=False
 

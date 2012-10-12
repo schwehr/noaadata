@@ -15,7 +15,7 @@ Adds commstate to the msg 4 definition
 @undocumented: __doc__
 @since: 2009-Jul-21
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 import sys
 from decimal import Decimal
@@ -47,7 +47,6 @@ fieldList = (
 	'fixtype',
 	'Spare',
 	'RAIM',
-       
 ) + commstate.sotdma_fields
 
 def decode_aivdm(msg):
@@ -55,7 +54,7 @@ def decode_aivdm(msg):
     print decode(bv)
 
 def decode(bv, validate=False):
-	'''Unpack a bsreport message 
+	'''Unpack a bsreport message
 
 	Fields in params:
 	  - MessageID(uint): AIS message number.  Must be 4 (field automatically set to "4")
@@ -184,7 +183,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 	  - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
 	  - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
 	  - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
-	@param params: Dictionary of field names/values.  
+	@param params: Dictionary of field names/values.
 	@param out: File like object to write to
 	@rtype: stdout
 	@return: text to out
@@ -241,7 +240,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 		printKml(params,out)
 		out.write("</Document>\n")
 		out.write("</kml>\n")
-	else: 
+	else:
 		print "ERROR: unknown format:",format
 		assert False
 
@@ -312,7 +311,7 @@ def main():
 		import doctest
 		numfail,numtests=doctest.testmod()
 		if numfail==0: print 'ok'
-		else: 
+		else:
 			print 'FAILED'
 			success=False
 
@@ -381,7 +380,7 @@ def main():
 
 
 		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-		elif 'nmea'==options.ioType: 
+		elif 'nmea'==options.ioType:
 		    #bitLen=len(bits)
                     #if bitLen%6!=0:
 		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6

@@ -135,7 +135,7 @@ if __name__=='__main__':
     (options,args) = myparser.parse_args()
 
     success=True
-    
+
     if options.doctest:
 	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
 	sys.argv= [sys.argv[0]]
@@ -143,7 +143,7 @@ if __name__=='__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 

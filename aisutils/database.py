@@ -106,7 +106,7 @@ def createTables(cx,dbType='sqlite',includeList=None, excludeList=None,verbose=F
         if aisMod.dbTableName in tables:
             if verbose: sys.stderr.write(str(msgNum)+' ... skipping - already in the db -'+str(aisMod.dbTableName)+'\n')
         else:
-            if verbose:  
+            if verbose:
                 print msgNum,' ... adding '+aisMod.dbTableName+' table to db'
             cu.execute(str(aisMod.sqlCreate(dbType=dbType)))
             tables.append(aisMod.dbTableName)
@@ -136,7 +136,7 @@ def dropTables(cx,includeList=None, excludeList=None,verbose=False):
         aisMod = ais.msgModByNumber[msgNum]
 
         if aisMod.dbTableName in tables:
-            if verbose: 
+            if verbose:
                 print msgNum,' ... skipping - already dropped from the db -',aisMod.dbTableName
         else:
             if verbose:
@@ -191,7 +191,7 @@ def rebuild_track_lines(cx,vessels=None
     @param trackTable: the database table where to put the lines
     @param limitPoints: max number of points in a track line
     @param startTime: oldest timestamp to allow in the track lines
-    @type startTime: datetime 
+    @type startTime: datetime
     '''
     v = verbose
     cu = cx.cursor()
@@ -213,13 +213,13 @@ def rebuild_track_lines(cx,vessels=None
         vessels = set()
         for v in cu.fetchall():
             vessels.add(v[0])
-        
+
     if v:
         sys.stderr.write('\nrebuild_track_lines\n')
         #sys.stderr.write('  vessels %s\n' % str(vessels))
         sys.stderr.write('  Number of vessels %d\n' % len(vessels))
         sys.stderr.write('  startTime: %s   now: %s \n' % (str(startTime),str(datetime.datetime.utcnow())))
-        
+
     for vessel in vessels:
 
         query='SELECT AsText(position) FROM position WHERE userid=%s'
@@ -251,7 +251,7 @@ def rebuild_track_lines(cx,vessels=None
                 continue
             linePoints.append(row[0].split('(')[1].split(')')[0])
         if len(linePoints)<2:#lineLen<2:
-            if v: 
+            if v:
                 sys.stderr.write('Line needs at least 2 points for vessel %s\n' % vessel)
             cu.execute ('SELECT '+trackKey+' FROM '+trackTable+' WHERE userid = %s;',( vessel,))
             row = cu.fetchall()
@@ -261,7 +261,7 @@ def rebuild_track_lines(cx,vessels=None
                 cu.execute('DELETE FROM '+trackTable+' WHERE userid = %s;',(vessel,))
             continue
         lineWKT='LINESTRING('+','.join(linePoints)+')'
-        if v: 
+        if v:
             sys.stderr.write(str(len(linePoints))+' points used for vessel '+str(vessel)+'\n')
         # Get the most recent vessel name
         #if v: print 'Getting name...'
@@ -306,18 +306,18 @@ def rebuild_track_lines(cx,vessels=None
         else:
             # How did this happen???
             sys.stderr.write('ERROR: database corrupted ... too many track lines for '+str(vessel)+'\n')
-                            
+
     if vesselsUpdated>0:
         cx.commit()
         if v: sys.stderr.write('Updated tracks ... '+str(vesselsUpdated)+' tracks updated\n')
 
     #
     # Handle class B reports here
-    # 
+    #
 
     if startTime is not None:
         #cu2 = cx.cursor()
-        print '*** Removing track_lines older than', startTime 
+        print '*** Removing track_lines older than', startTime
         #checkpoint()
         cu.execute('SELECT COUNT(userid) FROM track_lines;')
         #checkpoint()
@@ -329,8 +329,6 @@ def rebuild_track_lines(cx,vessels=None
 
         import traceback
 
-
-        
         sql = 'DELETE FROM track_lines WHERE userid IN (SELECT userid FROM track_lines WHERE update_timestamp < %s);'
         #try:
         #    checkpoint()
@@ -368,7 +366,7 @@ def rebuild_last_position(cx
     @param vessels: if None, do all vessels in the tables, otherwise a set of MMSI values
     @param trackTable: the database table where to put the lines
     @param startTime: oldest timestamp to allow in the last_position table
-    @type startTime: datetime 
+    @type startTime: datetime
     '''
     v = verbose
     cu = cx.cursor()
@@ -376,7 +374,7 @@ def rebuild_last_position(cx
     #
     # position table - Class A
     #
-    if v: 
+    if v:
         sys.stderr.write ('REBUILD_LAST_POSITION: (%s to %s)\n' % ( str(startTime), str(datetime.datetime.utcnow()) ) )
 
     vesselsUpdated=0
@@ -391,7 +389,7 @@ def rebuild_last_position(cx
         for v in cu.fetchall():
             vesselsClassA.add(v[0])
 
-    if v: 
+    if v:
         sys.stderr.write ('  num class A vessels: %s\n' % len(vesselsClassA))
 
     for vessel in vesselsClassA:
@@ -399,13 +397,13 @@ def rebuild_last_position(cx
         query='SELECT position,cog,sog,cg_timestamp FROM position WHERE userid=%s ORDER BY cg_sec DESC LIMIT 1;'
         #if startTime is not None:
         #    query += ' AND cg_timestamp > %s'
-        #query+=' ORDER BY cg_sec DESC LIMIT 1;' 
+        #query+=' ORDER BY cg_sec DESC LIMIT 1;'
         #if startTime is not None:
         #    #print 'FIX: q', (query % (vessel,startTime))
         #    cu.execute(query,(vessel,startTime))
         #else:
         cu.execute(query,(vessel,));
-        
+
         rows = cu.fetchall()
         if len(rows)==0: continue
         row = rows[0]
@@ -445,7 +443,7 @@ def rebuild_last_position(cx
         sys.stderr.write('b NAME for '+str(vessel)+' is "'+name+'"\n')
 
         # FIX: set color based on shipandcargo
-        
+
         cu.execute('SELECT '+posKey+' FROM '+lastPosTable+' WHERE userid=%s\n', (vessel,))
         lastpos_keys = cu.fetchall()
 
@@ -467,7 +465,7 @@ def rebuild_last_position(cx
                 vesselsUpdated += 1
         elif len(lastpos_keys)==1:
             # Need to replace an existing row
-            
+
             query = 'UPDATE '+lastPosTable+' SET name = %s, cog = %s, sog = %s, cg_timestamp=%s, position = %s WHERE '+posKey+' = %s'
             key = lastpos_keys[0][0]
             try:
@@ -482,7 +480,7 @@ def rebuild_last_position(cx
         else:
             # How did this happen???
             sys.stderr.write('ERROR: database corrupted ... too many positions for '+str(vessel)+'\n')
-                            
+
     if vesselsUpdated>0:
         cx.commit()
         if v: sys.stderr.write('Updated tracks ... '+str(vesselsUpdated)+' tracks updated\n')
@@ -491,7 +489,7 @@ def rebuild_last_position(cx
         print 'FIX: class B not yet implemented'
 
     if startTime is not None:
-        print '*** Removing positions older than', startTime 
+        print '*** Removing positions older than', startTime
 
         cu.execute('SELECT COUNT(key) FROM position;')
         print 'COUNT position',cu.fetchone()
@@ -501,7 +499,7 @@ def rebuild_last_position(cx
 
         # Remove old points to keep the database lean... go back a few days
         sql = 'DELETE FROM position WHERE key IN (SELECT key FROM position WHERE cg_timestamp < %s);'
-        when = startTime - datetime.timedelta(days=4) 
+        when = startTime - datetime.timedelta(days=4)
         cu.execute(sql,(when,))
 
         sql = 'DELETE FROM last_position WHERE key IN (SELECT key FROM last_position WHERE cg_timestamp < %s);'
@@ -516,6 +514,6 @@ def rebuild_last_position(cx
         print 'AFTER COUNT last_position',cu.fetchone()
 
         print 'done cleaning position and last_position based on startTime'
-        
+
 
 # FIX: unittests here?

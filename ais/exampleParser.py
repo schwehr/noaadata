@@ -110,7 +110,7 @@ if __name__=='__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 
@@ -125,4 +125,3 @@ if __name__=='__main__':
 	if options.verbose: sys.argv+='-v'
         print 'Currently no unit tests'
 	#unittest.main()
-    

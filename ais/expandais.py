@@ -24,7 +24,7 @@ Expand structs in ais xml to include-struct elements while applying name manglin
 '''
 
 import sys
-from lxml import etree 
+from lxml import etree
 
 def getPos(parent,child):
     '''
@@ -86,7 +86,6 @@ def expandAis(inET,verbose=False):
             postgisType=replacement.attrib['postgis_type']
             postgisName=inc.attrib['name'] #baseName
             if verbose: print 'Found PostGIS datatype for structure:',postgisName,postgisType
-            
 
 	# FIX: what happens when the include is at the beginning or end of the list?
 
@@ -105,7 +104,7 @@ def expandAis(inET,verbose=False):
                     if verbose: 'WARNING: are you sure you want no text in this description?'
                     txt = ''
                 else: txt +='  '  # FIX: was \n\t which cause trouble with word export
-		desc[0].text=  txt+desc[0].text 
+		desc[0].text=  txt+desc[0].text
 	    else:
 		print 'WARNING: no description for subfield!!!!  Must have exactly one description field'
 	    # Now that the node is ready, jam it in there after the replaced comment
@@ -146,9 +145,9 @@ if __name__ == '__main__':
     parser = OptionParser(usage="%prog [options]",
 			    version="%prog "+__version__)
     parser.add_option('-i','--input-file',dest='inFilename',default=None,
-                        help='AIS to read from')    
+                        help='AIS to read from')
     parser.add_option('-o','--output-file',dest='outFilename',default='out-ais.xml',
-                        help='New AIS file that has structures expanded')    
+                        help='New AIS file that has structures expanded')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
                         help='Verbose mode')
 
@@ -159,7 +158,7 @@ if __name__ == '__main__':
     tree = etree.parse(options.inFilename)
     #tree.xinclude()
     newET = expandAis(tree,options.verbose)
-    if not options.keepStructs: 
+    if not options.keepStructs:
 	newET = nukeStructs(newET,options.verbose)
     newET.write(options.outFilename)
 

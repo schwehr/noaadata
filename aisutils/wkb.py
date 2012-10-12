@@ -37,13 +37,12 @@ class convert:
 
         c = convert()
         c.decode("0020000001000010E6C051D30925D1DA0B4044A79AE924F228")
-        
+
         @param wkbhex: HEX geometry
         @type wkbhex: str
-        @return: Different geometry objects depending on what you give it.  e.g. 
+        @return: Different geometry objects depending on what you give it.  e.g.
         @rtype: Geotypes object
         '''
         parser.parseGeometry(wkbhex)
         geom = factory.getGeometry()
         return geom
-    

@@ -4,7 +4,7 @@ __version__ = '$Revision: 6398 $'.split()[1] # See man ident
 __date__ = '$Date: 2007-06-20 13:42:04 -0400 (Wed, 20 Jun 2007) $'.split()[1] # FIX: pull out just the date
 __author__ = 'Kurt Schwehr'
 __doc__='''
-Helper functions to create SQL statements. 
+Helper functions to create SQL statements.
 
 @license: GPL
 @todo: How do I assemble queries like this::
@@ -48,7 +48,7 @@ ALWAYS   = 0
 NEVER    = 0 # Confusing, eh?
 # Pass in 0 for NEVER from the user side
 
-# 
+
 def addVerbosityOptions(parser):
     '''
     Added the verbosity options to a parser
@@ -333,7 +333,7 @@ class insert:
     Help create an SQL insert statement for injecting data into a database.  Wee!
 
     @todo: FIX: provide some sort of validation, maybe with the CREATE string or class?
-    @todo: Put in a remove/delete call to pull a value out so that it is not inserted 
+    @todo: Put in a remove/delete call to pull a value out so that it is not inserted
 
     @todo: FIX:  MUST REWRITE THIS CLASS TO BE TYPE AWARE.
     '''
@@ -349,20 +349,20 @@ class insert:
         self.values = []
         self.postGIS = []
         return
-    
+
     def dump(self):
 	'''Print out a safer dump to std out rather than str for debugging'''
 	print '\n === dump insert for table',self.table,'==='
 	for i in range(1,len(self.fields)):
 	    print self.fields[i], self.values[i],'    (',type(self.fields[i]), type(self.values[i]),')'
-	print 
+	print
 
     def __str__(self):
         "Return the SQL string for the insert"
         if 0==len(self.fields):
             print "WARNING: empty insert.  returning empty string"
             return ""  # FIX: throw exception and a hissy fit
-        
+
         s = 'INSERT INTO '
 
         if 'postgres'==self.dbType: s+= self.table.lower() + ' '
@@ -394,8 +394,8 @@ class insert:
 	    elif isinstance(self.values[i],BitVector): s2List.append('\''+str(self.values[i])+'\'')
             elif str == type(self.values[i]):          s2List.append('\''+str(self.values[i])+'\'')
             elif type(self.values[i]) in (int, float): s2List.append(str(self.values[i]))
-	    
-	    elif not self.values[i]:  
+
+	    elif not self.values[i]:
                 print 'FIX: what was I trying to accomplish with this?',fields[i],self.values[i]
 		s2List.append('NULL')
             else:
@@ -406,7 +406,7 @@ class insert:
             s1List.append(entry[0].lower())
             # FIX: this hard codes WGS 84.  Not good for a general library!
             s2List.append('GeomFromText(\'' + entry[1] + '\',4326)')
-            
+
         s += '(' + ','.join(s1List) + ') VALUES (' + ','.join(s2List) + ');'
         return s
 
@@ -427,7 +427,7 @@ class insert:
 
         if type(value)==str:
 	    # Prevent quotes from breaking out of a string/varchar.  "" is SQL for " in a character string
-	    value = value.replace('"','""')  
+	    value = value.replace('"','""')
 	self.fields.append(field)
         self.values.append(value)
         return
@@ -500,7 +500,7 @@ if __name__=='__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 

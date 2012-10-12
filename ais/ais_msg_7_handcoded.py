@@ -146,7 +146,7 @@ def encode(params, validate=False):
 	return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-	'''Unpack a binack message 
+	'''Unpack a binack message
 
 	Fields in params:
 	  - MessageID(uint): AIS message number.  Must be 7 (field automatically set to "7")
@@ -179,7 +179,7 @@ def decode(bv, validate=False):
 	r['Spare']=0
 	r['DestID1']=int(bv[40:70])
 	r['SeqID1']=int(bv[70:72])
-        
+
         if len(bv) < 104: return r
 	r['DestID2']=int(bv[72:102])
 	r['SeqID2']=int(bv[102:104])
@@ -356,7 +356,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 	  - SeqID3(uint): Sequence ID of the message to be acknowledged
 	  - DestID4(uint): MMSI destication to ACK
 	  - SeqID4(uint): Sequence ID of the message to be acknowledged
-	@param params: Dictionary of field names/values.  
+	@param params: Dictionary of field names/values.
 	@param out: File like object to write to
 	@rtype: stdout
 	@return: text to out
@@ -391,7 +391,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 		printHtml(params,out)
 	elif 'sql'==format:
 		sqlInsertStr(params,out,dbType=dbType)
-	else: 
+	else:
 		print "ERROR: unknown format:",format
 		assert False
 
@@ -506,7 +506,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 	if dbType=='postgres':
 		finished = []
 		for key in params:
-			if key in finished: 
+			if key in finished:
 				continue
 
 			if key not in toPgFields and key not in fromPgFields:
@@ -530,12 +530,12 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 					valStr+=' '.join(vals)+')'
 					i.addPostGIS(pgName,valStr)
 	else:
-		for key in params: 
+		for key in params:
 			if type(params[key])==Decimal: i.add(key,float(params[key]))
 			else: i.add(key,params[key])
 
 	if None != extraParams:
-		for key in extraParams: 
+		for key in extraParams:
 			i.add(key,extraParams[key])
 
 	return i
@@ -561,19 +561,19 @@ def latexDefinitionTable(outfile=sys.stdout
 \\centering
 \\begin{tabular}{|l|c|l|}
 \\hline
-Parameter & Number of bits & Description 
+Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 7 \\\\ \hline 
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline 
-UserID & 30 & Unique ship identification number (MMSI).  Also known as the Source ID \\\\ \hline 
-Spare & 2 & Not used.  Should be set to zero. \\\\ \hline 
-DestID1 & 30 & MMSI destication to ACK \\\\ \hline 
-SeqID1 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline 
-DestID2 & 30 & MMSI destication to ACK \\\\ \hline 
-SeqID2 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline 
-DestID3 & 30 & MMSI destication to ACK \\\\ \hline 
-SeqID3 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline 
-DestID4 & 30 & MMSI destication to ACK \\\\ \hline 
+MessageID & 6 & AIS message number.  Must be 7 \\\\ \hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
+UserID & 30 & Unique ship identification number (MMSI).  Also known as the Source ID \\\\ \hline
+Spare & 2 & Not used.  Should be set to zero. \\\\ \hline
+DestID1 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID1 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID2 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID2 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID3 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID3 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID4 & 30 & MMSI destication to ACK \\\\ \hline
 SeqID4 & 2 & Sequence ID of the message to be acknowledged\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
 \\end{tabular}
@@ -598,7 +598,7 @@ def textDefinitionTable(outfile=sys.stdout
 
 	'''
 	o = outfile
-	o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description 
+	o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description
 MessageID'''+delim+'''6'''+delim+'''AIS message number.  Must be 7
 RepeatIndicator'''+delim+'''2'''+delim+'''Indicated how many times a message has been repeated
 UserID'''+delim+'''30'''+delim+'''Unique ship identification number (MMSI).  Also known as the Source ID
@@ -751,7 +751,7 @@ def main():
 		import doctest
 		numfail,numtests=doctest.testmod()
 		if numfail==0: print 'ok'
-		else: 
+		else:
 			print 'FAILED'
 			success=False
 
@@ -808,7 +808,7 @@ def main():
 
 
 		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-		elif 'nmea'==options.ioType: 
+		elif 'nmea'==options.ioType:
 		    #bitLen=len(bits)
                     #if bitLen%6!=0:
 		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6

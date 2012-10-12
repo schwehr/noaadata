@@ -11,7 +11,7 @@ Tools to support writing python server programs.  Pulled from serial-logger.
 @undocumented: __doc__
 @since: 2008-Oct-16
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import datetime
@@ -21,9 +21,9 @@ import sys
 
 SERIAL_SPEEDS = [
         #0, 50, 75, 110,
-        #134, 150, 200, 
+        #134, 150, 200,
         300
-        ,600 
+        ,600
         ,1200, 1800, 2400, 4800, 9600, 19200
         ,38400, 57600, 115200, 230400
             ]
@@ -61,7 +61,7 @@ def create_daemon():
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
         maxfd = 1024
-  
+
     # Iterate through and close all file descriptors.
     if True:
         for fd in range(0, maxfd):
@@ -87,7 +87,7 @@ class LogFileWithRotate():
         self.station=station
         self.uscg_format=uscg_format
         self.open()
-        
+
     def open(self):
         '''Open a log file.  Close old one if it exists'''
         if self.log_file is not None:
@@ -102,7 +102,7 @@ class LogFileWithRotate():
 
     def write_header(self):
         self.write('# START LOGGING',rotate=False)
-        
+
     def write_tail(self):
         self.write('# STOP LOGGING',rotate=False)
 
@@ -117,12 +117,12 @@ class LogFileWithRotate():
             return
         if self.v: print 'rotate log file'
         self.open()
-        
+
     def write(self,data,verbose=False,rotate=True):
         if rotate:
             self.rotate()
         log_str=''
-        
+
         if self.uscg_format:
             log_str = data
             if data[-1] in ('\n','\r'): log_str = data[:-1]
@@ -133,12 +133,10 @@ class LogFileWithRotate():
 
         if verbose:
             print log_str,
-            
+
         self.log_file.write(log_str)
-                
+
     def __del__(self):
         print 'shutting down'
         self.write_tail()
         self.log_file.close()
-
-        

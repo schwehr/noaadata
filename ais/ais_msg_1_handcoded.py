@@ -15,7 +15,7 @@ Adds SOTDMA commstate to messages 1 and 2
 @undocumented: __doc__
 @since: 2009-Jul-21
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import sys
@@ -184,7 +184,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 		printKml(params,out)
 		out.write("</Document>\n")
 		out.write("</kml>\n")
-	else: 
+	else:
 		print "ERROR: unknown format:",format
 		assert False
 

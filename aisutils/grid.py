@@ -131,7 +131,7 @@ class Grid:
             print '     x:',minx,maxx
             print '     y:',miny,maxy
             print '  step:',stepSize
-            
+
         assert(minx<maxx)
         assert(miny<maxy)
         assert(stepSize>0)
@@ -202,7 +202,7 @@ class Grid:
         distance.
 
         A line inside a cell returns the cell, 0., 1., and the distance
-        
+
         @return: a list of (cell(an i,j), startFrac, endFrac, distance) for a line
         @todo: make this actually be fast
         @todo: switch to delta Y for N-S lines
@@ -210,7 +210,7 @@ class Grid:
         if verbose: print '\n\n===============\n   getLineCells',x0,y0, x1,y1
         #from IPython.Shell import IPShellEmbed
         #ipshell = IPShellEmbed(argv=[])
-        #ipshell() 
+        #ipshell()
 
         # only scan left to right direction
         flippedX = False
@@ -222,12 +222,12 @@ class Grid:
         startCell = self.getCell(x0,y0,verbose)
         endCell   = self.getCell(x1,y1,verbose)
         if verbose: print 'cellrange',startCell,endCell,x0,y0,'->',x1,y1
-        
+
         # just one cell
         if startCell==endCell:
             dist = distance(x0,y0, x1,y1)
             return ( (startCell,0.,1.,dist),)
-        
+
         dx = x1-x0
         dy = y1-y0
         m = slope = (dy/float(dx))
@@ -237,7 +237,7 @@ class Grid:
         stepSize = self.stepSize
         minx=self.minx; maxx=self.maxx
         miny=self.miny; maxy=self.maxy
-        
+
         flippedY = False
         if y0>y1:
             if verbose: print 'flipping Y'
@@ -249,7 +249,7 @@ class Grid:
 
         if verbose:
             print 'steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps
-       
+
         x_ycrossings = [   ]
         for step in range(steps):
             y = step*stepSize + y_first_ycrossing
@@ -296,14 +296,14 @@ class Grid:
             print 'orig crossings:',crossings
             print ' new crossings:',cnew
         crossings=cnew
-        
+
         # Be careful which side to add that start cell
         cells=[]
         if not flippedX:
             cells = [startCell,]
 
         fractions = [0.,]
-        
+
         totXRange = x1 - x0
         print 'xrange',totXRange , x1,x0
         for x in crossings:
@@ -324,7 +324,7 @@ class Grid:
             x = x0 + totXRange * fractions[i+1]
             y = m * x + b
             p2 = (x,y)
-            
+
             distances.append(distancePt(p1,p2))
         print 'dists',distances
 
@@ -341,7 +341,7 @@ class Grid:
 
 
         # if rounding errors happen to push us out, then toss a cell
-        
+
         if not inBoundingBox(cells[0][0],cells[0][1],minCellX,minCellY,maxCellX,maxCellY):
             if verbose: print 'chomp front'
             assert False # need to also remove from the fractions
@@ -357,7 +357,7 @@ class Grid:
         #    cells=cells[1:]
         #c = cells[-1]
         #if not inRange(c[0],minCellX,maxCellX) or not inRange(c[1],minCellY,maxCellY):
-        #    
+        # 
         #    cells=cells[:-1]
 
         assert(len(cells)>1)
@@ -381,7 +381,7 @@ class Grid:
         if verbose: print '\n\n===============\n   getLineCells',x0,y0, x1,y1
         #from IPython.Shell import IPShellEmbed
         #ipshell = IPShellEmbed(argv=[])
-        #ipshell() 
+        #ipshell()
 
         # only scan left to right direction
         flippedX = False
@@ -393,7 +393,7 @@ class Grid:
         startCell = self.getCell(x0,y0,verbose)
         endCell   = self.getCell(x1,y1,verbose)
         if verbose: print 'cellrange',startCell,endCell,x0,y0,'->',x1,y1
-        
+
         # Vertical Line or just one cell?
         if startCell[0]==endCell[0]:
             yFlipped=False
@@ -432,7 +432,7 @@ class Grid:
         stepSize = self.stepSize
         minx=self.minx; maxx=self.maxx
         miny=self.miny; maxy=self.maxy
-        
+
         flippedY = False
         if y0>y1:
             if verbose: print 'flipping Y'
@@ -444,7 +444,7 @@ class Grid:
 
         if verbose:
             print 'steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps
-       
+
         x_ycrossings = [   ]
         for step in range(steps):
             y = step*stepSize + y_first_ycrossing
@@ -491,7 +491,6 @@ class Grid:
             print 'orig crossings:',crossings
             print ' new crossings:',cnew
         crossings=cnew
-        
 
         # Be careful which side to add that start cell
         cells=[]
@@ -530,7 +529,7 @@ class Grid:
         @param multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
         '''
         assert len(multiSegLine)>1
-        
+
         cells = self.getLineCells2pt(multiSegLine[0],multiSegLine[1])
         if len(multiSegLine)==2:
             return cells
@@ -553,19 +552,19 @@ class Grid:
         '''
         Return the cells for a multi vertex line.  Returns distances
         within cells, so that doubling is not an issue
-        
+
         @param multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
         @return: list of (cell, startFrac, endFrac, distance)
         '''
         assert len(multiSegLine)>1
-        
+
         #cells = getLineCellsWithCrossingsPts(multiSegLine[0],multiSegLine[1])
         cells=[]
         for i in range(len(multiSegLine)-1):
             newCells = self.getLineCellsWithCrossingsPts(multiSegLine[i],multiSegLine[i+1])
             cells+=newCells
         return cells
-        
+
 
     def writeLayoutGnuplot(self,filename):
         'Write out the grid lines as gnuplot dat file'
@@ -672,7 +671,7 @@ if __name__=='__main__':
         import doctest
         numfail,numtests=doctest.testmod()
         if numfail==0: print 'ok'
-        else: 
+        else:
             print 'FAILED'
             success=False
     if not success: sys.exit('Something Failed')

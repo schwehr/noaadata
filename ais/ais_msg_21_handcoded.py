@@ -208,7 +208,7 @@ def encode(params, validate=False):
 	return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-	'''Unpack a AidsToNavReport message 
+	'''Unpack a AidsToNavReport message
 
 	Fields in params:
 	  - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
@@ -608,7 +608,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 	  - assigned_mode_flag(bool): autonomous or controlled
 	  - spare(uint): Not Used (field automatically set to "0")
 	  - spare2(uint): Not Used (field automatically set to "0")
-	@param params: Dictionary of field names/values.  
+	@param params: Dictionary of field names/values. 
 	@param out: File like object to write to
 	@rtype: stdout
 	@return: text to out
@@ -662,7 +662,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 		printKml(params,out)
 		out.write("</Document>\n")
 		out.write("</kml>\n")
-	else: 
+	else:
 		print "ERROR: unknown format:",format
 		assert False
 
@@ -977,7 +977,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 	if dbType=='postgres':
 		finished = []
 		for key in params:
-			if key in finished: 
+			if key in finished:
 				continue
 
 			if key not in toPgFields and key not in fromPgFields:
@@ -1001,12 +1001,12 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 					valStr+=' '.join(vals)+')'
 					i.addPostGIS(pgName,valStr)
 	else:
-		for key in params: 
+		for key in params:
 			if type(params[key])==Decimal: i.add(key,float(params[key]))
 			else: i.add(key,params[key])
 
 	if None != extraParams:
-		for key in extraParams: 
+		for key in extraParams:
 			i.add(key,extraParams[key])
 
 	return i
@@ -1032,27 +1032,27 @@ def latexDefinitionTable(outfile=sys.stdout
 \\centering
 \\begin{tabular}{|l|c|l|}
 \\hline
-Parameter & Number of bits & Description 
+Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 21 aka 'F' \\\\ \hline 
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline 
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline 
-type & 5 & IALA type of aid-to-navigation \\\\ \hline 
-name & 120 or more & Name of the aid-to-navigation \\\\ \hline 
-PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \hline 
-longitude & 28 & Location of the AtoN  East West location \\\\ \hline 
-latitude & 27 & Location of the AtoN  North South location \\\\ \hline 
-dimA & 9 & Distance from bow to reference position \\\\ \hline 
-dimB & 9 & Distance from reference position to stern \\\\ \hline 
-dimC & 6 & Distance from port side to reference position \\\\ \hline 
-dimD & 6 & Distance from reference position to starboard side \\\\ \hline 
-FixType & 4 & Type of electronic position fixing device \\\\ \hline 
-timestamp & 6 & UTC second when report was generated \\\\ \hline 
-OffPosition & 1 & True when the AtoN is off station \\\\ \hline 
-status & 8 & Unknown \\\\ \hline 
-RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \hline 
-virtual\_aton\_flag & 1 & Does the unit physically exist? \\\\ \hline 
-assigned\_mode\_flag & 1 & autonomous or controlled \\\\ \hline 
+MessageID & 6 & AIS message number.  Must be 21 aka 'F' \\\\ \hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
+type & 5 & IALA type of aid-to-navigation \\\\ \hline
+name & 120 or more & Name of the aid-to-navigation \\\\ \hline
+PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \hline
+longitude & 28 & Location of the AtoN  East West location \\\\ \hline
+latitude & 27 & Location of the AtoN  North South location \\\\ \hline
+dimA & 9 & Distance from bow to reference position \\\\ \hline
+dimB & 9 & Distance from reference position to stern \\\\ \hline
+dimC & 6 & Distance from port side to reference position \\\\ \hline
+dimD & 6 & Distance from reference position to starboard side \\\\ \hline
+FixType & 4 & Type of electronic position fixing device \\\\ \hline
+timestamp & 6 & UTC second when report was generated \\\\ \hline
+OffPosition & 1 & True when the AtoN is off station \\\\ \hline
+status & 8 & Unknown \\\\ \hline
+RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \hline
+virtual\_aton\_flag & 1 & Does the unit physically exist? \\\\ \hline
+assigned\_mode\_flag & 1 & autonomous or controlled \\\\ \hline
 spare & 1 & Not Used\\\\ \\hline \\hline
 spare2 & 0,2,4, or 6 & Not Used\\\\ \\hline \\hline
 Total bits & 272 & Appears to take 2 slots with 152 pad bits to fill the last slot \\\\ \\hline
@@ -1078,7 +1078,7 @@ def textDefinitionTable(outfile=sys.stdout
 
 	'''
 	o = outfile
-	o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description 
+	o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description
 MessageID'''+delim+'''6'''+delim+'''AIS message number.  Must be 21 aka 'F'
 RepeatIndicator'''+delim+'''2'''+delim+'''Indicated how many times a message has been repeated
 UserID'''+delim+'''30'''+delim+'''Unique ship identification number (MMSI)
@@ -1273,7 +1273,7 @@ def main():
 		import doctest
 		numfail,numtests=doctest.testmod()
 		if numfail==0: print 'ok'
-		else: 
+		else:
 			print 'FAILED'
 			success=False
 
@@ -1347,7 +1347,7 @@ def main():
 
 
 		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-		elif 'nmea'==options.ioType: 
+		elif 'nmea'==options.ioType:
 		    #bitLen=len(bits)
                     #if bitLen%6!=0:
 		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6

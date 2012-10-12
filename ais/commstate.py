@@ -13,7 +13,7 @@ Handle communication state as described in Annex 2 - 3.3.7.2.1 of ITU 1371.3
 @undocumented: __doc__
 @since: 2009-Jul-21
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 sotdma_fields = (
@@ -83,4 +83,3 @@ def sql_fields(c):
     'sqlhelp fields for commstate - both SOTDMA and ITDMA'
     for field in set(sotdma_fields + itdma_fields):
         c.addInt(field)
-

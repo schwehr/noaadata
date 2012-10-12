@@ -201,8 +201,6 @@ def bvFromSignedInt(intVal,bitSize=None):
     1000
 
 
-    
-
     @param intVal: integer value to turn into a bit vector
     @type intVal: int
     @param bitSize: optional size to flush out the number of bits
@@ -227,7 +225,7 @@ def bvFromSignedInt(intVal,bitSize=None):
 	bv = ~bv
 	bv = BitVector(intVal=1) + bv
     return bv
-    
+
 def signedIntFromBV(bv):
     '''
     Interpret a bit vector as an signed integer.  int(BitVector)
@@ -353,9 +351,9 @@ def ais6tobitvecSLOW(str6):
 	if val>=40: val -= 8
 	bv = None
 	#print 'slow: ',c,val
-	if 0==val: 
+	if 0==val:
 	    bv = BitVector(size=6)
-	else: 
+	else:
 	    bv = setBitVectorSize(BitVector(intVal=val),6)
 	    #bv = BitVector(intVal=val,size=6)  # FIX: I thought this would work, but it is more than 6 bits?
 	bvtotal += bv
@@ -432,7 +430,7 @@ def ais6tobitvec(str6):
 
     >>> print ais6tobitvec('6b')
     000110101010
-    
+
     >>> print ais6tobitvec('6bF:R')
     000110101010010110001010100010
 
@@ -522,9 +520,9 @@ def bitvectoais6(bv,doPadding=True):
 	c = encode[val]
 	aisStrLst.append(c)
         #print 'appending',c,'for',val
-    
+
     aisStr = ''.join(aisStrLst)
-   
+
     return aisStr, pad
 
 
@@ -574,7 +572,7 @@ if __name__ == '__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 

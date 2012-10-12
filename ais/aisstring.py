@@ -144,7 +144,7 @@ def buildDict():
 	c = characterLUT[i]
 	if c=='\\': c='\\\\'
   	print "'"+c+"': "+str(i)+",",
-	if count%6==0: 
+	if count%6==0:
 	    print
     print '}'
 
@@ -190,9 +190,9 @@ def encode(string,bitSize=None):
     @bug: force to upper case
     @bug: building this in reverse may be faster
     @bug: check that bitSize is a multple of 6
-    @bug: pad with "@" to reach requested bitSize 
+    @bug: pad with "@" to reach requested bitSize
     '''
-    if bitSize: 
+    if bitSize:
 	assert(bitSize%6==0)
     bv = BitVector(size=0)
     for i in range(len(string)):
@@ -227,7 +227,7 @@ def unpad(string,removeBlanks=True):
     ''
     >>> unpad('MY SHIP NAME    ')
     'MY SHIP NAME'
-    
+
     The standard implies this behavior with is less fun
 
     >>> unpad('MY SHIP NAME    ',removeBlanks=False)
@@ -241,10 +241,10 @@ def unpad(string,removeBlanks=True):
     @return: cleaned up string
     @rtype: str
     """
-    while len(string)>0 and string[-1]=='@': 
+    while len(string)>0 and string[-1]=='@':
 	string=string[:-1]
     if removeBlanks:
-	while len(string)>0 and string[-1]==' ': 
+	while len(string)>0 and string[-1]==' ':
 	    string=string[:-1]
     return string
 
@@ -293,10 +293,9 @@ if __name__ == '__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-	else: 
+	else:
 	    print 'FAILED'
 	    success=False
 
     if not success:
 	sys.exit('Something Failed')
-

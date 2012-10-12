@@ -49,7 +49,7 @@ class Normalize(Queue.Queue):
         self.ttl=ttl
         self.stations={}  # Buffer by station
         self.v=verbose
-        
+
     def cull(self):
         '''
         Drop messages older than the ttl
@@ -94,7 +94,7 @@ class Normalize(Queue.Queue):
         del cgMsg
 
         for msg in stationList:
-            if (msg.aisChannel == cgMsgFinal.aisChannel 
+            if (msg.aisChannel == cgMsgFinal.aisChannel
                 and msg.sequentialMsgId == cgMsgFinal.sequentialMsgId
                 ):
                 if msg.sentenceNum==1:
@@ -116,7 +116,7 @@ class Normalize(Queue.Queue):
 
         payloads.append(cgMsgFinal.contents)
         #print 'payloads:', payloads
-        
+
         # The fill bits will not change
         #bv = payloads[0]
         payload = ''.join(payloads)
@@ -130,4 +130,3 @@ class Normalize(Queue.Queue):
         newNmeaStr = cgMsgFinal.buildNmea()
         #print 'queuing',newNmeaStr
         Queue.Queue.put(self,newNmeaStr,block,timeout)
-        
