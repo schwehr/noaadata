@@ -1,0 +1,7 @@
+*.html
+imo*.py
+ais_msg_[0-9].py
+ais_msg_[0-9][0-9].py
+*.pyc
+whalenotice*.py
+waterlevel*.py
