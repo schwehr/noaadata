@@ -85,6 +85,7 @@
     </include-struct>
 
     <field name="StationType" numberofbits="4" type="uint">
+      <description>TODO</description>
       <lookuptable>
 	<entry key="0">all types of mobiles</entry>
 	<entry key="1">reserved for future use</entry>
@@ -228,6 +229,7 @@
     </field>
 
     <field name="TxRxMode" numberofbits="4" type="uint">
+      <description>TODO</description>
       <lookuptable>
 	<entry key="0">Tx A/Tx B, Rx A/RX B</entry>
 	<entry key="1">Tx A, Rx A/Rx B</entry>
