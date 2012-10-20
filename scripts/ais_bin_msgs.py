@@ -28,50 +28,48 @@ from BitVector import BitVector
 import StringIO
 
 import ais.binary    as binary
-#import ais.aisstring as aisstring
 
-#import ais
-
-#import aisutils.database
-
-#import ais.ais_msg_1_handcoded
-#import ais.ais_msg_2_handcoded
-#import ais.ais_msg_3_handcoded
-#import ais.ais_msg_4_handcoded
-#import ais.ais_msg_5
-#import ais.ais_msg_18
-#import ais.ais_msg_19
 from aisutils.uscg import uscg_ais_nmea_regex
 
 def parse_msgs(infile, verbose=False):
     for line in infile:
         try:
-            match = uscg_ais_nmea_regex.search(line).groupdict()      
+            match = uscg_ais_nmea_regex.search(line).groupdict()
         except AttributeError:
             continue
-        #if not match: continue
 
-        if match['body'][0]!='8':
+        msg_type = match['body'][0]
+        if msg_type not in ('6', '8'):
             continue
         #print line,
-        bv = binary.ais6tobitvec(match['body'])
+        if msg_type == '6' and len(match['body']) < 15:
+          continue
+        if msg_type == '8' and len(match['body']) < 10:
+          continue
+
+        try:
+          bv = binary.ais6tobitvec(match['body'][:15])
+        except ValueError:
+          sys.stderr.write('bad msg: %s\n' % line.strip())
+          continue
 	r = {}
 	r['MessageID']=int(bv[0:6])
-	r['RepeatIndicator']=int(bv[6:8])
 	r['UserID']=int(bv[8:38])
-	r['Spare']=int(bv[38:50])
-	#r['BinaryData']=bv[40:]
-	r['dac']=int(bv[40:50])
-	r['fid']=int(bv[50:56])
 
-        #if 34==r['fid']:
+        if '6' == msg_type:
+            dac = int(bv[72:82])
+            fi = int(bv[82:88])
+        elif '8' == msg_type:
+          dac = int(bv[40:50])
+          fi = int(bv[50:56])
+        elif verbose:
+          print 'not a bbm:', line
+
         if verbose:
-            print r['dac'], r['fid'], r['UserID'], line.rstrip()
+            print msg_type, dac, fi, r['UserID'], line.rstrip()
         else:
-            print r['dac'], r['fid'], r['UserID'], match['station']
+            print msg_type, dac, fi, r['UserID'], match['station']
 
-
-        
 
 def main():
     from optparse import OptionParser
@@ -84,6 +82,5 @@ def main():
     for filename in args:
         parse_msgs(file(filename), verbose = options.verbose)
 
-    
 if __name__=='__main__':
     main()
