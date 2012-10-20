@@ -8,7 +8,7 @@
   <!-- titlefield is what to use when a message needs to by titled (e.g. in kml) -->
 
   <message name="SARposition" aismsgnum="9" titlefield="UserID">
-    <description>Search and rescue position report</description>
+    <description>Search and rescue position report.  Changed in 1371-4</description>
     <!-- This next block of messages will get ignored... -->
 
     <messagesize>168</messagesize> <!-- number of bits in the message -->
@@ -115,9 +115,19 @@
       <testvalue>0</testvalue>
     </field>
 
-    <field name="Spare" numberofbits="5" type="uint">
+    <field name="Spare" numberofbits="3" type="uint">
       <description>Not used.  Should be set to zero.</description>
       <required>0</required>
+    </field>
+
+    <field name="assigned_mode" numberofbits="1" type="uint">
+      <description>autonomous or assigned mode</description>
+      <range min="0" max="1"/>
+      <lookuptable>
+	<entry key="0">autonomous and continuous mode</entry>
+	<entry key="1">assigned mode</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
     </field>
 
     <field name="RAIM" numberofbits="1" type="bool">
@@ -129,6 +139,15 @@
       <testvalue>0</testvalue>
     </field>
 
+    <field name="comm_state" numberofbits="1" type="uint">
+      <description>SOTDMA or ITDMA</description>
+      <range min="0" max="1"/>
+      <lookuptable>
+	<entry key="0">SOTDMA</entry>
+	<entry key="1">ITDMA</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
 
     <include-struct name="state" struct="sotdmaState">
       <description>Communications State - SOTDMA</description>
