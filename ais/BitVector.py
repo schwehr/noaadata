@@ -6,11 +6,7 @@ __date__    = '2012-June-9'
 __url__     = 'https://engineering.purdue.edu/kak/dist/BitVector-3.1.1.html'
 __copyright__ = "(C) 2012 Avinash Kak. Python Software Foundation."
 
-__doc__ = '''
-
-    BitVector.py - See https://engineering.purdue.edu/kak/dist/
-'''
-
+__doc__ = '''See https://engineering.purdue.edu/kak/dist/ for docs.'''
 
 import array
 import operator
@@ -1134,3 +1130,5 @@ class BitVectorIterator:                                            #(IT1)
 #------------------------  End of Class Definition -----------------------
 
 #------------------------     Test Code Removed    -----------------------
+
+# Test code removed.  See https://engineering.purdue.edu/kak/dist/

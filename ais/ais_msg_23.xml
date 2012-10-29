@@ -223,7 +223,7 @@
     </field>
 
 
-    <field name="Spare" numberofbits="22" type="uint">
+    <field name="Spare2" numberofbits="22" type="uint">
       <description>Not used.  Should be set to zero.</description>
       <required>0</required>
     </field>
@@ -271,7 +271,7 @@
       <testvalue>5</testvalue>
     </field>
 
-    <field name="Spare" numberofbits="6" type="uint">
+    <field name="Spare3" numberofbits="6" type="uint">
       <description>Not used.  Should be set to zero.</description>
       <required>0</required>
     </field>

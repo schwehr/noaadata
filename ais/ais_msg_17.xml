@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ais-binary-message version="1.0">
+  <message name="gnss_correction" aismsgnum="17">
+    <description>Satellite navigation differential correction</description>
+    <see-also>http://www.itu.int/rec/R-REC-M.823/en</see-also>
+    <!-- message size of 80-816 -->
+    <category>F</category>
+    <priority>2</priority>
+    <accessscheme>SOTDMA</accessscheme>
+    <accessscheme>RATDMA</accessscheme>
+    <stationtype>BASE</stationtype>
+
+    <field name="MessageID" numberofbits="6" type="uint">
+      <description>AIS message number.  Must be 17</description>
+      <required>17</required>
+    </field>
+
+    <field name="RepeatIndicator" numberofbits="2" type="uint">
+      <description>Indicated how many times a message has been repeated</description>
+      <unavailable>0</unavailable>
+      <lookuptable>
+	<entry key="0">default</entry>
+	<entry key="3">do not repeat any more</entry>
+      </lookuptable>
+      <testvalue>1</testvalue>
+    </field>
+
+    <field name="UserID" numberofbits="30" type="uint">
+      <description>Base station identification number (MMSI)</description>
+      <testvalue>1193046</testvalue> <!-- Default value for all NAUTICAST devices -->
+    </field>
+
+    <field name="Spare" numberofbits="2" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="x" numberofbits="18" type="decimal">
+      <description>East West location</description>
+      <range min="-180" max="180"/>
+      <unavailable>181</unavailable>
+      <units>degrees</units>
+      <scale>600</scale>
+      <decimalplaces>2</decimalplaces>
+      <testvalue>-122.16</testvalue>
+    </field>
+    
+    <field name="y" numberofbits="17" type="decimal">
+      <description>North South location</description>
+      <range min="-90" max="90"/>
+      <unavailable>91</unavailable>
+      <units>degrees</units>
+      <scale>600</scale>
+      <decimalplaces>2</decimalplaces>
+      <testvalue>37.42</testvalue>
+    </field>
+
+    <field name="Spare2" numberofbits="5" type="uint">
+      <description>Reserved for definition by a regional authority.</description>
+      <required>0</required>
+    </field>
+
+    <field name="BinaryData" numberofbits="-1" type="binary">
+      <description>GNSS Differential correction data</description>
+      <testvalue>110000101100000111100010010101001110111001101010011011111111100000110001011100001011111111101111111110011001000000010001110</testvalue>
+    </field>
+  </message>
+</ais-binary-message>    
