@@ -3,8 +3,6 @@ __copyright__ = '2006-2013'
 __doc__= ''' 
 Distutils setup script for the Automatic Identification System tools.
 
-@var __date__: Date of last svn commit
-@undocumented: __doc__
 @since: Fall 2006
 @status: under development
 
