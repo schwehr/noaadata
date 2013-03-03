@@ -3,7 +3,7 @@
 
 SHELL:=/bin/bash
 PKG:=noaadata
-VERSION := ${shell cat VERSION}
+VERSION := ${shell cat noaadata/__init__.py | grep version | cut -d\' -f2}
 
 default:
 	@echo

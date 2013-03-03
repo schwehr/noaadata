@@ -1,11 +1,5 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 10404 $'.split()[1]
-__date__ = '$Date: 2008-09-24 22:45:05 -0400 (Wed, 24 Sep 2008) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-__copyright__ = '2006-2008'
-__version__=file('VERSION').readline().strip()
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__copyright__ = '2006-2013'
 __doc__= ''' 
 Distutils setup script for the Automatic Identification System tools.
 
@@ -13,10 +7,8 @@ Distutils setup script for the Automatic Identification System tools.
 @undocumented: __doc__
 @since: Fall 2006
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
 
-@requires: U{Python<http://python.org/>} >= 2.5
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0.1
+@requires: U{Python<http://python.org/>} >= 2.7
 @requires: U{psycopg2<http://http://initd.org/projects/psycopg2/>} >= 2.0.6
 @todo: Get all the requires in here
 @todo: Allow ezsetup/setuptools support
@@ -25,15 +17,21 @@ Distutils setup script for the Automatic Identification System tools.
 @see: doc/template.py for coding template
 '''
 
-from distutils.core import setup
+import ast
+import sys
 
-# Setuptools / eggs, etc.
-#from setuptools import setup
+try:
+    from setuptools import setup
+except:
+    sys.exit('Requires distribute or setuptools')
 
+from setuptools import find_packages
 
-url='http://vislab-ccom.unh.edu/~schwehr/software/noaadata'
-download_url=url+'/downloads/noaadata-py-'+__version__+'.tar.bz2'
-print download_url
+def Version():
+    """Get the package version string."""
+    for line in open('noaadata/__init__.py'):
+        if line.startswith('__version__'):
+            return ast.literal_eval(line.split('=')[1].strip())
 
 import glob
 SCRIPTS=glob.glob('scripts/*')
@@ -42,13 +40,10 @@ SCRIPTS=glob.glob('scripts/*')
 if __name__=='__main__':
 
     setup(name='noaadata-py',
-          version=__version__,
-          author=__author__,
-          author_email='kurt@ccom.unh.edu',
-          maintainer='Kurt Schwehr',
-          maintainer_email='kurt@ccom.unh.edu',
-          url=url,
-          download_url=download_url,
+          version=Version(),
+          author='Kurt Schwehr',
+          author_email='schwehr@gmail.comx',
+          url='https://github.com/schwehr/noaadata',
           description='Encode/decode NOAA co-ops marine data and marine AIS',
           long_description='''Library for handling marine Automatic Identification System (AIS)
 messages and NOAA marine data messages from http://opendap.co-ops.nos.noaa.gov/axis/. 
@@ -63,7 +58,7 @@ Part of the UNH/NOAA Chart of the Future project.
 
 Still in development.  Some rough edges.
           ''',
-          license=__license__,
+          license='BSD',
           keywords='axis, soap, marine, NOAA, AIS, N-AIS, binary messages, NMEA',
           platforms='All platforms',
           classifiers=[
