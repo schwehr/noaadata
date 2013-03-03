@@ -1,5 +1,5 @@
 # GNU -*- makefile -*- for emacs
-# Created by Kurt Schwehr (schwehr _at_ ccom.unh.edu)
+# Created by Kurt Schwehr (schwehr@gmail.com)
 
 SHELL:=/bin/bash
 PKG:=noaadata
@@ -196,3 +196,6 @@ svn-branch:
 
 register:
 	./setup.py register
+
+upload-pypi:
+	python setup.py sdist --formats=bztar upload
