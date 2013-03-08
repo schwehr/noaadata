@@ -45,40 +45,9 @@ from decimal import Decimal
 from BitVector import BitVector
 import StringIO
 
-import ais.binary as binary
-import ais.sqlhelp as sqlhelp
-#import ais.aisstring as aisstring
-
-import ais
-import ais.ais_msg_1
-import ais.ais_msg_2
-import ais.ais_msg_3
-#import ais.ais_msg_4
-#import ais.ais_msg_5
-#import ais.ais_msg_6 # Addressed binary message
-#import ais.ais_msg_7 # ACK for address binary message
-#import ais.ais_msg_8  # need to do each one carefully
-#import ais.ais_msg_9 # SAR position
-#import ais.ais_msg_10 # utcquery
-#import ais.ais_msg_11 # 
-#import ais.ais_msg_12 # asrm
-#import ais.ais_msg_13 # 
-#import ais.ais_msg_14 # srbm
-#import ais.ais_msg_15 # Interrogation
-#import ais.ais_msg_16 # 
-#import ais.ais_msg_17 # 
-#import ais.ais_msg_18 # Class B position report
-#import ais.ais_msg_19 # Class B extended position and ship type report
-#import ais.ais_msg_20 # data link management
-#import ais.ais_msg_21
-#import ais.ais_msg_22
-#import ais.ais_msg_22
-#import ais.ais_msg_23 # GroupAssignmentCommand
-#import ais.ais_msg_24 # StaticDataReport
-#import ais.ais_msg_25 # SingleSlotBinaryMessage - addressed or broadcast
-#import ais.ais_msg_26 # Multi slot binary message with comm state
-
-
+from noaadata.ais import binary
+from noaadata.ais import sqlhelp
+from noaadata import ais
 
 def createTables(cx,verbose=False):
     '''

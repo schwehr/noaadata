@@ -31,18 +31,15 @@ import select
 #import Queue
 import exceptions # For KeyboardInterupt pychecker complaint
 import logging # Python's logger module for tracking progress
-import aisutils.daemon
-import aisutils.uscg
-import aisutils.normalize
+from noaadata.aisutils import daemon
+from noaadata.aisutils import uscg
+from noaadata.aisutils import normalize
 
-import ais.sqlhelp
-import aisutils.database
+from noaadata import ais
+from noaadata import database
 
-#import ais.ais_msg_1 as msg1
-import ais
-
-from ais.ais_msg_1 import NavigationStatusDecodeLut
-from ais.ais_msg_5 import shipandcargoDecodeLut
+from noaadata.ais.ais_msg_1 import NavigationStatusDecodeLut
+from noaadata.ais.ais_msg_5 import shipandcargoDecodeLut
 
 #ais_msgs_supported = ('B','C','H') 
 ais_msgs_supported = ('1','2','3','4','5','B','H') # ,'C', 'H') 

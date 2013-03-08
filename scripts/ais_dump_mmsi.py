@@ -25,11 +25,9 @@ Try to get the mmsi info as fast as possible
 '''
 
 import sys
-from ais import binary as binary
-#from ais import ais_msg_1 as m1
-# Going to do this by hand
-from ais import aisstring as aisstring
-from ais.BitVector import BitVector
+from noaadata.ais import binary
+from noadatat.ais import aisstring
+from BitVector import BitVector
 
 ######################################################################
 if __name__=='__main__':

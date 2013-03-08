@@ -25,6 +25,7 @@ from decimal import Decimal
 from BitVector import BitVector
 
 import binary, aisstring
+import ais_msg_5
 
 # FIX: check to see if these will be needed
 TrueBV  = BitVector(bitstring="1")
@@ -219,10 +220,9 @@ RepeatIndicatorDecodeLut = {
 	'3':'do not repeat any more',
 	} # RepeatIndicatorEncodeLut
 
-import ais.ais_msg_5
 
-shipandcargoEncodeLut = ais.ais_msg_5.shipandcargoEncodeLut
-shipandcargoDecodeLut = ais.ais_msg_5.shipandcargoDecodeLut
+shipandcargoEncodeLut = ais_msg_5.shipandcargoEncodeLut
+shipandcargoDecodeLut = ais_msg_5.shipandcargoDecodeLut
 
 dimCEncodeLut = {
 	'63 m or greater':'63',

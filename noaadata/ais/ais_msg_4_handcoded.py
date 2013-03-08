@@ -29,6 +29,7 @@ import sqlhelp
 # FIX: can I do this better with copy.deepcopy?
 
 from ais_msg_4 import *
+import noaadata.aisutils.uscg as uscg
 
 
 fieldList = (
@@ -384,7 +385,6 @@ def main():
 		    #bitLen=len(bits)
                     #if bitLen%6!=0:
 		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-                    import aisutils.uscg as uscg
                     nmea = uscg.create_nmea(bits)
                     print nmea
                     #

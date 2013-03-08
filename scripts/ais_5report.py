@@ -26,9 +26,6 @@ Produce reports of AIS message 5 reports
 
 @todo: Deal with ships that have there messages wag back and forth
 @todo: Maybe make a flag that has the code always check for the same message and not repeat
-@todo: 
-
-
 '''
 
 import sys
@@ -36,9 +33,9 @@ import os
 import pyExcelerator as excel
 from datetime import datetime
 
-from ais import binary
-from ais import ais_msg_5 as m5
-from ais import aisstring
+from noaadata.ais import binary
+from noaadata.ais import ais_msg_5 as m5
+from noaadata.ais import aisstring
 
 ######################################################################
 # Code that runs when this is this file is executed directly

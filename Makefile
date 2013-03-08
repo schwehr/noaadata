@@ -82,7 +82,7 @@ test:
 	@echo
 	cd ${PKG} && make test
 	@echo
-	@echo "All tests passed! (Accept those that are known to fail)"
+	@echo "All tests passed! (Except those that are known to fail)"
 
 
 # Look for rough spots
@@ -102,9 +102,9 @@ sdist: test
 	@echo
 	@echo Building a source distribution...
 	@echo
-	(cd ais;make)
-	(cd ais/sls;make)
-	(cd ais/ris;make)
+	(cd noaadata/ais;make)
+	(cd noaadata/ais/sls;make)
+	(cd noaadata/ais/ris;make)
 	-find . -name \*.pyc | xargs rm
 	rm -f MANIFEST
 	./setup.py sdist --formats=bztar
@@ -128,20 +128,7 @@ sdist-notests: docs
 .PHONY: docs
 docs:
 	rm -rf man html-scripts html-test html-man
-	@echo skip "rm -f ${PKG}/*.pyc"
-	echo "skipping (cd ais && make waterlevel.py && make waterlevel.html)"
-	echo "skipping graphing until font issue fixed epydoc -v ${PKG} --graph=all ais/*.py"
-	PYTHONPATH=`pwd`:`pwd`/ais epydoc -v ${PKG} ais/*.py aisutils ais/*/*.py
-
-	@echo "FIX enable: cd scripts && make man"
-	@echo "FIX enable: cd scripts && make docs"
-	@echo "skipping cd test && make docs"
-	@echo "FIX enable: mv scripts/man ."
-	@echo  "mkdir html-man"
-	@echo "FIX enable: mv man/*.html html-man"
-	@echo "FIX enable: mv scripts/html html-scripts"
-	@echo "FIX enable: mv test/html html-test"
-
+	@echo "Redo all docs without epydoc"
 
 .PHONY: test-docs
 test-docs:

@@ -2,8 +2,8 @@
 
 import socket
 import time
+from noaadata.aisutils import server
 
-#host='192.168.8.31'
 host='0.0.0.0' # All interfaces
 port=4000
 buffer = 10000
@@ -11,8 +11,7 @@ buffer = 10000
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
 sock.bind((host,port))
 
-import aisutils.server
-log = aisutils.server.LogFileWithRotate('log-ccom-wx-','rnhccom',True,True)
+log = server.LogFileWithRotate('log-ccom-wx-','rnhccom',True,True)
 
 while 1:
     data,addr = sock.recvfrom(buffer)

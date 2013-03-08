@@ -21,12 +21,9 @@ Trying to do better than ais_nmea_uptime*.py
 @status: In progress
 '''
 
-import ais
-from ais import binary
-from aisutils.uscg import uscg_ais_nmea_regex
-
-import ais.binary
-import ais
+from noaadata import ais
+from noaadata.ais import binary
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
 import datetime
 
 from BitVector import BitVector
@@ -36,9 +33,8 @@ import math
 import sqlite3
 
 from pyproj import Proj
-
-
 import sys, os
+
 
 def lon_to_utm_zone(lon):
     return int(( lon + 180 ) / 6) + 1

@@ -26,8 +26,8 @@ import time
 
 import magicdate
 
-import aisutils.database
-import aisutils.uscg
+from noaadata.aisutils import database
+from noaadata.aisutils import uscg
 
 
 ######################################################################
@@ -42,7 +42,7 @@ if __name__=='__main__':
                           ,option_class=magicdate.MagicDateOption
                           )
 
-    aisutils.database.stdCmdlineOptions(parser,'postgres')
+    database.stdCmdlineOptions(parser,'postgres')
 
     parser.add_option('-l','--limit-points',dest='limitPoints',type='int'
                       ,default=10
@@ -103,7 +103,7 @@ if __name__=='__main__':
     options.uscg=True # FIX: don't hack this in
     options.dbType = 'postgres' # FIX: don't force this
 
-    cx = aisutils.database.connect(options,dbType=options.dbType)
+    cx = database.connect(options,dbType=options.dbType)
 
     tzoffset = datetime.timedelta(seconds=time.timezone) # to get to UTC from magicdate's local datetime
 
@@ -115,7 +115,7 @@ if __name__=='__main__':
             sys.stderr.write('Updating track_lines (%s to %s)\n' % (startTime,datetime.datetime.utcnow()))
 
         
-        aisutils.database.rebuild_track_lines(cx,limitPoints=options.limitPoints, startTime = startTime, verbose = v)
+        database.rebuild_track_lines(cx,limitPoints=options.limitPoints, startTime = startTime, verbose = v)
 
     if options.updateLastPosition:
 
@@ -124,5 +124,5 @@ if __name__=='__main__':
         if v:
             sys.stderr.write('\nUpdating last_position (%s to %s)\n' % (startTime,datetime.datetime.utcnow()))
 
-        aisutils.database.rebuild_last_position(cx, startTime = startTime, verbose = v)
+        database.rebuild_last_position(cx, startTime = startTime, verbose = v)
 

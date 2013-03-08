@@ -73,9 +73,14 @@ import ais_msg_1_handcoded
 import ais_msg_2_handcoded
 import ais_msg_3_handcoded
 import ais_msg_4_handcoded
+import ais_msg_1
+import ais_msg_2
+import ais_msg_3
+import ais_msg_4
 import ais_msg_5
 import ais_msg_6
 import ais_msg_7_handcoded
+import ais_msg_7
 import ais_msg_8
 import ais_msg_9
 import ais_msg_10

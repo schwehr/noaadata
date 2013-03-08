@@ -24,9 +24,8 @@ import sys
 #import os
 
 # Can decode messages 1,2,3 will any of the three codecs
-import ais.binary    as binary
-import ais.ais_msg_1 as ais_msg_1
-#import ais.aisstring as aisstring
+import noaadata.ais.binary    as binary
+import noaadata.ais.ais_msg_1 as ais_msg_1
 
 from pyproj import Proj
 import math

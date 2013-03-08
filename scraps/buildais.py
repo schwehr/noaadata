@@ -35,10 +35,10 @@ from decimal import Decimal
 
 from BitVector import BitVector
 
-import nmea
+from noaadata import nmea
 import nmeamessages as nm
-import ais.ais_msg_1 as m1
-import ais.binary as binary
+import noaadata.ais.ais_msg_1 as m1
+import noaadata.ais.binary as binary
 
 from pyproj import Proj
 import math

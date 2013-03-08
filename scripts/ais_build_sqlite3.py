@@ -44,24 +44,12 @@ from decimal import Decimal
 from BitVector import BitVector
 import StringIO
 
-import ais.binary    as binary
-#import ais.aisstring as aisstring
+from noaadata.ais import binary
 
-import ais.ais_msg_1
-import ais.ais_msg_2
-import ais.ais_msg_3
-import ais.ais_msg_4
-import ais.ais_msg_5
-import ais.ais_msg_18 # Class B position report
-import ais.ais_msg_19 # Class B position and shipdata
-#import ais.ais_msg_8
-#import ais.ais_msg_21
-
-#import pysqlite2.dbapi2 as sqlite
-#import pysqlite2.dbapi2
-
+import noaadata.ais as ais
 import sqlite3
 import datetime, time
+
 
 def createTables(cx,verbose=False):
     '''

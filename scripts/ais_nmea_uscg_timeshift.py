@@ -23,11 +23,11 @@ receiver, but no, it appears to be done by the java logging code.
 @status: In progress
 '''
 
-from aisutils.uscg import uscg_ais_nmea_regex
-from ais import binary
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
+from noaadata.ais import binary
 import sys, datetime
-import ais.ais_msg_1_handcoded as ais_msg_1
-import ais.ais_msg_4_handcoded as ais_msg_4
+import noaadata.ais.ais_msg_1_handcoded as ais_msg_1
+import noaadata.ais.ais_msg_4_handcoded as ais_msg_4
 
 print '* emacs org-mode table'
 

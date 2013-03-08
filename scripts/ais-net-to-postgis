@@ -40,10 +40,10 @@ import exceptions
 #import psycopg2
 import magicdate
 
-import ais
-import ais.sqlhelp
-import aisutils.database
-import aisutils.uscg
+from noaadata import ais
+from noaadata.ais import sqlhelp
+from noaadata.aisutils import database
+from noaadata.aisutils import uscg
 
 ######################################################################
 
@@ -167,11 +167,11 @@ class DatabaseHandler:
 
                     track_start_time = magicdate.magicdate(self.track_start_time_limit) + tzoffset
                     #print '\n\n...\nFIX START TIME TRK:',self.track_start_time_limit,tzoffset,'  ->  ',track_start_time
-                    aisutils.database.rebuild_track_lines  (cx, vessels=vesselsSeen, startTime = track_start_time, verbose=self.v)
+                    database.rebuild_track_lines  (cx, vessels=vesselsSeen, startTime = track_start_time, verbose=self.v)
 
                     last_pos_start_time = magicdate.magicdate(self.last_position_time_limit) + tzoffset
                     #print '\n\n...\nFIX START TIME POS:',self.last_position_time_limit,tzoffset,'   ->  ', last_pos_start_time
-                    aisutils.database.rebuild_last_position(cx, vesselsClassA=vesselsSeen, startTime = last_pos_start_time, verbose=self.v)
+                    database.rebuild_last_position(cx, vesselsClassA=vesselsSeen, startTime = last_pos_start_time, verbose=self.v)
 
     def clean(self):
         '''
@@ -196,7 +196,7 @@ class DatabaseHandler:
 
             #print '\n\n...\nFIX 2 START TIME TRK:',self.track_start_time_limit,tzoffset,'  ->  ',startTime
 
-            aisutils.database.rebuild_track_lines  (self.cx, startTime=startTime, verbose=self.v)
+            database.rebuild_track_lines  (self.cx, startTime=startTime, verbose=self.v)
             print 'DONE track_start'
 
         if self.last_position_time_limit:
@@ -204,7 +204,7 @@ class DatabaseHandler:
             if self.v:
                 sys.stderr.write('  clean last_position %s (%s)\n' % (str(startTime),self.last_position_time_limit))
             #print '\n\n...\nFIX 2 START TIME POS:',self.last_position_time_limit,tzoffset,'   ->  ', startTime
-            aisutils.database.rebuild_last_position(self.cx, startTime = startTime, verbose=self.v)
+            database.rebuild_last_position(self.cx, startTime = startTime, verbose=self.v)
         if self.v:
             sys.stderr.write('DONE CLEANING...\n\n')
         
@@ -304,7 +304,7 @@ class HandleAisConnection:
                             sys.stderr.write('processing ais message ... '+msg+'\n')
                         pass
 
-                    uscgMsg = aisutils.uscg.UscgNmea(msg)
+                    uscgMsg = uscg.UscgNmea(msg)
 
                     if uscgMsg.totalSentences != 1:
                         if v:
@@ -446,7 +446,7 @@ def main():
     parser.add_option('-t', '--timeout', dest='timeout', type='float', default='300', 
                       help='Number of seconds to timeout after if no data [default: %default]')
 
-    aisutils.database.stdCmdlineOptions(parser, 'postgres')
+    database.stdCmdlineOptions(parser, 'postgres')
 
     parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true'
                       , help='Make the test output verbose')
@@ -506,7 +506,7 @@ def main():
 
     cx = None
     if not options.skipDB:
-        cx = aisutils.database.connect(options, dbType=options.dbType)
+        cx = database.connect(options, dbType=options.dbType)
 
 
     sys.stderr.write('Creating dbHandler verbosity = %s\n' %v)

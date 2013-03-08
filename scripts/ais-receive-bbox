@@ -25,9 +25,9 @@ Decimate these requirements to meet what you need
 '''
 import sys
 
-import ais.ais_msg_1 as m1
-import aisutils.uscg as uscg
-import ais.binary
+from noaadata.ais import ais_msg_1 as m1
+from noaadata.aisutils import uscg
+from noaadata.ais import binary
 
 def get_stations_bboxes(filename,current_stations=None,verbose=False):
     '''
@@ -49,7 +49,6 @@ def get_stations_bboxes(filename,current_stations=None,verbose=False):
 
         # FIX: switch to a function that only pulls the station and payload
         try:
-            #cgMsg = uscg.UscgNmea(line)
             contents = uscg.get_contents(line)
             station = uscg.get_station(line)
         except (ValueError,IndexError),inst:
@@ -61,7 +60,7 @@ def get_stations_bboxes(filename,current_stations=None,verbose=False):
             if v: sys.stderr.write('bad msg len of %d for %s\n' % (len(contents),line[:-1]))
             continue
         # FIX: slice out the characters for just lon/lat
-        bv = ais.binary.ais6tobitvec(contents[:20])
+        bv = binary.ais6tobitvec(contents[:20])
         #print str(bv)
         try:
             lon = float(m1.decodelongitude(bv))
@@ -108,9 +107,8 @@ def main():
     for filename in args:
         if v:
             sys.stderr.write('file %s\n' % filename)
-
         stations = get_stations_bboxes(filename, current_stations=stations, verbose=v)
-    #print stations
+
     for key in stations.keys():
         s = stations[key]
         print key,s['x1'],s['x2'],s['y1'],s['y2']

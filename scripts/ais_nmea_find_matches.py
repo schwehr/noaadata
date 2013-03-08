@@ -21,7 +21,7 @@ Trying to do better than ais_nmea_uptime*.py
 @status: In progress
 '''
 import sys
-from aisutils.uscg import uscg_ais_nmea_regex
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
 
 use_line_num = True # else use timestamp
 

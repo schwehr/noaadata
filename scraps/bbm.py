@@ -24,7 +24,7 @@ import os
 
 import StringIO
 
-import ais.nmea
+from noaadata.ais import nmea
 
 def create(payload,fill_bits=0,prefix='xx',seq_msg_id=0, msg_type=8,ais_chan='A'):
     '''
@@ -48,7 +48,7 @@ def create(payload,fill_bits=0,prefix='xx',seq_msg_id=0, msg_type=8,ais_chan='A'
     p.append(str(fill_bits)+'*')
     s = ','.join(p)
     
-    s+=ais.nmea.checksumStr(s)
+    s += nmea.checksumStr(s)
     return s
 
 

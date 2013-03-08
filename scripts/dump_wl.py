@@ -24,8 +24,8 @@ import sys
 from decimal import Decimal
 from BitVector import BitVector
 
-import ais.binary    as binary
-import ais.aisstring as aisstring
+import noaadata.ais.binary    as binary
+import noaadata.ais.aisstring as aisstring
 
 
 ############################################################
@@ -89,10 +89,6 @@ if __name__=='__main__':
 	    elif 'nmea'        == options.inputType:  bv = binary.ais6tobitvec(msg.split(',')[5])
 	    else: sys.exit('ERROR: unknown inputType.  Help!')
 
-	    #import ais.ais_msg_8 as m8
-	    #m8dict = m8.decode(bv)
 	    import ais.waterlevel as wl
-	    
-            #wl.printFields(wl.decode(m8dict['BinaryData']),out=outfile,format=options.outputType)
             wl.printFields(wl.decode(bv),out=outfile,format=options.outputType)
 	

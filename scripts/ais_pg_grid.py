@@ -26,6 +26,9 @@ in a separate grid class such that it might actually work correctly.
 """
 
 import math,sys,os
+from noaadata.aisutils.grid as grid
+import psycopg2 as psycopg
+from pyproj import Proj
 
 
 def utmZoneToEpsg(cx,zone):
@@ -142,10 +145,6 @@ if __name__=='__main__':
 
     (options,args) = parser.parse_args()
     verbose = options.verbose
-
-    import aisutils.grid as grid
-    import psycopg2 as psycopg
-    from pyproj import Proj
 
     assert options.xMin < options.xMax
     assert options.yMin < options.yMax

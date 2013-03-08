@@ -30,7 +30,7 @@ import math
 import sys
 import os
 
-import aisutils.grid as grid
+import noaadata.aisutils.grid as grid
 import psycopg2 as psycopg
 from pyproj import Proj
 from optparse import OptionParser

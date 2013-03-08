@@ -115,7 +115,7 @@ import sys
 from decimal import Decimal
 from BitVector import BitVector
 
-import binary, aisstring
+from noaadata.ais import binary, aisstring
 
 # FIX: check to see if these will be needed
 TrueBV  = BitVector(bitstring="1")
@@ -2406,7 +2406,7 @@ def main():
                     #bitLen=len(bits)
                     #if bitLen%6!=0:
                     #        bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-                    import aisutils.uscg as uscg
+                    import noaadata.aisutils.uscg as uscg
                     nmea = uscg.create_nmea(bits)
                     print nmea
                     #

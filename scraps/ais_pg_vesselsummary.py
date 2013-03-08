@@ -26,7 +26,7 @@ import os
 import datetime
 import psycopg2 as psycopg
 import pyExcelerator as excel
-from ais.ais_msg_5 import shipandcargoDecodeLut as shipandcargo_lut
+from noaadata.ais.ais_msg_5 import shipandcargoDecodeLut as shipandcargo_lut
 
 
 def main():

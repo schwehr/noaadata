@@ -50,6 +50,8 @@ egrep '!AIVDM,1,1,[0-9]?,[AB],[1-3]' biglog.ais > pos_msgs.ais
 '''
 
 import sys, os
+import noaadata.ais.ais_msg_1 as ais_msg_1
+import noaadata.ais.binary as binary
 
 stellwagen=(
     (-70.502624517077535,42.651229858376865),
@@ -337,8 +339,6 @@ def filter_file(infile, outfile, polygonWKT, verbose=False):
     param polygon: bounding region for the query
     type polygon: WKT polygon string
     '''
-    import ais.ais_msg_1 as ais_msg_1
-    import ais.binary as binary
     try:
         from cartography.geometry import Geometry
     except:
@@ -395,8 +395,6 @@ def filter_box(infile, outfile, west, east, lower, upper, verbose=False):
     '''
     assert (upper>lower)
     assert (west<east)
-    import ais.ais_msg_1 as ais_msg_1
-    import ais.binary as binary
 
     if verbose:
         print 'xrange:',west,east

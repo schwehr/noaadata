@@ -28,9 +28,10 @@ interleaving of msg 5 nmea strings.
 
 import sys, os
 
-from ais import binary
-from ais import ais_msg_5
-from ais import aisstring
+from noaadata.ais import binary
+from noaadata.ais import ais_msg_5
+from noaadata.ais import aisstring
+
 
 def getNameMMSI(logfile,outfile):
     for line in logfile: 

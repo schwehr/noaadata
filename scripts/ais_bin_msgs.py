@@ -27,9 +27,8 @@ from decimal import Decimal
 from BitVector import BitVector
 import StringIO
 
-import ais.binary    as binary
-
-from aisutils.uscg import uscg_ais_nmea_regex
+from noaadata.ais import binary
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
 
 def parse_msgs(infile, verbose=False):
     for line in infile:

@@ -19,9 +19,9 @@ Summarize the AIS message traffic at the NMEA level without decoding the content
 @status: Works, but not complete
 '''
 
-from aisutils.uscg import uscg_ais_nmea_regex
-import ais.binary
-import ais
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
+from noaadata import ais
+
 
 def nmea_summary(filename):
     msgs = dict([(val,0) for val in ais.binary.encode])

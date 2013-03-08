@@ -34,6 +34,9 @@ tug
 
 import os,sys
 
+import psycopg2 as psycopg
+import noaadata.ais.sqlhelp as sqlhelp
+
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",version="%prog "+__version__)
@@ -50,9 +53,6 @@ if __name__=='__main__':
                   help='Do not create the tables in the database')
 
     (options,args) = parser.parse_args()
-
-    import psycopg2 as psycopg
-    import ais.sqlhelp as sqlhelp
 
     connectStr = "dbname='"+options.databaseName+"' user='"+options.databaseUser+"' host='"+options.databaseHost+"'"
 

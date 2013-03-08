@@ -24,19 +24,19 @@ Command line AIS database utilities.
 
 import os
 import sys
-import aisutils.database
+from noaadata.aisutils import database
 
 ############################################################
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",version="%prog "+__version__)
-    parser.add_option('-t','--database-type',dest='dbType',default=aisutils.database.dbTypes[0]
-                      ,choices=aisutils.database.dbTypes
+    parser.add_option('-t','--database-type',dest='dbType',default=database.dbTypes[0]
+                      ,choices=database.dbTypes
                       ,help='Which database type to use [default: %default]')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
                       ,help='Make program output more verbose info as it runs')
 
-    aisutils.database.stdCmdlineOptions(parser,'all')
+    database.stdCmdlineOptions(parser,'all')
 
     parser.add_option('-c','--create-database',dest='createDB',default=False, action='store_true'
                       ,help='Create the database.  Sqlite does not need this.')
@@ -90,7 +90,7 @@ if __name__=='__main__':
             sys.exit('Unable to create the database.  Exit code: '+str(r))
         r=os.system('createlang plpgsql '+options.databaseName)
 
-    cx = aisutils.database.connect(options)
+    cx = database.connect(options)
 
     if options.addPostgis :
         if options.dbType=='sqlite':
@@ -125,7 +125,7 @@ if __name__=='__main__':
 
     if options.createTables:
         if v: sys.stderr.write('Creating tables\n')
-        aisutils.database.createTables(cx
+        database.createTables(cx
                                        ,dbType=options.dbType
                                        ,includeList=options.includeMsgs
                                        ,excludeList=options.excludeMsgs
@@ -133,7 +133,7 @@ if __name__=='__main__':
 
     if options.dropTables:
         if v: sys.stderr.write('Dropping tables.  Say goodbye to your data\n')
-        aisutils.database.dropTables(cx
+        database.dropTables(cx
 #                                     ,dbType=options.dbType
                                      ,includeList=options.includeMsgs
                                      ,excludeList=options.excludeMsgs

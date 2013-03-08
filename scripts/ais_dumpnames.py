@@ -26,14 +26,14 @@ version with no error checking.
 '''
 
 import sys
-from ais import binary as binary
-from ais import ais_msg_5 as ais_msg_5
-from ais import aisstring as aisstring
-from ais.BitVector import BitVector
+from BitVector import BitVector
 
-from aisutils.uscg import uscg_ais_nmea_regex
+from noaadata.ais import binary
+from noaadata.ais import ais_msg_5
+from noaadata.ais import aisstring
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
 
-######################################################################
+
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",

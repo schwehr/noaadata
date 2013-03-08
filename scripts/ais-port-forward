@@ -34,12 +34,11 @@ import exceptions # For KeyboardInterupt pychecker complaint
 
 import logging # Python's logger module for tracking progress
 
-import aisutils.daemon
+from noaadata.aisutils import daemon
 
-import aisutils.uscg
-import aisutils.normalize
-import ais.ais_msg_1 as msg1
-#import ais.binary as binary
+from noaadata.aisutils import uscg
+from noaadata.aisutils import normalize
+from noaadata.ais import ais_msg_1 as msg1
 
 ######################################################################
 
@@ -197,7 +196,7 @@ class PassThroughServer:
         @todo: normalize messages
 	'''
         v = self.v # Verbose flag
-        normQueue = aisutils.normalize.Normalize()
+        normQueue = normalize.Normalize()
         usebbox = self.options.useBox
         if usebbox:
             x1=self.options.lonMin
@@ -244,7 +243,7 @@ class PassThroughServer:
                 if v:
                     sys.stderr.write('parsing station from: ' + msg + '\n')
                 try:
-                    cgMsg = aisutils.uscg.UscgNmea(msg)
+                    cgMsg = uscg.UscgNmea(msg)
                 except (ValueError,IndexError),inst:
                     sys.stderr.write('ERROR:'+str(inst)+'\n')
                     sys.stderr.write('Unable to parse message:'+msg+'\n')
@@ -454,7 +453,7 @@ if __name__=='__main__':
     parser.add_option('-Y','--lat-max', dest='latMax', type='float', default=47.0
                       ,help=' [default: %default]')
 
-    aisutils.daemon.stdCmdlineOptions(parser)
+    daemon.stdCmdlineOptions(parser)
 
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
                       ,help='Make the test output verbose')
@@ -493,7 +492,7 @@ if __name__=='__main__':
 	options.outHost=socket.gethostname()
 
     if options.daemon_mode:
-        aisutils.daemon.start(options.pid_file)
+        daemon.start(options.pid_file)
 
     # Must start this after detaching
     logging.basicConfig(filename = options.log_file

@@ -1351,7 +1351,7 @@ def main():
 		    #bitLen=len(bits)
                     #if bitLen%6!=0:
 		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-                    import aisutils.uscg as uscg
+                    import noaadata.aisutils.uscg as uscg
                     nmea = uscg.create_nmea(bits)
                     print nmea
                     #

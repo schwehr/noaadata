@@ -27,8 +27,8 @@ import datetime
 import magicdate
 import pytz
 
-import aisutils.daemon
-import aisutils.database
+from noaadata.aisutils import daemon
+from noaadata.aisutils import database
 
 def mark_utc(dt):
     '''Take a datetime object in UTC without timezone set and return one with utc marked'''
@@ -41,7 +41,7 @@ class Clean:
         self.options = options
         self.track_start = options.track_start
         self.last_position_start = options.track_start
-        self.cx = aisutils.database.connect(options, dbType='postgres')
+        self.cx = database.connect(options, dbType='postgres')
         self.cu = self.cx.cursor()
         self.verbose = options.verbose
 
@@ -92,9 +92,8 @@ def main():
     parser = OptionParser(usage="%prog [options]"
                           ,version="%prog "+__version__ + " ("+__date__+")")
 
-    aisutils.daemon.stdCmdlineOptions(parser, skip_short=True)
-
-    aisutils.database.stdCmdlineOptions(parser, 'postgres')
+    daemon.stdCmdlineOptions(parser, skip_short=True)
+    database.stdCmdlineOptions(parser, 'postgres')
 
     parser.add_option('-s', '--track-start-time', dest='track_start', type='str',
                       default=None,
@@ -129,7 +128,7 @@ def main():
                          (options.log_file, options.log_level) )
 
     if options.daemon_mode:
-        aisutils.daemon.start(options.pid_file)
+        daemon.start(options.pid_file)
 
     logging.basicConfig(filename = options.log_file
                         , level  = options.log_level

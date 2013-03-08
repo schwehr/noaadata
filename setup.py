@@ -73,7 +73,7 @@ Still in development.  Some rough edges.
             'Topic :: Software Development :: Code Generators',
             'Topic :: Scientific/Engineering :: GIS',
             ],
-          packages=['noaadata','ais','aisutils','nmea'],
+          packages=['noaadata'],
           scripts=SCRIPTS,
           )
 

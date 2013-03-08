@@ -1,1 +1,3 @@
 *.pyc
+dist
+noaadata_py.egg-info

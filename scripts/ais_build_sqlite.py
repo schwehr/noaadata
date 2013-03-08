@@ -48,24 +48,10 @@ from decimal import Decimal
 from BitVector import BitVector
 import StringIO
 
-import ais.binary    as binary
-#import ais.aisstring as aisstring
-
-#import ais
-
-#import aisutils.database
-
-import ais.ais_msg_1_handcoded
-import ais.ais_msg_2_handcoded
-import ais.ais_msg_3_handcoded
-import ais.ais_msg_4_handcoded
-import ais.ais_msg_5
-import ais.ais_msg_18
-import ais.ais_msg_19
-#import ais.ais_msg_8
-#import ais.ais_msg_21
-
-import nmea.checksum # for isChecksumValid
+from noaadata.ais import binary
+from noaadaata import ais
+from noaadata.nmea import checksum
+from noaadata.aisutils.uscg import uscg_ais_nmea_regex
 
 import pysqlite2.dbapi2 as sqlite
 import pysqlite2.dbapi2
@@ -244,9 +230,9 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 	if len(line)<15 or line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
 
         #print 'FIX: validate checksum'
-        if not nmea.checksum.isChecksumValid(line):
+        if not checksum.isChecksumValid(line):
             print >> sys.stderr, 'WARNING: invalid checksum:\n\t',line,
-            print >> sys.stderr, '   ',nmea.checksum.checksumStr(line)
+            print >> sys.stderr, '   ',checksum.checksumStr(line)
             counts['checksum_failed'] += 1
 
 	fields=line.split(',') # FIX: use this split throughout below...
@@ -306,7 +292,6 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 	counts[msg_num] += 1
 
 	if uscg:
-            from aisutils.uscg import uscg_ais_nmea_regex
             match = uscg_ais_nmea_regex.search(line).groupdict()
             
             try:
