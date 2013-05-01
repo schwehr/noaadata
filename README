@@ -9,4 +9,11 @@ http://opendap.co-ops.nos.noaa.gov/axis/
 NOAA uses the apache java based Axis engine for SOAP.
 http://ws.apache.org/axis
 
-kurt@ccom.unh.edu
+Library for handling marine Automatic Identification System (AIS)
+messages and NOAA marine data messages from http://opendap.co-ops.nos.noaa.gov/axis/. 
+Has extensions to handle the USCG N-AIS receive fields.  The SOAP code is a bit rusty and now
+uses pydap.
+
+For AIS ship traffic, noaadata provides interfaces to sqlite3 and
+postgresql/postgis databases.  Is able to generate Google Earth KML
+files for AIS.
