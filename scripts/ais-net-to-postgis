@@ -63,7 +63,7 @@ class DatabaseHandler:
     '''
     Queue handling for the database
     '''
-    def __init__(self, connection, dbUpdateInterval=5., threshold=1, verbose=False, skipDB=False, 
+    def __init__(self, connection, dbUpdateInterval=5., threshold=1, verbose=False, skipDB=False,
                  limitPoints=10
                  , track_start_time_limit=None #'1 hour ago'
                  , last_position_time_limit=None #'6 hours ago'
@@ -82,7 +82,7 @@ class DatabaseHandler:
         '''
         #@param maxLoops: how many loops with data below the threshold before we commit the data?
 
-        if not skipDB: 
+        if not skipDB:
             self.cx = connection
             self.cu = connection.cursor()
         else:
@@ -207,7 +207,7 @@ class DatabaseHandler:
             aisutils.database.rebuild_last_position(self.cx, startTime = startTime, verbose=self.v)
         if self.v:
             sys.stderr.write('DONE CLEANING...\n\n')
-        
+
     def handler(self, unused=None):
         '''
         top level loop thread
@@ -231,8 +231,8 @@ class DatabaseHandler:
         sys.stderr.write('Database handler stopping... begin final commit\n')
         self.commit()
         self.stopped = True
-        
-                
+
+
 
 class HandleAisConnection:
     '''
@@ -259,7 +259,7 @@ class HandleAisConnection:
         v = self.options.verbose
         if v:
             sys.stderr.write('handler started.  VERBOSE\n')
-        
+
         while self.running:
             #if v: sys.stderr.write('calling select\n')
             readersready, outputready, exceptready = select.select([self.dataSocket,],[],[],self.timeout)
@@ -311,7 +311,7 @@ class HandleAisConnection:
                             sys.stderr.write('Can not handle unnormalized messages. Tot sentences: '+str(uscgMsg.totalSentences)+'\n')
                             sys.stderr.write('  msg:'+msg+'\n')
                         continue
-                    
+
                     if uscgMsg.msgTypeChar not in ais.msgModByFirstChar:
                         if v:
                             sys.stderr.write('Can not process message starting with '+uscgMsg.msgTypeChar+'\n')
@@ -352,7 +352,7 @@ class HandleAisConnection:
                         vessel = msgDict['UserID']
                     self.dbQueue.put((str(ins), vessel))
 
-        
+
 class PassThroughServer:
     '''Receive data from a socket and write the data to all clients that
     are connected.  Starts two threads and returns to the caller.
@@ -387,7 +387,7 @@ class PassThroughServer:
         sys.stderr.write('connection_handler started\n')
         return
 
-        
+
     def connection_handler(self, unused=None):
         '''Do not use this.  Call start() instead.  This listens for
         connections and adds the new socket to the clients list.
@@ -443,7 +443,7 @@ def main():
     parser.add_option('-a', '--allow', action='append', dest='hosts_allow'
                       , help='Add hosts to a list that are allowed to connect [default: all]')
 
-    parser.add_option('-t', '--timeout', dest='timeout', type='float', default='300', 
+    parser.add_option('-t', '--timeout', dest='timeout', type='float', default='300',
                       help='Number of seconds to timeout after if no data [default: %default]')
 
     aisutils.database.stdCmdlineOptions(parser, 'postgres')
@@ -484,7 +484,7 @@ def main():
             options.track_start = options.timeLimitAll
         if options.last_position_start is None:
             options.last_position_start = options.timeLimitAll
-    
+
     if options.track_start is not None:
         try:
             m = magicdate.magicdate(options.track_start)
@@ -517,7 +517,7 @@ def main():
                                 , skipDB=options.skipDB
                                 , cleanTime=options.cleanTime
                                 )
-    
+
     if v:
         sys.stderr.write('hosts allowed: '+str(options.hosts_allow)+'\n')
 
@@ -527,7 +527,7 @@ def main():
     pts = PassThroughServer(options, dbHandler)
     pts.start()
 
-    # Now start up the thread to send the messages to 
+    # Now start up the thread to send the messages to
     thread.start_new_thread(dbHandler.handler, (None, ))
 
     timeout = options.timeout
@@ -535,7 +535,7 @@ def main():
     i = 0
     running = True
 
-    try: 
+    try:
         while running:
             i += 1
             time.sleep(timeout)
@@ -552,7 +552,7 @@ def main():
         time.sleep(.1)
     if v:
         sys.stderr.write('Finished cleaning up ... goodbye\n')
-    
+
 
 ######################################################################
 if __name__ == '__main__':

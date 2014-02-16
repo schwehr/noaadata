@@ -19,7 +19,7 @@ Decimate these requirements to meet what you need
 @undocumented: __doc__ parser
 @since: 2008-Feb-09
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @todo: how to deal with bad positions?
 '''
@@ -43,7 +43,7 @@ def get_stations_bboxes(filename,current_stations=None,verbose=False):
         lineNum+=1
         if v and lineNum%1000==0:
             sys.stderr.write('%d\n' % lineNum)
-            
+
         if line[3:6] not in ('VDO','VDM'):
             continue
 
@@ -102,7 +102,7 @@ def main():
 
     (options, args) = parser.parse_args()
     v = options.verbose
-    
+
     stations = {} # Fill in with station names and {x1,x2,y1,y2}
 
     for filename in args:

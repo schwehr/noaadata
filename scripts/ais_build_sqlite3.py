@@ -76,7 +76,7 @@ def createTables(cx,verbose=False):
         print 'Warning: position table already exists'
 
     # Skip 2 and 3 since they are also position messages
-    
+
     if verbose: print str(ais.ais_msg_4.sqlCreate(dbType='sqlite'))
     cu.execute(str(ais.ais_msg_4.sqlCreate(dbType='sqlite')))
 
@@ -134,7 +134,7 @@ def loadData(cx,datafile,verbose=False
         countsTotal[msgNum]+=1
         
 	if verbose: print 'msgNum:',msgNum
-#	if msgNum not in (1,2,3,4,5): 
+#	if msgNum not in (1,2,3,4,5):
 #	    if verbose: print 'skipping',line
 #	    continue
 	
@@ -156,8 +156,8 @@ def loadData(cx,datafile,verbose=False
 		print '  ',line,
 		print '   Got length',len(bv), 'expected', 424
 		continue
-	    
-		
+
+
 
 	fields=line.split(',')
 
@@ -228,7 +228,7 @@ def loadData(cx,datafile,verbose=False
 #                 # Give some debugging flexibility
 #                 from IPython.Shell import IPShellEmbed
 #                 ipshell = IPShellEmbed(argv=[])
-#                 ipshell() 
+#                 ipshell()
 #                 sys.exit('Gave up')
 
     #print counts
@@ -270,7 +270,7 @@ if __name__=='__main__':
 
     if len(args)==0:
         print 'processing from stdin'
-    
+
         loadData(cx,sys.stdin,verbose=options.verbose,uscg=options.uscgTail)
     else:
         for filename in args:

@@ -140,7 +140,7 @@ if __name__=='__main__':
                                      ,verbose=v)
 
     if options.createTrackLinesTable:
-        sqlCreate = 'CREATE TABLE track_lines ( ogc_fid SERIAL PRIMARY KEY, userid INTEGER, name CHARACTER VARYING(20), update_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now());' 
+        sqlCreate = 'CREATE TABLE track_lines ( ogc_fid SERIAL PRIMARY KEY, userid INTEGER, name CHARACTER VARYING(20), update_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now());'
         sqlCreate += " SELECT AddGeometryColumn('track_lines','track',4326,'LINESTRING',2);"
         if v: sys.stderr.write('Creating track_lines table\n')
         if v: sys.stderr.write(sqlCreate+'\n')
@@ -150,7 +150,7 @@ if __name__=='__main__':
 
     if options.createLastPositionTable:
         # cog is a decimal in the position table.  ... cog == course over ground
-        sqlCreate = 'CREATE TABLE  last_position ( key SERIAL PRIMARY KEY, userid INTEGER, name character varying(20), cog INTEGER, sog REAL, cg_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now(), cg_r VARCHAR(15), navigationstatus VARCHAR(30), shipandcargo VARCHAR(30) );' 
+        sqlCreate = 'CREATE TABLE  last_position ( key SERIAL PRIMARY KEY, userid INTEGER, name character varying(20), cog INTEGER, sog REAL, cg_timestamp TIMESTAMP WITH TIME ZONE DEFAULT now(), cg_r VARCHAR(15), navigationstatus VARCHAR(30), shipandcargo VARCHAR(30) );'
         sqlCreate += " SELECT AddGeometryColumn('last_position','position',4326,'POINT',2);"
         if v: sys.stderr.write('Creating last position table\n')
         if v: sys.stderr.write(sqlCreate+'\n')

@@ -39,7 +39,7 @@ def dist_utm_m (lon1, lat1, lon2, lat2):
 class Decimate:
     def __init__(self,min_dist_m=200, min_time_s=600):
         '''min_dist: meters till we must emit
-        min_time: 
+        min_time:
         '''
         self.ship_status = {} # indexed by MMSI
         self.min_dist_m = min_dist_m
@@ -55,14 +55,14 @@ class Decimate:
         if mmsi not in self.ship_status:
             self.ship_status[mmsi] = {'x':x,'y':y, 'timestamp': timestamp}
             return True
-        
+
         last = self.ship_status[mmsi]
 
         dt = timestamp - last['timestamp']
         if dt >= self.min_time_s:
             self.ship_status= {'x':x,'y':y, 'timestamp': timestamp}
             return True
-        
+
         dist_m = dist_utm_m(x,y, last['x'], last['y'])
         if dist_m >= self.min_dist_m:
             self.ship_status= {'x':x,'y':y, 'timestamp': timestamp}
@@ -70,7 +70,8 @@ class Decimate:
 
         return False
 
-class Bbox:
+
+    class Bbox:
 
     def __init__(self,x_min=None,y_min=None,x_max=None,y_max=None):
         self.bounds=(x_min,y_min,x_max,y_max)

@@ -77,7 +77,7 @@ class TrackDuplicates:
 
     Does not distinguish duplicates coming from the same receiver (should that ever happen)
     '''
-    
+
     def __init__(self, lookback_length=None, lookback_time_sec=5*60):
         self.lookback_length = lookback_length
         self.lookback_time_sec = lookback_time_sec
@@ -107,7 +107,7 @@ class TrackDuplicates:
         self.next_new_id += 1
         if self.newest_time_sec < time_sec:
             self.newest_time_sec = time_sec
-        
+
 
         # clean up queue wrt to length
         if self.lookback_length:
@@ -151,7 +151,7 @@ def create_tables(cx, verbose=False):
         print 'Warning: position table already exists'
 
     # Skip 2 and 3 since they are also position messages
-    
+
     if verbose: print str(ais.ais_msg_4_handcoded.sqlCreate(dbType='sqlite'))
     cu.execute(str(ais.ais_msg_4_handcoded.sqlCreate(dbType='sqlite')))
 
@@ -163,12 +163,12 @@ def create_tables(cx, verbose=False):
 
     # For tracking packets and duplicate content.  Each unique payload gets an ID number
     # FIX: make these added to the sqlhelper object before executing
-    cu.execute('ALTER TABLE position  ADD pkt_id INTEGER;') 
-    cu.execute('ALTER TABLE position  ADD dup_flag BOOLEAN;') 
+    cu.execute('ALTER TABLE position  ADD pkt_id INTEGER;')
+    cu.execute('ALTER TABLE position  ADD dup_flag BOOLEAN;')
 
-    cu.execute('ALTER TABLE bsreport  ADD pkt_id INTEGER;') 
-    cu.execute('ALTER TABLE bsreport  ADD dup_flag BOOLEAN;') 
-    #cu.execute('ALTER TABLE positionb ADD (pkt_id INTEGER, dup BOOLEAN);') 
+    cu.execute('ALTER TABLE bsreport  ADD pkt_id INTEGER;')
+    cu.execute('ALTER TABLE bsreport  ADD dup_flag BOOLEAN;')
+    #cu.execute('ALTER TABLE positionb ADD (pkt_id INTEGER, dup BOOLEAN);')
 
     cu.execute('ALTER TABLE position ADD est_sec INTEGER;') # Best estimated time
     cu.execute('ALTER TABLE position ADD est_sec_type INTEGER;') # Where did the est_sec come from?
@@ -196,7 +196,7 @@ def get_max_key(cx):
 
         if max_key < int(key[0]):
             max_key = int(key[0])
-        
+
     return max_key
 
 
@@ -240,7 +240,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 	if lineNum%1000==0:
 	    print lineNum
 	    cx.commit()
-            
+
 	if len(line)<15 or line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
 
         #print 'FIX: validate checksum'
@@ -257,8 +257,8 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 	    print 'line would not decode',line
 	    continue
 	if verbose: print 'msg_num:',msg_num
-	if msg_num not in message_set: 
-	    if verbose: 
+	if msg_num not in message_set:
+	    if verbose:
                 print 'skipping',line
                 print '  not in msg set:',str(message_set)
 	    continue
@@ -284,7 +284,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 		print '  ',line,
 		print '   Got length',len(bv), 'expected', 424
 		continue
-	    
+
 	ins = None
 
 	try:
@@ -308,7 +308,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 	if uscg:
             from aisutils.uscg import uscg_ais_nmea_regex
             match = uscg_ais_nmea_regex.search(line).groupdict()
-            
+
             try:
                 cg_sec = int(float(match['timeStamp']))
                 ins.add('cg_sec', cg_sec)
@@ -328,7 +328,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
                 except:
                     print >> sys.stderr, 'WARNING: corrupted time of arrival (T) in line.  T ignored\n\t',line
                     pass # Not critical if corrupted
-                
+
 
             if match['slot'] is not None:
                 ins.add('cg_s_slotnum',  int(match['slot']) )
@@ -344,7 +344,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
         ins.add('key',next_key)
         next_key += 1
 
-	if verbose: 
+	if verbose:
             print str(ins)
 	try:
             cu.execute(str(ins))
@@ -363,7 +363,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
                 # Give some debugging flexibility
                 from IPython.Shell import IPShellEmbed
                 ipshell = IPShellEmbed(argv=[])
-                ipshell() 
+                ipshell()
                 sys.exit('Gave up')
 
 #        if payload_table and msg_num in (1,2,3):
@@ -400,8 +400,8 @@ if __name__=='__main__':
         create_tables(cx, verbose=options.verbose)
 #        create_tables(cx, options.payload_table, verbose=options.verbose)
 
-   
-    
+
+
     if len(args)==0:
         args = (sys.stdin,)
         print 'processing from stdin'
@@ -409,9 +409,9 @@ if __name__=='__main__':
     for filename in args:
         print 'processing file:',filename
         load_data(
-            cx, 
-            file(filename,'r'), 
+            cx,
+            file(filename,'r'),
             verbose=options.verbose,
-            uscg=options.uscgTail, 
+            uscg=options.uscgTail,
             )
 #            payload_table=options.payload_table

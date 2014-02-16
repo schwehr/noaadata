@@ -31,7 +31,7 @@ ls -1 $day > $day/.stations
 mv $day/.stations $day/stations
 
 ########################################
-# Split out some of the message types.  
+# Split out some of the message types.
 ########################################
 
 # Should ok to group nmea strings by message now that each station is separate.

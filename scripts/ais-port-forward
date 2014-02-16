@@ -110,7 +110,7 @@ class PassThroughServer:
             # Might want to shutdown the whole thing for certain exceptions
         self.running=False # Just be sure
         logging.warn('exiting recv_thread')
-        
+
 
     def recvThread(self,unused=None):
 	'''Do not use this.  Call start() instead.
@@ -206,7 +206,7 @@ class PassThroughServer:
             y2=self.options.latMax
             if v:
                 sys.stderr.write('bbox lon: %f.2 ... %.2f lat: %f.2 ... %.2f\n'  % (x1,x2,y1,y2))
-        
+
 	sys.stderr.write('beginning filterThread\n')
         if v:
             if self.options.allowStations is None:
@@ -227,7 +227,7 @@ class PassThroughServer:
                 sys.stderr.write('f')
                 #logging.warn('filter empty queue')
                 continue
-                
+
             if buf is not None:
                 m = buf+m
                 buf = None
@@ -287,7 +287,7 @@ class PassThroughServer:
                     if msg[-1]!='\n': msg+='\n'
                     self.sQueue.put(msg)
                     continue
-                
+
                 #sys.stderr.write('queuing a nmea piece\n')
                 normQueue.put(msg)
 
@@ -301,8 +301,8 @@ class PassThroughServer:
                     #sys.stderr.write('\n\n\n *** forwarding normalized msg '+msg+'\n\n\n')
                     if msg[-1]!='\n': msg+='\n'
                     self.sQueue.put(msg)
-                
-                
+
+
 
         self.filtThreadStopped=True
         sys.stderr.write('end of filter thread\n')
@@ -338,7 +338,7 @@ class PassThroughServer:
 	@bug: how can I get rid of unused?
 	'''
         v = self.v # Verbose flag
-        
+
 	sys.stderr.write('beginning  sendThread\n')
 
 	# dst is where our data comes from
@@ -362,7 +362,7 @@ class PassThroughServer:
                         while self.sQueue.qsize()>self.maxSendQueue:
                             print 'drop'
                             self.sQueue.get()
-                                         
+
                 count += 1
                 if count%10==1: sys.stderr.write('connecting to '+str((self.options.outHost,self.options.outPort))+'\n')
                 try:
@@ -381,7 +381,7 @@ class PassThroughServer:
                 sys.stderr.write('s')
                 #logging.warn('send empty queue')
                 continue
-                    
+
             try:
                 dst.send(m)
                 sent_count += 1
@@ -486,7 +486,7 @@ if __name__=='__main__':
         sys.stderr.write('bounding box long: %f...%f  lat: %f...%f\n' % (options.lonMin,options.lonMax,options.latMin,options.latMax))
 
     #print [type(x) for x in (options.lonMin,options.lonMax,options.latMin,options.latMax)]
-    
+
     if options.inHostname:
 	options.inHost=socket.gethostname()
     if options.outHostname:
@@ -502,7 +502,7 @@ if __name__=='__main__':
 
     pts = PassThroughServer(options,verbose=v,maxSendQueue=options.maxSendQueue)
     pts.start()
-    
+
     timeout = options.timeout
     del(options) # remove global to force self.options
 
@@ -522,7 +522,7 @@ if __name__=='__main__':
         if v: sys.stderr.write('\bshutting down...\n')
 
     pts.stop()
-    
+
 #    while not pts.stopped:
 #        time.sleep(.1)
 

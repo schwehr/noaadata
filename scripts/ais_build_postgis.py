@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 12832 $'.split()[1]
 __date__ = '$Date: 2009-11-30 15:38:45 -0500 (Mon, 30 Nov 2009) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-
 Build a postgres/postgis database of the raw ais messages.
 
 NOTE: this following sets up postgres totally open.  You need to use a
@@ -18,10 +16,9 @@ You may need to some intial setup: (examples assume mac osx + fink)
       (FIX: update instructions for better security)
   - Might need to install plpgsql
       - createlang plpgsql ais
-  - Install postgis into the database: 
+  - Install postgis into the database:
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/spatial_ref_sys.sql -d ais
-
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
 @requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
@@ -60,13 +57,13 @@ import ais.ais_msg_3
 #import ais.ais_msg_8  # need to do each one carefully
 #import ais.ais_msg_9 # SAR position
 #import ais.ais_msg_10 # utcquery
-#import ais.ais_msg_11 # 
+#import ais.ais_msg_11 #
 #import ais.ais_msg_12 # asrm
-#import ais.ais_msg_13 # 
+#import ais.ais_msg_13 #
 #import ais.ais_msg_14 # srbm
 #import ais.ais_msg_15 # Interrogation
-#import ais.ais_msg_16 # 
-#import ais.ais_msg_17 # 
+#import ais.ais_msg_16 #
+#import ais.ais_msg_17 #
 #import ais.ais_msg_18 # Class B position report
 #import ais.ais_msg_19 # Class B extended position and ship type report
 #import ais.ais_msg_20 # data link management
@@ -90,7 +87,7 @@ def createTables(cx,verbose=False):
     cu.execute(str(ais.ais_msg_1.sqlCreate()))
 
     # Skip 2 and 3 since they are also position messages
-    
+
     if verbose: print str(ais.ais_msg_5.sqlCreate())
     cu.execute(str(ais.ais_msg_5.sqlCreate()))
 
@@ -127,7 +124,7 @@ def loadData(cx,datafile,verbose=False
 	lineNum += 1
 	if lineNum%1000==0:
 	    print lineNum
-# 	if lineNum%1000==0: 
+# 	if lineNum%1000==0:
 #             try:
 #                 cu.execute('BEGIN;'+';'.join(buf)+'COMMIT;')
 #             except psycopg2.ProgrammingError:
@@ -136,7 +133,7 @@ def loadData(cx,datafile,verbose=False
 #                 continue
 #             buf=[]
 #             cx.commit()
-            
+
 #	    if lineNum>3000:
 #		print 'Early exit from load'
 #		break
@@ -148,7 +145,7 @@ def loadData(cx,datafile,verbose=False
 	    print '# line would not decode',line
 	    continue
 	if verbose: print '# msgNum:',msgNum
-	if msgNum not in (1,2,3,5): 
+	if msgNum not in (1,2,3,5):
 	    if verbose: print '# skipping',line
 	    continue
 	
@@ -169,8 +166,8 @@ def loadData(cx,datafile,verbose=False
 		print '#  ',line,
 		print '#   Got length',len(bv), 'expected', 424
 		continue
-	    
-		
+
+
 
 	fields=line.split(',')
 
@@ -229,7 +226,7 @@ def loadData(cx,datafile,verbose=False
             #buf.append(str(ins))
 	except Exception, e:
             print params
-#            # FIX: give a better error message 
+#            # FIX: give a better error message
             print '# exception:',str(type(Exception)), str(e)
 	    print '# ERROR: sql error?','line:',lineNum
 	    print '#  ', str(ins)

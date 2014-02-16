@@ -7,7 +7,7 @@ __license__   = 'GPL v2'
 __contact__   = 'kurt at ccom.unh.edu'
 __doc__='''
 Rebuild the cache tables for high speed access to the current vessel
-traffic status.  This works on the last_position and track_lines 
+traffic status.  This works on the last_position and track_lines
 tables.
 
 @requires: U{magicdate<http://cheeseshop.python.org/pypi/magicdate>}
@@ -110,11 +110,11 @@ if __name__=='__main__':
     if options.updateTrackLines:
 
         startTime = options.track_start + tzoffset
-        
+
         if v:
             sys.stderr.write('Updating track_lines (%s to %s)\n' % (startTime,datetime.datetime.utcnow()))
 
-        
+
         aisutils.database.rebuild_track_lines(cx,limitPoints=options.limitPoints, startTime = startTime, verbose = v)
 
     if options.updateLastPosition:
