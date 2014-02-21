@@ -33,32 +33,31 @@ from ais import ais_msg_5
 from ais import aisstring
 
 def getNameMMSI(logfile,outfile):
-    for line in logfile: 
-	fields = line.split(',')[:6]
-	if '1'!=fields[2]: # Must be the start of a sequence
-	    continue
-	if len(fields[5])<39: continue
-	bv = binary.ais6tobitvec(fields[5][:39]) # Hacked for speed
+    for line in logfile:
+        fields = line.split(',')[:6]
+        if '1'!=fields[2]: # Must be the start of a sequence
+            continue
+        if len(fields[5])<39: continue
+        bv = binary.ais6tobitvec(fields[5][:39]) # Hacked for speed
 
-	mmsi = ais_msg_5.decodeUserID(bv)
-	name = aisstring.unpad(ais_msg_5.decodename(bv))
-	outfile.write(str(mmsi)+' '+str(name)+'\n')
+        mmsi = ais_msg_5.decodeUserID(bv)
+        name = aisstring.unpad(ais_msg_5.decodename(bv))
+        outfile.write(str(mmsi)+' '+str(name)+'\n')
 
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] logfile1 [logfile2 logfile3 ...] ", version="%prog "+__version__)
     parser.add_option('-o','--output',dest='outputFileName',default=None,
-		      help='Name of the file to write [default: stdout]')
+                      help='Name of the file to write [default: stdout]')
 
     (options,args) = parser.parse_args()
-    
+
     outfile = sys.stdout
     if None!=options.outputFileName:
-	print 'outfilename=',options.outputFileName
-	outfile = file(options.outputFileName,'w')
+        print 'outfilename=',options.outputFileName
+        outfile = file(options.outputFileName,'w')
     if 0==len(args):
-	getNameMMSI(sys.stdin,outfile)
-    else: 
-	for filename in args:
-	    getNameMMSI(file(filename),outfile)
-
+        getNameMMSI(sys.stdin,outfile)
+    else:
+        for filename in args:
+            getNameMMSI(file(filename),outfile)

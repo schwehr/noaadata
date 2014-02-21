@@ -17,7 +17,7 @@ How many minutes did we receive data from during the time span?
 @undocumented: __doc__
 @since: 2009-Jun-09
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import sys
@@ -43,7 +43,7 @@ def uptime(filename):
             continue
 
         t = datetime.datetime(t.year, t.month, t.day, t.hour, t.minute)
-        
+
         if tmin is None:
             tmin = t
             tmax = t

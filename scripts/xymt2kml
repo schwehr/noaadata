@@ -30,7 +30,7 @@ def timeSec2KmlTime(timeSec):
     t = time.gmtime(float(timeSec))
 #    except:
 #	sys.exit('ERROR: this is not a valid time:'+str(timeSec)+' '+str(type(timeSec)))
-        
+
     s = "%4d-%02d-%02dT%02d:%02d:%02dZ" % (t[0],t[1],t[2],t[3],t[4],t[5])
     return s
 
@@ -46,7 +46,7 @@ def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpaci
     po = (int(polyOpacity*255)).__hex__()
     po = po[po.find('x')+1:]
     if len(po)==1: po='0'+po
-    
+
     o.write(indent+'<Style id="'+styleName+'">\n')
     o.write(indent+'\t<LineStyle>'+'\n')
     o.write(indent+'\t  <color>'+lo+str(lineColor)+'</color>\n')
@@ -160,7 +160,7 @@ if __name__ == '__main__':
             print '</Placemark>'
         print '</Folder>'
 
-    print '''    
+    print '''
 </Document>
 </kml>
 '''

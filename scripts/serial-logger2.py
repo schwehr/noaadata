@@ -61,7 +61,7 @@ def run(options):
     formatter = SerialLoggerFormatter(uscgFormat=options.uscgFormat,
                                       mark=options.mark,
                                       stationId=options.stationId)
-    
+
     prologue = '# START LOGGING UTC seconds since the epoch: %(created)f\n'
     prologue+='# SPEED:       ' + str(options.baud)+'\n'
     prologue+='# PORT:        ' + str(options.port)+'\n'
@@ -88,7 +88,7 @@ def run(options):
         ch = logging.StreamHandler()
         ch.setFormatter(formatter)
         logger.addHandler(ch)
-    
+
     while True:
         # import time
         # time.sleep(5)
@@ -102,7 +102,7 @@ def parseOptions():
     parser = OptionParser(usage="%prog [options]",
                           version="%prog "+__version__)
 
-    #################### log 
+    #################### log
     parser.add_option('-l', '--log-prefix', dest='log_prefix', type='string', default='log',
                       help='prefix before date of the log file [default: %default]')
 
@@ -174,10 +174,10 @@ def parseOptions():
     #speeds=serial.baudEnumToInt.keys()
     #speeds.sort()
     speeds = [
-        #0, 50, 75, 110,
-        #134, 150, 200, 
+        # 0, 50, 75, 110,
+        # 134, 150, 200,
         300
-        ,600 
+        ,600
         ,1200, 1800, 2400, 4800, 9600, 19200
         ,38400, 57600, 115200, 230400
             ]
@@ -209,7 +209,7 @@ def main():
             raise
     else:
         pidfile = None
-        
+
     if options.daemonMode:
         from daemon import DaemonContext
         with DaemonContext(pidfile=pidfile, working_directory=options.working_directory):
@@ -223,4 +223,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

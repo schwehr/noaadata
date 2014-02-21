@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 12308 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -97,17 +96,17 @@ def dist_utm_m (lon1, lat1, lon2, lat2):
 
 def distance_m_unit_sphere(lat1, long1, lat2, long2):
     'distance in meters between two points assuming unit sphere - very rough!'
-    
+
     # phi = 90 - latitude
     phi1 = math.radians(90.0 - lat1)
     phi2 = math.radians(90.0 - lat2)
-        
+
     # theta = longitude
     theta1 = math.radians(long1)
     theta2 = math.radians(long2)
-        
+
     # Compute spherical distance from spherical coordinates.
-    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) + 
+    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) +
            math.cos(phi1)*math.cos(phi2))
     arc = math.acos( cos )
 
@@ -158,7 +157,7 @@ def build_dist_database(database_filename, log_files, verbose=False):
                 continue
 
             station = match['station']
-            
+
             julian_day = int(datetime.datetime.utcfromtimestamp(int(match['timeStamp'])).strftime('%j'))
 
             d_km =  dist_utm_km( (x,y), station_locations[station] )
@@ -185,14 +184,14 @@ def build_dist_database(database_filename, log_files, verbose=False):
             print 'Appears indexes were already created'
 
     return cx, counts
-            
+
 def get_parser():
     import magicdate
 
     parser = OptionParser(option_class=magicdate.MagicDateOption,
                           usage='%prog [options] file1 [file2] [file3] ...',
                           version='%prog '+__version__)
-    
+
 #    parser.add_option('-s', '--start-time', type='magicdate', default=None, help='Force a start time (magicdate) [default: use first timestamp in file]')
 #    parser.add_option('-e', '--end-time',   type='magicdate', default=None, help='Force an end  time (magicdate) [default: use last timestamp in file]')
 
@@ -221,7 +220,7 @@ class Histogram:
 from numpy import array
 import numpy
 
-def main():    
+def main():
     parser = get_parser()
     (options,args) = parser.parse_args()
     v = options.verbose
@@ -255,11 +254,11 @@ def main():
         bins = array(hist.bins)
         min_bin_val = min(min_bin_val,bins.min())
         max_bin_val = max(max_bin_val,bins.max())
-        histograms.append(bins)    
+        histograms.append(bins)
 
     print min_bin_val, max_bin_val
     max_bin_val = math.log(max_bin_val)
-    
+
     o = file('foo.pgm','w')
     o.write('P2\n')
     o.write('%d %d\n' % (num_bins, len(histograms)))
@@ -272,7 +271,7 @@ def main():
                 o.write('%d ' % int(255 * math.log(val)/max_bin_val))
 
         o.write('\n')
-    
+
 
 if __name__ == '__main__':
     main()

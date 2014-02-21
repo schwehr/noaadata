@@ -16,7 +16,7 @@ __doc__ ='''
 @undocumented: __doc__ parser
 @since: 2008-Feb-09
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @todo: how to deal with bad positions?
 '''
@@ -37,13 +37,13 @@ def main():
     <Folder id="bounding boxes">
 '''
     for filename in args:
-    	for line in file(filename):
-	    station,x1,x2,y1,y2 = line.split()
+        for line in file(filename):
+            station,x1,x2,y1,y2 = line.split()
             print '''<Placemark><name>%s</name><Polygon>
   <!-- specific to Polygon -->
   <extrude>0</extrude>                       <!-- boolean -->
   <tessellate>1</tessellate>                 <!-- boolean -->
-  <altitudeMode>clampToGround</altitudeMode> 
+  <altitudeMode>clampToGround</altitudeMode>
   <outerBoundaryIs>
     <LinearRing>
       <coordinates>%s,%s,1000 %s,%s,1000 %s,%s,1000 %s,%s,1000 %s,%s,1000</coordinates>         <!-- lon,lat[,alt] -->
@@ -57,8 +57,7 @@ def main():
             print '''<Placemark><name>%s</name><Point><coordinates>%f,%f</coordinates></Point></Placemark>''' % (station,x,y)
 
     print '</Folder></Document></kml>'
-    
+
 
 if __name__ == '__main__':
     main()
-

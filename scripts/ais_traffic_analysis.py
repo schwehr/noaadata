@@ -95,21 +95,14 @@ encode = {0: '0',
 decode={}
 for key in encode.keys():
     decode[encode[key]]=key
-#print decode
 
 
-############################################################
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
     parser.add_option('-d','--with-date',dest='withDateFilename',default=False, action='store_true',
                       help='Assume a filename of YYYY-MM-DDxxxxx')
     (options,args) = parser.parse_args()
-
-#    if options.columnDef:
-#        print '#'
-#        for i in range(1,64):
-#            print ' '+str(i)
 
     for filename in args:
         counts = [ 0 for i in range(64) ]
@@ -135,20 +128,14 @@ if __name__=='__main__':
                 sys.stderr.write('What index is this? '+fields[5][0]+'\n')
                 sys.stderr.write('  '+line)
                 continue
-                
-                
-            #print index,line,
             counts[index]+=1
-        #print counts
+
         for i in range(1,len(counts)):
-            #print i, counts[i]
             print counts[i],' ',
+
         if options.withDateFilename:
             date=filename[:10]
             print date+'\t'+'1200',
         else:
             print filename,' ',
         print
-        
-            
-            

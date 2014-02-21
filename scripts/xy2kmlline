@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 8449 $'.split()[1]
 __date__ = '$Date: 2008-01-31 11:11:50 -0500 (Thu, 31 Jan 2008) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__="""
 Convert xy mmsi time files to Google Earth ship tracks
 
@@ -37,7 +35,7 @@ def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpaci
     po = (int(polyOpacity*255)).__hex__()
     po = po[po.find('x')+1:]
     if len(po)==1: po='0'+po
-    
+
     o.write(indent+'<Style id="'+styleName+'">\n')
     o.write(indent+'\t<LineStyle>'+'\n')
     o.write(indent+'\t  <color>'+lo+str(lineColor)+'</color>\n')
@@ -109,7 +107,7 @@ if __name__ == '__main__':
         print '\t</Placemark>'
         print '</Folder>'
 
-    print '''    
+    print '''
 </Document>
 </kml>
 '''

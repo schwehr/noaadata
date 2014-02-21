@@ -13,7 +13,7 @@ import socket
 import datetime
 import exceptions
 import traceback
-#import Queue
+
 import select
 
 def main():
@@ -24,7 +24,7 @@ def main():
     start_time = time.time()
     while True:
         count = 0
-        
+
         if count != 0: time.sleep(.25)
         try:
             soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,7 +36,6 @@ def main():
             connected = True
             print ('CONNECT to ',host_name, port_num)
 
-        #while running and connected:
         buf = ''
 
         prev_time = time.time()
@@ -46,7 +45,6 @@ def main():
             if count % 10000 == 0:
                 print ('inner_ListenThread:',count,datetime.datetime.now().strftime('%dT%H:%M:%S'), 'EST\tconnected:',connected )
             if count % 100 == 0:
-                #print ('sleeping')
                 time.sleep(0.01)
             readersready,outputready,exceptready = select.select([soc,],[],[],.1)
             if len(readersready) == 0: continue
@@ -55,7 +53,6 @@ def main():
                 connected = False
                 print ('DISCONNECT')
                 break
-            #buf += data
 
             now = time.time()
             dt = now - prev_time
@@ -70,6 +67,6 @@ def main():
                     print('{offset} {rate} {rcv_count} {now}'.format(**locals()))
                 rcv_count = 0
                 prev_time = now
-                
+
 if __name__ == '__main__':
     main()

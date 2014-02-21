@@ -25,7 +25,7 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
 
         if symlink:
             self._symlinkPointToToday(filename)
-            
+
         BaseRotatingHandler.__init__(self, filename, 'a', None, delay)
         # print "Will rollover at %d, %d seconds from now" % (self.rolloverAt, self.rolloverAt - currentTime)
         if self.prologue:
@@ -33,16 +33,16 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
 
 
     def _symlinkPointToToday(self, filename):
-        timeTuple = time.gmtime(time.time())        
+        timeTuple = time.gmtime(time.time())
         dfn = self.prefix + time.strftime(self.suffix, timeTuple)
         try:
             os.remove(filename)
         except OSError, detail:
             if detail.errno != 2:
-                raise        
+                raise
         os.symlink(dfn, filename)
-        
-    
+
+
     def computeRollover(self, currentTime):
         """
         Work out the rollover time based on the specified time.
@@ -80,16 +80,16 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
         if self.stream:
             if self.epilogue:
                 self.stream.write(self.epilogue % self._getParameter())
-            
+
             # rollover
             if self.rollover:
                 self.stream.write(self.rollover % self._getParameter())
 
             self.stream.close()
-            
+
         self._doRollover()
-        
-        self.mode = 'w'            
+
+        self.mode = 'w'
         self.stream = self._open()
         currentTime = int(time.time())
         newRolloverAt = self.computeRollover(currentTime)
@@ -107,12 +107,12 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
             # get the time that this sequence started at and make it a TimeTuple
             t = self.rolloverAt - self.interval
             timeTuple = time.gmtime(t)
-            
+
             dfn = self.prefix + time.strftime(self.suffix, timeTuple)
             if os.path.exists(dfn):
                 os.remove(dfn)
-                os.rename(self.baseFilename, dfn)        
-            #print "%s -> %s" % (self.baseFilename, dfn)        
+                os.rename(self.baseFilename, dfn)
+            #print "%s -> %s" % (self.baseFilename, dfn)
 
     def _getParameter(self):
         d = {}
@@ -128,10 +128,10 @@ class PassThroughServerHandler(logging.Handler):
     '''
     def __init__(self,options):
         logging.Handler.__init__(self)
-	self.clients=[]
-	self.options = options
+        self.clients=[]
+        self.options = options
         self.q = Queue.Queue()
-	self.count=0
+        self.count=0
         self.v = options.verbose
         self.start()
 
@@ -140,23 +140,23 @@ class PassThroughServerHandler(logging.Handler):
         self.put("%s\n" % msg)
 
     def start(self):
-	print 'starting threads'
-	thread.start_new_thread(self.passdata,(self,))
-	thread.start_new_thread(self.connection_handler,(self,))
-	return
+        print 'starting threads'
+        thread.start_new_thread(self.passdata,(self,))
+        thread.start_new_thread(self.connection_handler,(self,))
+        return
 
     def put(self,nmea_str):
         self.q.put(nmea_str)
 
     def passdata(self,unused=None):
-	'''Do not use this.  Call start() instead.
+        '''Do not use this.  Call start() instead.
 
-	@bug: how can I get rid of unused?
-	'''
-	print 'starting passthrough server'
+        @bug: how can I get rid of unused?
+        '''
+        print 'starting passthrough server'
 
-	while 1:
-	    time.sleep(.001) # Replace with select
+        while 1:
+            time.sleep(.001) # Replace with select
             m = self.q.get()
             if len(m) == 0:
                 sys.stderr.write('No data in queue get\n')
@@ -171,23 +171,23 @@ class PassThroughServerHandler(logging.Handler):
                 except socket.error:
                     sys.stderr.write('Client Disconnect\n')
                     self.clients.remove(c)
-	
+
     def connection_handler(self,unused=None):
-	'''Do not use this.  Call start() instead.  This listens for
-	connections and adds the new socket to the clients list.
+        '''Do not use this.  Call start() instead.  This listens for
+        connections and adds the new socket to the clients list.
 
-	@bug: how can I get rid of unused?
-	'''
-	sys.stderr.write('starting incoming connection receiver\n')
-	sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
+        @bug: how can I get rid of unused?
+        '''
+        sys.stderr.write('starting incoming connection receiver\n')
+        sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
 
-        
-	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	serversocket.bind((self.options.outHost, self.options.outPort))
-	serversocket.listen(5)
+        serversocket.bind((self.options.outHost, self.options.outPort))
+        serversocket.listen(5)
 
-	while 1:
-	    (clientsocket, address) = serversocket.accept()
-	    sys.stderr.write('connect from %s\n' % (address,))
-	    self.clients.append(clientsocket)    
+        while 1:
+            (clientsocket, address) = serversocket.accept()
+            sys.stderr.write('connect from %s\n' % (address,))
+            self.clients.append(clientsocket)

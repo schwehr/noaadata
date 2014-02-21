@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 7470 $'.split()[1]
 __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__='''
 Talk to a postgres/postgis db to build the transit table
 
@@ -49,7 +47,7 @@ if __name__=='__main__':
         import psycopg2 as psycopg
 
         deltaT = options.deltaT
-        
+
         connectStr = "dbname='"+options.databaseName+"' user='"+options.databaseUser+"' host='"+options.databaseHost+"'"
 
         cx = psycopg.connect(connectStr)

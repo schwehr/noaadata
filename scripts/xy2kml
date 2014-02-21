@@ -40,10 +40,10 @@ def getCircle(cx,cy,radius,stepsize=15):
     more displayable.  E.g. if you convert from geographic (lon,lat) to
     UTM and give a radius in meters, then you have to do the inverse
     projection.
-    
+
     @param cx: center x coord in native units
     @param stepsize: how many degrees between vertex
-    
+
     '''
     pts=[]
     for theta in range(0,360,stepsize):
@@ -66,7 +66,7 @@ def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpaci
     po = (int(polyOpacity*255)).__hex__()
     po = po[po.find('x')+1:]
     if len(po)==1: po='0'+po
-    
+
     o.write(indent+'<Style id="'+styleName+'">\n')
     o.write(indent+'\t<LineStyle>'+'\n')
     o.write(indent+'\t  <color>'+lo+str(lineColor)+'</color>\n')
@@ -156,7 +156,7 @@ if __name__ == '__main__':
                  )
     print '''    <Folder>
 '''
-    itemNum=0 # For staggering/stuttering the height 
+    itemNum=0 # For staggering/stuttering the height
     for filename in args:
         for line in file(filename):
             fields = line.split()
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                 if options.staggerHeight!=None:
                     if itemNum%2==0: z=zOrig
                     else: z = zOrig+options.staggerHeight
-                
+
                 xutm,yutm=proj(float(x),float(y))
                 pts = getCircle(xutm,yutm,radius)
                 print '      <Placemark>'

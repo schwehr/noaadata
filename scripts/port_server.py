@@ -2,9 +2,7 @@
 __version__ = '$Revision: 13407 $'.split()[1]
 __date__ = '$Date: 2010-04-07 10:36:00 -0400 (Wed, 07 Apr 2010) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__ = '''
-
 Connect to a socket and provide a service where multiple clients can
 connect.  The program optionally logs the data stream to a file.
 Migrated from ais-py in August 2007.
@@ -44,7 +42,7 @@ VERBOSE   = 3
 TRACE     = 2
 TERSE     = 1
 ALWAYS    = 0
-NEVER     = 0 
+NEVER     = 0
 
 def add_verbosity_options(parser):
     """
@@ -77,14 +75,14 @@ class PassThroughServer:
     are connected.  Starts two threads and returns to the caller.
     '''
     def __init__(self, options):
-	self.clients = []
-	self.options = options
-	if options.log_file:
-	    self.curLogFile = self.getLogFileName()
-	    self.log = open(self.curLogFile,'a')
+        self.clients = []
+        self.options = options
+        if options.log_file:
+            self.curLogFile = self.getLogFileName()
+            self.log = open(self.curLogFile,'a')
             self.logfile_add_start()
         else: self.log = None
-	self.count = 0
+        self.count = 0
         self.running = True
 
         # NTP monitoring
@@ -109,25 +107,25 @@ class PassThroughServer:
             self.log.close()
             self.log = None
             self.running = False
-            
+
     def start(self):
-	print 'starting threads'
-	thread.start_new_thread(self.passdata, (self,))
-	thread.start_new_thread(self.connection_handler, (self,))
-	return
+        print 'starting threads'
+        thread.start_new_thread(self.passdata, (self,))
+        thread.start_new_thread(self.connection_handler, (self,))
+        return
 
     def getLogFileName(self):
-	'''Return the log file name.  Appends date if rotation is happenin
+        '''Return the log file name.  Appends date if rotation is happenin
 
-	FIX: update when the program can rotate at arbitrary times.
-	'''
-	if self.options.rotateLog:
-	    return '%s-%s%s' % (
+        FIX: update when the program can rotate at arbitrary times.
+        '''
+        if self.options.rotateLog:
+            return '%s-%s%s' % (
                 self.options.log_file,
                 datetime.datetime.utcnow().strftime('%Y-%m-%d'),
                 self.options.log_file_extension
                 )
-	return self.options.log_file
+        return self.options.log_file
 
 
     def logfile_add_start(self):
@@ -156,11 +154,11 @@ class PassThroughServer:
                 traceback.print_exc(file=sys.stderr)
 
     def passdata_actual(self, unused=None):
-	'''Do not use this.  Call start() instead.
+        '''Do not use this.  Call start() instead.
 
-	@bug: how can I get rid of unused?
-	'''
-	print 'Starting passthrough server'
+        @bug: how can I get rid of unused?
+        '''
+        print 'Starting passthrough server'
 
         uscg_flag = self.options.uscg
         data_cache = ''
@@ -168,47 +166,47 @@ class PassThroughServer:
         v = self.options.verbosity
         station_id = self.options.station_id
 
-	# remote is where our data comes from
-	remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	remote.connect((self.options.inHost, self.options.inPort))
+        # remote is where our data comes from
+        remote = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        remote.connect((self.options.inHost, self.options.inPort))
 
-	while 1:
-	    time.sleep(.001) # FIX: Replace with select
-	    # Go slower for debugging
-	    #if self.options.verbosity>BOMBASTIC: time.sleep(.2)
-	    #else time.sleep(.01)  # Is this needed to reschedule?
-	    
-	    # Use this for code that executes every N reads
-	    self.count += 1
-	    if self.count % 1000 == 1:
-		print '# TIME =', time.gmtime()
-		print
-		print '#  HOUR,MIN: ', time.gmtime()[3:5]
-		print
-		
+        while 1:
+            time.sleep(.001) # FIX: Replace with select
+            # Go slower for debugging
+            #if self.options.verbosity>BOMBASTIC: time.sleep(.2)
+            #else time.sleep(.01)  # Is this needed to reschedule?
 
-	    if self.log and self.options.rotateLog:
-		new_log_file = self.getLogFileName()
-		if self.curLogFile != new_log_file:
-		    if self.options.verbosity >= TERSE:
-			print 'ROTATING LOG: ', self.curLogFile, new_log_file
+            # Use this for code that executes every N reads
+            self.count += 1
+            if self.count % 1000 == 1:
+                print '# TIME =', time.gmtime()
+                print
+                print '#  HOUR,MIN: ', time.gmtime()[3:5]
+                print
+
+
+            if self.log and self.options.rotateLog:
+                new_log_file = self.getLogFileName()
+                if self.curLogFile != new_log_file:
+                    if self.options.verbosity >= TERSE:
+                        print 'ROTATING LOG: ', self.curLogFile, new_log_file
                     now = time.time()
                     self.log.write('# Closing log file at %s UTC,%s\n' % ( datetime.datetime.utcnow().strftime('%Y-%m-%d %H:%M'), time.time() ) )
-		    self.log.close()
-		    self.curLogFile = new_log_file
-		    self.log = open(self.curLogFile, 'a')
+                    self.log.close()
+                    self.curLogFile = new_log_file
+                    self.log = open(self.curLogFile, 'a')
                     self.logfile_add_start()
                     self.znt.out_file = self.log # Make the znt handler know about the new log file.
 
                     # FIX: change the log file in znt
             self.znt.update()
-                    
-	    m = remote.recv(1000)
+
+            m = remote.recv(1000)
             now = time.time()
-	    if len(m)>0:
+            if len(m)>0:
 
                 if uscg_flag:
-                    
+
                     if recv_time is None: recv_time = now
 
                     # Make sure that we log each line with one timestamp that matches
@@ -224,7 +222,7 @@ class PassThroughServer:
                         continue
 
                     if '\n' not in m: continue
-                    
+
                     lines = data_cache.split('\n')
                     for line in lines[:-1]:
 
@@ -243,7 +241,7 @@ class PassThroughServer:
 
                     recv_time = now
                     data_cache = lines[-1] # Save the last partial line
-                    
+
 
                 else:
                     # Log straight through
@@ -256,25 +254,25 @@ class PassThroughServer:
                             print 'Client Disconnect'
                             self.clients.remove(c)
 
-	    elif v >= VERBOSE: 
-		print 'no data'
-	
+            elif v >= VERBOSE:
+                print 'no data'
+
     def connection_handler(self, unused=None):
-	'''Do not use this.  Call start() instead.  This listens for
-	connections and adds the new socket to the clients list.
+        '''Do not use this.  Call start() instead.  This listens for
+        connections and adds the new socket to the clients list.
 
-	@bug: how can I get rid of unused?
-	'''
-	print 'starting incoming connection receiver'
+        @bug: how can I get rid of unused?
+        '''
+        print 'starting incoming connection receiver'
 
-	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	serversocket.bind((self.options.outHost, self.options.outPort))
-	serversocket.listen(5)
+        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        serversocket.bind((self.options.outHost, self.options.outPort))
+        serversocket.listen(5)
 
-	while self.running:
-	    (clientsocket, address) = serversocket.accept()
-	    print 'connect from', clientsocket, address
-	    self.clients.append(clientsocket)
+        while self.running:
+            (clientsocket, address) = serversocket.accept()
+            print 'connect from', clientsocket, address
+            self.clients.append(clientsocket)
 
 
 ######################################################################
@@ -286,29 +284,29 @@ def main():
                             version="%prog "+__version__ + " ("+__date__+")")
 
     parser.add_option('-l', '--log-file', dest='log_file', type='string', default=None,
-			help='Write the stream through a log file [default: %default]')
+                        help='Write the stream through a log file [default: %default]')
 
     parser.add_option('-e', '--log-extension', dest='log_file_extension', type='string', default='',
-			help='File extension to put on the end of the filename.  '
+                        help='File extension to put on the end of the filename.  '
                         'Suggest ".ais" for AIS NMEA or ".gps" for GPS NMEA [default: "%default"]')
 
     parser.add_option('-i', '--in-port', dest='inPort', type='int', default=31414,
-			help='Where the data comes from [default: %default]')
+                        help='Where the data comes from [default: %default]')
     parser.add_option('-I', '--in-host', dest='inHost', type='string', default='localhost',
-			help='What host to read data from [default: %default]')
+                        help='What host to read data from [default: %default]')
 #    parser.add_option('--in-gethostname',dest='inHostname', action='store_true', default=False,
 #			help='Where the data comes from [default: %default]')
 
     parser.add_option('-o', '--out-port', dest="outPort", type='int', default=31401,
-			help='Where the data will be available to others [default: %default]')
+                        help='Where the data will be available to others [default: %default]')
     parser.add_option('-O', '--out-host', dest='outHost', type='string', default='localhost',
-			help='What machine the source port is on [default: %default]')
+                        help='What machine the source port is on [default: %default]')
     parser.add_option('--out-gethostname', dest='outHostname', action='store_true', default=False,
-			help='Use the default hostname ['+socket.gethostname()+']')
+                        help='Use the default hostname ['+socket.gethostname()+']')
 
     parser.add_option('-r', '--rotate', dest='rotateLog', default=False,
-			action='store_true', help='turn on one a day log rotation.'+
-			'  Appends the date to the log')
+                        action='store_true', help='turn on one a day log rotation.'+
+                        '  Appends the date to the log')
 
     parser.add_option('-s', '--station-id', dest='station_id', type='string', default=None,
                       help='If uscg format is selected, you can specify a station id to'
@@ -325,16 +323,16 @@ def main():
     v = options.verbosity
 
     if options.outHostname:
-	options.outHost = socket.gethostname()
+        options.outHost = socket.gethostname()
 
     if v >= VERBOSE:
-	print options
+        print options
         if len(args) > 0:
             print 'UNUSED args:', args
 
     pts = PassThroughServer(options)
     pts.start()
-    
+
     del(options) # remove global to force self.options
     i = 0
     running=True
@@ -348,7 +346,7 @@ def main():
         running=False
         pts.stop()
     time.sleep(2) # FIX: Should loop until pts is finished
-    
+
 
 ######################################################################
 

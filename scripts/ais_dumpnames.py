@@ -37,57 +37,56 @@ from aisutils.uscg import uscg_ais_nmea_regex
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
     parser.add_option('-o','--output',dest='outputFilename',default=None,
-		      help='Name of the file to write [default: stdout]')
+                      help='Name of the file to write [default: stdout]')
     parser.add_option('-v','--verbose',dest='verbose',default=False
                       ,action='store_true'
-		      ,help='Name of the file to write [default: stdout]')
+                      ,help='Name of the file to write [default: stdout]')
 
     (options,args) = parser.parse_args()
     o = sys.stdout
-    if None != options.outputFilename: 
+    if None != options.outputFilename:
         o = open(options.outputFilename,'w')
 
     verbose = options.verbose
-        
+
     #print args
     for filename in args:
-	print filename
+        print filename
         linenum=1
-	for line in file(filename):
+        for line in file(filename):
             if linenum%1000==0:
                 print 'line',linenum
             linenum += 1
 
             #try:
-            
+
             match_obj = uscg_ais_nmea_regex.search(line)
             if match_obj is None:
                 sys.stderr.write(line)
                 continue
             station = match_obj.group('station')
-            
+
             #except:
             #    sys.stderr.write('bad line: %s\n' %line)
             #    continue
 
 
-	    fields = line.split(',')[:6]
-	    if '1'!=fields[2]: # Must be the start of a sequence
+            fields = line.split(',')[:6]
+            if '1'!=fields[2]: # Must be the start of a sequence
                 #if verbose:
                 #    print 'skipping based on field 2',line
-		continue
-	    if len(fields[5])<39: 
+                continue
+            if len(fields[5])<39:
                 #if verbose:
                 #    print 'skipping',line
                 continue
-	    bv = binary.ais6tobitvec(fields[5][:39]) # Hacked for speed
-	    #print int(bv[8:38]),aisstring.decode(bv[112:232],True)
-	    name = aisstring.decode(bv[112:232],True).strip('@ ')
-	    mmsi = str(int(bv[8:38]))
+            bv = binary.ais6tobitvec(fields[5][:39]) # Hacked for speed
+            #print int(bv[8:38]),aisstring.decode(bv[112:232],True)
+            name = aisstring.decode(bv[112:232],True).strip('@ ')
+            mmsi = str(int(bv[8:38]))
             imo = str(int(bv[40:70]))
-	    #if len(name)<1 or name[0]=='X': print 'TROUBLE with line:',line
-	    if len(name)<1: print 'TROUBLE with line:',line
-	    o.write (mmsi+' '+imo+' '+station+' '+name+'\n')
-
+            #if len(name)<1 or name[0]=='X': print 'TROUBLE with line:',line
+            if len(name)<1: print 'TROUBLE with line:',line
+            o.write (mmsi+' '+imo+' '+station+' '+name+'\n')

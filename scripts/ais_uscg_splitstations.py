@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 7470 $'.split()[1]
 __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__='''
-
 Split USCG N-AIS messages into separate stations
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
@@ -48,7 +45,7 @@ def splitstations(logfile, subdir=None, basename=None, withR=False, verbose=Fals
     if subdir!=None and not os.access(subdir,os.X_OK): #F_OK):
 	os.mkdir(subdir)
     else: subdir='.'
-	
+
     stations={}
     for line in logfile:
 	station = getStation(line)
@@ -71,7 +68,6 @@ def splitstations(logfile, subdir=None, basename=None, withR=False, verbose=Fals
 
 
 if __name__=='__main__':
-    
 	from optparse import OptionParser
 	parser = OptionParser(usage="%prog [options]", version="%prog "+__version__)
 
@@ -97,4 +93,3 @@ if __name__=='__main__':
 	    if options.verbose: print 'Processing file:',filename
 	    logfile = open(filename)
 	    splitstations(logfile, options.subdir, options.basename, options.withR, options.verbose,options.withStationSubdirs)
-

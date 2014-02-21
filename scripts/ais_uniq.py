@@ -2,8 +2,7 @@
 __version__ = '$Revision: 7470 $'.split()[1]
 __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
-'''Find unique ais messages within a stream and give only those...
+'''Find unique ais messages within a stream and give only those.
 
 This would be wise to drop messages after a fixed set of time so
 that the list of messages does not get too large.  Perhaps 30
@@ -42,7 +41,6 @@ if __name__=='__main__':
                       +'[default: %default]'
                       )
 
-
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
                       help='Make the program run output verbose')
 
@@ -52,7 +50,7 @@ if __name__=='__main__':
     (options,args) = parser.parse_args()
     verbose = options.verbose
     out = sys.stdout
-    if options.outFile != None: 
+    if options.outFile != None:
         out = file(options.outFile,'w')
 
     for filename in args:
@@ -70,7 +68,7 @@ if __name__=='__main__':
                 msgs.append(data)
             else:
                 dropcount += 1
-                
+
             if options.maxLines!=None and linenum%options.intervalCheck==0 and len(msgs)>options.maxLines:
                 overflow = len(msgs)-options.maxLines
                 msgs=msgs[overflow:] # Chop from the front.  What is the fastest way to do this?

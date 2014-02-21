@@ -16,12 +16,11 @@ log = aisutils.server.LogFileWithRotate('log-ccom-wx-','rnhccom',True,True)
 
 while 1:
     data,addr = sock.recvfrom(buffer)
-    
+
     if not data:
         log.write("NO DATA")
 	break
     else:
         timestamp = time.time()
     log_str = '%s,%s' % (data.strip(),addr[0])
-    #print log_str
     log.write(log_str,verbose=True)

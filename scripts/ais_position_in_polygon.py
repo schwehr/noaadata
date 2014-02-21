@@ -1,10 +1,7 @@
 #!/usr/bin/env python
-#!/usr/bin/env python
-
 __version__ = '$Revision: 12483 $'.split()[1]
 __date__ = '$Date: 2009-08-19 16:55:51 -0400 (Wed, 19 Aug 2009) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__='''
 
 Filter position messages (1,2,3) that are within a polygon.
@@ -33,7 +30,7 @@ The Hampton Roads area for the US Hydro 2007 conference:
 egrep '!AIVDM,1,1,[0-9]?,[AB],[1-3]' biglog.ais > pos_msgs.ais
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{pcl-core<http://trac.gispython.org/projects/PCL>} 
+@requires: U{pcl-core<http://trac.gispython.org/projects/PCL>}
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
 @version: ''' + __version__ +'''
@@ -311,7 +308,7 @@ def listofpoints2PolygonWKT(aList):
 
     buf.write('POLYGON ((')
     for pt in aList[:-1]:
-	buf.write(str(pt[0])+' '+str(pt[1])+', ')
+        buf.write(str(pt[0])+' '+str(pt[1])+', ')
 
     pt = aList[-1]
     buf.write(str(pt[0])+' '+str(pt[1]))
@@ -320,7 +317,7 @@ def listofpoints2PolygonWKT(aList):
     #print buf.getvalue()
 
     return buf.getvalue()
-    
+
 stellwagenWKT = listofpoints2PolygonWKT(stellwagen)
 stellwagen_5nm_WKT = listofpoints2PolygonWKT(stellwagen_5nm)
 
@@ -343,7 +340,7 @@ def filter_file(infile, outfile, polygonWKT, verbose=False):
         from cartography.geometry import Geometry
     except:
         sys.exit('ERROR: need to install pcl-core for cartography.geometry.Geometry')
-    
+
     poly = Geometry.fromWKT(polygonWKT)
     bbox = poly.envelope()
     minx = bbox.minx  # for speed, throw out points as soon as possible
@@ -353,42 +350,42 @@ def filter_file(infile, outfile, polygonWKT, verbose=False):
 
     if verbose:
         print 'minLon maxLon minLat maxLat filename'
-        print minx, maxx, miny, maxy 
+        print minx, maxx, miny, maxy
 
     count = 0
     linenum=0
     for line in infile:
-	linenum += 1
-	if linenum%1000==0: 
+        linenum += 1
+        if linenum%1000==0:
             sys.stderr.write('line '+str(linenum)+' -- count='+str(count)+'\n')
-	# Trick: Only handle the first 19 characters since that contains the lon/lat
-	txt = line.split(',')[5][:25]
-	#print txt
-	bv = binary.ais6tobitvec(txt) #line[5][:19]
+        # Trick: Only handle the first 19 characters since that contains the lon/lat
+        txt = line.split(',')[5][:25]
+        #print txt
+        bv = binary.ais6tobitvec(txt) #line[5][:19]
 
         # Try to throw out points as soon as possible.  Use float rather than decimal.  faster??  Maybe not
-	#lon = ais_msg_1.decodelongitude(bv)
+        #lon = ais_msg_1.decodelongitude(bv)
         lon = binary.signedIntFromBV(bv[61:89])/600000.0
         if lon<minx or lon>maxx: continue
         #print 'close1:',lon
-	#lat = ais_msg_1.decodelatitude(bv)
+        #lat = ais_msg_1.decodelatitude(bv)
         lat = binary.signedIntFromBV(bv[89:116])/600000.0
         if lat<miny or lat>maxy: continue
 
         #print 'close2: POINT ('+str(lon)+' '+str(lat)+')'
 
-	point = Geometry.fromWKT('POINT ('+str(lon)+' '+str(lat)+')')
-	inside = point.within(poly)
-	if 1==inside:
-	    outfile.write(line)
-	    count+= 1
+        point = Geometry.fromWKT('POINT ('+str(lon)+' '+str(lat)+')')
+        inside = point.within(poly)
+        if 1==inside:
+            outfile.write(line)
+            count+= 1
 
     return count
 
 def filter_box(infile, outfile, west, east, lower, upper, verbose=False):
     ''' Do a straight box clip that should be faster than using the WKT.
     Use geographic coordinates what run +/- 180 east west and +/-90
-    north south. 
+    north south.
 
     @bug: Good luck at the +/-180 boundary!
 
@@ -405,17 +402,16 @@ def filter_box(infile, outfile, west, east, lower, upper, verbose=False):
     count = 0
     linenum=0
     for line in infile:
-	linenum += 1
-	if linenum%1000==0: sys.stderr.write('line '+str(linenum)+'\n')
-	# Trick: Only handle the first 19 characters since that contains the lon/lat
-	txt = line.split(',')[5][:25]
-	#print txt
-	bv = binary.ais6tobitvec(txt) #line[5][:19]
-	lon = float(ais_msg_1.decodelongitude(bv))
-	lat = float(ais_msg_1.decodelatitude(bv))
+        linenum += 1
+        if linenum%1000==0: sys.stderr.write('line '+str(linenum)+'\n')
+        # Trick: Only handle the first 19 characters since that contains the lon/lat
+        txt = line.split(',')[5][:25]
+        bv = binary.ais6tobitvec(txt) #line[5][:19]
+        lon = float(ais_msg_1.decodelongitude(bv))
+        lat = float(ais_msg_1.decodelatitude(bv))
 
         if west>lon or lon>east:
-            #print 'skip on lon',type(west),type(lon),type(east), west>lon,lon>east 
+            #print 'skip on lon',type(west),type(lon),type(east), west>lon,lon>east
             continue
         if lower>lat or lat>upper:
             continue
@@ -428,13 +424,13 @@ def filter_box(infile, outfile, west, east, lower, upper, verbose=False):
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
 
     parser.add_option('-o','--output',dest='outputFilename',default=None,
-		      help='Name of the file to write [default: stdout]')
+                      help='Name of the file to write [default: stdout]')
 
     parser.add_option('-p','--polygon',dest='polygonWKT',default=stellwagenWKT,
-		      help='Region to include [default: Stellwagen Bank National Marine Sanctuary]')
+                      help='Region to include [default: Stellwagen Bank National Marine Sanctuary]')
 
     parser.add_option('-5','--stellwagen-5nm',action='store_const'
                       ,dest='polygonWKT'
@@ -498,15 +494,14 @@ if __name__=='__main__':
         sys.exit(0)
 
     if options.verbose:
-	sys.stderr.write('WKT:\n  '+options.polygonWKT+'\n')
+        sys.stderr.write('WKT:\n  '+options.polygonWKT+'\n')
 
 
     if len(args)==0:
-	count = filter_file(sys.stdin,outFile,options.polygonWKT,options.verbose)
-	if (options.verbose): sys.stderr.write('Found points inside: '+str(count)+'\n')
+        count = filter_file(sys.stdin,outFile,options.polygonWKT,options.verbose)
+        if (options.verbose): sys.stderr.write('Found points inside: '+str(count)+'\n')
     else:
-	for filename in args:
-	    if (options.verbose): sys.stderr.write('Working on file: '+filename+'\n')
-	    count = filter_file(open(filename),outFile,options.polygonWKT,options.verbose)
-	    if (options.verbose): sys.stderr.write('Found points inside: '+str(count)+'\n')
-
+        for filename in args:
+            if (options.verbose): sys.stderr.write('Working on file: '+filename+'\n')
+            count = filter_file(open(filename),outFile,options.polygonWKT,options.verbose)
+            if (options.verbose): sys.stderr.write('Found points inside: '+str(count)+'\n')

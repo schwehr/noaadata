@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 13270 $'.split()[1]
 __date__ = '$Date: 2010-03-11 14:50:30 -0500 (Thu, 11 Mar 2010) $'.split()[1]
 __author__ = 'Kurt Schwehr'
@@ -44,8 +43,8 @@ def utmZoneToEpsg(cx,zone):
     sql='SELECT srid FROM spatial_ref_sys WHERE srtext LIKE \'%UTM zone '+str(zone)+'%\';'
     #cu.execute('SELECT srid FROM spatial_ref_sys WHERE srtext like ''\%UTM zone %s\%\';',zone)
     cu.execute(sql)
-    
-    
+
+
 ######################################################################
 if __name__=='__main__':
     from optparse import OptionParser
@@ -86,7 +85,7 @@ if __name__=='__main__':
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')
     parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+                          help='Host name of the computer serving the dbx [default: %default]')
     defaultUser = os.getlogin()
     parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
                       help='Host name on which the database resides [default: %default]')
@@ -171,11 +170,11 @@ if __name__=='__main__':
     #sys.stderr.write('FIX: remove limit\n')
 
     print 'FIX: do not hard code the projection!'
-    # UTM Zone 19... 
+    # UTM Zone 19...
     sql='SELECT AsText(Transform(track,32619)) FROM tpath'
     # --- EPSG 32610 : WGS 84 / UTM zone 10N
     #sql='SELECT AsText(Transform(track,32610)) FROM tpath'
-    
+
 
     if options.category!=None:
         s=',(SELECT userid FROM '+options.table+' WHERE '+options.field+'=\''+categories[options.category]
@@ -202,7 +201,7 @@ if __name__=='__main__':
     if options.startDate!=None or options.endDate!=None:
         sql +=' tpath.id=track_id.id'
 
-        
+
     if options.limit != None: sql+=' LIMIT '+str(options.limit)
     sql+=';'
     if options.dryRun:
@@ -232,10 +231,8 @@ if __name__=='__main__':
         #cells = getMultiSegLineCells(bbox,step,trackseq,verbose)
         #print cells
         g.addMultiSegLine(trackseq)
-        
+
     tracksFile.write('\n')
 
     g.writeCellsGnuplot(basename+'-cells.dat')
     g.writeArcAsciiGrid(basename+'-grd.asc')
-
-    

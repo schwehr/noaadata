@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 4799 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -8,7 +7,6 @@ __copyright__ = '2009'
 __license__   = 'GPL v3'
 __contact__   = 'kurt at ccom.unh.edu'
 __deprecated__ = 'what goes here?'
-
 __doc__ ='''
 Do an analysis of bs reports from an sqlite db.
 
@@ -19,7 +17,7 @@ Do an analysis of bs reports from an sqlite db.
 @undocumented: __doc__
 @since: 2009-Jun-09
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import sqlite3
@@ -42,7 +40,7 @@ def main():
     v = options.verbose
 
     cx = sqlite3.connect(options.database_file)
-    cx.row_factory = sqlite3.Row 
+    cx.row_factory = sqlite3.Row
 
     bs_list = [row['userid'] for row in cx.execute('SELECT DISTINCT(userid) FROM bsreport;')]
 
@@ -64,7 +62,7 @@ def main():
         o.write('%f %f %s\n' % (x,y,str(bs)))
 
 
-    
+
     if 1:
 
       dt_bs_uscg = []
@@ -72,7 +70,7 @@ def main():
         bsreport = dict(row)
         if row['Time_year'] == 0:
             continue
-#        print 
+#        print
 #        for item in bsreport:
 #            print '  ',item,bsreport[item]
         bs_time = datetime.datetime(row['Time_year'],row['Time_month'],row['Time_day'],
@@ -87,7 +85,7 @@ def main():
         dt =  row['cg_sec'] - bs_sec
         print dt
         #if dt
-        
+
 
 ######################################################################
 # Code that runs when this is this file is executed directly

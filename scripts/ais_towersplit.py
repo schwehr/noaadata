@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 7470 $'.split()[1]
 __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__='''
-
 Split an USCG N-AIS log file into one file per receiving station.
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
@@ -27,8 +24,6 @@ Split an USCG N-AIS log file into one file per receiving station.
 '''
 
 import sys, os
-#from decimal import Decimal
-#from lxml import etree 
 
 def getStation(msg,withR=True):
     '''
@@ -41,13 +36,13 @@ def getStation(msg,withR=True):
     numFields = len(fields)
     #for i in range(numFields):
     for i in range(numFields-1,-1,-1):
-	#curField = fields[numFields-i-1]
-	curField = fields[i]
-	if curField[0]=='r':
-	    if withR: return curField
-	    return curField[1:]
-	if curField[1]=='*': # Checksum
-	    return None
+        #curField = fields[numFields-i-1]
+        curField = fields[i]
+        if curField[0]=='r':
+            if withR: return curField
+            return curField[1:]
+        if curField[1]=='*': # Checksum
+            return None
     return None
 
 
@@ -63,39 +58,39 @@ def towersplit(options, filenames):
     #stations=set()
     subdir = options.subdir
     if options.useSubdir:
-	if not os.access(subdir,os.X_OK):
-	    os.mkdir(subdir)
-	if subdir[-1]!='/': subdir += '/'
-	print 'Using subdir ...',subdir
+        if not os.access(subdir,os.X_OK):
+            os.mkdir(subdir)
+        if subdir[-1]!='/': subdir += '/'
+        print 'Using subdir ...',subdir
     else:
-	subdir = ''
-    
+        subdir = ''
+
     unknown = None  # Where to write messages with no station
     stationFiles={}
     for filename in filenames:
-	lineNum = 0
-	for line in file(filename):
-	    lineNum += 1
-	    if lineNum % 20000 == 0: print 'line',lineNum
-	    if line[0]=='#': continue # Allow for comments
-	    station = getStation(line)
-	    if None==station:
-		print 'Line had no station:',line
-		if None==unknown: unknown = file(subdir+'unknown','w')
-		unknown.write(line)
-	    if station not in stationFiles:
-		stationFilename = subdir+station
-		#print 'Creating station file',stationFilename,'for',station
-		stationFiles[station] = file(stationFilename,'w')
-	    #else: print 'already open'
-	    #print 'writing line to file:',station
-	    stationFiles[station].write(line)
+        lineNum = 0
+        for line in file(filename):
+            lineNum += 1
+            if lineNum % 20000 == 0: print 'line',lineNum
+            if line[0]=='#': continue # Allow for comments
+            station = getStation(line)
+            if None==station:
+                print 'Line had no station:',line
+                if None==unknown: unknown = file(subdir+'unknown','w')
+                unknown.write(line)
+            if station not in stationFiles:
+                stationFilename = subdir+station
+                #print 'Creating station file',stationFilename,'for',station
+                stationFiles[station] = file(stationFilename,'w')
+            #else: print 'already open'
+            #print 'writing line to file:',station
+            stationFiles[station].write(line)
 
 ######################################################################
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
 
     parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
                         help='run the documentation tests')
@@ -114,18 +109,18 @@ if __name__=='__main__':
     success=True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	argvOrig = sys.argv
-	sys.argv= [sys.argv[0]]
-	if options.verbose: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else: 
-	    print 'FAILED'
-	    success=False
-	sys.argv = argvOrig # Restore the original args
-	del argvOrig # hide from epydoc
-	sys.exit() # FIX: Will this exit success?
+        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        argvOrig = sys.argv
+        sys.argv= [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print 'ok'
+        else:
+            print 'FAILED'
+            success=False
+        sys.argv = argvOrig # Restore the original args
+        del argvOrig # hide from epydoc
+        sys.exit() # FIX: Will this exit success?
 
     towersplit(options, args)

@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 12308 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -39,9 +38,6 @@ def main():
             s = os.stat(filename)
         except OSError:
             print 'missing',filename
-        
-
-        
 
 
 if __name__ == '__main__':

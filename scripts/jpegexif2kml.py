@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 4799 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -8,7 +7,6 @@ __copyright__ = '2008'
 __license__   = 'GPL v3'
 __contact__   = 'kurt at ccom.unh.edu'
 __deprecated__ = 'what goes here?'
-
 __doc__ ='''
 Convert a sequence of geotagged jpeg images to kml
 
@@ -19,8 +17,7 @@ Convert a sequence of geotagged jpeg images to kml
 @undocumented: __doc__
 @since: 2008-Aug-24
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
-
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import sys
@@ -52,7 +49,7 @@ def kml_start(file):
 
 def kml_end(file):
     file.write('</kml>\n')
-    
+
 
 def kml_placemark(x, y, z=10, description='No description', name='unknown',indent='\t\t'):
     ''' Try to handle writing kml placemarks
