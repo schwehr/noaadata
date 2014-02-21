@@ -16,7 +16,7 @@ Try to process the tide data for summer hydro 2009.  Don't trust this code!
 @undocumented: __doc__
 @since: 2009-Jun-09
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @todo: verify this whole deal
 @todo: check the time zones
@@ -55,13 +55,15 @@ print output_format
 print header
 
 
-test_str='''Date/Time:  9.06.09 15:04:08
-00 Battery Voltage        10.2  Volt 
-01 Reference              76    77   
-02 Water level             2.46 m    
-03 Water temperature       7.84 Deg.C
-04 Pressure               11.74 kPa  
-# 12.5633, 3.60414, 09 Jun 2009, 15:10:47'''
+test_str=(
+    'Date/Time:  9.06.09 15:04:08'
+    '00 Battery Voltage        10.2  Volt '
+    '01 Reference              76    77   '
+    '02 Water level             2.46 m    '
+    '03 Water temperature       7.84 Deg.C'
+    '04 Pressure               11.74 kPa  '
+    ' # 12.5633, 3.60414, 09 Jun 2009, 15:10:47'
+    )
 
 
 aanderraa_date_regex_str = r'''Date/Time:\s+(?P<datetime>\d{1,2}.\d{1,2}.\d{1,2}\s+\d{1,2}:\d{1,2}:\d{1,2})'''
@@ -130,7 +132,7 @@ if __name__=='__main__':
         # FIX: remove
         if len(matches)<5:
             continue
-            
+
         # filename is JJJSSSSS where J is julian day number and S is seconds since midnight
         print filename, filename[3:].lstrip('0')
         julianday = int(filename[:3].lstrip('0'))
@@ -144,7 +146,7 @@ if __name__=='__main__':
         print 'hour:',daysec,'->',hour
 
         basedate = datetime.datetime.strptime('2009 %d %d:0:0' % (julianday,hour), '%Y %j %H:%M:%S')
-        
+
         # first time found in the file for the waterlevel system
         startdate = None
         for i in range(len(matches)):
@@ -173,7 +175,7 @@ if __name__=='__main__':
         cur_match = {}
         for i in range(len(matches)):
             if matches[i][0] == 'aand_date':
-                curdate = datetime.datetime.strptime(matches[i][1]['datetime'],aanderraa_date_strptime) 
+                curdate = datetime.datetime.strptime(matches[i][1]['datetime'],aanderraa_date_strptime)
                 #print curdate,'->', curdate+dt
                 actual_curdate = curdate+dt
                 cur_match={'datetime':actual_curdate}
