@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ais-binary-message version="1.0">
-  <!-- Example that uses all of the AIS types and arrays of those types 
+  <!-- Example that uses all of the AIS types and arrays of those types
        $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $
        $Revision: 7473 $
     -->
@@ -71,7 +71,7 @@
       <description>An IEEE floating point number</description>
       <testvalue>-1234.5678</testvalue>
     </field>
-   
+
   </message>
   <!-- waterlevel -->
 

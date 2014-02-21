@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_23.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
-<!-- AUTHOR: Kurt Schwehr -->
-<!--  Definition for AIS Msg 23- Group Assignment Command  -->
-
 <ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <xi:include href="structs-inc.xml"/>
@@ -60,8 +56,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -87,22 +83,22 @@
     <field name="StationType" numberofbits="4" type="uint">
       <description>TODO</description>
       <lookuptable>
-	<entry key="0">all types of mobiles</entry>
-	<entry key="1">reserved for future use</entry>
-	<entry key="2">all types of Class B mobile stations</entry>
-	<entry key="3">SAR airborne mobile stations</entry>
-	<entry key="4">AtoN station</entry>
-	<entry key="5">Class B "CS" shipborne mobile stations (IEC62287 only)</entry>
-	<entry key="6">regional use and inland waterways</entry>
-	<entry key="7">regional use and inland waterways</entry>
-	<entry key="8">regional use and inland waterways</entry>
-	<entry key="9">regional use and inland waterways</entry>
-	<entry key="10">reserved for future use</entry>
-	<entry key="11">reserved for future use</entry>
-	<entry key="12">reserved for future use</entry>
-	<entry key="13">reserved for future use</entry>
-	<entry key="14">reserved for future use</entry>
-	<entry key="15">reserved for future use</entry>
+        <entry key="0">all types of mobiles</entry>
+        <entry key="1">reserved for future use</entry>
+        <entry key="2">all types of Class B mobile stations</entry>
+        <entry key="3">SAR airborne mobile stations</entry>
+        <entry key="4">AtoN station</entry>
+        <entry key="5">Class B "CS" shipborne mobile stations (IEC62287 only)</entry>
+        <entry key="6">regional use and inland waterways</entry>
+        <entry key="7">regional use and inland waterways</entry>
+        <entry key="8">regional use and inland waterways</entry>
+        <entry key="9">regional use and inland waterways</entry>
+        <entry key="10">reserved for future use</entry>
+        <entry key="11">reserved for future use</entry>
+        <entry key="12">reserved for future use</entry>
+        <entry key="13">reserved for future use</entry>
+        <entry key="14">reserved for future use</entry>
+        <entry key="15">reserved for future use</entry>
       </lookuptable>
       <default>0</default>
       <testvalue>3</testvalue> <!-- SAR -->
@@ -110,13 +106,13 @@
 
 
     <!-- FIX: need to make this ship and cargo be an include - This is the same as ais msg 5 -->
-    <field name="shipandcargo" numberofbits="8" type="uint"> 
+    <field name="shipandcargo" numberofbits="8" type="uint">
       <alias>what</alias>
       <description>Type of ship and cargo type.  FIX: need to verify that I got this lookup table right.  Also need to handle entryranges in the lookup table</description>
       <note>
-	http://www.imo.org/Environment/mainframe.asp?topic_id=236
+        http://www.imo.org/Environment/mainframe.asp?topic_id=236
 
-	see also ais msg 5.
+        see also ais msg 5.
       </note>
 
       <range min="0" max="99"/>
@@ -125,99 +121,99 @@
       <!-- 100-199 preserved for regional use -->
       <!-- 200-255 preserved for future use -->
       <lookuptable>
-	<!-- FIX: what about 0..9?? -->
-	<entryrange start="10" end="19">Reserved for future use</entryrange>
+        <!-- FIX: what about 0..9?? -->
+        <entryrange start="10" end="19">Reserved for future use</entryrange>
 
-	<!-- http://www.navcen.uscg.gov/mwv/regulations/wig/wig.htm -->
-	<entry key="20">Wing in ground (WIG), all ships of this type</entry>
-	<entry key="21">Wing in ground (WIG), Hazardous catagory A</entry>
-	<entry key="22">Wing in ground (WIG), Hazardous catagory B</entry>
-	<entry key="23">Wing in ground (WIG), Hazardous catagory C</entry>
-	<entry key="24">Wing in ground (WIG), Hazardous catagory D</entry>
-	<entry key="25">Wing in ground (WIG), Reserved for future use</entry>
-	<entry key="26">Wing in ground (WIG), Reserved for future use</entry>
-	<entry key="27">Wing in ground (WIG), Reserved for future use</entry>
-	<entry key="28">Wing in ground (WIG), Reserved for future use</entry>
-	<entry key="29">Wing in ground (WIG), No additional information</entry>
+        <!-- http://www.navcen.uscg.gov/mwv/regulations/wig/wig.htm -->
+        <entry key="20">Wing in ground (WIG), all ships of this type</entry>
+        <entry key="21">Wing in ground (WIG), Hazardous catagory A</entry>
+        <entry key="22">Wing in ground (WIG), Hazardous catagory B</entry>
+        <entry key="23">Wing in ground (WIG), Hazardous catagory C</entry>
+        <entry key="24">Wing in ground (WIG), Hazardous catagory D</entry>
+        <entry key="25">Wing in ground (WIG), Reserved for future use</entry>
+        <entry key="26">Wing in ground (WIG), Reserved for future use</entry>
+        <entry key="27">Wing in ground (WIG), Reserved for future use</entry>
+        <entry key="28">Wing in ground (WIG), Reserved for future use</entry>
+        <entry key="29">Wing in ground (WIG), No additional information</entry>
 
-	<entry key="30">fishing</entry>
-	<entry key="31">towing</entry>
-	<entry key="32">towing length exceeds 200m or breadth exceeds 25m</entry>
-	<entry key="33">dredging or underwater ops</entry>
-	<entry key="34">diving ops</entry>
-	<entry key="35">military ops</entry>
-	<entry key="36">sailing</entry>
-	<entry key="37">pleasure craft</entry>
-	<entry key="38">reserved</entry>
-	<entry key="39">reserved</entry>
+        <entry key="30">fishing</entry>
+        <entry key="31">towing</entry>
+        <entry key="32">towing length exceeds 200m or breadth exceeds 25m</entry>
+        <entry key="33">dredging or underwater ops</entry>
+        <entry key="34">diving ops</entry>
+        <entry key="35">military ops</entry>
+        <entry key="36">sailing</entry>
+        <entry key="37">pleasure craft</entry>
+        <entry key="38">reserved</entry>
+        <entry key="39">reserved</entry>
 
-	<entry key="40">High speed craft (HSC), all ships of this type</entry>
-	<entry key="41">High speed craft (HSC), Hazardous catagory A</entry>
-	<entry key="42">High speed craft (HSC), Hazardous catagory B</entry>
-	<entry key="43">High speed craft (HSC), Hazardous catagory C</entry>
-	<entry key="44">High speed craft (HSC), Hazardous catagory D</entry>
-	<entry key="45">High speed craft (HSC), Reserved for future use</entry>
-	<entry key="46">High speed craft (HSC), Reserved for future use</entry>
-	<entry key="47">High speed craft (HSC), Reserved for future use</entry>
-	<entry key="48">High speed craft (HSC), Reserved for future use</entry>
-	<entry key="49">High speed craft (HSC), No additional information</entry>
+        <entry key="40">High speed craft (HSC), all ships of this type</entry>
+        <entry key="41">High speed craft (HSC), Hazardous catagory A</entry>
+        <entry key="42">High speed craft (HSC), Hazardous catagory B</entry>
+        <entry key="43">High speed craft (HSC), Hazardous catagory C</entry>
+        <entry key="44">High speed craft (HSC), Hazardous catagory D</entry>
+        <entry key="45">High speed craft (HSC), Reserved for future use</entry>
+        <entry key="46">High speed craft (HSC), Reserved for future use</entry>
+        <entry key="47">High speed craft (HSC), Reserved for future use</entry>
+        <entry key="48">High speed craft (HSC), Reserved for future use</entry>
+        <entry key="49">High speed craft (HSC), No additional information</entry>
 
-	<entry key="50">pilot vessel</entry>
-	<entry key="51">search and rescue vessel</entry>
-	<entry key="52">tug</entry>
-	<entry key="53">port tender</entry>
-	<entry key="54">anti-polution equipment</entry>
-	<entry key="55">law enforcement</entry>
-	<entry key="56">spare - local vessel</entry>
-	<entry key="57">spare - local vessel</entry>
-	<entry key="58">medical transport</entry>
-	<!-- http://www.icrc.org/ihl.nsf/COM/470-750140?OpenDocument
-	     Protection of Victims of International Armed Conflicts -->
-	<entry key="59">ship according to RR Resolution No. 18</entry>
+        <entry key="50">pilot vessel</entry>
+        <entry key="51">search and rescue vessel</entry>
+        <entry key="52">tug</entry>
+        <entry key="53">port tender</entry>
+        <entry key="54">anti-polution equipment</entry>
+        <entry key="55">law enforcement</entry>
+        <entry key="56">spare - local vessel</entry>
+        <entry key="57">spare - local vessel</entry>
+        <entry key="58">medical transport</entry>
+        <!-- http://www.icrc.org/ihl.nsf/COM/470-750140?OpenDocument
+             Protection of Victims of International Armed Conflicts -->
+        <entry key="59">ship according to RR Resolution No. 18</entry>
 
-	<entry key="60">passenger, all ships of this type</entry>
-	<entry key="61">passenger, Hazardous catagory A</entry>
-	<entry key="62">passenger, Hazardous catagory B</entry>
-	<entry key="63">passenger, Hazardous catagory C</entry>
-	<entry key="64">passenger, Hazardous catagory D</entry>
-	<entry key="65">passenger, Reserved for future use</entry>
-	<entry key="66">passenger, Reserved for future use</entry>
-	<entry key="67">passenger, Reserved for future use</entry>
-	<entry key="68">passenger, Reserved for future use</entry>
-	<entry key="69">passenger, No additional information</entry>
-	<entry key="70">cargo, all ships of this type</entry>
-	<entry key="71">cargo, Hazardous catagory A</entry>
-	<entry key="72">cargo, Hazardous catagory B</entry>
-	<entry key="73">cargo, Hazardous catagory C</entry>
-	<entry key="74">cargo, Hazardous catagory D</entry>
-	<entry key="75">cargo, Reserved for future use</entry>
-	<entry key="76">cargo, Reserved for future use</entry>
-	<entry key="77">cargo, Reserved for future use</entry>
-	<entry key="78">cargo, Reserved for future use</entry>
-	<entry key="79">cargo, No additional information</entry>
-	<entry key="80">tanker, all ships of this type</entry>
-	<entry key="81">tanker, Hazardous catagory A</entry>
-	<entry key="82">tanker, Hazardous catagory B</entry>
-	<entry key="83">tanker, Hazardous catagory C</entry>
-	<entry key="84">tanker, Hazardous catagory D</entry>
-	<entry key="85">tanker, Reserved for future use</entry>
-	<entry key="86">tanker, Reserved for future use</entry>
-	<entry key="87">tanker, Reserved for future use</entry>
-	<entry key="88">tanker, Reserved for future use</entry>
-	<entry key="89">tanker, No additional information</entry>
-	<entry key="90">other type, all ships of this type</entry>
-	<entry key="91">other type, Hazardous catagory A</entry>
-	<entry key="92">other type, Hazardous catagory B</entry>
-	<entry key="93">other type, Hazardous catagory C</entry>
-	<entry key="94">other type, Hazardous catagory D</entry>
-	<entry key="95">other type, Reserved for future use</entry>
-	<entry key="96">other type, Reserved for future use</entry>
-	<entry key="97">other type, Reserved for future use</entry>
-	<entry key="98">other type, Reserved for future use</entry>
-	<entry key="99">other type, No additional information</entry>
+        <entry key="60">passenger, all ships of this type</entry>
+        <entry key="61">passenger, Hazardous catagory A</entry>
+        <entry key="62">passenger, Hazardous catagory B</entry>
+        <entry key="63">passenger, Hazardous catagory C</entry>
+        <entry key="64">passenger, Hazardous catagory D</entry>
+        <entry key="65">passenger, Reserved for future use</entry>
+        <entry key="66">passenger, Reserved for future use</entry>
+        <entry key="67">passenger, Reserved for future use</entry>
+        <entry key="68">passenger, Reserved for future use</entry>
+        <entry key="69">passenger, No additional information</entry>
+        <entry key="70">cargo, all ships of this type</entry>
+        <entry key="71">cargo, Hazardous catagory A</entry>
+        <entry key="72">cargo, Hazardous catagory B</entry>
+        <entry key="73">cargo, Hazardous catagory C</entry>
+        <entry key="74">cargo, Hazardous catagory D</entry>
+        <entry key="75">cargo, Reserved for future use</entry>
+        <entry key="76">cargo, Reserved for future use</entry>
+        <entry key="77">cargo, Reserved for future use</entry>
+        <entry key="78">cargo, Reserved for future use</entry>
+        <entry key="79">cargo, No additional information</entry>
+        <entry key="80">tanker, all ships of this type</entry>
+        <entry key="81">tanker, Hazardous catagory A</entry>
+        <entry key="82">tanker, Hazardous catagory B</entry>
+        <entry key="83">tanker, Hazardous catagory C</entry>
+        <entry key="84">tanker, Hazardous catagory D</entry>
+        <entry key="85">tanker, Reserved for future use</entry>
+        <entry key="86">tanker, Reserved for future use</entry>
+        <entry key="87">tanker, Reserved for future use</entry>
+        <entry key="88">tanker, Reserved for future use</entry>
+        <entry key="89">tanker, No additional information</entry>
+        <entry key="90">other type, all ships of this type</entry>
+        <entry key="91">other type, Hazardous catagory A</entry>
+        <entry key="92">other type, Hazardous catagory B</entry>
+        <entry key="93">other type, Hazardous catagory C</entry>
+        <entry key="94">other type, Hazardous catagory D</entry>
+        <entry key="95">other type, Reserved for future use</entry>
+        <entry key="96">other type, Reserved for future use</entry>
+        <entry key="97">other type, Reserved for future use</entry>
+        <entry key="98">other type, Reserved for future use</entry>
+        <entry key="99">other type, No additional information</entry>
 
-	<entryrange start="100" end="199">Reserved for regional use</entryrange> <!-- FIX: does this seem good for ranges? -->
-	<entryrange start="200" end="255">Reserved for future use</entryrange> <!-- FIX: does this seem good for ranges? -->
+        <entryrange start="100" end="199">Reserved for regional use</entryrange> <!-- FIX: does this seem good for ranges? -->
+        <entryrange start="200" end="255">Reserved for future use</entryrange> <!-- FIX: does this seem good for ranges? -->
       </lookuptable>
       <testvalue>55</testvalue>
     </field>
@@ -231,10 +227,10 @@
     <field name="TxRxMode" numberofbits="4" type="uint">
       <description>TODO</description>
       <lookuptable>
-	<entry key="0">Tx A/Tx B, Rx A/RX B</entry>
-	<entry key="1">Tx A, Rx A/Rx B</entry>
-	<entry key="2">Tx B, Rx A/Rx B</entry>
-	<entry key="3">reserved for future use</entry>
+        <entry key="0">Tx A/Tx B, Rx A/RX B</entry>
+        <entry key="1">Tx A, Rx A/Rx B</entry>
+        <entry key="2">Tx B, Rx A/Rx B</entry>
+        <entry key="3">reserved for future use</entry>
       </lookuptable>
       <default>0</default>
       <testvalue>1</testvalue>
@@ -244,22 +240,22 @@
       <description>Command the stations to report as given in table 17</description>
       <!-- FIX: is there some what to make this into a machine readable number? -->
       <lookuptable>
-	<entry key="0">As given by the autonomous mode</entry>
-	<entry key="1">10 minutes</entry>
-	<entry key="2">6 minutes</entry>
-	<entry key="3">3 minutes</entry>
-	<entry key="4">1 minute</entry>
-	<entry key="5">30 seconds</entry>
-	<entry key="6">15 seconds</entry>
-	<entry key="7">10 seconds</entry>
-	<entry key="8">5 seconds</entry>
-	<entry key="9">Next shorter reporting interval</entry>
-	<entry key="10">Next longer reporting interval</entry>
-	<entry key="11">Reserved for future use</entry>
-	<entry key="12">Reserved for future use</entry>
-	<entry key="13">Reserved for future use</entry>
-	<entry key="14">Reserved for future use</entry>
-	<entry key="15">Reserved for future use</entry>
+        <entry key="0">As given by the autonomous mode</entry>
+        <entry key="1">10 minutes</entry>
+        <entry key="2">6 minutes</entry>
+        <entry key="3">3 minutes</entry>
+        <entry key="4">1 minute</entry>
+        <entry key="5">30 seconds</entry>
+        <entry key="6">15 seconds</entry>
+        <entry key="7">10 seconds</entry>
+        <entry key="8">5 seconds</entry>
+        <entry key="9">Next shorter reporting interval</entry>
+        <entry key="10">Next longer reporting interval</entry>
+        <entry key="11">Reserved for future use</entry>
+        <entry key="12">Reserved for future use</entry>
+        <entry key="13">Reserved for future use</entry>
+        <entry key="14">Reserved for future use</entry>
+        <entry key="15">Reserved for future use</entry>
       </lookuptable>
       <testvalue>9</testvalue>
     </field>

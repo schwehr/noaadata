@@ -16,7 +16,7 @@
       <description>month 1..12</description>
       <testvalue>2</testvalue>
     </field>
- 	
+
     <field name="day" numberofbits="5" type="uint">
       <description>day of the month 1..31</description>
       <testvalue>28</testvalue>
@@ -78,7 +78,7 @@ goal is to illustrated the Tide Aware ENC and the AIS XML engine.
       <do_not_mangle_name/>
       <description>Time the measurement represents</description>
     </include-struct>
-    
+
     <!-- number of bits of station id is just to match St. Lawrence Seaway -->
     <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
       <description>Character identifier of the station.  Usually a number.</description>
@@ -105,17 +105,17 @@ goal is to illustrated the Tide Aware ENC and the AIS XML engine.
       <note>Tries to match the first 2 along with the St. Lawrence Seaway.  2 is for Water Level Type of 1?!?</note>
       <note>Need a good reference to the definition of each</note>
       <lookuptable>
-	<!-- FIX: need to doc these! -->
-	<entry key="0">MLLW</entry>
-	<entry key="1">IGLD-85</entry>
-	<entry key="2">WaterDepth</entry>
-	<entry key="3">STND</entry>
-	<entry key="4">MHW</entry>
-	<entry key="5">MSL</entry>
-	<entry key="6">NGVD</entry>
-	<entry key="7">NAVD</entry>
-	<entry key="8">WGS-84</entry>
-	<entry key="9">LAT</entry>
+        <!-- FIX: need to doc these! -->
+        <entry key="0">MLLW</entry>
+        <entry key="1">IGLD-85</entry>
+        <entry key="2">WaterDepth</entry>
+        <entry key="3">STND</entry>
+        <entry key="4">MHW</entry>
+        <entry key="5">MSL</entry>
+        <entry key="6">NGVD</entry>
+        <entry key="7">NAVD</entry>
+        <entry key="8">WGS-84</entry>
+        <entry key="9">LAT</entry>
       </lookuptable>
       <unavailable>31</unavailable>
       <testvalue>0</testvalue>

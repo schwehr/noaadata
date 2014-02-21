@@ -57,25 +57,25 @@
       help with these.
     </note>
 -->
-    <note> 
+    <note>
       Proposed transmission scheme for areatype=0 (right whale
       acoustic): A notice will be sent every 3 minutes for each buoy.
       Messages will be sent with timetoexpire of 0 when no acoustic
       detection has occured in the last 24 hours.  When an acoustic
       detection, the system will send an separate broadcast for that
       buoy as soon as possible in addition to the normal 3 minute
-      schedule.  
+      schedule.
     </note>
-<!-- 
+<!--
 This needs to somehow be expressed.  Is there a XML
       language for this?
 -->
 
     <note>
       The (lat,lon,areatype) provide the key/id for each message.  Any
-      system is expected to overwrite any prior message message with 
-      a new message when it is received.  This provide the mechanism 
-      to cancel out of date messages before they expire or extend the 
+      system is expected to overwrite any prior message message with
+      a new message when it is received.  This provide the mechanism
+      to cancel out of date messages before they expire or extend the
       messages further into the future.
     </note>
 
@@ -105,7 +105,7 @@ This needs to somehow be expressed.  Is there a XML
       <do_not_mangle_name/>
       <description>Start time of most recent notice</description> <!-- whale detection -->
     </include-struct>
-    
+
     <include-struct name="center" struct="position2d">
       <do_not_mangle_name/>
       <description>Center of the area/zone</description> <!-- detection -->
@@ -117,7 +117,7 @@ This needs to somehow be expressed.  Is there a XML
       <units>Minutes</units>
       <unavailable>32767</unavailable>  <!-- is this equivalent to will not expire? -->
       <lookuptable>
-	<entry key="0">No detection or notice not active in region</entry>
+        <entry key="0">No detection or notice not active in region</entry>
 <!--	<entry key="32767">Will not expire until another message has been received to replace the message for that location</entry>-->
       </lookuptable>
       <testvalue>1</testvalue>
@@ -137,74 +137,74 @@ This needs to somehow be expressed.  Is there a XML
       <description>What does this circular area represent</description>
       <note>This makes no recommendation on representation</note>
       <lookuptable>
-	<entry key="0">Right whale detection</entry> <!-- acoustic and possibly others --> <!-- FIX: how do we reference a regulatation or agreement? -->
+        <entry key="0">Right whale detection</entry> <!-- acoustic and possibly others --> <!-- FIX: how do we reference a regulatation or agreement? -->
 
-	<!-- WARNING: Do not count on anything else in the list beyond the 0 entry -->
+        <!-- WARNING: Do not count on anything else in the list beyond the 0 entry -->
 
-	<!-- FIX: what should go here?  J. Arroyo suggested looking at NOAA Chart 1 -->
-	<entry key="1">Restricted Area</entry> <!-- 1.2 in NOAA Chart 1 -->
-	<entry key="2">Prohibited Area (no unauthorized entry)</entry> <!-- 2.2 in NOAA Chart 1 -->
-	<!--<entry key="3">Dredging operations</entry> see 65 instead -->
-	<entry key="4">Diving operations</entry>
-	<entry key="5">Underwater obstruction</entry>
-	<entry key="6">Fishing nets</entry>
-	<entry key="7">Oil in water</entry>  <!-- do we need distinctions of oil in the water? -->
-	<entry key="9">Towing prohibited</entry>
+        <!-- FIX: what should go here?  J. Arroyo suggested looking at NOAA Chart 1 -->
+        <entry key="1">Restricted Area</entry> <!-- 1.2 in NOAA Chart 1 -->
+        <entry key="2">Prohibited Area (no unauthorized entry)</entry> <!-- 2.2 in NOAA Chart 1 -->
+        <!--<entry key="3">Dredging operations</entry> see 65 instead -->
+        <entry key="4">Diving operations</entry>
+        <entry key="5">Underwater obstruction</entry>
+        <entry key="6">Fishing nets</entry>
+        <entry key="7">Oil in water</entry>  <!-- do we need distinctions of oil in the water? -->
+        <entry key="9">Towing prohibited</entry>
 
-	<entry key="10">Anchorage area (large vessels)</entry> <!-- 10 in NOAA Chart 1 -->
-	<entry key="11">Anchorage area (small vessels)</entry> <!-- 10 in NOAA Chart 1 -->
-	<entry key="12">Anchorage area (general)</entry> <!-- 12.1 in NOAA Chart 1 -->
+        <entry key="10">Anchorage area (large vessels)</entry> <!-- 10 in NOAA Chart 1 -->
+        <entry key="11">Anchorage area (small vessels)</entry> <!-- 10 in NOAA Chart 1 -->
+        <entry key="12">Anchorage area (general)</entry> <!-- 12.1 in NOAA Chart 1 -->
 
-	<entry key="13">Anchorage area (deep water)</entry> <!-- 12.4 in NOAA Chart 1 -->
-	<entry key="14">Anchorage area (tanker)</entry> <!-- 12.5 in NOAA Chart 1 -->
-	<entry key="15">Anchorage area (24h max)</entry> <!-- 12.6 in NOAA Chart 1 -->
-	<entry key="16">Anchorage area (explosives)</entry> <!-- 12.7 in NOAA Chart 1 -->
+        <entry key="13">Anchorage area (deep water)</entry> <!-- 12.4 in NOAA Chart 1 -->
+        <entry key="14">Anchorage area (tanker)</entry> <!-- 12.5 in NOAA Chart 1 -->
+        <entry key="15">Anchorage area (24h max)</entry> <!-- 12.6 in NOAA Chart 1 -->
+        <entry key="16">Anchorage area (explosives)</entry> <!-- 12.7 in NOAA Chart 1 -->
 
-	<entry key="17">Sea-plane landing area</entry> <!-- 13 in NOAA Chart 1 -->
-	<entry key="18">Anchorage area (sea planes)</entry> <!-- 14 in NOAA Chart 1 -->
-
-
-	<entry key="20">Anchoring prohibited</entry> <!-- 20 in NOAA Chart 1 -->
-	<entry key="21">Fishing prohibited</entry> <!-- 21 in NOAA Chart 1 -->
-	<entry key="23">Actively dumping explosives</entry> <!-- 23.1 in NOAA Chart 1 - sort of?-->
-	<entry key="24">Actively dumping</entry> <!-- 24 in NOAA Chart 1 - sort of? -->
-
-	<entry key="30">Firing danger area</entry> <!-- 30 in NOAA Chart 1 -->
-	<entry key="31">Military area, entry prohibited</entry> <!-- 31 in NOAA Chart 1 -->
-	<entry key="32">Mine-laying practice area</entry> <!-- 32 in NOAA Chart 1 -->
-	<entry key="33">Submarine transit and exercise area</entry> <!-- 33 in NOAA Chart 1 -->
-	<entry key="34">Mine field</entry> <!-- 34 in NOAA Chart 1 -->
-
-	<!-- FIX: need explicit definitions of ice or citations to an authoritative reference -->
-	<entry key="61">Fast ice</entry> <!-- 60.1 in NOAA Chart 1 sort of? -->
-	<entry key="62">Sea ice</entry> <!-- 60.2  in NOAA Chart 1 sort of? -->
-	<entry key="63">Logs</entry> <!-- 61 in NOAA Chart 1 -->
-	<!-- <entry key="64">Spoil Ground</entry> dumping ground --> <!-- 62.1  in NOAA Chart 1 - What is this? -->
-
-	<entry key="65">Dredging area</entry> <!-- 63 in NOAA Chart 1 -->
-	<entry key="66">Cargo transhipment area</entry> <!-- 64 in NOAA Chart 1 -->
-	<entry key="67">Incineration area</entry> <!-- 65  in NOAA Chart 1 -->
-
-	<entry key="70">SAR - Region of search (what SAR keys should there be?)</entry> <!-- FIX: what sar's should there be? -->
-	<entry key="71">SAR - Man Overboard</entry> 
-
-	<entry key="80">Debris, Generic</entry> 
-	<!-- What other forms of debris need to be on here?  -->
-	<!-- IEC spec on debris from M. Winkler -->
-
-	<entry key="90">Restricted visibility</entry>
-	<entry key="91">Restricted visibility, fog</entry>
-	<entry key="92">Restricted visibility, smoke</entry>
+        <entry key="17">Sea-plane landing area</entry> <!-- 13 in NOAA Chart 1 -->
+        <entry key="18">Anchorage area (sea planes)</entry> <!-- 14 in NOAA Chart 1 -->
 
 
-	<entry key="100">Autonmous Underwater Vehicle (AUV) operations</entry>
-	<entry key="101">Remotely Operated Vehicle (ROV) operations - teather in water</entry>
-	<entry key="102">Diving operations</entry>
-	<entry key="103">Swimmers in water</entry>
-	<entry key="111">LNG security zone</entry>
+        <entry key="20">Anchoring prohibited</entry> <!-- 20 in NOAA Chart 1 -->
+        <entry key="21">Fishing prohibited</entry> <!-- 21 in NOAA Chart 1 -->
+        <entry key="23">Actively dumping explosives</entry> <!-- 23.1 in NOAA Chart 1 - sort of?-->
+        <entry key="24">Actively dumping</entry> <!-- 24 in NOAA Chart 1 - sort of? -->
+
+        <entry key="30">Firing danger area</entry> <!-- 30 in NOAA Chart 1 -->
+        <entry key="31">Military area, entry prohibited</entry> <!-- 31 in NOAA Chart 1 -->
+        <entry key="32">Mine-laying practice area</entry> <!-- 32 in NOAA Chart 1 -->
+        <entry key="33">Submarine transit and exercise area</entry> <!-- 33 in NOAA Chart 1 -->
+        <entry key="34">Mine field</entry> <!-- 34 in NOAA Chart 1 -->
+
+        <!-- FIX: need explicit definitions of ice or citations to an authoritative reference -->
+        <entry key="61">Fast ice</entry> <!-- 60.1 in NOAA Chart 1 sort of? -->
+        <entry key="62">Sea ice</entry> <!-- 60.2  in NOAA Chart 1 sort of? -->
+        <entry key="63">Logs</entry> <!-- 61 in NOAA Chart 1 -->
+        <!-- <entry key="64">Spoil Ground</entry> dumping ground --> <!-- 62.1  in NOAA Chart 1 - What is this? -->
+
+        <entry key="65">Dredging area</entry> <!-- 63 in NOAA Chart 1 -->
+        <entry key="66">Cargo transhipment area</entry> <!-- 64 in NOAA Chart 1 -->
+        <entry key="67">Incineration area</entry> <!-- 65  in NOAA Chart 1 -->
+
+        <entry key="70">SAR - Region of search (what SAR keys should there be?)</entry> <!-- FIX: what sar's should there be? -->
+        <entry key="71">SAR - Man Overboard</entry>
+
+        <entry key="80">Debris, Generic</entry>
+        <!-- What other forms of debris need to be on here?  -->
+        <!-- IEC spec on debris from M. Winkler -->
+
+        <entry key="90">Restricted visibility</entry>
+        <entry key="91">Restricted visibility, fog</entry>
+        <entry key="92">Restricted visibility, smoke</entry>
+
+
+        <entry key="100">Autonmous Underwater Vehicle (AUV) operations</entry>
+        <entry key="101">Remotely Operated Vehicle (ROV) operations - teather in water</entry>
+        <entry key="102">Diving operations</entry>
+        <entry key="103">Swimmers in water</entry>
+        <entry key="111">LNG security zone</entry>
 
 <!--
-	<entry key=""></entry>
+        <entry key=""></entry>
 -->
       </lookuptable>
       <testvalue>1</testvalue>

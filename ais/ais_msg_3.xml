@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_1.xml 10587 2008-10-20 17:47:41Z schwehr $ -->
-<!-- AUTHOR: Kurt Schwehr -->
-<!-- AIS Msg 1-3  - position message -->
-
 <ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <xi:include href="structs-inc.xml"/>
@@ -39,8 +35,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -54,22 +50,22 @@
       <description>What is the vessel doing</description>
       <unavailable>15</unavailable>
       <lookuptable>
-	<entry key="0">under way using engine</entry>
-	<entry key="1">at anchor</entry>
-	<entry key="2">not under command</entry>
-	<entry key="3">restricted maneuverability</entry>
-	<entry key="4">constrained by her draught</entry>
-	<entry key="5">moored</entry>
-	<entry key="6">aground</entry>
-	<entry key="7">engaged in fishing</entry>
-	<entry key="8">under way sailing</entry>
-	<entry key="9">reserved for future use (hazmat)</entry>
-	<entry key="10">reserved for future use</entry>
-	<entry key="11">reserved for future use</entry>
-	<entry key="12">reserved for future use</entry>
-	<entry key="13">reserved for future use</entry>
-	<entry key="14">reserved for future use</entry>
-	<entry key="15">not defined = default</entry>
+        <entry key="0">under way using engine</entry>
+        <entry key="1">at anchor</entry>
+        <entry key="2">not under command</entry>
+        <entry key="3">restricted maneuverability</entry>
+        <entry key="4">constrained by her draught</entry>
+        <entry key="5">moored</entry>
+        <entry key="6">aground</entry>
+        <entry key="7">engaged in fishing</entry>
+        <entry key="8">under way sailing</entry>
+        <entry key="9">reserved for future use (hazmat)</entry>
+        <entry key="10">reserved for future use</entry>
+        <entry key="11">reserved for future use</entry>
+        <entry key="12">reserved for future use</entry>
+        <entry key="13">reserved for future use</entry>
+        <entry key="14">reserved for future use</entry>
+        <entry key="15">not defined = default</entry>
       </lookuptable>
       <testvalue>3</testvalue>
     </field>
@@ -83,19 +79,19 @@
       <units>4.733*sqrt(val) degrees/min</units>  <!-- FIX: doh! -->
       <testvalue>-2</testvalue>
       <!-- Arg... this is painful
-	   <encode>4.733*sqrt(value)</encode>
-	   <decode>(value/4.733)*(value/4.733)</decode> 
-	   -->
+           <encode>4.733*sqrt(value)</encode>
+           <decode>(value/4.733)*(value/4.733)</decode>
+           -->
     </field>
 
     <field name="SOG" numberofbits="10" type="udecimal">
       <description>Speed over ground</description>
       <unavailable>102.3</unavailable>
       <lookuptable>
-	<entry key="102.2">102.2 knots or higher</entry>
+        <entry key="102.2">102.2 knots or higher</entry>
       </lookuptable>
       <units>knots</units>
-      <scale>10</scale> 
+      <scale>10</scale>
       <decimalplaces>1</decimalplaces>
       <testvalue>101.9</testvalue>
     </field>
@@ -104,8 +100,8 @@
     <field name="PositionAccuracy" numberofbits="1" type="uint">
       <description>Accuracy of positioning fixes</description>
       <lookuptable>
-	<entry key="0">low (greater than 10 m)</entry>
-	<entry key="1">high (less than 10 m)</entry>
+        <entry key="0">low (greater than 10 m)</entry>
+        <entry key="1">high (less than 10 m)</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -138,10 +134,10 @@
       <range min="0" max="59"/>
       <unavailable>60</unavailable>
       <lookuptable>
-	<entry key="60">not available/default</entry>
-	<entry key="61">manual input</entry>
-	<entry key="62">dead reckoning</entry>
-	<entry key="63">inoperative</entry>
+        <entry key="60">not available/default</entry>
+        <entry key="61">manual input</entry>
+        <entry key="62">dead reckoning</entry>
+        <entry key="63">inoperative</entry>
       </lookuptable>
       <units>seconds</units>
       <testvalue>35</testvalue>
@@ -172,8 +168,8 @@ Spare then becomes 3 bits
     <field name="RAIM" numberofbits="1" type="bool">
       <description>Receiver autonomous integrity monitoring flag</description>
       <lookuptable>
-	<entry key="False">not in use</entry>
-	<entry key="True">in use</entry>
+        <entry key="False">not in use</entry>
+        <entry key="True">in use</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>

@@ -82,7 +82,7 @@
       <!--<do_not_mangle_name/>-->
       <description>Time of most recent whale detection.</description>
     </include-struct>
-    
+
     <field name="stationid1" numberofbits="8" type="uint">
       <description>Identifier of the station that recorded the whale.  Usually a number.</description>
       <note>It is unlikely that a local area is likely to have more than 256 stations</note>
@@ -101,7 +101,7 @@
       <units>seconds</units>
       <unavailable>65535</unavailable>
       <lookuptable>
-	<entry key="0">No detection/notice active in region</entry>
+        <entry key="0">No detection/notice active in region</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -120,7 +120,7 @@
       <!-- <do_not_mangle_name/> -->
       <description>Time of most recent whale detection.</description>
     </include-struct>
-    
+
     <field name="stationid2" numberofbits="8" type="uint">
       <description>Identifier of the station that recorded the whale.  Usually a number.</description>
       <note>It is unlikely that a local area is likely to have more than 256 stations</note>
@@ -139,7 +139,7 @@
       <units>seconds</units>
       <unavailable>65535</unavailable>
       <lookuptable>
-	<entry key="0">No detection/notice active in region</entry>
+        <entry key="0">No detection/notice active in region</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -157,7 +157,7 @@
       <!-- <do_not_mangle_name/> -->
       <description>Time of most recent whale detection.</description>
     </include-struct>
-    
+
     <field name="stationid3" numberofbits="8" type="uint">
       <description>Identifier of the station that recorded the whale.  Usually a number.</description>
       <note>It is unlikely that a local area is likely to have more than 256 stations</note>
@@ -176,7 +176,7 @@
       <units>seconds</units>
       <unavailable>65535</unavailable>
       <lookuptable>
-	<entry key="0">No detection/notice active in region</entry>
+        <entry key="0">No detection/notice active in region</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>

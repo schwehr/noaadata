@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_7.xml 13621 2010-05-04 18:57:50Z schwehr $ -->
-<!-- $Revision: 13621 $ -->
-<!-- $Date: 2010-05-04 14:57:50 -0400 (Tue, 04 May 2010) $ -->
-
-<!-- AUTHOR: Kurt Schwehr -->
-
 <ais-binary-message version="1.0">
-  
-  <message name="binack" aismsgnum="8">
+
+  <message name="binack" aismsgnum="7">
     <description>Binary acknowledgement of addressed message</description>
 
     <messagesize>168</messagesize> <!-- number of bits in the message -->
@@ -34,8 +28,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>

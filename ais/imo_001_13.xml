@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: imo_001_13.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
-<!-- Since: 2007-Oct-17 -->
-<!-- AUTHOR: Kurt Schwehr -->
-<!-- IMO 236 FAIRWAY CLOSED - Application 3 - 001-13  -->
-
 <ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <!-- Stand alone version of a message 8 - includes header  -->
@@ -30,8 +25,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -94,10 +89,10 @@
     <field name="unit" numberofbits="2" type="uint">
       <description>Unit of extension value for range field</description>
       <lookuptable>
-	<entry key="0">m</entry>
-	<entry key="1">km</entry>
-	<entry key="2">nm</entry>
-	<entry key="3">cbl</entry> <!-- FIX: what kind of unit is this?!?! -->
+        <entry key="0">m</entry>
+        <entry key="1">km</entry>
+        <entry key="2">nm</entry>
+        <entry key="3">cbl</entry> <!-- FIX: what kind of unit is this?!?! -->
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -124,17 +119,17 @@
     </field>
 
     <field name="today" numberofbits="5" type="uint">
-      <description>To day</description> 
+      <description>To day</description>
       <testvalue>27</testvalue>
     </field>
 
     <field name="tomonth" numberofbits="4" type="uint">
-      <description>To month</description> 
+      <description>To month</description>
       <testvalue>2</testvalue>
     </field>
 
     <field name="tohour" numberofbits="5" type="uint">
-      <description>To LT hour (appr)</description> 
+      <description>To LT hour (appr)</description>
       <testvalue>22</testvalue>
     </field>
 
@@ -148,6 +143,5 @@
       <required>0</required>
     </field>
   </message>
-  
-</ais-binary-message>
 
+</ais-binary-message>

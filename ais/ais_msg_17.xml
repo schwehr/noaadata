@@ -19,8 +19,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -44,7 +44,7 @@
       <decimalplaces>2</decimalplaces>
       <testvalue>-122.16</testvalue>
     </field>
-    
+
     <field name="y" numberofbits="17" type="decimal">
       <description>North South location</description>
       <range min="-90" max="90"/>
@@ -65,4 +65,4 @@
       <testvalue>110000101100000111100010010101001110111001101010011011111111100000110001011100001011111111101111111110011001000000010001110</testvalue>
     </field>
   </message>
-</ais-binary-message>    
+</ais-binary-message>

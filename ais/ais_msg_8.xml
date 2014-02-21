@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_8.xml 13756 2010-05-21 12:18:06Z schwehr $ -->
-<!-- $Revision: 13756 $ -->
-<!-- $Date: 2010-05-21 08:18:06 -0400 (Fri, 21 May 2010) $ -->
-
-<!-- AUTHOR: Kurt Schwehr for the Hampton Roads/Elizabeth River demonstration -->
-
 <!--
-
 Attempt to read an AIS Msg 8.  Binary broadcast message
 
-
-test message from N-AIS Dec 2006... 
+test message from N-AIS Dec 2006...
 !BSVDM,1,1,,A,85MwpwQKf22M=5KEn7IONkp9nkF5PtBao=COt6;QOuwk82>:tltI,0*01,r003669717,1165850285
-
-
 -->
 
 <ais-binary-message version="1.0">
@@ -58,8 +48,8 @@ test message from N-AIS Dec 2006...
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
