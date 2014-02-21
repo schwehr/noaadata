@@ -38,7 +38,6 @@ EOL=DOS_EOL
 if __name__=='__main__':
     from optparse import OptionParser
 
-    # FIX: is importing __init__ safe?
     parser = OptionParser(usage="%prog [options]",
                           version="%prog "+__version__ + " ("+__date__+")")
 
@@ -60,10 +59,10 @@ if __name__=='__main__':
                       ,help='How many seconds to listen after each send [default: %default sec]')
     parser.add_option('-T','--uscg-timestamps',dest='uscgFormat',default=False,action='store_true',
                       help='Use USCG N-AIS format with ",UTCsec" at the end of each line')
-    
+
 #    parser.add_option('p','--query-prefix',default='xx'
 #                      ,help=' [default: %default]')
-#    
+#
 #    parser.add_option('-q','--query',default=None
 #                      ,help='send a query (known choices: ACA, B[default: None]
 #                      )
@@ -81,7 +80,7 @@ if __name__=='__main__':
 
     buf=''
     for arg in args:
-        if options.verbose: 
+        if options.verbose:
             print 'Using DOS EOL style:',options.eolDos
             print 'sending:',arg,['(unix newline)','(dos newline)'][int(options.eolDos)]
 
@@ -100,7 +99,7 @@ if __name__=='__main__':
                 newline=buf.find('\n')
                 if -1!=newline:
                     fields = buf.split('\n')
-                    if options.uscgFormat: 
+                    if options.uscgFormat:
                         print fields[0].strip()+','+str(time.time())
                     else:
                         print fields[0].strip()
@@ -112,4 +111,3 @@ if __name__=='__main__':
 
     #s.send('$xxCAB,0,0,,*40'+EOL)
     #s.send('$xxCAB,1,1,1,1*40'+EOL)
-    
