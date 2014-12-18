@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
 # Since 2010-Apr-22
-
 # Try to decimate messages for ships
 
 import math
@@ -128,11 +126,11 @@ def main():
         keep_cnt = 0
         toss_cnt = 0
         outside_cnt = 0
-        
+
         xymt = file(str(mmsi)+'.xymt','w')
         csv = file(str(mmsi)+'.csv','w')
         csv.write('mmsi,x,y,date/time UTC,date/time EST\n')
-        
+
         print 'mmsi:',mmsi
         for row_num, row in enumerate (cx.execute('SELECT userid,longitude,latitude,cg_sec FROM position WHERE userid=%d AND latitude<90 ORDER by cg_sec;' % mmsi) ):
             if options.verbose and row_num % 10000 == 0: print row_num
@@ -149,10 +147,10 @@ def main():
                 #print row
                 xymt.write('{longitude} {latitude} {UserID} {cg_sec}\n'.format(**row))
                 d = datetime.datetime.utcfromtimestamp(row['cg_sec'])
-                
+
                 d_with_tz = datetime.datetime(d.year,d.month,d.day,d.hour,d.second, tzinfo=pytz.utc)
                 d_est = d_with_tz.astimezone(EST)
-                
+
                 csv.write('{mmsi},{x},{y},{d},{d_est}\n'.format(mmsi=row['UserID'], x=x, y=y, d=d.strftime('%Y/%d/%m %H:%M:%S'), d_est=d_est.strftime('%Y/%d/%m %H:%M:%S')))
                 #pass
             else:

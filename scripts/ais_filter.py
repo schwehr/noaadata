@@ -64,7 +64,7 @@ def filterInTimestamp(lineList):
 
 tsOld = None
 
-linesInTS=[] # Collection of all lines in the time 
+linesInTS=[] # Collection of all lines in the time
 
 for line in sys.stdin:
     ts = line.split(',')[-1].strip()

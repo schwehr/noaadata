@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_18.xml 11975 2009-05-27 15:18:30Z schwehr $ -->
-<!-- AUTHOR: Kurt Schwehr -->
-<!-- AIS Class B  - position message -->
-
 <ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
 
   <xi:include href="structs-inc.xml"/>
@@ -38,8 +34,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -58,10 +54,10 @@
       <description>Speed over ground</description>
       <unavailable>102.3</unavailable>
       <lookuptable>
-	<entry key="102.2">102.2 knots or higher</entry>
+        <entry key="102.2">102.2 knots or higher</entry>
       </lookuptable>
       <units>knots</units>
-      <scale>10</scale> 
+      <scale>10</scale>
       <decimalplaces>1</decimalplaces>
       <testvalue>101.9</testvalue>
     </field>
@@ -69,8 +65,8 @@
     <field name="PositionAccuracy" numberofbits="1" type="uint">
       <description>Accuracy of positioning fixes</description>
       <lookuptable>
-	<entry key="0">low (greater than 10 m)</entry>
-	<entry key="1">high (less than 10 m)</entry>
+        <entry key="0">low (greater than 10 m)</entry>
+        <entry key="1">high (less than 10 m)</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -103,10 +99,10 @@
       <range min="0" max="59"/>
       <unavailable>60</unavailable>
       <lookuptable>
-	<entry key="60">not available/default</entry>
-	<entry key="61">manual input</entry>
-	<entry key="62">dead reckoning</entry>
-	<entry key="63">inoperative</entry>
+        <entry key="60">not available/default</entry>
+        <entry key="61">manual input</entry>
+        <entry key="62">dead reckoning</entry>
+        <entry key="63">inoperative</entry>
       </lookuptable>
       <units>seconds</units>
       <testvalue>35</testvalue>
@@ -131,8 +127,8 @@
     <field name="cs_unit" numberofbits="1" type="bool">
       <description>Does this unit do Carrier Sense?</description>
       <lookuptable>
-	<entry key="False">Class B SOTDMA unit</entry>
-	<entry key="True">Class B CS unit</entry>
+        <entry key="False">Class B SOTDMA unit</entry>
+        <entry key="True">Class B CS unit</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -140,8 +136,8 @@
     <field name="display_flag" numberofbits="1" type="bool">
       <description>Does this class B unit have an integrated display?</description>
       <lookuptable>
-	<entry key="False">No display</entry>
-	<entry key="True">Integrated Display</entry>
+        <entry key="False">No display</entry>
+        <entry key="True">Integrated Display</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -149,8 +145,8 @@
     <field name="dsc_flag" numberofbits="1" type="bool">
       <description>Does it have dedicated or time-shared DSC radio function?</description>
       <lookuptable>
-	<entry key="False">No DSC function</entry>
-	<entry key="True">Has DSC</entry>
+        <entry key="False">No DSC function</entry>
+        <entry key="True">Has DSC</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -158,8 +154,8 @@
     <field name="band_flag" numberofbits="1" type="bool">
       <description>How flexible is the freq handling of the unit?</description>
       <lookuptable>
-	<entry key="False">Upper 525 kHz band</entry>
-	<entry key="True">Whole marine band</entry>
+        <entry key="False">Upper 525 kHz band</entry>
+        <entry key="True">Whole marine band</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -167,8 +163,8 @@
     <field name="msg22_flag" numberofbits="1" type="bool">
       <description>Can the unit handle msg 22?</description>
       <lookuptable>
-	<entry key="False">No freq management</entry>
-	<entry key="True">Freq management with msg 22</entry>
+        <entry key="False">No freq management</entry>
+        <entry key="True">Freq management with msg 22</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -176,8 +172,8 @@
     <field name="mode_flag" numberofbits="1" type="bool">
       <description>Assigned mode wrt to VDL slots</description>
       <lookuptable>
-	<entry key="False">Autonomous and continuous mode</entry>
-	<entry key="True">Assigned mode</entry>
+        <entry key="False">Autonomous and continuous mode</entry>
+        <entry key="True">Assigned mode</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -185,8 +181,8 @@
     <field name="RAIM" numberofbits="1" type="bool">
       <description>Receiver autonomous integrity monitoring flag</description>
       <lookuptable>
-	<entry key="False">not in use</entry>
-	<entry key="True">in use</entry>
+        <entry key="False">not in use</entry>
+        <entry key="True">in use</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>
@@ -194,8 +190,8 @@
     <field name="CommStateSelector" numberofbits="1" type="uint">
       <description>SOTDMA or ITDMA</description>
       <lookuptable>
-	<entry key="0">SOTDMA</entry>
-	<entry key="1">ITDMA</entry>
+        <entry key="0">SOTDMA</entry>
+        <entry key="1">ITDMA</entry>
       </lookuptable>
       <testvalue>0</testvalue>
     </field>

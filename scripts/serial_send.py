@@ -28,17 +28,18 @@ if __name__=='__main__':
 
     #speeds=serial.baudEnumToInt.keys()
     #speeds.sort()
-    speeds=[ #0, 50, 75, 110,
-            #134, 150, 200, 
-            300, 
-            600, 
-            1200, 
-            1800, 
-            2400, 
-            4800, 
-            9600,
-            19200, 38400, 57600, 115200, 230400
-            ]
+    speeds=[
+        # 0, 50, 75, 110,
+        # 134, 150, 200,
+        300,
+        600,
+        1200,
+        1800,
+        2400,
+        4800,
+        9600,
+        19200, 38400, 57600, 115200, 230400
+        ]
 
     speeds=[str(s) for s in speeds]
 
@@ -53,7 +54,6 @@ if __name__=='__main__':
                       help='Number of loops to listen for responses [default: %default]')
 
     (options,args) = parser.parse_args()
-    #options.timeout=10
 
     options.baud = int(options.baud)
 
@@ -74,6 +74,5 @@ if __name__=='__main__':
 
         for i in range(options.num_listens):
             line = ser.readline().strip()
-            #line = ser.read(100).strip()
             print time.time(),'returned: "'+str(line)+'"'
             time.sleep(.1)

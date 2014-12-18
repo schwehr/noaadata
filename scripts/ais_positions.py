@@ -52,7 +52,7 @@ def getPosition(logfile, outfile, minDist=None):
 
     positions = {} # Last recoded ship position
 
-    for line in logfile: 
+    for line in logfile:
         fields = line.split(',')
         # FIX: use regex instead
         if '!AIVDM' != fields[0]:
@@ -115,7 +115,7 @@ def main():
     # FIX: add option that a max time between positions to pass if the ship is not moving
 
     (options, args) = parser.parse_args()
-    
+
     outfile = sys.stdout
 
     if None != options.outputFileName:
@@ -124,7 +124,7 @@ def main():
 
     if 0 == len(args):
         getPosition(sys.stdin, outfile, options.minDist)
-    else: 
+    else:
         for filename in args:
             getPosition(file(filename), outfile, options.minDist)
 

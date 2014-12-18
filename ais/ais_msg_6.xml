@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_6.xml 13756 2010-05-21 12:18:06Z schwehr $ -->
-<!-- $Revision: 13756 $ -->
-<!-- $Date: 2010-05-21 08:18:06 -0400 (Fri, 21 May 2010) $ -->
-
-<!-- AUTHOR: Kurt Schwehr -->
-
-<!-- Addressed binary message - 6 -->
-
 <!-- ESR bug report on ais_msg_6.py -d '!AIVDM,1,1,,A,702R5`hwCjq8,0*6B' -->
 
 <ais-binary-message version="1.0">
-  
-  <message name="abm" aismsgnum="8">
+
+  <message name="abm" aismsgnum="6">
     <description>Addressed Binary Message</description>
 
     <!-- can be 1 to 5 slots -->
@@ -43,8 +35,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>

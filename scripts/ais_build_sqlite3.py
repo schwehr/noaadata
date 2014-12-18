@@ -45,7 +45,6 @@ from BitVector import BitVector
 import StringIO
 
 import ais.binary    as binary
-#import ais.aisstring as aisstring
 
 import ais.ais_msg_1
 import ais.ais_msg_2
@@ -57,10 +56,8 @@ import ais.ais_msg_19 # Class B position and shipdata
 #import ais.ais_msg_8
 #import ais.ais_msg_21
 
-#import pysqlite2.dbapi2 as sqlite
-#import pysqlite2.dbapi2
-
 import sqlite3
+
 import datetime, time
 
 def createTables(cx,verbose=False):
@@ -89,7 +86,7 @@ def createTables(cx,verbose=False):
     cx.commit()
 
 def loadData(cx,datafile,verbose=False
-	     , uscg=True):
+             , uscg=True):
     '''
     Try to read data from an open file object.  Not yet well tested.
 
@@ -113,116 +110,116 @@ def loadData(cx,datafile,verbose=False
         countsTotal[i]=0
 
     for line in datafile:
-	lineNum += 1
-	if lineNum%1000==0:
-	    print lineNum
-	    cx.commit()
-#	    if lineNum>3000:
+        lineNum += 1
+        if lineNum%1000==0:
+            print lineNum
+            cx.commit()
+#           if lineNum>3000:
 #		print 'Early exit from load'
 #		break
 
-	if line[3:6] not in ('VDM|VDO'):
+        if line[3:6] not in ('VDM|VDO'):
 #            if verbose:
 #                sys.stderr.write
             continue # Not an AIS VHF message
-	try:
-	    msgNum = int(binary.ais6tobitvec(line.split(',')[5][0]))
-	except:
-	    print 'line would not decode',line
-	    continue
+        try:
+            msgNum = int(binary.ais6tobitvec(line.split(',')[5][0]))
+        except:
+            print 'line would not decode',line
+            continue
 
         countsTotal[msgNum]+=1
-        
-	if verbose: print 'msgNum:',msgNum
+
+        if verbose: print 'msgNum:',msgNum
 #	if msgNum not in (1,2,3,4,5):
-#	    if verbose: print 'skipping',line
-#	    continue
-	
-	payload = bv = binary.ais6tobitvec(line.split(',')[5])
+#           if verbose: print 'skipping',line
+#           continue
+
+        payload = bv = binary.ais6tobitvec(line.split(',')[5])
 
 # FIX: need to take badding into account ... right before the *
-	if msgNum in (1,2,3):
-#	    if len(bv) != 168:
-	    if len(bv) < 168:
-		print 'ERROR: skipping bad position message, line:',lineNum
-		print '  ',line,
-		print '   Got length',len(bv), 'expected', 168
-		continue
+        if msgNum in (1,2,3):
+#           if len(bv) != 168:
+            if len(bv) < 168:
+                print 'ERROR: skipping bad position message, line:',lineNum
+                print '  ',line,
+                print '   Got length',len(bv), 'expected', 168
+                continue
 #	elif msgNum == 4:
-	elif msgNum == 5:
-#	    if len(bv) != 424:
-	    if len(bv) < 424:
-		print 'ERROR: skipping bad shipdata message, line:',lineNum
-		print '  ',line,
-		print '   Got length',len(bv), 'expected', 424
-		continue
+        elif msgNum == 5:
+#           if len(bv) != 424:
+            if len(bv) < 424:
+                print 'ERROR: skipping bad shipdata message, line:',lineNum
+                print '  ',line,
+                print '   Got length',len(bv), 'expected', 424
+                continue
 
 
 
-	fields=line.split(',')
+        fields=line.split(',')
 
-	cg_timestamp = None
-	cg_station   = None
-	if uscg:
+        cg_timestamp = None
+        cg_station   = None
+        if uscg:
             try:
                 cg_sec = int(float(fields[-1])) # US Coast Guard time stamp.
                 print 'cg_sec:',cg_sec,type(cg_sec)
                 cg_timestamp = datetime.datetime.utcfromtimestamp(float(cg_sec))
             except:
                 print 'ERROR getting timestamp for',lineNum,line
-	    #print len(fields),fields
-	    for i in range(len(fields)-1,5,-1):
-		if 0<len(fields[i]) and 'r' == fields[i][0]:
-		    cg_station = fields[i]
-		    break # Found it so ditch the for loop
+            #print len(fields),fields
+            for i in range(len(fields)-1,5,-1):
+                if 0<len(fields[i]) and 'r' == fields[i][0]:
+                    cg_station = fields[i]
+                    break # Found it so ditch the for loop
 
-	#print station
-	#sys.exit('stations please work')
+        #print station
+        #sys.exit('stations please work')
 
-	ins = None
+        ins = None
 
-	try:
-	    if   msgNum==1: ins = ais.ais_msg_1.sqlInsert(ais.ais_msg_1.decode(bv),dbType='sqlite')
-	    elif msgNum==2: ins = ais.ais_msg_2.sqlInsert(ais.ais_msg_2.decode(bv),dbType='sqlite')
-	    elif msgNum==3: ins = ais.ais_msg_3.sqlInsert(ais.ais_msg_3.decode(bv),dbType='sqlite')
-	    elif msgNum==4: ins = ais.ais_msg_4.sqlInsert(ais.ais_msg_4.decode(bv),dbType='sqlite')
-	    elif msgNum==5: ins = ais.ais_msg_5.sqlInsert(ais.ais_msg_5.decode(bv),dbType='sqlite')
+        try:
+            if   msgNum==1: ins = ais.ais_msg_1.sqlInsert(ais.ais_msg_1.decode(bv),dbType='sqlite')
+            elif msgNum==2: ins = ais.ais_msg_2.sqlInsert(ais.ais_msg_2.decode(bv),dbType='sqlite')
+            elif msgNum==3: ins = ais.ais_msg_3.sqlInsert(ais.ais_msg_3.decode(bv),dbType='sqlite')
+            elif msgNum==4: ins = ais.ais_msg_4.sqlInsert(ais.ais_msg_4.decode(bv),dbType='sqlite')
+            elif msgNum==5: ins = ais.ais_msg_5.sqlInsert(ais.ais_msg_5.decode(bv),dbType='sqlite')
 
-	    elif msgNum==18: ins = ais.ais_msg_18.sqlInsert(ais.ais_msg_18.decode(bv),dbType='sqlite')
-	    elif msgNum==19: ins = ais.ais_msg_19.sqlInsert(ais.ais_msg_19.decode(bv),dbType='sqlite')
+            elif msgNum==18: ins = ais.ais_msg_18.sqlInsert(ais.ais_msg_18.decode(bv),dbType='sqlite')
+            elif msgNum==19: ins = ais.ais_msg_19.sqlInsert(ais.ais_msg_19.decode(bv),dbType='sqlite')
             else:
                 if verbose:
                     print 'Warning... not handling type',msgNum,'line:',lineNum
-		continue
-	except:
-	    print 'ERROR:  some decode error?','line:',lineNum
-	    print '  ',line
-	    continue
+                continue
+        except:
+            print 'ERROR:  some decode error?','line:',lineNum
+            print '  ',line
+            continue
 
-	counts[msgNum] += 1
+        counts[msgNum] += 1
 
-	if uscg:
+        if uscg:
             # FIX: make cg_timestamp work
-	    if None != cg_timestamp: ins.add('cg_timestamp',cg_timestamp)
-	    if None != cg_station:   ins.add('cg_r',        cg_station)
-	if verbose: print str(ins)
+            if None != cg_timestamp: ins.add('cg_timestamp',cg_timestamp)
+            if None != cg_station:   ins.add('cg_r',        cg_station)
+        if verbose: print str(ins)
 
         # FIX: redo this correctly???
-	#try:
+        #try:
         print str(ins)
         cu.execute(str(ins))
         #except:
         #    sys.stderr.write('FIX: write some sort of exception handler\n')
 #         except pysqlite2.dbapi2.OperationalError, params:
-# 	#except OperationalError,  params:
+#       #except OperationalError,  params:
 #             if -1 != params.message.find('no such table'):
 #                 print 'ERROR:',params.message
 #                 sys.exit('You probably need to run with --with-create')
 #             print 'params',params
 #             print type(params)
-# 	    print 'ERROR: sql error?','line:',lineNum
-# 	    print '  ', str(ins)
-# 	    print '  ',line
+#           print 'ERROR: sql error?','line:',lineNum
+#           print '  ', str(ins)
+#           print '  ',line
 
 #             if False:
 #                 # Give some debugging flexibility
@@ -242,7 +239,7 @@ def loadData(cx,datafile,verbose=False
         if counts[key]>0:
             print str(key)+':',counts[key]
     cx.commit()
-	
+
 
 ############################################################
 if __name__=='__main__':

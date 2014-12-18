@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_12.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
-<!-- $Revision: 7473 $ -->
-<!-- $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $ -->
-
 <!-- AUTHOR: Kurt Schwehr -->
 
-<!-- Addressed binary message - 6 -->
-
 <ais-binary-message version="1.0">
-  
-  <message name="asrm" aismsgnum="8">
+
+  <message name="asrm" aismsgnum="12">
     <description>Addressed safety related message.  FIX: need to handle the -1 string length at the end</description>
 
     <!-- can be 1 to 5 slots -->
@@ -41,8 +35,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>

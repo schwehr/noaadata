@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 12308 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -86,13 +85,13 @@ class Histogram:
         bin = int ( math.floor ( (value - self.min_val) / self.bin_size ) )
         #print 'bin:',value,'->',bin
         self.bins[bin] += 1
-        
+
 class  Uptime:
     'Calculated as downtime and then flipped.  Questionable which way makes more sense to calculate things'
     def __init__(self, min_gap_sec=2, min_gap_neg_sec=-1, dt_raw_filename=None, verbose=True):
         '''
         WARNING/FIX: assumes times are integer seconds
-        
+
         @param min_gap_sec: minimum number of seconds to consider offline
         @param dt_raw_file: filename to write dt or None for no file.'''
         self.min_gap_sec = min_gap_sec
@@ -116,7 +115,7 @@ class  Uptime:
 
     def set_start_time(self, timestamp):
         self.min_sec = self.max_sec = self.old_sec = self.old_sec_raw = timestamp
-        
+
     def set_end_time(self, timestamp):
         'like add_time, but does not imply the system was working'
         julian_yrday = int(datetime.datetime.utcfromtimestamp(self.max_sec).strftime('%Y%j'))
@@ -138,7 +137,7 @@ class  Uptime:
             self.tot_by_julian_yrday[julian_yrday+1] = (dt_rest  if julian_yrday+1 not in self.tot_by_julian_yrday else self.tot_by_julian_yrday[julian_yrday+1] + dt_rest)
 
         self.max_sec = timestamp
-         
+
 
     def add_time(self,timestamp):
         '''@param timestamp: UNIX UTC timestamp
@@ -173,11 +172,11 @@ class  Uptime:
                 else:
                     self.gap_counts_neg[dt_raw] += 1
             self.old_sec_raw = timestamp
-            
+
         if self.old_sec == None:
             self.old_sec = timestamp
             return
-            
+
         dt = timestamp - self.old_sec
         self.gap_counts_raw[dt] = (1 if dt not in self.gap_counts_raw else self.gap_counts_raw[dt] + 1)
 
@@ -188,7 +187,7 @@ class  Uptime:
         if dt < self.min_gap_sec:
             self.old_sec = timestamp
             return
-            
+
         if dt not in self.gap_counts:
             self.gap_counts[dt] = 1
         else:
@@ -215,12 +214,12 @@ class  Uptime:
             #print '======== tot_by_julian_yrday updates:',cur_day,nxt_day
             self.tot_by_julian_yrday[julian_yrday]   = cur_day
             self.tot_by_julian_yrday[julian_yrday+1] = nxt_day
-            
+
         if self.verbose and abs(dt) > 30:
             print 'gap>30:',dt,'at',timestamp,'\t', datetime.datetime.utcfromtimestamp(timestamp)
 
         self.old_sec = timestamp
-            
+
     def total_gap(self,min_gap_for_total=5*60):
         tot = 0
         for key in self.gap_counts:
@@ -265,7 +264,7 @@ class  Uptime:
                 carry_over = current - day_sec
                 if self.verbose: print 'carry_over:', a_date, key, 100, carry_over, '%.2f' % (carry_over / day_sec)
                 continue
-            
+
             carry_over = 0
             uptime =  100 - (100 * current / day_sec)  # Flip it to uptime
             results.append((key,uptime))
@@ -279,17 +278,17 @@ def distance_km_unit_sphere(lat1, long1, lat2, long2):
 
 def distance_m_unit_sphere(lat1, long1, lat2, long2):
     'distance in meters between two points assuming unit sphere - very rough!'
-    
+
     # phi = 90 - latitude
     phi1 = math.radians(90.0 - lat1)
     phi2 = math.radians(90.0 - lat2)
-        
+
     # theta = longitude
     theta1 = math.radians(long1)
     theta2 = math.radians(long2)
-        
+
     # Compute spherical distance from spherical coordinates.
-    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) + 
+    cos = (math.sin(phi1)*math.sin(phi2)*math.cos(theta1 - theta2) +
            math.cos(phi1)*math.cos(phi2))
     arc = math.acos( cos )
 
@@ -310,7 +309,7 @@ class BoundingBox:
         if self.y_min == None or self.y_min > y: self.y_min = y
         if self.y_max == None or self.y_max < y: self.y_max = y
         #print x,y,'->', str(self)
-        
+
 
     def __str__(self):
         return 'bounding_box: x %.4f to %.4f  y %.4f to %.4f' % (self.x_min,self.x_max, self.y_min, self.y_max)
@@ -328,7 +327,7 @@ class AisPositionStats:
         self.count_no_gps = 0
         self.count_bad_pos = 0
         self.count_bad_num_bits = 0
-        
+
     def add_message(self, ais_msg_dict, bits):
         '''Takes a USCG message dict pulled with the regex and a bit vector
         FIX... optionally ingest class b messages
@@ -341,7 +340,7 @@ class AisPositionStats:
                 self.count_bad_num_bits += 1
                 raise AisErrorBadNumBits('expected 168, got 54')
                 #return
-            
+
             x = lon = binary.signedIntFromBV(bits[61:89]) / 600000.
             y = lat = binary.signedIntFromBV(bits[89:116]) / 600000.
 
@@ -359,13 +358,13 @@ class AisPositionStats:
                     #print 'bbox_dropping_point:',x,y,dist,'km'
                     self.count_bad_pos += 1
                     raise AisErrorPositionTooFar('%.2f %.2f -> %.2f km' % (x,y,dist))
-                    #return 
+                    #return
 
                 self.dist_hist.add_point(dist)
 
             self.positions.append((lon,lat))
             self.bbox.add_point(lon,lat)
-            
+
 
     def __str__(self):
         return 'hi'
@@ -382,7 +381,7 @@ class AisStreamInfo:
             self.pos_stats = AisPositionStats(station_location, max_dist_km)
         else:
             self.pos_stats = AisPositionStats()
-        
+
 
     def add_file(self, filename):
         for line_num, line in enumerate(file(filename)):
@@ -398,7 +397,7 @@ class AisStreamInfo:
             except:
                 sys.stderr.write('skipping line: %s\n' % (line, ) )
                 continue
-            
+
             self.up.add_time(timestamp)
 
             if False:
@@ -422,14 +421,14 @@ class AisStreamInfo:
 
         #print self.pos_stats.positions
         #print str(self.pos_stats.bbox)
-        
+
 def get_parser():
     import magicdate
 
     parser = OptionParser(option_class=magicdate.MagicDateOption,
                           usage='%prog [options] file1 [file2] [file3] ...',
                           version='%prog '+__version__)
-    
+
     parser.add_option('--min-gap-sec', default=60*6, type='int', help='Suggest 21 seconds for a busy area with a basestation [default: %default]')
     parser.add_option('-s', '--start-time', type='magicdate', default=None, help='Force a start time (magicdate) [default: use first timestamp in file]')
     parser.add_option('-e', '--end-time',   type='magicdate', default=None, help='Force an end  time (magicdate) [default: use last timestamp in file]')
@@ -437,7 +436,7 @@ def get_parser():
 
     parser.add_option('--up-time-file', default=None, help='Where to write the uptime per day [default: file1.uptime]')
     parser.add_option('-v', '--verbose', default=False, action='store_true', help='Run in chatty mode')
-    
+
     return parser
 
 import calendar
@@ -449,7 +448,7 @@ def datetime2unixtimestamp(a_datetime):
     return calendar.timegm(datetime.datetime.utctimetuple(a_datetime))
 
 
-def main():    
+def main():
     parser = get_parser()
     (options,args) = parser.parse_args()
     v = options.verbose
@@ -468,7 +467,7 @@ def main():
         if v: print 'setting_start_time:',options.start_time,ts
         info.up.set_start_time(ts)
         #print
-        
+
     for file_num, filename in enumerate(args):
         if v: print 'processing_file:', file_num, filename
         info.add_file(filename)
@@ -527,12 +526,12 @@ def main():
             jday = str(entry[0])[4:].lstrip('0').rjust(3)
             o.write('%s %6.2f\n' % (jday,entry[1]) )
 
-            
+
     if False:
         print 'count_no_gps:',info.pos_stats.count_no_gps
         print 'count_bad_pos:',info.pos_stats.count_bad_pos
         print 'count_bad_bad_num_bits:',info.pos_stats.count_bad_num_bits
-    
+
         o = file('dist_hist.dat','w')
         for bin in info.pos_stats.dist_hist.bins:
             o.write('%d\n' % bin)

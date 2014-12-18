@@ -16,7 +16,7 @@ A second try at defining uptime.  Think about making a histogram of time gaps.  
 @undocumented: __doc__
 @since: 2010-Mar-23
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 class Uptime:
@@ -30,12 +30,12 @@ class Uptime:
             if old_sec == None:
                 old_sec = sec
                 continue
-            
+
             dt = sec - old_sec
             if dt < 2:
                 old_sec = sec
                 continue
-            
+
             if dt not in self.gap_counts:
                 self.gap_counts[dt] = 1
             else:
@@ -49,7 +49,7 @@ class Uptime:
                 continue
             tot += key + self.gap_counts[key]
         return tot
-            
+
 import sys
 import datetime
 

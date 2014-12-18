@@ -23,7 +23,7 @@ filename=$1
 day=`echo $filename | cut -d '-' -f 3,4,5`
 
 # First decimation of the data
-#egrep '^[$!]AIVDM,2,[12],[0-9]?,[AB],[^*]*[0-9A-F][0-9A-F],[a-zA-Z0-9,]*(r003669947|r000006099|r003669959)' 
+#egrep '^[$!]AIVDM,2,[12],[0-9]?,[AB],[^*]*[0-9A-F][0-9A-F],[a-zA-Z0-9,]*(r003669947|r000006099|r003669959)'
 egrep '^[$!]AIVDM,2,[12],[0-9]?,[AB],' $filename | egrep 'r003669947|r000006099|r003669959' > 1.tmp
 
 for station in r000006099 r003669947 r003669959; do

@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: imo_001_11.xml 13356 2010-04-01 00:00:01Z schwehr $ -->
-<!-- AUTHOR: Kurt Schwehr -->
 <!-- IMO 236 MetHydro  -->
 
 <ais-binary-message version="1.0" xmlns:xi="http://www.w3.org/2001/XInclude">
@@ -13,7 +11,6 @@
     sphereoid.  Smaller number of bits.  Used by SLS and IMO binary
     messages. WARNING: the IMO Circ 236 and IALA 1.3 10 p 91 do lat/lon which is OPPOSITE other AIS messages.</description>
 
-    <!--  -->
     <field name="latitude" numberofbits="24" type="decimal">
       <description>North South location</description>
       <range min="-90" max="90"/>
@@ -59,8 +56,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -98,7 +95,7 @@
     <field name="day" numberofbits="5" type="uint">
       <description>Day 0..31</description>
       <units>days</units>
-      <testvalue>3</testvalue> 
+      <testvalue>3</testvalue>
     </field>
 
     <field name="hour" numberofbits="5" type="uint">
@@ -106,7 +103,7 @@
       <unavailable>31</unavailable>
       <range min="0" max="23"/>
       <units>hours</units>
-      <testvalue>21</testvalue> 
+      <testvalue>21</testvalue>
     </field>
 
     <field name="min" numberofbits="6" type="uint">
@@ -114,7 +111,7 @@
       <unavailable>63</unavailable>
       <range min="0" max="59"/>
       <units>minutes</units>
-      <testvalue>58</testvalue> 
+      <testvalue>58</testvalue>
     </field>
 
     <field name="avewind" numberofbits="7" type="uint">
@@ -125,7 +122,7 @@
       <unavailable>127</unavailable>
       <testvalue>23</testvalue>
     </field>
-    
+
     <field name="windgust" numberofbits="7" type="uint">
       <description>Wind gust is the max wind speed value reading
  during the last 10 minutes.</description>
@@ -158,7 +155,7 @@
       <note>FIX: double check the unavailable value.  is it really the max?</note>
       <range min="-60.0" max="60.0"/>
       <units>degrees Celsius</units>
-      <unavailable>102.3</unavailable> 
+      <unavailable>102.3</unavailable>
       <scale>10</scale>
       <decimalplaces>1</decimalplaces>
       <testvalue>-40.1</testvalue>
@@ -200,10 +197,10 @@
     <field name="airpressuretrend" numberofbits="2" type="uint">
       <description>Air pressure trend</description>
       <lookuptable>
-	<entry key="0">steady</entry>
-	<entry key="1">decreasing</entry>
-	<entry key="2">increasing</entry>
-	<entry key="3">unavailable</entry>
+        <entry key="0">steady</entry>
+        <entry key="1">decreasing</entry>
+        <entry key="2">increasing</entry>
+        <entry key="3">unavailable</entry>
       </lookuptable>
       <unavailable>3</unavailable>
       <testvalue>2</testvalue>
@@ -232,10 +229,10 @@
     <field name="waterleveltrend" numberofbits="2" type="uint">
       <description>Water level trend</description>
       <lookuptable>
-	<entry key="0">steady</entry>
-	<entry key="1">decreasing</entry>
-	<entry key="2">increasing</entry>
-	<entry key="3">unavailable</entry>
+        <entry key="0">steady</entry>
+        <entry key="1">decreasing</entry>
+        <entry key="2">increasing</entry>
+        <entry key="3">unavailable</entry>
       </lookuptable>
       <unavailable>3</unavailable>
       <testvalue>0</testvalue>
@@ -314,7 +311,7 @@
       <testvalue>28</testvalue> <!-- FIX: is 3 required to be below 2? -->
     </field>
 
-    
+
 
     <field name="sigwaveheight" numberofbits="8" type="udecimal">
       <description>Significant wave height</description>
@@ -379,21 +376,21 @@
       <range min="0" max="12"/>
       <units>Beaufort scale</units>
       <lookuptable>
-	<entry key="0">Calm</entry><!--Flat</entry>-->
-	<entry key="1">Light air</entry><!--Ripples without crests</entry>-->
-	<entry key="2">Light breeze</entry><!--Small wavelets.  Crests of glassy appearance, not breaking</entry>-->
-	<entry key="3">Gentle breeze</entry><!--Large wavelets.  Crests begin to break; scattered whitecaps</entry>-->
-	<entry key="4">Moderate breeze</entry><!--Small waves.</entry>-->
-	<entry key="5">Fresh breeze</entry><!--Moderate (1.2 m) longer waves.  Some foam and spray.</entry>-->
-	<entry key="6">Strong breeze</entry><!--Large waves with foam crests and some spray.</entry>-->
-	<entry key="7">Near gale</entry><!--Sea heaps up and foam begins to streak.</entry>-->
-	<entry key="8">Gale</entry><!--Moderately high waves with breaking crests forming sprindrift.  Streaks of foam.</entry>-->
-	<entry key="9">Strong gale</entry><!--High waves (2.75 m) with dense foam.  Wave crests start to roll over.  Considerable spray.</entry>-->
-	<entry key="10">Storm</entry>
-	<entry key="11">Violent storm</entry>
-	<entry key="12">Hurricane</entry>
+        <entry key="0">Calm</entry><!--Flat</entry>-->
+        <entry key="1">Light air</entry><!--Ripples without crests</entry>-->
+        <entry key="2">Light breeze</entry><!--Small wavelets.  Crests of glassy appearance, not breaking</entry>-->
+        <entry key="3">Gentle breeze</entry><!--Large wavelets.  Crests begin to break; scattered whitecaps</entry>-->
+        <entry key="4">Moderate breeze</entry><!--Small waves.</entry>-->
+        <entry key="5">Fresh breeze</entry><!--Moderate (1.2 m) longer waves.  Some foam and spray.</entry>-->
+        <entry key="6">Strong breeze</entry><!--Large waves with foam crests and some spray.</entry>-->
+        <entry key="7">Near gale</entry><!--Sea heaps up and foam begins to streak.</entry>-->
+        <entry key="8">Gale</entry><!--Moderately high waves with breaking crests forming sprindrift.  Streaks of foam.</entry>-->
+        <entry key="9">Strong gale</entry><!--High waves (2.75 m) with dense foam.  Wave crests start to roll over.  Considerable spray.</entry>-->
+        <entry key="10">Storm</entry>
+        <entry key="11">Violent storm</entry>
+        <entry key="12">Hurricane</entry>
 
-	<entry key="15">unavailable</entry>
+        <entry key="15">unavailable</entry>
       </lookuptable>
       <unavailable>15</unavailable>
       <testvalue>12</testvalue>
@@ -419,8 +416,8 @@
       <range min="0" max="6"/> <!-- FIX: check this range! -->
       <units>WMO scale index</units>
       <lookuptable>
-	<entry key="0">FIX: find the WMO list of types</entry>
-	<entry key="7">unavailable</entry>
+        <entry key="0">FIX: find the WMO list of types</entry>
+        <entry key="7">unavailable</entry>
       </lookuptable>
       <unavailable>7</unavailable>
       <testvalue>2</testvalue>
@@ -438,15 +435,15 @@
       <testvalue>0.9</testvalue>
     </field>
 
-    
+
     <field name="ice" numberofbits="2" type="uint">
       <description>Yes or no for the presence of ice</description>
       <note>FIX: what types of ice constitute a yes??</note>
       <lookuptable>
-	<entry key="0">No ice</entry>
-	<entry key="1">Ice present</entry>
-	<entry key="2">Reserved</entry>
-	<entry key="3">Unknown if there is ice present</entry>
+        <entry key="0">No ice</entry>
+        <entry key="1">Ice present</entry>
+        <entry key="2">Reserved</entry>
+        <entry key="3">Unknown if there is ice present</entry>
       </lookuptable>
       <unavailable>3</unavailable>
       <testvalue>1</testvalue>

@@ -58,7 +58,7 @@ def create_daemon():
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
         maxfd = 1024
-  
+
     # Iterate through and close all file descriptors.
     if True:
         for fd in range(0, maxfd):
@@ -96,13 +96,13 @@ class PassThroughServer:
     Ripped out of port_server, but without the log file support
     '''
     def __init__(self,options):
-	self.clients=[]
-	self.options = options
+        self.clients=[]
+        self.options = options
         self.q = Queue.Queue()
-	self.count=0
+        self.count=0
         self.v = options.verbose
         # NTP monitoring
-        
+
         self.znt = nmea.znt.ZntLogger(
             self.log, # Make sure to change this with the log file rotation
             enabled = options.znt_enable,
@@ -114,23 +114,23 @@ class PassThroughServer:
             )
 
     def start(self):
-	print 'starting threads'
-	thread.start_new_thread(self.passdata,(self,))
-	thread.start_new_thread(self.connection_handler,(self,))
-	return
+        print 'starting threads'
+        thread.start_new_thread(self.passdata,(self,))
+        thread.start_new_thread(self.connection_handler,(self,))
+        return
 
     def put(self,nmea_str):
         self.q.put(nmea_str)
 
     def passdata(self,unused=None):
-	'''Do not use this.  Call start() instead.
+        '''Do not use this.  Call start() instead.
 
-	@bug: how can I get rid of unused?
-	'''
-	print 'starting passthrough server'
+        @bug: how can I get rid of unused?
+        '''
+        print 'starting passthrough server'
 
-	while 1:
-	    time.sleep(.001) # Replace with select
+        while 1:
+            time.sleep(.001) # Replace with select
             m = self.q.get()
             if len(m) == 0:
                 sys.stderr.write('No data in queue get\n')
@@ -145,25 +145,25 @@ class PassThroughServer:
                 except socket.error:
                     sys.stderr.write('Client Disconnect\n')
                     self.clients.remove(c)
-	
+
     def connection_handler(self,unused=None):
-	'''Do not use this.  Call start() instead.  This listens for
-	connections and adds the new socket to the clients list.
+        '''Do not use this.  Call start() instead.  This listens for
+        connections and adds the new socket to the clients list.
 
-	@bug: how can I get rid of unused?
-	'''
-	sys.stderr.write('starting incoming connection receiver\n')
-	sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
+        @bug: how can I get rid of unused?
+        '''
+        sys.stderr.write('starting incoming connection receiver\n')
+        sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
 
-	serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	serversocket.bind((self.options.outHost, self.options.outPort))
-	serversocket.listen(5)
+        serversocket.bind((self.options.outHost, self.options.outPort))
+        serversocket.listen(5)
 
-	while 1:
-	    (clientsocket, address) = serversocket.accept()
-	    sys.stderr.write('connect from %s\n' % (address,))
-	    self.clients.append(clientsocket)
+        while 1:
+            (clientsocket, address) = serversocket.accept()
+            sys.stderr.write('connect from %s\n' % (address,))
+            self.clients.append(clientsocket)
 
 
 
@@ -175,7 +175,7 @@ def start(options, pts):
     verbose = options.verbose
 
     ser = serial.Serial(options.port, options.baud, timeout=options.timeout)
-    
+
     logfile = options.log_prefix + date_str()
     current_day = time.gmtime()[2]
     if not options.daemonMode:
@@ -220,12 +220,12 @@ def start(options, pts):
             log.write('# DAEMON MODE: ' + str(options.daemonMode)+'\n')
             # getlogin is not happy as a daemon
             #log.write('# USER:        ' + str(os.getlogin())+'\n')
-            
+
             znt.out_file = log # Let NTP stamper know the new file.
 
 
         znt.update()
-        
+
         line = ser.readline().strip()
         timestamp = time.time()
         if len(line) == 0:
@@ -234,12 +234,12 @@ def start(options, pts):
             if options.mark:
                 log_str = '# MARK: '+str(timestamp)+'\n'
                 log.write(log_str)
-                if pts is not None: 
+                if pts is not None:
                     pts.put(log_str)
                 if options.flush:
                     log.flush()
             continue
-        elif verbose: 
+        elif verbose:
             if options.uscgFormat:
                 if options.station_id != None:
                     print line+',r'+options.station_id+','+str(timestamp)
@@ -260,14 +260,14 @@ def start(options, pts):
                 #log.write(','+str(timestamp)+'\n')
                 out_str += ','+str(timestamp)+'\n'
                 log.write(out_str)
-                if pts is not None: 
+                if pts is not None:
                     pts.put(out_str)
             else:
-                if pts is not None: 
+                if pts is not None:
                     pts.put('# ' +str(timestamp)+'\n')
                 log.write('# ' +str(timestamp)+'\n')
                 log.flush() # FIX: better not to flush so writing to disk less often
-                if pts is not None: 
+                if pts is not None:
                     pts.put(line+'\n')
                 log.write(line+'\n')
 
@@ -280,7 +280,7 @@ def start(options, pts):
 
 
 ######################################################################
-       
+
 if __name__ == '__main__':
     from optparse import OptionParser
 
@@ -315,9 +315,9 @@ if __name__ == '__main__':
     #speeds.sort()
     speeds = [
         #0, 50, 75, 110,
-        #134, 150, 200, 
+        #134, 150, 200,
         300
-        ,600 
+        ,600
         ,1200, 1800, 2400, 4800, 9600, 19200
         ,38400, 57600, 115200, 230400
             ]

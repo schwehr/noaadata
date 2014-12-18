@@ -65,7 +65,7 @@
       <do_not_mangle_name/>
       <description>Time of most recent whale detection.</description>
     </include-struct>
-    
+
     <field name="stationid" numberofbits="8" type="uint">
       <description>Identifier of the station that recorded the whale.  Usually a number.</description>
       <note>It is unlikely that a local area is likely to have more than 256 stations</note>

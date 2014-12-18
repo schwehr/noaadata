@@ -15,7 +15,7 @@
       <description>UTC month 1..12</description>
       <testvalue>2</testvalue>
     </field>
- 	
+
     <field name="day" numberofbits="5" type="uint">
       <description>UTC day of the month 1..31</description>
       <testvalue>28</testvalue>
@@ -67,7 +67,7 @@
       <do_not_mangle_name/>
       <description>Time of most recent whale detection.</description>
     </include-struct>
-    
+
     <!-- number of bits of station id is just to match St. Lawrence Seaway -->
     <field name="stationid" numberofbits="6" arraylength="7" type="aisstr6">
       <description>Identifier of the station that detected the whale.  (e.g. which buoy)</description>

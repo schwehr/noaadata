@@ -49,8 +49,6 @@ class DataServer:
         serversocket.listen(5)
 
         while True:
-            
-
             (clientsocket, address) = serversocket.accept()
             sys.stderr.write('connect from '+str(clientsocket)+' '+str(address)+'\n')
             running = True
@@ -78,12 +76,12 @@ def main():
                       , help='What host to read data from [default: %default]')
     parser.add_option('--in-gethostname', dest='inHostname', action='store_true', default=False
                       , help='Where the data comes from [default: %default]')
-    parser.add_option('-t', '--timeout', dest='timeout', type='float', default='3', 
+    parser.add_option('-t', '--timeout', dest='timeout', type='float', default='3',
                       help='Number of seconds to timeout after if no data [default: %default]')
-    parser.add_option('-d', '--delay', dest='delay', type='float', default='.5', 
+    parser.add_option('-d', '--delay', dest='delay', type='float', default='.5',
                       help='Number of seconds delay between sends [default: %default]')
 
-    parser.add_option('-f', '--file', dest='datafile', default='uscg-logs-2009-05-06', 
+    parser.add_option('-f', '--file', dest='datafile', default='uscg-logs-2009-05-06',
                       help='data file to send [default: %default]')
 
 

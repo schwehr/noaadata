@@ -38,11 +38,11 @@ if __name__=='__main__':
                       ,type='string'
                       ,default='unknown'
                       ,help='Receiver station name.  [default: %default]')
-    
+
     parser.add_option('-o','--output',dest='outFile',type='string'
                       ,default=None
                       ,help='Where to write the resulting stream [default: stdout]')
-    
+
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
                       ,help='Make the program be verbose')
 

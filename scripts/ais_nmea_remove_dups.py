@@ -21,7 +21,7 @@ batch of messages.
 @undocumented: __doc__
 @since: 2009-Aug-01
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @see: U{Sean Gillies How to lay out Python project code http://sgillies.net/blog/845/how-to-lay-out-python-project-code/}
 '''
@@ -29,16 +29,12 @@ import sys
 import os
 
 
-#lookback_dist = 1000
-#received = {}  # Dict of FIFO's for each message type.
-
-
 def remove_dups(in_file, outfile, lookback_dist=1000, pos_only=False, verbose = False):
     payloads = []
     if isinstance(in_file,str):
         in_file = file(in_file)
-        
-    o = outfile #file('unique.ais','w')
+
+    o = outfile
 
     dropped = 0
     for line_num, line in enumerate(in_file):
@@ -70,7 +66,7 @@ def main():
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",
                           version="%prog "+__version__+' ('+__date__+')')
-    parser.add_option('-l', '--lookback-dist', dest='lookback_dist', 
+    parser.add_option('-l', '--lookback-dist', dest='lookback_dist',
                       default=1000, type='int',
                       help='Number of message payloads to track for duplicates [default: %default]')
     parser.add_option('-p', '--pos-only', dest='pos_only', default=False, action='store_true',

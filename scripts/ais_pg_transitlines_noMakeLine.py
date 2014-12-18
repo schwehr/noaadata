@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 13257 $'.split()[1]
 __date__ = '$Date: 2010-03-10 09:44:45 -0500 (Wed, 10 Mar 2010) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__="""
 MakeLine is really really slow on 180K point lines, so this is the same as the other
 program, but builds the WKB line data in python, not postgresql/postgis.
@@ -21,17 +19,17 @@ AS '
        FOR arow IN SELECT * FROM transit LOOP
            text_output := text_output || arow.userid || ''\n'';
 
-           INSERT INTO tpath 
+           INSERT INTO tpath
            SELECT arange.id as id, arange.userid, setSRID(MakeLine(position),4326) AS track
-                  FROM 
-                  	    position,
-                  	    (SELECT userid,startpos,endpos,id FROM transit WHERE transit.id=arow.id) AS arange 
-                  WHERE 
-                  	    position.key >= arange.startpos 
-           	    and 
-           	    position.key <= arange.endpos
-           	    and
-           	    position.userid = arange.userid
+                  FROM
+                            position,
+                            (SELECT userid,startpos,endpos,id FROM transit WHERE transit.id=arow.id) AS arange
+                  WHERE
+                            position.key >= arange.startpos
+                    and
+                    position.key <= arange.endpos
+                    and
+                    position.userid = arange.userid
                   GROUP BY id,arange.userid
              ;
        END LOOP;
@@ -55,9 +53,8 @@ AS '
 
 @todo: find a pure sql way to do this on the server side.  This would be the run section of the SQL boo
 """
-
-
 import os,sys
+
 
 if __name__=='__main__':
     from optparse import OptionParser
@@ -66,7 +63,7 @@ if __name__=='__main__':
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')
     parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+                          help='Host name of the computer serving the dbx [default: %default]')
     defaultUser = os.getlogin()
     parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
                       help='Host name of the to access the database with [default: %default]')
@@ -110,7 +107,7 @@ if __name__=='__main__':
 # CREATE TABLE '''+options.tableName+'''
 # (
 #   id INTEGER NOT NULL REFERENCES transit(id),  -- transit id number from the transit table
-#   userid INTEGER NOT NULL, 		-- primary mmsi
+#   userid INTEGER NOT NULL,            -- primary mmsi
 #   -- geometry column created with a stored procedure
 # ) WITH OIDS;
 # '''
@@ -151,11 +148,11 @@ CREATE TABLE '''+options.tableName+'''
         if count==0:
             sys.stderr.write('Skipping ROW # '+str(rowNum)+'... no data points!  id='+str(id)+' userid='+str(userid)+' AND key>='+str(startpos)+' AND key<='+str(endpos)+'  \n')
             continue
-           
+
         if not options.keepSingletons and count==1:
             sys.stderr.write('Skipping ROW # '+str(rowNum)+'... singleton.   id='+str(id)+' userid='+str(userid)+' AND key>='+str(startpos)+' AND key<='+str(endpos)+'  \n')
             continue
-        
+
         if verbose:
             sys.stderr.write('ROW # '+str(rowNum)+'  POSITIONS: '+str(count)+'\n')
         elif rowNum % 50 == 0:
@@ -170,7 +167,7 @@ CREATE TABLE '''+options.tableName+'''
                     +' WHERE userid='+str(userid)+' AND key>='+str(startpos)+' AND key<='+str(endpos)+';')
 
         pointsDB = cu2.fetchall()	# This can take some time for large lines
-        
+
         linePoints = []
         if count==1:
             pt = pointsDB[0][0].split('(')[1].split(')')[0]

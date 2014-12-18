@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 7470 $'.split()[1]
 __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
-
 __doc__="""
 Create track lines for each transit from points in each line.
 
@@ -19,17 +17,17 @@ AS '
        FOR arow IN SELECT * FROM transit LOOP
            text_output := text_output || arow.userid || ''\n'';
 
-           INSERT INTO tpath 
+           INSERT INTO tpath
            SELECT arange.id as id, arange.userid, setSRID(MakeLine(position),4326) AS track
-                  FROM 
-                  	    position,
-                  	    (SELECT userid,startpos,endpos,id FROM transit WHERE transit.id=arow.id) AS arange 
-                  WHERE 
-                  	    position.key >= arange.startpos 
-           	    and 
-           	    position.key <= arange.endpos
-           	    and
-           	    position.userid = arange.userid
+                  FROM
+                            position,
+                            (SELECT userid,startpos,endpos,id FROM transit WHERE transit.id=arow.id) AS arange
+                  WHERE
+                            position.key >= arange.startpos
+                    and
+                    position.key <= arange.endpos
+                    and
+                    position.userid = arange.userid
                   GROUP BY id,arange.userid
              ;
        END LOOP;
@@ -64,7 +62,7 @@ if __name__=='__main__':
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')
     parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+                          help='Host name of the computer serving the dbx [default: %default]')
     defaultUser = os.getlogin()
     parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
                       help='Host name of the to access the database with [default: %default]')
@@ -97,13 +95,13 @@ if __name__=='__main__':
             pass
         except:
             print 'table did not already exist'
-        
+
 
         cu.execute('''
 CREATE TABLE '''+options.tableName+'''
 (
   id INTEGER NOT NULL REFERENCES transit(id),  -- transit id number from the transit table
-  userid INTEGER NOT NULL 		-- primary mmsi
+  userid INTEGER NOT NULL               -- primary mmsi
   -- geometry column created with a stored procedure
 );
 ''')

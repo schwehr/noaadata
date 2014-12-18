@@ -72,7 +72,7 @@ class Clean:
 
         if self.last_position_start is not None:
             last_position_start = mark_utc(magicdate.magicdate(self.last_position_start)+tzoffset )
-            
+
             if v:
                 cu.execute('SELECT COUNT(*) FROM last_position WHERE cg_timestamp < %s;', (track_start,))
                 print 'Deleting from last_position:',cu.fetchone()[0]
@@ -125,7 +125,7 @@ def main():
     (options,args) = parser.parse_args()
     v = options.verbose
     if v:
-        sys.stderr.write('starting logging to %s at %d\n' % 
+        sys.stderr.write('starting logging to %s at %d\n' %
                          (options.log_file, options.log_level) )
 
     if options.daemon_mode:
@@ -139,7 +139,7 @@ def main():
     clean = Clean(options)
     clean.do_once()
 
-        
+
 ######################################################################
 if __name__=='__main__':
     main()

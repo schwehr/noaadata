@@ -28,7 +28,6 @@ import sys
 import time
 import socket
 import select
-#import Queue
 import exceptions # For KeyboardInterupt pychecker complaint
 import logging # Python's logger module for tracking progress
 import aisutils.daemon
@@ -44,8 +43,8 @@ import ais
 from ais.ais_msg_1 import NavigationStatusDecodeLut
 from ais.ais_msg_5 import shipandcargoDecodeLut
 
-#ais_msgs_supported = ('B','C','H') 
-ais_msgs_supported = ('1','2','3','4','5','B','H') # ,'C', 'H') 
+#ais_msgs_supported = ('B','C','H')
+ais_msgs_supported = ('1','2','3','4','5','B','H') # ,'C', 'H')
 ''' Which AIS messages will be handled.  The rest will be dropped. '''
 
 def rebuild_track_line(cu,userid,name,start_time=None,point_limit=50):
@@ -85,7 +84,7 @@ def rebuild_b_track_line(cu,userid,name,start_time=None,point_limit=50):
             continue
         linePoints.append(row[0].split('(')[1].split(')')[0])
     if len(linePoints)<2:
-        #print 'Not enough points.  Delete if exists'                                                                         
+        #print 'Not enough points.  Delete if exists'
         cu.execute('DELETE FROM track_lines WHERE userid = %s;',(userid,))
         return
     lineWKT='LINESTRING('+','.join(linePoints)+')'
@@ -173,7 +172,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
 
         if msg_dict['COG'] == 511:
             msg_dict['COG'] = 0 # make unknowns point north
-                   
+
         cu.execute(q,(userid,name,msg_dict['COG'],msg_dict['SOG'],cg_r,navigationstatus,shipandcargo))
 
         # drop the old value
@@ -269,7 +268,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
 
         # FIX: add navigation status
         q = 'INSERT INTO last_position (userid,name,cog,sog,position,cg_r,shipandcargo) VALUES (%s,%s,%s,%s,GeomFromText(\'POINT('+str(msg_dict['longitude'])+' '+str(msg_dict['latitude']) +')\',4326),%s,%s);'
-                   
+
         if msg_dict['COG'] == 511:
             msg_dict['COG'] = 0 # make unknowns point north
 
@@ -287,7 +286,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
         ins.add('cg_sec',       uscg_msg.cg_sec)
         ins.add('cg_timestamp', uscg_msg.sqlTimestampStr)
         ins.add('cg_r',         uscg_msg.station)
-        print 'msg 19:',str(ins)                                                                                            
+        print 'msg 19:',str(ins)
 
         cu.execute(str(ins))
 
@@ -322,7 +321,7 @@ class Nais2Postgis:
         self.norm_queue = aisutils.normalize.Normalize() # for multipart messages
         self.bad = file('bad.ais','w')
 
-        # Database commit handling... only commit every so often to 
+        # Database commit handling... only commit every so often to
         self.db_last_commit_time = 0
         self.db_uncommitted_count = 0
 
@@ -337,9 +336,9 @@ class Nais2Postgis:
         while not self.nais_connected:
             self.loop_count += 1
             connection_attempts += 1
-            if connection_attempts%100 == 1: 
+            if connection_attempts%100 == 1:
                 logging.warn('Connecting to NAIS')
-                sys.stderr.write('connecting to %s:%d\n' % 
+                sys.stderr.write('connecting to %s:%d\n' %
                                  (str(self.options.inHost), self.options.inPort))
             try:
                 self.nais_src = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -347,11 +346,11 @@ class Nais2Postgis:
                 self.nais_src.connect((self.options.inHost, self.options.inPort))
             except socket.error, inst:
                 if self.loop_count%50 == 0:
-                    sys.stderr.write('%d : Failed to connect to nais_src ... %s\tWill try again\n' % 
+                    sys.stderr.write('%d : Failed to connect to nais_src ... %s\tWill try again\n' %
                                      (self.loop_count,str(inst)))
                 time.sleep(.5)
             else:
-                self.nais_connected=True        
+                self.nais_connected=True
                 logging.warn('Connected to NAIS')
                 sys.stderr.write('Connected...\n')
             #time.sleep(.1)
@@ -430,14 +429,14 @@ class Nais2Postgis:
                 sys.stderr.write('   Dropping bad msg and calling continue: %s,%s\n' % (str(e),msg,) )
                 self.bad.write(msg+'\n')
                 continue
-            
+
 
             #print msg_dict
             #print 'uscg_msg:',type(uscg_msg)
             try:
                 if handle_insert_update(self.cx, uscg_msg, msg_dict, aismsg):
                     self.db_uncommitted_count += 1
-            
+
             except Exception, e:
                 sys.stderr.write('*** handle_insert_update exception\n')
                 sys.stderr.write('   Exception:' + str(type(Exception))+'\n')
@@ -458,7 +457,7 @@ class Nais2Postgis:
                 self.cx.commit()
                 #print '  Successful'
             except Exception, e:
-                # FIX: What are we likely to see here?  
+                # FIX: What are we likely to see here?
                 sys.stderr.write('*** handle_insert_update exception\n')
                 sys.stderr.write('   Exception:' + str(type(Exception))+'\n')
                 sys.stderr.write('   Exception args:'+ str(e)+'\n')
@@ -466,7 +465,7 @@ class Nais2Postgis:
                 self.bad.write(msg+'\n')
                 time.sleep(.1)
                 self.cx.commit() # reset the transaction
-            
+
 
 ######################################################################
 
@@ -483,7 +482,7 @@ if __name__=='__main__':
     parser.add_option('-I','--in-host',dest='inHost',type='string',default='localhost'
                       ,help='What host to read data from [default: %default]')
     parser.add_option('--in-gethostname',dest='inHostname', action='store_true', default=False
-			,help='Where the data comes from [default: %default]')
+                        ,help='Where the data comes from [default: %default]')
 
     parser.add_option('-t','--timeout',dest='timeout',type='float', default='5'
                       ,help='Number of seconds to timeout after if no data [default: %default]')
@@ -523,13 +522,13 @@ if __name__=='__main__':
     (options,args) = parser.parse_args()
     v = options.verbose
     if v:
-        sys.stderr.write('starting logging to %s at %d\n' % 
+        sys.stderr.write('starting logging to %s at %d\n' %
                          (options.log_file, options.log_level) )
 
     sys.stderr.write('Bounding box: X: %s to %s \t\t Y: %s to %s\n' % (options.lon_min,options.lon_max,options.lat_min,options.lat_max))
 
     if options.inHostname:
-	options.inHost=socket.gethostname()
+        options.inHost=socket.gethostname()
 
     if options.daemon_mode:
         aisutils.daemon.start(options.pid_file)
@@ -554,4 +553,3 @@ if __name__=='__main__':
             continue
 
         time.sleep(0.01)
-        

@@ -5,10 +5,9 @@ __date__ = '$Date: 2006-09-24 14:01:41 -0400 (Sun, 24 Sep 2006) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-
 Tools to generate python code to serialize/deserialize messages
 between python and ais binary.  Trying to be as inline as possible, so
-no XML on the fly like in ais-py.  
+no XML on the fly like in ais-py.
 
 serialize: python to ais binary
 deserialize: ais binary to python
@@ -45,7 +44,8 @@ which should be packaged with the resulting files.
 
 import sys, os
 from decimal import Decimal
-from lxml import etree 
+from lxml import etree
+
 
 def suggestType(name,curType,printout=True):
     '''
@@ -62,15 +62,15 @@ def suggestType(name,curType,printout=True):
     '''
     newType = None
     if curType.lower()=='unsigned int':
-	newType = 'uint'
+        newType = 'uint'
     elif curType.lower()=='unsigned decimal':
-	newType = 'udecimal'
+        newType = 'udecimal'
 
     if printout:
-	if None != newType:
-	    print 'Recommend switching "'+curType+'" to "'+newType+'" for field "'+name+'"'
-	else:
-	    print 'Sorry!  No recommendation available for bad type "'+curType+'" for field "'+name+'"'
+        if None != newType:
+            print 'Recommend switching "'+curType+'" to "'+newType+'" for field "'+name+'"'
+        else:
+            print 'Sorry!  No recommendation available for bad type "'+curType+'" for field "'+name+'"'
     return newType
 
 
@@ -164,18 +164,18 @@ def generatePython(infile,outfile, prefixName=False,verbose=False):
     writeBeginning(o)
 
     for msgET in aisMsgsET:
-	if msgET.tag != 'message': continue
-	print msgET.tag, msgET.attrib['name']
+        if msgET.tag != 'message': continue
+        print msgET.tag, msgET.attrib['name']
 
-	if len(msgET.xpath('include-struct')) > 0:
-	    sys.exit("ERROR: cannot handle xml that still has include-struct tags.\n  Please use expandais.py.")
-	buildHelpers(o,msgET,prefixName=prefixName,verbose=verbose)
-	buildEncode(o,msgET,prefixName=prefixName,verbose=verbose)
-	buildDecode(o,msgET,prefixName=prefixName)
-	buildDecodeParts(o,msgET,prefixName=prefixName) # functions that only decode one field
-	buildPrint(o,msgET,prefixName=prefixName)
-	buildLUT(o,msgET,prefixName=prefixName)
-	buildSQL(o,msgET,prefixName=prefixName)
+        if len(msgET.xpath('include-struct')) > 0:
+            sys.exit("ERROR: cannot handle xml that still has include-struct tags.\n  Please use expandais.py.")
+        buildHelpers(o,msgET,prefixName=prefixName,verbose=verbose)
+        buildEncode(o,msgET,prefixName=prefixName,verbose=verbose)
+        buildDecode(o,msgET,prefixName=prefixName)
+        buildDecodeParts(o,msgET,prefixName=prefixName) # functions that only decode one field
+        buildPrint(o,msgET,prefixName=prefixName)
+        buildLUT(o,msgET,prefixName=prefixName)
+        buildSQL(o,msgET,prefixName=prefixName)
         buildLaTeX(o,msgET,prefixName=prefixName,verbose=verbose)
         buildTextDef(o,msgET,prefixName=prefixName)
 
@@ -185,16 +185,16 @@ def generatePython(infile,outfile, prefixName=False,verbose=False):
     o.write('import unittest\n')
 
     for msgET in aisMsgsET:
-	if msgET.tag != 'message': continue
-	print 'Building unit tests for message ...', msgET.attrib['name']
+        if msgET.tag != 'message': continue
+        print 'Building unit tests for message ...', msgET.attrib['name']
 
-	buildUnitTest(o,msgET, prefixName=prefixName)
-	
+        buildUnitTest(o,msgET, prefixName=prefixName)
+
     for msgET in aisMsgsET:
-	if msgET.tag != 'message': continue
-	buildMain(o,msgET, prefixName=prefixName)
+        if msgET.tag != 'message': continue
+        buildMain(o,msgET, prefixName=prefixName)
 
-    return 
+    return
 
 ######################################################################
 # Build Helpers
@@ -211,19 +211,19 @@ def buildHelpers(o,msgET, verbose=False, prefixName=False):
     @todo: use a different name for message and field
     @todo: put in comments with the python and sql data type for each field
     '''
-    
+
     if verbose:
-	msgname = msgET.attrib['name']
-	print 'Building helpers ...',msgname
+        msgname = msgET.attrib['name']
+        print 'Building helpers ...',msgname
 
     if prefixName:
-	o.write(prefixName,'FieldList = (\n')
+        o.write(prefixName,'FieldList = (\n')
     else:
-	o.write('fieldList = (\n')
-    
+        o.write('fieldList = (\n')
+
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	o.write('\t\''+name+'\',\n')
+        name = field.attrib['name']
+        o.write('\t\''+name+'\',\n')
 
     o.write(')\n\n')
 
@@ -231,12 +231,12 @@ def buildHelpers(o,msgET, verbose=False, prefixName=False):
     # FIX: like that it is used as the default csv list
 
     if prefixName:
-	o.write(prefixName,'FieldListPostgres = (\n')
+        o.write(prefixName,'FieldListPostgres = (\n')
     else:
-	o.write('fieldListPostgres = (\n')
+        o.write('fieldListPostgres = (\n')
     finished=[] # postgis names
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
+        name = field.attrib['name']
         if 'postgisName' in field.attrib:
             name = field.attrib['postgisName']
             if name in finished: continue # already done, so skip
@@ -252,12 +252,12 @@ def buildHelpers(o,msgET, verbose=False, prefixName=False):
 
 
     if prefixName:
-	o.write(prefixName,'ToPgFields = {\n')
+        o.write(prefixName,'ToPgFields = {\n')
     else:
-	o.write('toPgFields = {\n')
+        o.write('toPgFields = {\n')
     for field in msgET.xpath('field'):
         if 'postgisName' not in field.attrib: continue
-	name = field.attrib['name']
+        name = field.attrib['name']
         pgName = field.attrib['postgisName']
         o.write('\t\''+name+'\':\''+pgName+'\',\n')
     o.write('}\n')
@@ -269,13 +269,13 @@ Go to the Postgis field names from the straight field name
 
 
     if prefixName:
-	o.write(prefixName,'FromPgFields = {\n')
+        o.write(prefixName,'FromPgFields = {\n')
     else:
-	o.write('fromPgFields = {\n')
+        o.write('fromPgFields = {\n')
     finished=[] # postgis names
     for field in msgET.xpath('field'):
         if 'postgisName' not in field.attrib: continue
-	name = field.attrib['name']
+        name = field.attrib['name']
         pgName = field.attrib['postgisName']
 
         if pgName in finished: continue # already done, so skip
@@ -293,9 +293,9 @@ Go from the Postgis field names to the straight field name
 
 
     if prefixName:
-	o.write(prefixName,'PgTypes = {\n')
+        o.write(prefixName,'PgTypes = {\n')
     else:
-	o.write('pgTypes = {\n')
+        o.write('pgTypes = {\n')
     finished=[] # postgis names
     for field in msgET.xpath('field'):
         if 'postgisName' not in field.attrib: continue
@@ -314,7 +314,7 @@ Lookup table for each postgis field name to get its type.
 
 
 
-    
+
 
 
 ######################################################################
@@ -325,8 +325,8 @@ def getMaxFieldNameLen(msgET):
     '''Get the maximum string length of any field name'''
     maxStrLen=0
     for field in msgET.xpath('field'):
-	fieldLen = len(field.attrib['name'])
-	if fieldLen>maxStrLen: maxStrLen = fieldLen
+        fieldLen = len(field.attrib['name'])
+        if fieldLen>maxStrLen: maxStrLen = fieldLen
     return maxStrLen
 
 def padStrRight(aStr,strlen):
@@ -403,43 +403,43 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
     o.write('\t\tout.write("<th align=\\"left\\">Units</th>\\n")\n')
     o.write('\t\tout.write("</tr>\\n")\n')
 
-    
+
     for field in msgET.xpath('field'):
-	o.write('\t\tout.write("\\n")\n')
-	o.write('\t\tout.write("<tr>\\n")\n')
-	fieldname = field.attrib['name']
-	fieldtype = field.attrib['type']
-	o.write('\t\tout.write("<td>'+fieldname+'</td>\\n")\n')
-	o.write('\t\tout.write("<td>'+fieldtype+'</td>\\n")\n')
+        o.write('\t\tout.write("\\n")\n')
+        o.write('\t\tout.write("<tr>\\n")\n')
+        fieldname = field.attrib['name']
+        fieldtype = field.attrib['type']
+        o.write('\t\tout.write("<td>'+fieldname+'</td>\\n")\n')
+        o.write('\t\tout.write("<td>'+fieldtype+'</td>\\n")\n')
 
         numbits = int(field.attrib['numberofbits'])
-	required = None; 
-	if hasSubTag(field,'required'): 
-	    required = field.xpath('required')[0].text
-	unavailable=None; 
-	if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
-	arraylen=1
-	if 'arraylength' in field.attrib:  arraylen=int(field.attrib['arraylength'])
+        required = None;
+        if hasSubTag(field,'required'):
+            required = field.xpath('required')[0].text
+        unavailable=None;
+        if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
+        arraylen=1
+        if 'arraylength' in field.attrib:  arraylen=int(field.attrib['arraylength'])
 
-	if 1==arraylen or fieldtype=='aisstr6':
-	    o.write('\t\tif \''+fieldname+'\' in params:\n\t\t\tout.write("\t<td>"+str(params[\''+fieldname+'\'])+"</td>\\n")\n')
-	    if not hasSubTag(field,'lookuptable'):
-		# Just duplicate the value through
-		o.write('\t\t\tout.write("\t<td>"+str(params[\''+fieldname+'\'])+"</td>\\n")\n')
-	    else:
-		lutName = fieldname+'DecodeLut'
-		if prefixName: lutName = msgname+fieldname.capitalize()+'DecodeLut'
+        if 1==arraylen or fieldtype=='aisstr6':
+            o.write('\t\tif \''+fieldname+'\' in params:\n\t\t\tout.write("\t<td>"+str(params[\''+fieldname+'\'])+"</td>\\n")\n')
+            if not hasSubTag(field,'lookuptable'):
+                # Just duplicate the value through
+                o.write('\t\t\tout.write("\t<td>"+str(params[\''+fieldname+'\'])+"</td>\\n")\n')
+            else:
+                lutName = fieldname+'DecodeLut'
+                if prefixName: lutName = msgname+fieldname.capitalize()+'DecodeLut'
 
-		o.write('\t\t\tif str(params[\''+fieldname+'\']) in '+lutName+':\n')
-		o.write('\t\t\t\tout.write("<td>"+'+lutName+'[str(params[\''+fieldname+'\'])]+"</td>")\n')
-		o.write('\t\t\telse:\n')
-		o.write('\t\t\t\tout.write("<td><i>Missing LUT entry</i></td>")\n')
-	else: sys.exit ('FIX: handle arrays in the buildPrint func')
+                o.write('\t\t\tif str(params[\''+fieldname+'\']) in '+lutName+':\n')
+                o.write('\t\t\t\tout.write("<td>"+'+lutName+'[str(params[\''+fieldname+'\'])]+"</td>")\n')
+                o.write('\t\t\telse:\n')
+                o.write('\t\t\t\tout.write("<td><i>Missing LUT entry</i></td>")\n')
+        else: sys.exit ('FIX: handle arrays in the buildPrint func')
 
-	if hasSubTag(field,'units'):
-	    o.write('\t\tout.write("<td>'+field.xpath('units')[0].text+'</td>\\n")\n')
+        if hasSubTag(field,'units'):
+            o.write('\t\tout.write("<td>'+field.xpath('units')[0].text+'</td>\\n")\n')
 
-	o.write('\t\tout.write("</tr>\\n")\n')
+        o.write('\t\tout.write("</tr>\\n")\n')
 
     o.write('\t\tout.write("</table>\\n")\n')
     o.write('\n')
@@ -451,32 +451,32 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
     printKmlName = 'printKml'
     if prefixName: printKmlName = msgName+'printKml'
     if not haveLocatableMessage(msgET): printKmlName=None
-    else: 
+    else:
         # FIX: use the first postgis print tagged lat and lon field
-	o.write('\n')
-	o.write('def printKml(params, out=sys.stdout):\n')
-	o.write('\t\'\'\'KML (Keyhole Markup Language) for Google Earth, but without the header/footer\'\'\'\n')
-	o.write('\tout.write("\\\t<Placemark>\\n")\n')
-	o.write('\tout.write("\\t\t<name>"+str(params[\''+msgET.attrib['titlefield']+'\'])+"</name>\\n")\n')
-	o.write('\tout.write("\\t\\t<description>\\n")\n')
+        o.write('\n')
+        o.write('def printKml(params, out=sys.stdout):\n')
+        o.write('\t\'\'\'KML (Keyhole Markup Language) for Google Earth, but without the header/footer\'\'\'\n')
+        o.write('\tout.write("\\\t<Placemark>\\n")\n')
+        o.write('\tout.write("\\t\t<name>"+str(params[\''+msgET.attrib['titlefield']+'\'])+"</name>\\n")\n')
+        o.write('\tout.write("\\t\\t<description>\\n")\n')
 
-	o.write('\timport StringIO\n')
-	o.write('\tbuf = StringIO.StringIO()\n')
-	o.write('\tprintHtml(params,buf)\n')
-	o.write('\timport cgi\n')
-	o.write('\tout.write(cgi.escape(buf.getvalue()))\n')
+        o.write('\timport StringIO\n')
+        o.write('\tbuf = StringIO.StringIO()\n')
+        o.write('\tprintHtml(params,buf)\n')
+        o.write('\timport cgi\n')
+        o.write('\tout.write(cgi.escape(buf.getvalue()))\n')
 
-	o.write('\tout.write("\\t\\t</description>\\n")\n')
-	o.write('\tout.write("\\t\\t<styleUrl>#m_ylw-pushpin_copy0</styleUrl>\\n")\n')
-	o.write('\tout.write("\\t\\t<Point>\\n")\n')
-	o.write('\tout.write("\\t\\t\\t<coordinates>")\n')
-	o.write('\tout.write(str(params[\''+getLongitudeFieldName(msgET)+'\']))\n')
-	o.write('\tout.write(\',\')\n')
-	o.write('\tout.write(str(params[\''+getLatitudeFieldName(msgET)+'\']))\n')
-	o.write('\tout.write(",0</coordinates>\\n")\n')
-	o.write('\tout.write("\\t\\t</Point>\\n")\n')
-	o.write('\tout.write("\\t</Placemark>\\n")\n')
-	o.write('\n')
+        o.write('\tout.write("\\t\\t</description>\\n")\n')
+        o.write('\tout.write("\\t\\t<styleUrl>#m_ylw-pushpin_copy0</styleUrl>\\n")\n')
+        o.write('\tout.write("\\t\\t<Point>\\n")\n')
+        o.write('\tout.write("\\t\\t\\t<coordinates>")\n')
+        o.write('\tout.write(str(params[\''+getLongitudeFieldName(msgET)+'\']))\n')
+        o.write('\tout.write(\',\')\n')
+        o.write('\tout.write(str(params[\''+getLatitudeFieldName(msgET)+'\']))\n')
+        o.write('\tout.write(",0</coordinates>\\n")\n')
+        o.write('\tout.write("\\t\\t</Point>\\n")\n')
+        o.write('\tout.write("\\t</Placemark>\\n")\n')
+        o.write('\n')
 
 
     ##############################
@@ -485,7 +485,7 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
 
     funcName = 'printFields'
     if prefixName: funcName = msgName+'PrintFields'
-    
+
     o.write('def '+funcName+'(params, out=sys.stdout, format=\'std\', fieldList=None, dbType=\'postgres\'):\n')
 
     ########################################
@@ -493,15 +493,15 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
     o.write("\t'''Print a "+msgName+" message to stdout.\n\n")
     o.write('\tFields in params:\n')
     for field in msgET.xpath('field'):
-	desc = field[0].text.replace('\n',' ') # get ride of new lines
-	o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
-	if len(field.xpath("required")) == 1:
-	    o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
+        desc = field[0].text.replace('\n',' ') # get ride of new lines
+        o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
+        if len(field.xpath("required")) == 1:
+            o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
 
-	o.write('\n')
-    o.write('\t@param params: Dictionary of field names/values.  \n')
-    o.write('\t@param out: File like object to write to\n')
-	
+        o.write('\n')
+    o.write('\t@param params: Dictionary of field names/values.\n')
+    o.write('\t@param out: File like object to write to.\n')
+
     o.write("\t@rtype: stdout\n")
     o.write("\t@return: text to out\n")
     o.write("\t'''\n\n")
@@ -514,44 +514,44 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
 
     if verbose: print 'number of fields = ', len(msgET.xpath('field'))
 
-    
-    for field in msgET.xpath('field'):
-	fieldname = field.attrib['name']
-	fieldtype = field.attrib['type']
-        numbits = int(field.attrib['numberofbits'])
-	required = None; 
-	if hasSubTag(field,'required'): 
-	    required = field.xpath('required')[0].text
-	unavailable=None; 
-	if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
-	arraylen=1
-	if 'arraylength' in field.attrib: 
-	    arraylen=int(field.attrib['arraylength'])
-	    if verbose: print 'Processing field ...',fieldname,'('+fieldtype+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
-	else:
-	    if verbose: print 'Processing field ...',fieldname,'(',fieldtype+' ',numbits,')'
 
-	if 1==arraylen or fieldtype=='aisstr6':
-	    o.write('\t\tif \''+fieldname+'\' in params: out.write("\t'+padStrRight(fieldname+':',maxFieldLen)+'  "+str(params[\''+fieldname+'\'])+"\\n")\n')
-	    # FIX: elif aisstr6 strip @@@ and then print
-	else:
+    for field in msgET.xpath('field'):
+        fieldname = field.attrib['name']
+        fieldtype = field.attrib['type']
+        numbits = int(field.attrib['numberofbits'])
+        required = None;
+        if hasSubTag(field,'required'):
+            required = field.xpath('required')[0].text
+        unavailable=None;
+        if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
+        arraylen=1
+        if 'arraylength' in field.attrib:
+            arraylen=int(field.attrib['arraylength'])
+            if verbose: print 'Processing field ...',fieldname,'('+fieldtype+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
+        else:
+            if verbose: print 'Processing field ...',fieldname,'(',fieldtype+' ',numbits,')'
+
+        if 1==arraylen or fieldtype=='aisstr6':
+            o.write('\t\tif \''+fieldname+'\' in params: out.write("\t'+padStrRight(fieldname+':',maxFieldLen)+'  "+str(params[\''+fieldname+'\'])+"\\n")\n')
+            # FIX: elif aisstr6 strip @@@ and then print
+        else:
             print '\n','ERROR:',fieldname,fieldtype
-	    sys.exit ('ERROR: FIX: handle arrays in the buildPrint func')
+            sys.exit ('ERROR: FIX: handle arrays in the buildPrint func')
 
     ####################
     ####### Comma separated values (csv)
     ####################
     o.write('''	elif 'csv'==format:
-		if None == options.fieldList:
-			options.fieldList = fieldList
-		needComma = False;
-		for field in fieldList:
-			if needComma: out.write(',')
-			needComma = True
-			if field in params:
-				out.write(str(params[field]))
-			# else: leave it empty
-		out.write("\\n")
+                if None == options.fieldList:
+                        options.fieldList = fieldList
+                needComma = False;
+                for field in fieldList:
+                        if needComma: out.write(',')
+                        needComma = True
+                        if field in params:
+                                out.write(str(params[field]))
+                        # else: leave it empty
+                out.write("\\n")
 ''')
 
     ####################
@@ -561,33 +561,33 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
     o.write('\t\t'+printHtmlName+'(params,out)\n')
 
     o.write('''	elif 'sql'==format:
-		sqlInsertStr(params,out,dbType=dbType)
+                sqlInsertStr(params,out,dbType=dbType)
 ''')
 
     if haveLocatableMessage(msgET):
-	# Has a lon/lat pair somewhere in there.
-	o.write('\telif \'kml\'==format:\n')
-	o.write('\t\t'+printKmlName+'(params,out)\n')
+        # Has a lon/lat pair somewhere in there.
+        o.write('\telif \'kml\'==format:\n')
+        o.write('\t\t'+printKmlName+'(params,out)\n')
 
-	o.write('\telif \'kml-full\'==format:\n')
+        o.write('\telif \'kml-full\'==format:\n')
 
-	o.write('\t\tout.write(\"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>\\n")\n')
-	o.write('\t\tout.write("<kml xmlns=\\"http://earth.google.com/kml/2.1\\">\\n")\n')
-	o.write('\t\tout.write("<Document>\\n")\n')
+        o.write('\t\tout.write(\"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>\\n")\n')
+        o.write('\t\tout.write("<kml xmlns=\\"http://earth.google.com/kml/2.1\\">\\n")\n')
+        o.write('\t\tout.write("<Document>\\n")\n')
 #	o.write('\t\tout.write("\t<name>Position</name>\\n")\n')
-	o.write('\t\tout.write("\t<name>'+msgName+'</name>\\n")\n')
+        o.write('\t\tout.write("\t<name>'+msgName+'</name>\\n")\n')
 
-	o.write('\t\t'+printKmlName+'(params,out)\n')
+        o.write('\t\t'+printKmlName+'(params,out)\n')
 
-	o.write('\t\tout.write("</Document>\\n")\n')
-	o.write('\t\tout.write("</kml>\\n")\n')
+        o.write('\t\tout.write("</Document>\\n")\n')
+        o.write('\t\tout.write("</kml>\\n")\n')
 
 
 
     ####################
     ####### Make safety check
     ####################
-    o.write('\telse: \n')
+    o.write('\telse:\n')
     o.write('\t\tprint "ERROR: unknown format:",format\n')
     o.write('\t\tassert False\n')
 
@@ -616,7 +616,7 @@ def buildTextDef(o,msgET, verbose=False, prefixName=False):
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
-    print 'Generating text table definition ...', msgName 
+    print 'Generating text table definition ...', msgName
 
     createFuncName = 'textDefinitionTable'
     if prefixName: createFuncName = msgName+'textDefinitionTable'
@@ -629,43 +629,43 @@ def buildTextDef(o,msgET, verbose=False, prefixName=False):
 
     # Should this really default to true for the uscg fields?
     o.write('def '+createFuncName+'''(outfile=sys.stdout
-		,delim='\\t'
-		):
-	\'\'\'
-	Return the text definition table for this message type
-	@param outfile: file like object to print to.
-	@type outfile: file obj
-	@return: text table string via the outfile
-	@rtype: str
+                ,delim='\\t'
+                ):
+        \'\'\'
+        Return the text definition table for this message type
+        @param outfile: file like object to print to.
+        @type outfile: file obj
+        @return: text table string via the outfile
+        @rtype: str
 
-	\'\'\'
-	o = outfile
+        \'\'\'
+        o = outfile
 ''')
 
     # NOTE: using / to mean one \ in the output compiled code
-    o.write('\to.write(\'\'\'Parameter\'\'\'+delim+\'Number of bits\'\'\'+delim+\'\'\'Description \n')
+    o.write('\to.write(\'\'\'Parameter\'\'\'+delim+\'Number of bits\'\'\'+delim+\'\'\'Description\n')
 
     lines = []
     totalBits = 0
     for field in msgET.xpath('field'):
-	fieldName = field.attrib['name']
-	fieldType = field.attrib['type']
+        fieldName = field.attrib['name']
+        fieldType = field.attrib['type']
         fieldBits = field.attrib['numberofbits']
         if 'arraylength' in field.attrib:
             fieldBits = str(int(fieldBits) * int(field.attrib['arraylength']))
         totalBits += int(fieldBits)
         # FIX: maybe cut down to the first sentence?
-        fieldDescription = field.xpath('description')[0].text.replace('\n','  ')
+        fieldDescription = field.xpath('description')[0].text.replace('\n',' ')
         lines.append(fieldName+'\'\'\'+delim+\'\'\''+fieldBits+'\'\'\'+delim+\'\'\''+fieldDescription)
 
     o.write('\n'.join(lines))
     # 168 in the first slot and following slots get to use the whole 256??  FIX: is this right?
     from math import ceil
     numSlots = 1 + int( ceil((totalBits-168)/256.) )
-    emptySlotBits = ( 168 + (numSlots-1)*256 ) - totalBits 
+    emptySlotBits = ( 168 + (numSlots-1)*256 ) - totalBits
     s = ''
     if numSlots>1: s = 's'
-    o.write(('\nTotal bits\'\'\'+delim+\'\'\''+str(totalBits)+'\'\'\'+delim+\'\'\'Appears to take '+str(numSlots)+' slot'+s)) 
+    o.write(('\nTotal bits\'\'\'+delim+\'\'\''+str(totalBits)+'\'\'\'+delim+\'\'\'Appears to take '+str(numSlots)+' slot'+s))
     if emptySlotBits > 0:
         o.write(' with '+str(emptySlotBits)+' pad bits to fill the last slot')
 
@@ -689,7 +689,7 @@ def buildLaTeX(o,msgET, verbose=False, prefixName=False):
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
-    print 'Generating LaTeX definition table ...', msgName 
+    print 'Generating LaTeX definition table ...', msgName
 
     createFuncName = 'latexDefinitionTable'
     if prefixName: createFuncName = msgName+'LaTeXDefinitionTable'
@@ -702,34 +702,34 @@ def buildLaTeX(o,msgET, verbose=False, prefixName=False):
 
     # Should this really default to true for the uscg fields?
     o.write('def '+createFuncName+'''(outfile=sys.stdout
-		):
-	\'\'\'
-	Return the LaTeX definition table for this message type
-	@param outfile: file like object to print to.
-	@type outfile: file obj
-	@return: LaTeX table string via the outfile
-	@rtype: str
+                ):
+        \'\'\'
+        Return the LaTeX definition table for this message type
+        @param outfile: file like object to print to.
+        @type outfile: file obj
+        @return: LaTeX table string via the outfile
+        @rtype: str
 
-	\'\'\'
-	o = outfile
+        \'\'\'
+        o = outfile
 ''')
 
     # NOTE: using / to mean one \ in the output compiled code
     o.write('''
-	o.write(\'\'\'
+        o.write(\'\'\'
 /begin{table}%[htb]
 /centering
 /begin{tabular}{|l|c|l|}
 /hline
-Parameter & Number of bits & Description 
+Parameter & Number of bits & Description
 //  /hline/hline
 '''.replace('/','\\\\'))
 
     lines = []
     totalBits = 0
     for field in msgET.xpath('field'):
-	fieldName = field.attrib['name'].replace('_','\_')  # _ means subscript to latex
-	fieldType = field.attrib['type']
+        fieldName = field.attrib['name'].replace('_','\_')  # _ means subscript to latex
+        fieldType = field.attrib['type']
         fieldBits = field.attrib['numberofbits']
         if 'arraylength' in field.attrib:
             fieldBits = str(int(fieldBits) * int(field.attrib['arraylength']))
@@ -738,14 +738,14 @@ Parameter & Number of bits & Description
         fieldDescription = field.xpath('description')[0].text.replace('\n',' ')
         lines.append(fieldName+' & '+fieldBits+' & '+fieldDescription)
 
-    o.write(' \\\\\\\\ \\hline \n'.join(lines))
+    o.write(' \\\\\\\\ \\hline\n'.join(lines))
     # 168 in the first slot and following slots get to use the whole 256??  FIX: is this right?
     from math import ceil
     numSlots = 1 + int( ceil((totalBits-168)/256.) )
-    emptySlotBits = ( 168 + (numSlots-1)*256 ) - totalBits 
+    emptySlotBits = ( 168 + (numSlots-1)*256 ) - totalBits
     s = ''
     if numSlots>1: s = 's'
-    o.write(('// /hline /hline\nTotal bits & '+str(totalBits)+' & Appears to take '+str(numSlots)+' slot'+s).replace('/','\\\\')) 
+    o.write(('// /hline /hline\nTotal bits & '+str(totalBits)+' & Appears to take '+str(numSlots)+' slot'+s).replace('/','\\\\'))
     if emptySlotBits > 0:
         o.write(' with '+str(emptySlotBits)+' pad bits to fill the last slot')
 
@@ -779,7 +779,7 @@ def buildSQL(o,msgET, verbose=False, prefixName=False):
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
-    print 'Generating SQL commands ...', msgName 
+    print 'Generating SQL commands ...', msgName
 
     createFuncName = 'sqlCreate'
     if prefixName: createFuncName = msgName+'SqlCreate'
@@ -797,94 +797,94 @@ def buildSQL(o,msgET, verbose=False, prefixName=False):
 
     # Should this really default to true for the uscg fields?
     o.write('def '+createFuncName+'''Str(outfile=sys.stdout, fields=None, extraFields=None
-		,addCoastGuardFields=True
-		,dbType='postgres'
-		):
-	\'\'\'
-	Return the SQL CREATE command for this message type
-	@param outfile: file like object to print to.
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@type addCoastGuardFields: bool
-	@return: sql create string
-	@rtype: str
+                ,addCoastGuardFields=True
+                ,dbType='postgres'
+                ):
+        \'\'\'
+        Return the SQL CREATE command for this message type
+        @param outfile: file like object to print to.
+        @param fields: which fields to put in the create.  Defaults to all.
+        @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+        @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+        @type addCoastGuardFields: bool
+        @return: sql create string
+        @rtype: str
 
-	@see: sqlCreate
-	\'\'\'
-	# FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
-	outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
+        @see: sqlCreate
+        \'\'\'
+        # FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
+        outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
 
 ''')
 
     o.write('def '+createFuncName+'''(fields=None, extraFields=None, addCoastGuardFields=True, dbType='postgres'):
-	\'\'\'
-	Return the sqlhelp object to create the table.
+        \'\'\'
+        Return the sqlhelp object to create the table.
 
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@type addCoastGuardFields: bool
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@return: An object that can be used to generate a return
-	@rtype: sqlhelp.create
-	\'\'\'
-	if None == fields: fields = fieldList
-	import sqlhelp
+        @param fields: which fields to put in the create.  Defaults to all.
+        @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+        @type addCoastGuardFields: bool
+        @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+        @return: An object that can be used to generate a return
+        @rtype: sqlhelp.create
+        \'\'\'
+        if None == fields: fields = fieldList
+        import sqlhelp
 ''')
 
     o.write('\tc = sqlhelp.create(\''+msgName+'\',dbType=dbType)\n')
     o.write('\tc.addPrimaryKey()\n');
 
     for field in msgET.xpath('field'):
-	fieldName = field.attrib['name']
-	fieldType = field.attrib['type']
+        fieldName = field.attrib['name']
+        fieldType = field.attrib['type']
 
         postgis = False
         if 'postgisType' in field.attrib:
             postgis=True
             o.write('\tif dbType != \'postgres\':\n\t')
-	o.write('\tif \''+fieldName+'\' in fields: c.add')
-	# FIX: add the ADD command here.
-	if   fieldType in ('int','uint'): o.write('Int (\''+fieldName+'\')')
-	elif fieldType in ('float'     ): o.write('Real(\''+fieldName+'\')')
+        o.write('\tif \''+fieldName+'\' in fields: c.add')
+        # FIX: add the ADD command here.
+        if   fieldType in ('int','uint'): o.write('Int (\''+fieldName+'\')')
+        elif fieldType in ('float'     ): o.write('Real(\''+fieldName+'\')')
         elif fieldType == 'bool':         o.write('Bool(\''+fieldName+'\')')
         elif fieldType in ('decimal','udecimal'):
-	    if not hasSubTag(field,'decimalplaces'):
-		print '\n ** ERROR: missing decimalplaces field for ',fieldName,'\n'
-		assert (False)
-	    scaleSQL = int(field.xpath('decimalplaces')[0].text)  # number of decimal places
-	    numBits = int(field.attrib['numberofbits'])
+            if not hasSubTag(field,'decimalplaces'):
+                print '\n ** ERROR: missing decimalplaces field for ',fieldName,'\n'
+                assert (False)
+            scaleSQL = int(field.xpath('decimalplaces')[0].text)  # number of decimal places
+            numBits = int(field.attrib['numberofbits'])
             if not hasSubTag(field,'scale'):
                 print 'ERROR: missing required <scale> for',fieldName,'of type',fieldType
-	    scaleVal = float(field.xpath('scale')[0].text)
-	    precision = scaleSQL + len(str(int((2**numBits)/scaleVal)))
-	    #precision += 1 # FIX: do I really need this safety factor
-	    o.write('Decimal(\''+fieldName+'\','+str(precision)+','+str(scaleSQL)+')')
-	elif fieldType == 'binary':
-	    numBits = int(field.attrib['numberofbits'])
-	    if -1 == numBits: numBits=1024 # FIX: what is a good maximum for AIS?
-	    o.write('BitVarying(\''+fieldName+'\','+str(numBits)+')')
-	elif fieldType == 'aisstr6':
-	    arrayLength = int(field.attrib['arraylength'])
-	    o.write('VarChar(\''+fieldName+'\','+str(arrayLength)+')')
-	else:
-	    print '\n\n *** Unknown type in SQL code generation for field',fieldName+':',fieldType,'\n\n'
-	    assert(False)
-	o.write('\n')
+            scaleVal = float(field.xpath('scale')[0].text)
+            precision = scaleSQL + len(str(int((2**numBits)/scaleVal)))
+            #precision += 1 # FIX: do I really need this safety factor
+            o.write('Decimal(\''+fieldName+'\','+str(precision)+','+str(scaleSQL)+')')
+        elif fieldType == 'binary':
+            numBits = int(field.attrib['numberofbits'])
+            if -1 == numBits: numBits=1024 # FIX: what is a good maximum for AIS?
+            o.write('BitVarying(\''+fieldName+'\','+str(numBits)+')')
+        elif fieldType == 'aisstr6':
+            arrayLength = int(field.attrib['arraylength'])
+            o.write('VarChar(\''+fieldName+'\','+str(arrayLength)+')')
+        else:
+            print '\n\n *** Unknown type in SQL code generation for field',fieldName+':',fieldType,'\n\n'
+            assert(False)
+        o.write('\n')
 
     o.write('''
-	if addCoastGuardFields:
-		# c.addInt('cg_s_rssi')     # Relative signal strength indicator
-		# c.addInt('cg_d_strength')        # dBm receive strength
-		# c.addVarChar('cg_x',10) # Idonno
-		c.addInt('cg_t_arrival')        # Receive timestamp from the AIS equipment 'T'
-		c.addInt('cg_s_slotnum')        # Slot received in
-		c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
-		c.addInt('cg_sec')        # UTC seconds since the epoch
+        if addCoastGuardFields:
+                # c.addInt('cg_s_rssi')     # Relative signal strength indicator
+                # c.addInt('cg_d_strength')        # dBm receive strength
+                # c.addVarChar('cg_x',10) # Idonno
+                c.addInt('cg_t_arrival')        # Receive timestamp from the AIS equipment 'T'
+                c.addInt('cg_s_slotnum')        # Slot received in
+                c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
+                c.addInt('cg_sec')        # UTC seconds since the epoch
 
-		c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
+                c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
 ''')
 
 
@@ -922,71 +922,71 @@ def buildSQL(o,msgET, verbose=False, prefixName=False):
 
     # FIX: function name
     o.write('''def '''+insertFuncName+'''Str(params, outfile=sys.stdout, extraParams=None, dbType='postgres'):
-	\'\'\'
-	Return the SQL INSERT command for this message type
-	@param params: dictionary of values keyed by field name
-	@param outfile: file like object to print to.
-	@param extraParams: A sequence of tuples containing (name,sql type) for additional fields
-	@return: sql create string
-	@rtype: str
+        \'\'\'
+        Return the SQL INSERT command for this message type
+        @param params: dictionary of values keyed by field name
+        @param outfile: file like object to print to.
+        @param extraParams: A sequence of tuples containing (name,sql type) for additional fields
+        @return: sql create string
+        @rtype: str
 
-	@see: sqlCreate
-	\'\'\'
-	outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
+        @see: sqlCreate
+        \'\'\'
+        outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
 
 
 ''')
 
     # FIX: function name
     o.write('''def '''+insertFuncName+'''(params,extraParams=None,dbType='postgres'):
-	\'\'\'
-	Give the SQL INSERT statement
-	@param params: dict keyed by field name of values
-	@param extraParams: any extra fields that you have created beyond the normal ais message fields
-	@rtype: sqlhelp.insert
-	@return: insert class instance
-	@todo: allow optional type checking of params?
-	@warning: this will take invalid keys happily and do what???
-	\'\'\'
-	import sqlhelp
-	i = sqlhelp.insert(\'''' + msgName + '''\',dbType=dbType)
+        \'\'\'
+        Give the SQL INSERT statement
+        @param params: dict keyed by field name of values
+        @param extraParams: any extra fields that you have created beyond the normal ais message fields
+        @rtype: sqlhelp.insert
+        @return: insert class instance
+        @todo: allow optional type checking of params?
+        @warning: this will take invalid keys happily and do what???
+        \'\'\'
+        import sqlhelp
+        i = sqlhelp.insert(\'''' + msgName + '''\',dbType=dbType)
 
-	if dbType=='postgres':
-		finished = []
-		for key in params:
-			if key in finished: 
-				continue
+        if dbType=='postgres':
+                finished = []
+                for key in params:
+                        if key in finished:
+                                continue
 
-			if key not in toPgFields and key not in fromPgFields:
-				if type(params[key])==Decimal: i.add(key,float(params[key]))
-				else: i.add(key,params[key])
-			else:
-				if key in fromPgFields:
-					val = params[key]
-				        # Had better be a WKT type like POINT(-88.1 30.321)
-					i.addPostGIS(key,val)
-					finished.append(key)
-				else:
-					# Need to construct the type.
-					pgName = toPgFields[key]
-					#valStr='GeomFromText(\\''+pgTypes[pgName]+'('
-					valStr=pgTypes[pgName]+'('
-					vals = []
-					for nonPgKey in fromPgFields[pgName]:
-						vals.append(str(params[nonPgKey]))
-						finished.append(nonPgKey)
-					valStr+=' '.join(vals)+')'
-					i.addPostGIS(pgName,valStr)
-	else:
-		for key in params: 
-			if type(params[key])==Decimal: i.add(key,float(params[key]))
-			else: i.add(key,params[key])
+                        if key not in toPgFields and key not in fromPgFields:
+                                if type(params[key])==Decimal: i.add(key,float(params[key]))
+                                else: i.add(key,params[key])
+                        else:
+                                if key in fromPgFields:
+                                        val = params[key]
+                                        # Had better be a WKT type like POINT(-88.1 30.321)
+                                        i.addPostGIS(key,val)
+                                        finished.append(key)
+                                else:
+                                        # Need to construct the type.
+                                        pgName = toPgFields[key]
+                                        #valStr='GeomFromText(\\''+pgTypes[pgName]+'('
+                                        valStr=pgTypes[pgName]+'('
+                                        vals = []
+                                        for nonPgKey in fromPgFields[pgName]:
+                                                vals.append(str(params[nonPgKey]))
+                                                finished.append(nonPgKey)
+                                        valStr+=' '.join(vals)+')'
+                                        i.addPostGIS(pgName,valStr)
+        else:
+                for key in params:
+                        if type(params[key])==Decimal: i.add(key,float(params[key]))
+                        else: i.add(key,params[key])
 
-	if None != extraParams:
-		for key in extraParams: 
-			i.add(key,extraParams[key])
+        if None != extraParams:
+                for key in extraParams:
+                        i.add(key,extraParams[key])
 
-	return i
+        return i
 ''')
 
 
@@ -1012,28 +1012,28 @@ def buildLUT(o,msgET, verbose=False, prefixName=False):
     print 'Generating lookup tables ...',msgname # FIX: verbose?
 
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	if not hasSubTag(field,'lookuptable'): continue
-	lut = field.xpath('lookuptable')[0]
+        name = field.attrib['name']
+        if not hasSubTag(field,'lookuptable'): continue
+        lut = field.xpath('lookuptable')[0]
 
-	lutName = name
-	if prefixName: lutName = msgname+name.capitalize()
+        lutName = name
+        if prefixName: lutName = msgname+name.capitalize()
 
-	o.write(lutName+'EncodeLut = {\n')
-	for entry in lut.xpath('entry'):
-	    o.write('\t\''+entry.text+'\':\''+entry.attrib['key']+'\',\n')
-	o.write('\t} #'+lutName+'EncodeLut\n')
-	o.write('\n')
+        o.write(lutName+'EncodeLut = {\n')
+        for entry in lut.xpath('entry'):
+            o.write('\t\''+entry.text+'\':\''+entry.attrib['key']+'\',\n')
+        o.write('\t} #'+lutName+'EncodeLut\n')
+        o.write('\n')
 
-	# FIX: make doc string for LUT here
+        # FIX: make doc string for LUT here
 
-	o.write(lutName+'DecodeLut = {\n')
-	for entry in lut.xpath('entry'):
-	    o.write('\t\''+entry.attrib['key']+'\':\''+entry.text+'\',\n')
-	o.write('\t} # '+lutName+'EncodeLut\n')
-	o.write('\n')
+        o.write(lutName+'DecodeLut = {\n')
+        for entry in lut.xpath('entry'):
+            o.write('\t\''+entry.attrib['key']+'\':\''+entry.text+'\',\n')
+        o.write('\t} # '+lutName+'EncodeLut\n')
+        o.write('\n')
 
-	# FIX: make doc string for LUT here
+        # FIX: make doc string for LUT here
 
 
 
@@ -1045,7 +1045,7 @@ def encodeBool(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ve
     '''
     Build the encoder for boolean variables
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1060,7 +1060,7 @@ def encodeBool(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ve
     @param unavailable: the default value to use if none given (if not None)
     @return: None
     '''
-    
+
     if verbose: print 'bool encode',name,': unvail=',unavailable
 
     assert type.lower()=='bool'
@@ -1068,23 +1068,23 @@ def encodeBool(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ve
     if arraylen != 1: assert False # FIX... handle arrays
     if verbose: o.write('\t### FIELD: '+name+' (type=bool)\n')
     if None != required:
-	assert type(required)==bool
-	if required: o.write('\t\tbvList.append(TrueBV)\n')
-	else: o.write('\t\tbvList.append(FalseBV)\n')
-	if verbose: o.write('\n')
-	return
+        assert type(required)==bool
+        if required: o.write('\t\tbvList.append(TrueBV)\n')
+        else: o.write('\t\tbvList.append(FalseBV)\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tif params["'+name+'"]: bvList.append(TrueBV)\n')
-	o.write('\telse: bvList.append(FalseBV)\n')
+        o.write('\tif params["'+name+'"]: bvList.append(TrueBV)\n')
+        o.write('\telse: bvList.append(FalseBV)\n')
     else: # Have a default value that can be filled in
-	assert type(unavailable)==bool
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tif params["'+name+'"]: bvList.append(TrueBV)\n')
-	o.write('\t\telse: bvList.append(FalseBV)\n')
-	o.write('\telse:\n')
-	if unavailable: o.write('\t\tbvList.append(TrueBV)\n')
-	else: o.write('\t\tbvList.append(FalseBV)\n')
+        assert type(unavailable)==bool
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tif params["'+name+'"]: bvList.append(TrueBV)\n')
+        o.write('\t\telse: bvList.append(FalseBV)\n')
+        o.write('\telse:\n')
+        if unavailable: o.write('\t\tbvList.append(TrueBV)\n')
+        else: o.write('\t\tbvList.append(FalseBV)\n')
     if verbose: o.write('\n')
 
 def encodeUInt(o,name,type,numbits,required=None,arraylen=1,unavailable=None, verbose=False):
@@ -1092,7 +1092,7 @@ def encodeUInt(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ve
     Build the encoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1115,21 +1115,21 @@ def encodeUInt(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ve
     if verbose: o.write('\t### FIELD: '+name+' (type='+type+')\n')
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(required)+'),'+str(numbits)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(required)+'),'+str(numbits)+'))\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']),'+str(numbits)+'))\n')
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']),'+str(numbits)+'))\n')
     else: # Have a default value that can be filled in
-	#assert type(unavailable)==
-	int(unavailable) # Make sure unavailable is a number object
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']'+'),'+str(numbits)+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(unavailable)+'),'+str(numbits)+'))\n')
+        #assert type(unavailable)==
+        int(unavailable) # Make sure unavailable is a number object
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']'+'),'+str(numbits)+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(unavailable)+'),'+str(numbits)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1139,7 +1139,7 @@ def encodeFloat(o,name,fieldType,numbits,required=None,arraylen=1,unavailable=No
     Build the encoder for IEEE float variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type fieldType: str
@@ -1161,20 +1161,20 @@ def encodeFloat(o,name,fieldType,numbits,required=None,arraylen=1,unavailable=No
     if verbose: o.write('\t### FIELD: '+name+' (type='+fieldType+')\n')
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(binary.float2bitvec('+str(required)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        o.write('\tbvList.append(binary.float2bitvec('+str(required)+'))\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tbvList.append(binary.float2bitvec(params[\''+name+'\']))\n')
+        o.write('\tbvList.append(binary.float2bitvec(params[\''+name+'\']))\n')
     else: # Have a default value that can be filled in
-	int(unavailable) # Make sure unavailable is a number object
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.float2bitvec(params[\''+name+'\']'+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.float2bitvec('+str(unavailable)+'))\n')
+        int(unavailable) # Make sure unavailable is a number object
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.float2bitvec(params[\''+name+'\']'+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.float2bitvec('+str(unavailable)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1185,7 +1185,7 @@ def encodeAisstr6(o,name,fieldType,numbits,required=None,arraylen=1,unavailable=
     @bug: do we need to optionally check for a valid string?
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type fieldType: str
@@ -1206,19 +1206,19 @@ def encodeAisstr6(o,name,fieldType,numbits,required=None,arraylen=1,unavailable=
     if verbose: o.write('\t### FIELD: '+name+' (type='+fieldType+')\n')
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(aisstring.encode(\''+str(required)+'\','+totLen+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        o.write('\tbvList.append(aisstring.encode(\''+str(required)+'\','+totLen+'))\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tbvList.append(aisstring.encode(params[\''+name+'\'],'+totLen+'))\n')
+        o.write('\tbvList.append(aisstring.encode(params[\''+name+'\'],'+totLen+'))\n')
     else: # Have a default value that can be filled in
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(aisstring.encode(params[\''+name+'\'],'+totLen+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(aisstring.encode(\''+str(unavailable)+'\','+totLen+'))\n')
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(aisstring.encode(params[\''+name+'\'],'+totLen+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(aisstring.encode(\''+str(unavailable)+'\','+totLen+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1228,7 +1228,7 @@ def encodeInt(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ver
     Build the encoder for signed integer variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1250,22 +1250,22 @@ def encodeInt(o,name,type,numbits,required=None,arraylen=1,unavailable=None, ver
     if verbose: o.write('\t### FIELD: '+name+' (type='+type+')\n')
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(binary.bvFromSignedInt('+str(required)+','+str(numbits)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        o.write('\tbvList.append(binary.bvFromSignedInt('+str(required)+','+str(numbits)+'))\n')
+        if verbose: o.write('\n')
+        return
 
 
     if None==unavailable:
-	o.write('\tbvList.append(binary.bvFromSignedInt(params[\''+name+'\'],'+str(numbits)+'))\n')
+        o.write('\tbvList.append(binary.bvFromSignedInt(params[\''+name+'\'],'+str(numbits)+'))\n')
     else: # Have a default value that can be filled in
-	#assert type(unavailable)==
-	int(unavailable) # Make sure unavailable is a number object
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.bvFromSignedInt(params[\''+name+'\']'+','+str(numbits)+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.bvFromSignedInt('+str(unavailable)+','+str(numbits)+'))\n')
+        #assert type(unavailable)==
+        int(unavailable) # Make sure unavailable is a number object
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.bvFromSignedInt(params[\''+name+'\']'+','+str(numbits)+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.bvFromSignedInt('+str(unavailable)+','+str(numbits)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1277,7 +1277,7 @@ def encodeDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None,
     Build the encoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1299,17 +1299,17 @@ def encodeDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None,
     if verbose: o.write('\t### FIELD: '+name+' (type='+type+')\n')
 
     # FIX: optimize to not emit the scaling when it is not needed... or tell the user to switch to an int!
-    if None == scale: 
-	print 'WARNING: if you are not scaling, then you probably want to use an int instead!'
-	print 'Beware canadians bearing travel videos'
-	scale='1'
+    if None == scale:
+        print 'WARNING: if you are not scaling, then you probably want to use an int instead!'
+        print 'Beware canadians bearing travel videos'
+        scale='1'
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(binary.bvFromSignedInt('+str(int(Decimal(required)*Decimal(scale)))+','+str(numbits)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        o.write('\tbvList.append(binary.bvFromSignedInt('+str(int(Decimal(required)*Decimal(scale)))+','+str(numbits)+'))\n')
+        if verbose: o.write('\n')
+        return
 
     offsetStr=''
     if None != offset:
@@ -1317,12 +1317,12 @@ def encodeDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None,
 
     # FIX: can I get rid of the Decimal around params?
     if None==unavailable:
-	o.write('\tbvList.append(binary.bvFromSignedInt(int(Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')),'+str(numbits)+'))\n')
+        o.write('\tbvList.append(binary.bvFromSignedInt(int(Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')),'+str(numbits)+'))\n')
     else: # Have a default value that can be filled in
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.bvFromSignedInt(int(Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')),'+str(numbits)+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.bvFromSignedInt('+str(int(Decimal(unavailable)*Decimal(scale)))+','+str(numbits)+'))\n')
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.bvFromSignedInt(int(Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')),'+str(numbits)+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.bvFromSignedInt('+str(int(Decimal(unavailable)*Decimal(scale)))+','+str(numbits)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1333,7 +1333,7 @@ def encodeUDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None
     Build the encoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1355,18 +1355,18 @@ def encodeUDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None
     if verbose: o.write('\t### FIELD: '+name+' (type='+type+')\n')
 
     # FIX: optimize to not emit the scaling when it is not needed... or tell the user to switch to an int!
-    if None == scale: 
-	print 'WARNING: if you are not scaling, then you probably want to use an int instead!'
-	print 'Beware canadians bearing travel videos'
-	scale='1'
+    if None == scale:
+        print 'WARNING: if you are not scaling, then you probably want to use an int instead!'
+        print 'Beware canadians bearing travel videos'
+        scale='1'
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	assert(0<=required)
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(int(Decimal(required)*Decimal(scale)))+'),'+str(numbits)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print '  required:',required
+        required=int(required)
+        assert(0<=required)
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(int(Decimal(required)*Decimal(scale)))+'),'+str(numbits)+'))\n')
+        if verbose: o.write('\n')
+        return
 
     offsetStr=''
     if None != offset:
@@ -1374,12 +1374,12 @@ def encodeUDecimal(o,name,type,numbits,required=None,arraylen=1,unavailable=None
 
     # FIX: can I get rid of the Decimal around params?
     if None==unavailable:
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')))),'+str(numbits)+'))\n')
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')))),'+str(numbits)+'))\n')
     else: # Have a default value that can be filled in
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')))),'+str(numbits)+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int('+str(int(Decimal(unavailable)*Decimal(scale)))+')),'+str(numbits)+'))\n')
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params[\''+name+'\']'+offsetStr+')*Decimal(\''+scale+'\')))),'+str(numbits)+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=int('+str(int(Decimal(unavailable)*Decimal(scale)))+')),'+str(numbits)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -1392,7 +1392,7 @@ def encodeBinary(o,name,type,numbits,required=None,arraylen=1,unavailable=None, 
     not use it within binary messages.
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1427,12 +1427,12 @@ def encodeBinary(o,name,type,numbits,required=None,arraylen=1,unavailable=None, 
 ######################################################################
 
 def decodeBool(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for boolean variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1463,12 +1463,12 @@ def decodeBool(o,name,type,startindex,numbits,required=None,arraylen=1,unavailab
     assert arraylen == 1 # FIX... handle arrays
 
     if None != required:
-	assert type(required)==bool
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	if required: o.write('True\n')
-	else: o.write('False\n')
-	if not decodeOnly: o.write('\n')
-	return int(startindex)+int(numbits)
+        assert type(required)==bool
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        if required: o.write('True\n')
+        else: o.write('False\n')
+        if not decodeOnly: o.write('\n')
+        return int(startindex)+int(numbits)
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('bool(int('+bv+'['+str(startindex)+':'+str(startindex+int(numbits)*int(arraylen))+']))')
@@ -1478,12 +1478,12 @@ def decodeBool(o,name,type,startindex,numbits,required=None,arraylen=1,unavailab
 
 
 def decodeUInt(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1514,27 +1514,27 @@ def decodeUInt(o,name,type,startindex,numbits,required=None,arraylen=1,unavailab
     if not decodeOnly: verbose=False
 
     if None != required:
-	int(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(required))
-	if not decodeOnly: o.write('\n')
-	return startindex+numbits
+        int(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(required))
+        if not decodeOnly: o.write('\n')
+        return startindex+numbits
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('int('+bv+'['+str(startindex)+':'+str(startindex+int(numbits)*int(arraylen))+'])')
     if not decodeOnly: o.write('\n')
     if verbose: o.write('\n')
-    
+
     return startindex+numbits
 
 
 def decodeInt(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1566,26 +1566,26 @@ def decodeInt(o,name,type,startindex,numbits,required=None,arraylen=1,unavailabl
     assert numbits>=1
 
     if None != required:
-	int(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(required))
-	if not decodeOnly: o.write('\n')
-	return end
+        int(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(required))
+        if not decodeOnly: o.write('\n')
+        return end
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('binary.signedIntFromBV('+bv+'['+str(startindex)+':'+str(end)+'])')
     if not decodeOnly: o.write('\n')
     if verbose: o.write('\n')
-    
+
     return end
 
 def decodeFloat(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for IEEE float variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1617,27 +1617,27 @@ def decodeFloat(o,name,type,startindex,numbits,required=None,arraylen=1,unavaila
     assert numbits>=1
 
     if None != required:
-	float(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(required))
-	if not decodeOnly: o.write('\n')
-	if verbose: o.write('\n')
-	return end
+        float(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(required))
+        if not decodeOnly: o.write('\n')
+        if verbose: o.write('\n')
+        return end
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('binary.bitvec2float('+bv+'['+str(startindex)+':'+str(end)+'])')
     if not decodeOnly: o.write('\n')
-    
+
     return end
 
 
 def decodeAisstr6(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-		  bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+                  bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for aisstr6 variables.  Generally arrays.
     @bug: FIX: validate strings??
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1669,26 +1669,26 @@ def decodeAisstr6(o,name,type,startindex,numbits,required=None,arraylen=1,unavai
     assert numbits>=1
 
     if None != required:
-	float(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(required)
-	if not decodeOnly: o.write('\n')
-	return end
+        float(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(required)
+        if not decodeOnly: o.write('\n')
+        return end
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('aisstring.decode('+bv+'['+str(startindex)+':'+str(end)+'])')
     if not decodeOnly: o.write('\n')
-    
+
     return end
 
 
 def decodeDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False,offset=None):
+               bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False,offset=None):
     '''
     Build the decoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1722,11 +1722,11 @@ def decodeDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unavai
     if None == scale: scale='1' # Warning about this was in the encode section
 
     if None != required:
-	Decimal(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(Decimal(required))+'/Decimal(\''+scale+'\')')
-	if not decodeOnly: o.write('\n')
-	return end
+        Decimal(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(Decimal(required))+'/Decimal(\''+scale+'\')')
+        if not decodeOnly: o.write('\n')
+        return end
 
     offsetStr=''
     if offset != None:
@@ -1735,19 +1735,19 @@ def decodeDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unavai
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('Decimal(binary.signedIntFromBV('+bv+'['+str(startindex)+':'+str(end)+']))/Decimal(\''+scale+'\')'+offsetStr+'')
     if not decodeOnly: o.write('\n')
-    
+
     return end
 
 
 
 
 def decodeUDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False,offset=None):
+               bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False,offset=None):
     '''
     Build the decoder for unsigned decimal variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1781,11 +1781,11 @@ def decodeUDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unava
     if None == scale: scale='1' # Warning about this was in the encode section
 
     if None != required:
-	assert (Decimal(required)>=0.) # Make sure required is a number and not negative
-	if not decodeOnly:	o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(Decimal(required))+'/Decimal(\''+scale+'\')')
-	if not decodeOnly: o.write('\n')
-	return end
+        assert (Decimal(required)>=0.) # Make sure required is a number and not negative
+        if not decodeOnly:	o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(Decimal(required))+'/Decimal(\''+scale+'\')')
+        if not decodeOnly: o.write('\n')
+        return end
 
     offsetStr=''
     if offset != None:
@@ -1794,17 +1794,17 @@ def decodeUDecimal(o,name,type,startindex,numbits,required=None,arraylen=1,unava
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('Decimal(int('+bv+'['+str(startindex)+':'+str(end)+']))/Decimal(\''+scale+'\')'+offsetStr+'')
     if not decodeOnly: o.write('\n')
-    
+
     return end
 
 
 def decodeBinary(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False,scale=None, decodeOnly=False):
     '''
     Build the decoder for unsigned decimal variables
 
     @type o: file like obj
-    @param o: where write the code 
+    @param o: where write the code
     @type name: str
     @param name: field name
     @type type: str
@@ -1842,7 +1842,7 @@ def decodeBinary(o,name,type,startindex,numbits,required=None,arraylen=1,unavail
     if int(numbits) != -1: o.write(str(end))  # -1 means go to the end of the message
     o.write(']')
     if not decodeOnly: o.write('\n')
-    
+
     return end
 
 
@@ -1865,40 +1865,40 @@ def buildTestParamFunc(o,msgET, verbose=False, prefixName=False):
     o.write("\t'''Return a params file base on the testvalue tags.\n\t@rtype: dict\n\t@return: params based on testvalue tags\n\t'''\n")
     o.write('\tparams = {}\n')
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	type = field.attrib['type']
-	if verbose: print 'buildTestParamFunc ...',name,type
-	val = None
-	if hasSubTag(field,'testvalue') and hasSubTag(field,'required'):
-	    print 'ERROR: can not have both test value and required tags in the same field'
-	    assert(False)
-	if hasSubTag(field,'testvalue'):
-	    val = field.xpath('testvalue')[0].text
-	else:
-	    if not hasSubTag(field,'required'):
-		sys.exit("ERROR: missing required or testvalue for field: "+name)
-	    val = field.xpath('required')[0].text
-	if verbose: print 'buildTestParamFunc for field '+name+' ...',type,val
-	o.write('\tparams[\''+name+'\'] = ')
-	if type=='bool': 
-	    if val=='1' or val.lower=='true': val = 'True'
-	    else: val = 'False'
-	    o.write(val)
-	elif type in ('uint','int','float'):
-	    o.write(val)
-	elif type in ('decimal','udecimal'):
-	    o.write('Decimal(\''+val+'\')')
+        name = field.attrib['name']
+        type = field.attrib['type']
+        if verbose: print 'buildTestParamFunc ...',name,type
+        val = None
+        if hasSubTag(field,'testvalue') and hasSubTag(field,'required'):
+            print 'ERROR: can not have both test value and required tags in the same field'
+            assert(False)
+        if hasSubTag(field,'testvalue'):
+            val = field.xpath('testvalue')[0].text
+        else:
+            if not hasSubTag(field,'required'):
+                sys.exit("ERROR: missing required or testvalue for field: "+name)
+            val = field.xpath('required')[0].text
+        if verbose: print 'buildTestParamFunc for field '+name+' ...',type,val
+        o.write('\tparams[\''+name+'\'] = ')
+        if type=='bool':
+            if val=='1' or val.lower=='true': val = 'True'
+            else: val = 'False'
+            o.write(val)
+        elif type in ('uint','int','float'):
+            o.write(val)
+        elif type in ('decimal','udecimal'):
+            o.write('Decimal(\''+val+'\')')
 
-	elif type in ('aisstr6'):
-	    o.write('\''+val+'\'')
-	elif type in ('binary'):
-	    o.write('BitVector(bitstring=\''+val+'\')')
-	else:
-	    print 'ERROR: type not handled ...',type,'  (found in the ',name,' field).  Time to buy more coffee'
-	    suggestType(name,type)
-	    assert(False)
+        elif type in ('aisstr6'):
+            o.write('\''+val+'\'')
+        elif type in ('binary'):
+            o.write('BitVector(bitstring=\''+val+'\')')
+        else:
+            print 'ERROR: type not handled ...',type,'  (found in the ',name,' field).  Time to buy more coffee'
+            suggestType(name,type)
+            assert(False)
 
-	o.write('\n')
+        o.write('\n')
 
 
     o.write('\n\treturn params\n\n')
@@ -1919,27 +1919,27 @@ def buildUnitTest(o,msgET, verbose=False, prefixName=False):
     o.write("\t'''Use testvalue tag text from each type to build test case the "+name+" message'''\n")
     o.write('\tdef testEncodeDecode(self):\n\n')
     if prefixName:
-	o.write('\t\tparams = '+name+'TestParams()\n')
-	o.write('\t\tbits   = '+name+'Encode(params)\n')
-	o.write('\t\tr      = '+name+'Decode(bits)\n\n')
+        o.write('\t\tparams = '+name+'TestParams()\n')
+        o.write('\t\tbits   = '+name+'Encode(params)\n')
+        o.write('\t\tr      = '+name+'Decode(bits)\n\n')
     else:
-	o.write('\t\tparams = testParams()\n')
-	o.write('\t\tbits   = encode(params)\n')
-	o.write('\t\tr      = decode(bits)\n\n')
+        o.write('\t\tparams = testParams()\n')
+        o.write('\t\tbits   = encode(params)\n')
+        o.write('\t\tr      = decode(bits)\n\n')
 
     o.write('\t\t# Check that each parameter came through ok.\n')
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	type = field.attrib['type']
-	if type in ('bool','uint','int','aisstr6','binary'):
-	    o.write('\t\tself.failUnlessEqual(r[\''+name+'\'],params[\''+name+'\'])\n')
-	else:
-	    # float, decimal, udecimal
-	    # FIX: look up the decimal places if decimal
-	    places = '3'
-	    if hasSubTag(field,'decimalplaces'): places = field.xpath('decimalplaces')[0].text
-	    o.write('\t\tself.failUnlessAlmostEqual(r[\''+name+'\'],params[\''+name+'\'],'+places+')\n')
-	
+        name = field.attrib['name']
+        type = field.attrib['type']
+        if type in ('bool','uint','int','aisstr6','binary'):
+            o.write('\t\tself.failUnlessEqual(r[\''+name+'\'],params[\''+name+'\'])\n')
+        else:
+            # float, decimal, udecimal
+            # FIX: look up the decimal places if decimal
+            places = '3'
+            if hasSubTag(field,'decimalplaces'): places = field.xpath('decimalplaces')[0].text
+            o.write('\t\tself.failUnlessAlmostEqual(r[\''+name+'\'],params[\''+name+'\'],'+places+')\n')
+
 
 
 def buildEncode(o,msgET, verbose=False, prefixName=False):
@@ -1965,18 +1965,18 @@ def buildEncode(o,msgET, verbose=False, prefixName=False):
     o.write("\t'''Create a "+name+" binary message payload to pack into an AIS Msg "+name+".\n\n")
     o.write('\tFields in params:\n')
     for field in msgET.xpath('field'):
-	if verbose: 
+        if verbose:
             print field.tag,field.attrib['name']
             print field.attrib
-	desc = field[0].text.replace('\n',' ') # get ride of new lines
-	o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
-	if len(field.xpath("required")) == 1:
-	    o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
+        desc = field[0].text.replace('\n',' ') # get ride of new lines
+        o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
+        if len(field.xpath("required")) == 1:
+            o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
 
-	o.write('\n')
+        o.write('\n')
     o.write('\t@param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing\n')
     o.write('\t@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.\n')
-	
+
     o.write("\t@rtype: BitVector\n")
     o.write("\t@return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8\n")
     o.write("\t@note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.\n")
@@ -1992,49 +1992,49 @@ def buildEncode(o,msgET, verbose=False, prefixName=False):
     dynamicArrays = False # Set to true when positioning must be calculated
 
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	type = field.attrib['type']
+        name = field.attrib['name']
+        type = field.attrib['type']
         numbits = int(field.attrib['numberofbits'])
-	required = None; 
-	if hasSubTag(field,'required'): 
-	    required = field.xpath('required')[0].text
-	unavailable=None; 
-	if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
-	arraylen=1
-	if 'arraylength' in field.attrib: 
-	    arraylen=int(field.attrib['arraylength'])
-	    if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
-	else:
-	    if verbose: print 'Processing field ...',name,'(',type+' ',numbits,')'
+        required = None;
+        if hasSubTag(field,'required'):
+            required = field.xpath('required')[0].text
+        unavailable=None;
+        if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
+        arraylen=1
+        if 'arraylength' in field.attrib:
+            arraylen=int(field.attrib['arraylength'])
+            if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
+        else:
+            if verbose: print 'Processing field ...',name,'(',type+' ',numbits,')'
 
-	if   type=='bool'   : encodeBool   (o,name,type,numbits,required,arraylen,unavailable)
-	elif type=='uint'   : encodeUInt   (o,name,type,numbits,required,arraylen,unavailable)
-	elif type=='int'    : encodeInt    (o,name,type,numbits,required,arraylen,unavailable)	    
-	elif type=='float'  : encodeFloat  (o,name,type,numbits,required,arraylen,unavailable)
-	elif type=='aisstr6': encodeAisstr6(o,name,type,numbits,required,arraylen,unavailable)	    
+        if   type=='bool'   : encodeBool   (o,name,type,numbits,required,arraylen,unavailable)
+        elif type=='uint'   : encodeUInt   (o,name,type,numbits,required,arraylen,unavailable)
+        elif type=='int'    : encodeInt    (o,name,type,numbits,required,arraylen,unavailable)
+        elif type=='float'  : encodeFloat  (o,name,type,numbits,required,arraylen,unavailable)
+        elif type=='aisstr6': encodeAisstr6(o,name,type,numbits,required,arraylen,unavailable)
         elif type=='decimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
-	    encodeDecimal(o,name,type,numbits,required,arraylen,unavailable,scale=scale, offset=offset)
+            if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
+            encodeDecimal(o,name,type,numbits,required,arraylen,unavailable,scale=scale, offset=offset)
         elif type=='udecimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): 
+            if hasSubTag(field,'offset'):
                 offset = field.xpath('offset')[0].text
-	    encodeUDecimal(o,name,type,numbits,required,arraylen,unavailable,scale=scale,offset=offset)
-	elif type=='binary': encodeBinary(o,name,type,numbits,required,arraylen,unavailable)
-        else: 
-	    print 'WARNING: In buildEncode - Unhandled field type for',name,'...',type
-	    suggestType (name,type)
-	    assert False
+            encodeUDecimal(o,name,type,numbits,required,arraylen,unavailable,scale=scale,offset=offset)
+        elif type=='binary': encodeBinary(o,name,type,numbits,required,arraylen,unavailable)
+        else:
+            print 'WARNING: In buildEncode - Unhandled field type for',name,'...',type
+            suggestType (name,type)
+            assert False
 
 #    o.write('\n\tbv=binary.joinBV(bvList)\n')
 #    o.write('\n\tbvLen=len(bv)\n')
 #    o.write('\n\tif bvLen%6!=0:\n')
-#    o.write('\n\t    bv = bv + BitVector(size=bvLen%6)  # \n')
+#    o.write('\n\t    bv = bv + BitVector(size=bvLen%6)\n')
 #    o.write('\n\treturn bv\n\n')
     o.write('\n\treturn binary.joinBV(bvList)\n\n')
 
@@ -2065,61 +2065,61 @@ def buildDecodeParts(o,msgET, verbose=False, prefixName=False):
     name = msgET.attrib['name']
 
     print 'Generating partial decode functions ...',name
-    
+
     baseName = name+'Decode'
     if not prefixName: baseName = 'decode'
 
     startindex = 0 # Where we are in the bitvector... FIX: what about variable length jobs?
 
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	type = field.attrib['type']
+        name = field.attrib['name']
+        type = field.attrib['type']
 
-	o.write('def '+baseName+name+'(bv, validate=False):\n')
-	# Follow the same convention of decoding into a dict so that code is the same
-	#o.write('\tr={};')
-	o.write('\treturn ')
+        o.write('def '+baseName+name+'(bv, validate=False):\n')
+        # Follow the same convention of decoding into a dict so that code is the same
+        #o.write('\tr={};')
+        o.write('\treturn ')
 
         numbits = int(field.attrib['numberofbits'])
-	required = None; 
-	if hasSubTag(field,'required'): 
-	    required = field.xpath('required')[0].text
-	unavailable=None; 
-	if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
-	arraylen=1
-	if 'arraylength' in field.attrib: 
-	    arraylen=int(field.attrib['arraylength'])
-	    if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
+        required = None;
+        if hasSubTag(field,'required'):
+            required = field.xpath('required')[0].text
+        unavailable=None;
+        if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
+        arraylen=1
+        if 'arraylength' in field.attrib:
+            arraylen=int(field.attrib['arraylength'])
+            if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
 
-	assert None!=startindex
-	if verbose: print 'startindex',startindex
-	if   type=='bool'   : startindex = decodeBool   (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
-	elif type=='uint'   : startindex = decodeUInt   (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
-	elif type=='int'    : startindex = decodeInt    (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
-	elif type=='float'  : startindex = decodeFloat  (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
-	elif type=='aisstr6': startindex = decodeAisstr6(o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
-	elif type=='binary' : startindex = decodeBinary (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)	    
+        assert None!=startindex
+        if verbose: print 'startindex',startindex
+        if   type=='bool'   : startindex = decodeBool   (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
+        elif type=='uint'   : startindex = decodeUInt   (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
+        elif type=='int'    : startindex = decodeInt    (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
+        elif type=='float'  : startindex = decodeFloat  (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
+        elif type=='aisstr6': startindex = decodeAisstr6(o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
+        elif type=='binary' : startindex = decodeBinary (o,name,type,startindex,numbits,required,arraylen,unavailable,decodeOnly=True)
 
         elif type=='decimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
-	    startindex = decodeDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,decodeOnly=True,offset=offset)
+            if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
+            startindex = decodeDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,decodeOnly=True,offset=offset)
         elif type=='udecimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
-	    startindex = decodeUDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,decodeOnly=True,offset=offset)
+            if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
+            startindex = decodeUDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,decodeOnly=True,offset=offset)
 
-        else: 
-	    print 'WARNING: In buildDecode - Unhandled field type for',name,'...',type
-	    suggestType (name,type)
-	    assert False
+        else:
+            print 'WARNING: In buildDecode - Unhandled field type for',name,'...',type
+            suggestType (name,type)
+            assert False
 
-	#o.write('\treturn(r[\''+name+'\'])\n\n')
-	o.write('\n\n')
+        #o.write('\treturn(r[\''+name+'\'])\n\n')
+        o.write('\n\n')
 
 
 ######################################################################
@@ -2147,19 +2147,19 @@ def buildDecode(o,msgET, verbose=False, prefixName=False):
 
     ########################################
     # doc string
-    o.write("\t'''Unpack a "+name+" message \n\n")
+    o.write("\t'''Unpack a "+name+" message.\n\n")
     o.write('\tFields in params:\n')
     for field in msgET.xpath('field'):
-	desc = field[0].text.replace('\n',' ') # get ride of new lines
-	o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
-	if len(field.xpath("required")) == 1:
-	    o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
+        desc = field[0].text.replace('\n',' ') # get ride of new lines
+        o.write('\t  - '+field.attrib['name']+'('+field.attrib['type']+'): '+desc) # give the description
+        if len(field.xpath("required")) == 1:
+            o.write(' (field automatically set to "'+field.xpath("required")[0].text+'")')
 
-	o.write('\n')
+        o.write('\n')
     o.write('\t@type bv: BitVector\n')
     o.write('\t@param bv: Bits defining a message\n')
     o.write('\t@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.\n')
-	
+
     o.write("\t@rtype: dict\n")
     o.write("\t@return: params\n")
     o.write("\t'''\n\n")
@@ -2183,23 +2183,23 @@ def buildDecode(o,msgET, verbose=False, prefixName=False):
     startindex = 0 # Where we are in the bitvector... FIX: what about variable length jobs?
 
     for field in msgET.xpath('field'):
-	name = field.attrib['name']
-	type = field.attrib['type']
+        name = field.attrib['name']
+        type = field.attrib['type']
         numbits = int(field.attrib['numberofbits'])
-	required = None; 
-	if hasSubTag(field,'required'): 
-	    required = field.xpath('required')[0].text
-	unavailable=None; 
-	if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
-	arraylen=1
-	if 'arraylength' in field.attrib: 
-	    arraylen=int(field.attrib['arraylength'])
-	    if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
-	else:
-	    if verbose: print 'Processing field ...',name,'(',type+' ',numbits,')'
+        required = None;
+        if hasSubTag(field,'required'):
+            required = field.xpath('required')[0].text
+        unavailable=None;
+        if hasSubTag(field,'unavailable'): unavailable = field.xpath('unavailable')[0].text
+        arraylen=1
+        if 'arraylength' in field.attrib:
+            arraylen=int(field.attrib['arraylength'])
+            if verbose: print 'Processing field ...',name,'('+type+' ',numbits,'*',arraylen,'=',numbits*arraylen,'bits )'
+        else:
+            if verbose: print 'Processing field ...',name,'(',type+' ',numbits,')'
 
-	assert None!=startindex
-	if verbose: print 'startindex',startindex
+        assert None!=startindex
+        if verbose: print 'startindex',startindex
 
         if hasSubTag(field,'optional'):
             # NoReturn means that this field is not a point that needs a check to see if we are done
@@ -2216,35 +2216,35 @@ def buildDecode(o,msgET, verbose=False, prefixName=False):
             elif text != 'NoReturn':
                 sys.exit ('ERROR: optional text must be NoReturn or empty')
 
-	if   type=='bool'   : startindex = decodeBool   (o,name,type,startindex,numbits,required,arraylen,unavailable)
-	elif type=='uint'   : startindex = decodeUInt   (o,name,type,startindex,numbits,required,arraylen,unavailable)
-	elif type=='int'    : startindex = decodeInt    (o,name,type,startindex,numbits,required,arraylen,unavailable)
-	elif type=='float'  : startindex = decodeFloat  (o,name,type,startindex,numbits,required,arraylen,unavailable)
-	elif type=='aisstr6': startindex = decodeAisstr6(o,name,type,startindex,numbits,required,arraylen,unavailable)
-	elif type=='binary' : startindex = decodeBinary (o,name,type,startindex,numbits,required,arraylen,unavailable)	    
+        if   type=='bool'   : startindex = decodeBool   (o,name,type,startindex,numbits,required,arraylen,unavailable)
+        elif type=='uint'   : startindex = decodeUInt   (o,name,type,startindex,numbits,required,arraylen,unavailable)
+        elif type=='int'    : startindex = decodeInt    (o,name,type,startindex,numbits,required,arraylen,unavailable)
+        elif type=='float'  : startindex = decodeFloat  (o,name,type,startindex,numbits,required,arraylen,unavailable)
+        elif type=='aisstr6': startindex = decodeAisstr6(o,name,type,startindex,numbits,required,arraylen,unavailable)
+        elif type=='binary' : startindex = decodeBinary (o,name,type,startindex,numbits,required,arraylen,unavailable)
 
         elif type=='decimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
-	    startindex = decodeDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,offset=offset)
+            if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
+            startindex = decodeDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,offset=offset)
 
         elif type=='udecimal':
-	    scale = None
-	    if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
+            scale = None
+            if hasSubTag(field,'scale'): scale = field.xpath('scale')[0].text
             offset = None
-	    if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
-	    startindex = decodeUDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,offset=offset)
+            if hasSubTag(field,'offset'): offset = field.xpath('offset')[0].text
+            startindex = decodeUDecimal(o,name,type,startindex, numbits,required,arraylen,unavailable,scale=scale,offset=offset)
 
-        else: 
-	    print 'WARNING: In buildDecode - Unhandled field type for',name,'...',type
-	    suggestType (name,type)
-	    assert False
+        else:
+            print 'WARNING: In buildDecode - Unhandled field type for',name,'...',type
+            suggestType (name,type)
+            assert False
 
 
-	if None==startindex: print 'FIX: here. drat.  treat me right'
-	assert None!=startindex
+        if None==startindex: print 'FIX: here. drat.  treat me right'
+        assert None!=startindex
 
 
     o.write('\treturn r\n\n')
@@ -2253,7 +2253,7 @@ def buildDecode(o,msgET, verbose=False, prefixName=False):
 
 #def getPythonType(aType):
 #    '''
-#    Translate a 
+#    Translate a
 #    @rtype: str
 #    @return: name of the python type
 #    '''
@@ -2297,34 +2297,34 @@ def buildOptParse(o,msgET, prefixName=False):
     # FIX: write out a doc string
 
     o.write('''
-	parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
-		help='decode a "'''+msgName+'''" AIS message')
-	parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
-		help='encode a "'''+msgName+'''" AIS message')
-''')	       
+        parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
+                help='decode a "'''+msgName+'''" AIS message')
+        parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
+                help='encode a "'''+msgName+'''" AIS message')
+''')
 
     #print 'here...', msgName, prefixName
     for field in msgET.xpath('field'):
-	name      = field.attrib['name']
-	fieldType = field.attrib['type']
-	if hasSubTag(field,'required'):
-	    print 'skipping required field ...',name,fieldType
-	    continue
-	#print 'there',name,fieldType
-	o.write('\tparser.add_option(\'--')
-	if prefixName: o.write(msgName+'-')
-	o.write(name+'-field\', dest=\''+name+'Field\'')
-	if hasSubTag(field,'unavailable'):
-	    val = field.xpath('unavailable')[0].text
-	    o.write(',default=')
-	    if fieldType in ('uint','int','float'): 
-		o.write(val)
-	    elif fieldType in ('decimal','udecimal'):
-		o.write('Decimal(\''+val+'\')')
-	    elif fieldType in ('aisstr6','bitvector'):
-		o.write('\''+val+'\'')
-	o.write(',metavar=\''+fieldType+'\',type=\''+aisType2optParseType[fieldType]+'\'')
-	o.write('\n\t\t,help=\'Field parameter value [default: %default]\')\n')
+        name      = field.attrib['name']
+        fieldType = field.attrib['type']
+        if hasSubTag(field,'required'):
+            print 'skipping required field ...',name,fieldType
+            continue
+        #print 'there',name,fieldType
+        o.write('\tparser.add_option(\'--')
+        if prefixName: o.write(msgName+'-')
+        o.write(name+'-field\', dest=\''+name+'Field\'')
+        if hasSubTag(field,'unavailable'):
+            val = field.xpath('unavailable')[0].text
+            o.write(',default=')
+            if fieldType in ('uint','int','float'):
+                o.write(val)
+            elif fieldType in ('decimal','udecimal'):
+                o.write('Decimal(\''+val+'\')')
+            elif fieldType in ('aisstr6','bitvector'):
+                o.write('\''+val+'\'')
+        o.write(',metavar=\''+fieldType+'\',type=\''+aisType2optParseType[fieldType]+'\'')
+        o.write('\n\t\t,help=\'Field parameter value [default: %default]\')\n')
 
 
 
@@ -2341,90 +2341,90 @@ def buildMain(o, msgET, prefixName=False):
 
     o.write('''
 def main():
-	from optparse import OptionParser
-	parser = OptionParser(usage="%prog [options]",
-		version="%prog "+__version__)
+        from optparse import OptionParser
+        parser = OptionParser(usage="%prog [options]",
+                version="%prog "+__version__)
 
-	parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
-		help='run the documentation tests')
-	parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
-		help='run the unit tests')
-	parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		help='Make the test output verbose')
+        parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
+                help='run the documentation tests')
+        parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
+                help='run the unit tests')
+        parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
+                help='Make the test output verbose')
 
-	# FIX: remove nmea from binary messages.  No way to build the whole packet?
-	# FIX: or build the surrounding msg 8 for a broadcast?
-	typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
-	parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
-		,default='nmeapayload'
-		,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
+        # FIX: remove nmea from binary messages.  No way to build the whole packet?
+        # FIX: or build the surrounding msg 8 for a broadcast?
+        typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
+        parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
+                ,default='nmeapayload'
+                ,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
 
 
-	outputChoices = ('std','html','csv','sql' ''')
+        outputChoices = ('std','html','csv','sql' ''')
 #	'xml' -  FIX: need to add xml output
-    if haveLocatableMessage(msgET): o.write(', \'kml\',\'kml-full\'') 
+    if haveLocatableMessage(msgET): o.write(', \'kml\',\'kml-full\'')
     o.write(''')
-	parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
-		,default='std'
-		,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
+        parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
+                ,default='std'
+                ,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
 
-	parser.add_option('-o','--output',dest='outputFileName',default=None,
-			  help='Name of the python file to write [default: stdout]')
+        parser.add_option('-o','--output',dest='outputFileName',default=None,
+                          help='Name of the python file to write [default: stdout]')
 
-	parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
-			  choices=fieldList,
-			  help='Which fields to include in the output.  Currently only for csv output [default: all]')
+        parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
+                          choices=fieldList,
+                          help='Which fields to include in the output.  Currently only for csv output [default: all]')
 
-	parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
-			  help='Print the field name for csv')
+        parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
+                          help='Print the field name for csv')
 
-	parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
-			  help='Print out an sql create command for the table.')
+        parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
+                          help='Print out an sql create command for the table.')
 
-	parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
-			  help='Print a LaTeX table of the type')
+        parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
+                          help='Print a LaTeX table of the type')
 
-	parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
-			  help='Print delimited table of the type (for Word table importing)')
-	parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\\t'
-			  ,help='Delimiter for text table [default: \\\'%default\\\'](for Word table importing)')
+        parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
+                          help='Print delimited table of the type (for Word table importing)')
+        parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\\t'
+                          ,help='Delimiter for text table [default: \\\'%default\\\'](for Word table importing)')
 
 
-	dbChoices = ('sqlite','postgres')
-	parser.add_option('-D','--db-type',dest='dbType',default='postgres'
-			  ,choices=dbChoices,type='choice'
-			  ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
+        dbChoices = ('sqlite','postgres')
+        parser.add_option('-D','--db-type',dest='dbType',default='postgres'
+                          ,choices=dbChoices,type='choice'
+                          ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
 
 ''')
 
     o.write('''\taddMsgOptions(parser)\n''')
 
     o.write('''
-	(options,args) = parser.parse_args()
-	success=True
+        (options,args) = parser.parse_args()
+        success=True
 
-	if options.doctest:
-		import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-		sys.argv= [sys.argv[0]]
-		if options.verbose: sys.argv.append('-v')
-		import doctest
-		numfail,numtests=doctest.testmod()
-		if numfail==0: print 'ok'
-		else: 
-			print 'FAILED'
-			success=False
+        if options.doctest:
+                import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+                sys.argv= [sys.argv[0]]
+                if options.verbose: sys.argv.append('-v')
+                import doctest
+                numfail,numtests=doctest.testmod()
+                if numfail==0: print 'ok'
+                else:
+                        print 'FAILED'
+                        success=False
 
-	if not success: sys.exit('Something Failed')
-	del success # Hide success from epydoc
+        if not success: sys.exit('Something Failed')
+        del success # Hide success from epydoc
 
-	if options.unittest:
-		sys.argv = [sys.argv[0]]
-		if options.verbose: sys.argv.append('-v')
-		unittest.main()
+        if options.unittest:
+                sys.argv = [sys.argv[0]]
+                if options.verbose: sys.argv.append('-v')
+                unittest.main()
 
-	outfile = sys.stdout
-	if None!=options.outputFileName:
-		outfile = file(options.outputFileName,'w')
+        outfile = sys.stdout
+        if None!=options.outputFileName:
+                outfile = file(options.outputFileName,'w')
 
 ''')
 
@@ -2437,43 +2437,43 @@ def main():
     o.write('\n\tif options.doEncode:\n')
     o.write('\t\t# First make sure all non required options are specified\n')
     for field in msgET.xpath('field'):
-	name      = field.attrib['name']
-	fieldType = field.attrib['type']
-	varName = prefix+name+'Field'
-	if not hasSubTag(field,'required'):
-	    o.write('\t\tif None==options.'+varName+': parser.error("missing value for '+varName+'")\n')
+        name      = field.attrib['name']
+        fieldType = field.attrib['type']
+        varName = prefix+name+'Field'
+        if not hasSubTag(field,'required'):
+            o.write('\t\tif None==options.'+varName+': parser.error("missing value for '+varName+'")\n')
 
     # Build dict
     o.write('\t\tmsgDict={\n')
     for field in msgET.xpath('field'):
-	name    = field.attrib['name']
-	varName = prefix+name+'Field'
-	if hasSubTag(field,'required'):
-	    o.write('\t\t\t\''+name+'\': \''+field.xpath('required')[0].text+'\',\n')
-	else:
-	    o.write('\t\t\t\''+name+'\': options.'+varName+',\n')
+        name    = field.attrib['name']
+        varName = prefix+name+'Field'
+        if hasSubTag(field,'required'):
+            o.write('\t\t\t\''+name+'\': \''+field.xpath('required')[0].text+'\',\n')
+        else:
+            o.write('\t\t\t\''+name+'\': options.'+varName+',\n')
     o.write('\t\t}\n')
 
     encodeFunction = 'encode'
     if prefixName: encodeFunction = msgName+'Encode'
     o.write('''
-		bits = '''+encodeFunction+'''(msgDict)
-		if 'binary'==options.ioType: print str(bits)
-		elif 'nmeapayload'==options.ioType:
-		    # FIX: figure out if this might be necessary at compile time
-		    #print "bitLen",len(bits)
-		    bitLen=len(bits)
-		    if bitLen%6!=0:
-			bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-		    #print "result:",binary.bitvectoais6(bits)[0]
-		    print binary.bitvectoais6(bits)[0]
+                bits = '''+encodeFunction+'''(msgDict)
+                if 'binary'==options.ioType: print str(bits)
+                elif 'nmeapayload'==options.ioType:
+                    # FIX: figure out if this might be necessary at compile time
+                    #print "bitLen",len(bits)
+                    bitLen=len(bits)
+                    if bitLen%6!=0:
+                        bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
+                    #print "result:",binary.bitvectoais6(bits)[0]
+                    print binary.bitvectoais6(bits)[0]
 
 
-		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-		elif 'nmea'==options.ioType: 
-		    #bitLen=len(bits)
+                # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
+                elif 'nmea'==options.ioType:
+                    #bitLen=len(bits)
                     #if bitLen%6!=0:
-		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
+                    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
                     import aisutils.uscg as uscg
                     nmea = uscg.create_nmea(bits)
                     print nmea
@@ -2482,7 +2482,7 @@ def main():
 
 
                     #sys.exit("FIX: need to implement creating nmea capability")
-		else: sys.exit('ERROR: unknown ioType.  Help!')
+                else: sys.exit('ERROR: unknown ioType.  Help!')
 ''')
 
 
@@ -2491,59 +2491,59 @@ def main():
     ##############################
     decodeFunction = 'decode'
     printFields='printFields'
-    if prefixName: 
-	decodeFunction = msgName+'Decode'
-	printFields    = msgName+'PrintFields'
+    if prefixName:
+        decodeFunction = msgName+'Decode'
+        printFields    = msgName+'PrintFields'
     o.write('''
 
-	if options.sqlCreate:
-		sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
+        if options.sqlCreate:
+                sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
 
-	if options.latexDefinitionTable:
-		latexDefinitionTable(outfile)
+        if options.latexDefinitionTable:
+                latexDefinitionTable(outfile)
 
-	# For conversion to word tables
-	if options.textDefinitionTable:
-		textDefinitionTable(outfile,options.delimTextDefinitionTable)
+        # For conversion to word tables
+        if options.textDefinitionTable:
+                textDefinitionTable(outfile,options.delimTextDefinitionTable)
 
-	if options.printCsvfieldList:
-		# Make a csv separated list of fields that will be displayed for csv
-		if None == options.fieldList: options.fieldList = fieldList
-		import StringIO
-		buf = StringIO.StringIO()
-		for field in options.fieldList:
-			buf.write(field+',')
-		result = buf.getvalue()
-		if result[-1] == ',': print result[:-1]
-		else: print result
+        if options.printCsvfieldList:
+                # Make a csv separated list of fields that will be displayed for csv
+                if None == options.fieldList: options.fieldList = fieldList
+                import StringIO
+                buf = StringIO.StringIO()
+                for field in options.fieldList:
+                        buf.write(field+',')
+                result = buf.getvalue()
+                if result[-1] == ',': print result[:-1]
+                else: print result
 
-	if options.doDecode:
-		if len(args)==0: args = sys.stdin
-		for msg in args:
-			bv = None
+        if options.doDecode:
+                if len(args)==0: args = sys.stdin
+                for msg in args:
+                        bv = None
 
-			if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
-				# Found nmea
-				# FIX: do checksum
-				bv = binary.ais6tobitvec(msg.split(',')[5])
-			else: # either binary or nmeapayload... expect mostly nmeapayloads
-				# assumes that an all 0 and 1 string can not be a nmeapayload
-				binaryMsg=True
-				for c in msg:
-					if c not in ('0','1'):
-						binaryMsg=False
-						break
-				if binaryMsg:
-					bv = BitVector(bitstring=msg)
-				else: # nmeapayload
-					bv = binary.ais6tobitvec(msg)
+                        if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
+                                # Found nmea
+                                # FIX: do checksum
+                                bv = binary.ais6tobitvec(msg.split(',')[5])
+                        else: # either binary or nmeapayload... expect mostly nmeapayloads
+                                # assumes that an all 0 and 1 string can not be a nmeapayload
+                                binaryMsg=True
+                                for c in msg:
+                                        if c not in ('0','1'):
+                                                binaryMsg=False
+                                                break
+                                if binaryMsg:
+                                        bv = BitVector(bitstring=msg)
+                                else: # nmeapayload
+                                        bv = binary.ais6tobitvec(msg)
 
-			'''+printFields+'''('''+decodeFunction+'''(bv)
-				    ,out=outfile
-				    ,format=options.outputType
-				    ,fieldList=options.fieldList
-				    ,dbType=options.dbType
-				    )
+                        '''+printFields+'''('''+decodeFunction+'''(bv)
+                                    ,out=outfile
+                                    ,format=options.outputType
+                                    ,fieldList=options.fieldList
+                                    ,dbType=options.dbType
+                                    )
 
 ############################################################
 if __name__=='__main__':
@@ -2555,14 +2555,14 @@ if __name__=='__main__':
 if __name__=='__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
 
     parser.add_option('-o','--output',dest='outputFileName',default=None,
-			help='Name of the python file to write')
+                        help='Name of the python file to write')
 #			help='Name of the python file to write [default: stdout]')
 
     parser.add_option('-i','-x','--xml-definition',dest='xmlFileName',default=None,
-			help='XML definition file for the msg to use')
+                        help='XML definition file for the msg to use')
 #			help='XML definition file for the msg to use [default: stdin]')
 
 #    parser.add_option('-m','--message',dest='message',default=None,
@@ -2573,7 +2573,7 @@ if __name__=='__main__':
 
     parser.add_option('-p','--prefix',dest='prefix',default=False,action='store_true',
                         help='put the field name in front of all function names.'
-			+'  Allows multiple messages in one file')
+                        +'  Allows multiple messages in one file')
 
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
                         help='run the tests run in verbose mode')
@@ -2583,19 +2583,19 @@ if __name__=='__main__':
     success=True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	argvOrig = sys.argv
-	sys.argv= [sys.argv[0]]
-	if options.verbose: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else: 
-	    print 'FAILED'
-	    success=False
-	sys.argv = argvOrig # Restore the original args
-	del argvOrig # hide from epydoc
-	sys.exit() # FIX: Will this exit success?
+        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        argvOrig = sys.argv
+        sys.argv= [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print 'ok'
+        else:
+            print 'FAILED'
+            success=False
+        sys.argv = argvOrig # Restore the original args
+        del argvOrig # hide from epydoc
+        sys.exit() # FIX: Will this exit success?
 
     #infile=sys.stdin
     #if options.xmlFileName: infile = file(options.xmlFileName,'r')
@@ -2606,9 +2606,9 @@ if __name__=='__main__':
     # FIX: down the road, it would be good to allow either filenames of std{in/out}
 
     if None==options.xmlFileName:
-	sys.exit('ERROR: must specify an xml definition file.')
+        sys.exit('ERROR: must specify an xml definition file.')
     if None==options.outputFileName:
-	sys.exit('ERROR: must specify an python file to write to.')
+        sys.exit('ERROR: must specify an python file to write to.')
     generatePython(options.xmlFileName,options.outputFileName,prefixName=options.prefix, verbose=options.verbose)
 
     print '\nrecommend running pychecker like this:'

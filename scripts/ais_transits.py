@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-
 __version__ = '$Revision: 12383 $'.split()[1]
 __date__ = '$Date: 2009-08-03 09:41:06 -0400 (Mon, 03 Aug 2009) $'.split()[1]
 __author__ = ''
-
 __doc__='''
 Calculate ship transits from AIS data.
 
 Here is a quick way to make the xymt format:
 
-ais_build_sqlite.py -d ais.db3 --with-create positions-123.ais 
+ais_build_sqlite.py -d ais.db3 --with-create positions-123.ais
 
 sqlite3 ais.db3 'SELECT longitude,latitude,UserID,cg_sec FROM position' | tr '|' ' ' > ais.xymt
 
@@ -192,7 +190,7 @@ def detectTransits(inFile, basename, options):
    #for ship in ships:
    for ship in shipList:
       shipTransitFile=None
-      if options.separateShips: shipTransitFile = file(basename+'.'+ship,'w') # shipTransitFile 
+      if options.separateShips: shipTransitFile = file(basename+'.'+ship,'w') # shipTransitFile
 
       transits=[]  # List of start_time,end_time,# of points
       start=None # Time the current transit started
@@ -201,9 +199,9 @@ def detectTransits(inFile, basename, options):
       shipTransits=1
       t = None
       print ship
-      if transitsFile: transitsFile.write('# '+ship+'\n')   
+      if transitsFile: transitsFile.write('# '+ship+'\n')
       if options.gmtMultiSeg: gmtMultiSegFile.write('>\n') # This is the segment separator default character
-      if options.separateShips: shipTransitFile.write('# '+ship+'\n')   
+      if options.separateShips: shipTransitFile.write('# '+ship+'\n')
 
       max_delta_t = 0  # maximum time between samples
 
@@ -267,7 +265,7 @@ def detectTransits(inFile, basename, options):
          gp.write('set output "'+basename+'.'+ship+'.pdf"\n')
          gp.write('replot\n')
 
-      if options.excel: 
+      if options.excel:
          totalTime = 0  # Track total time by ship in region
          totalSamples =0 # What was the total number of AIS position messages from this ship?
          transitCount=0 # What transit number for THIS ship
@@ -307,7 +305,7 @@ def detectTransits(inFile, basename, options):
          ws_summary.write(ws_summary_row,col,totalSamples); col += 1
          #ws_summary.write(ws_summary_row,col,); col += 1
          ws_summary_row += 1
-         
+
       #print transits
 
       if None != summaryFile:
@@ -317,12 +315,12 @@ def detectTransits(inFile, basename, options):
 
       totalTransits+=shipTransits
 
-  
+
    if transitsFile: transitsFile.write('#total transits = '+str(totalTransits)+'\n')
    print 'Total transits =',totalTransits
    if options.excel:
       workbook.save(basename+'.xls')
-   
+
 
 ######################################################################
 # Code that runs when this is this file is executed directly

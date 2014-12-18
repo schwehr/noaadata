@@ -29,7 +29,7 @@ cat *.names | sort -n -u > names
 
 PYTHONPATH=.. ./ais_position_in_polygon.py 123.ais -v  > inside.ais
 
-./ais_positions.py -o inside.tracks < inside.ais 
+./ais_positions.py -o inside.tracks < inside.ais
 
 # Get all the ships by mmsi
 ship_mmsi=`awk '{print $2}' inside.tracks | sort -u -n`
@@ -53,4 +53,3 @@ gnuplot <<EOF
   #plot 'stellwagen.dat' with lp, 'inside.tracks' using 3:4
   plot 'stellwagen.dat' with l, 'inside.tracks' using 3:4
 EOF
-

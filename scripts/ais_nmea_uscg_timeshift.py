@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 12308 $'.split()[1]
 __revision__  = __version__ # For pylint
@@ -77,8 +76,6 @@ for line in file(sys.argv[1]):
         slot_t = 'N/A'
 
 
-            
-            
     print '|',uscg,'|',cg_s,'|',dt,'|',time_of_arrival,'|', dt_time_of_arrival,'|', match['t_recver_hhmmss'], '|',slot_num, '|',slot_t , '|',
 
     if match['body'][0] in ('1','2','3'):
@@ -113,9 +110,6 @@ for line in file(sys.argv[1]):
         print '{slot_number}|{slot_time}|{Time_hour}|{Time_min}|{Time_sec}| b{UserID}|'.format(**msg)
     else:
         print '|'*6
-        #print 
-        #print line
-        #print
         pass
 
 

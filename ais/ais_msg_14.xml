@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- $Id: ais_msg_14.xml 7473 2007-11-06 15:58:19Z schwehr $ -->
-<!-- $Revision: 7473 $ -->
-<!-- $Date: 2007-11-06 10:58:19 -0500 (Tue, 06 Nov 2007) $ -->
-
-<!-- AUTHOR: Kurt Schwehr -->
-
 <ais-binary-message version="1.0">
-  
+
   <message name="srbm" aismsgnum="14">
     <description>Safety related broadcast message</description>
 
@@ -39,8 +33,8 @@
       <description>Indicated how many times a message has been repeated</description>
       <unavailable>0</unavailable>
       <lookuptable>
-	<entry key="0">default</entry>
-	<entry key="3">do not repeat any more</entry>
+        <entry key="0">default</entry>
+        <entry key="3">do not repeat any more</entry>
       </lookuptable>
       <testvalue>1</testvalue>
     </field>
@@ -61,7 +55,6 @@
       <testvalue>HELLO</testvalue>
     </field>
     -->
-
 
   </message> <!-- addressed safety related message -->
 

@@ -53,7 +53,7 @@ def get_parser():
     parser.add_option('-v', '--verbose', default=False, action='store_true', help='Make the test output verbose')
 
     parser.add_option('-t', '--tracks-file', default=None, help='File containing space separated track id numbers [default: use args]')
-    
+
     return parser
 
 def lon_to_utm_zone(lon):
@@ -80,7 +80,7 @@ def main():
 
     ll = proj(options.x_min,options.y_min)
     ur = proj(options.x_max,options.y_max)
-    
+
     g = grid.Grid(ll[0],ll[1], ur[0],ur[1], stepSize=options.step)# , verbose=options.verbose)
     basename=options.basename
     g.writeLayoutGnuplot(basename+'-grd.dat')
@@ -97,7 +97,7 @@ def main():
     cu = cx.cursor()
 
     print 'FIX: lookup EPSG for UTM zone here rather than hardcoding'
-    
+
     if options.tracks_file is not None:
         for line in file(options.tracks_file):
             #more_tracks = [int(t) for t in line.split()]
@@ -109,7 +109,7 @@ def main():
     for track_count, track_id in enumerate(tracks):
         if track_count % 200==0:
             print 'track_count:',track_count
-        
+
         cu.execute('SELECT AsText(Transform(track,32619)) FROM tpath WHERE id=%d;' %(int(track_id),) )
         track_wkt=cu.fetchone()[0]
         trackseq = grid.wktLine2list(track_wkt);
@@ -122,7 +122,7 @@ def main():
 
     g.writeCellsGnuplot(basename+'-cells.dat')
     g.writeArcAsciiGrid(basename+'-grd.asc')
-    
+
 ######################################################################
 if __name__=='__main__':
     main()
