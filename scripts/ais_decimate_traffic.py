@@ -71,7 +71,7 @@ class Decimate:
         return False
 
 
-    class Bbox:
+class Bbox:
 
     def __init__(self,x_min=None,y_min=None,x_max=None,y_max=None):
         self.bounds=(x_min,y_min,x_max,y_max)
@@ -85,7 +85,7 @@ class Decimate:
 
     def is_outside(self,x,y):
         return not self.is_inside(x,y)
-    
+
 
 def main():
     from optparse import OptionParser
