@@ -5,7 +5,7 @@ __date__      = '$Date: 2009-05-26 14:11:37 -0400 (Tue, 26 May 2009) $'.split()[
 __revision__  = __version__
 __date__      = '$Date: 2009-05-26 14:11:37 -0400 (Tue, 26 May 2009) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
+__license__   = 'Apache 2.0'
 __doc__='''
 Listen for connections.  When it receives data, shove the data into a postgis server.
 

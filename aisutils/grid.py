@@ -13,7 +13,7 @@ Privide a class to allow laying ship tracks down into a grid.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2007-Jul-29
 @todo: allow for non-square grid cells
 @see: U{Tentative numpy tutorial<http://www.scipy.org/Tentative_NumPy_Tutorial>}

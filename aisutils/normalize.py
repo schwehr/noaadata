@@ -18,9 +18,8 @@ Rewrite from the command line only ais_normalize
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2008-Jan-30
-@organization: U{CCOM<http://ccom.unh.edu/>}
 @see: U{Queue<http://www.python.org/doc/current/lib/QueueObjects.html>}
 '''
 

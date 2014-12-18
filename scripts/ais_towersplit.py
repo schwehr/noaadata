@@ -5,17 +5,8 @@ __author__ = 'Kurt Schwehr'
 __doc__='''
 Split an USCG N-AIS log file into one file per receiving station.
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
-@copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
 @since: 2006-Sep-24
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
+@license: Apache 2.0
 
 @todo: add a link to generated doc string to bring up the html for the pretty version
 

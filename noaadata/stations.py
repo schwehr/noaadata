@@ -21,11 +21,8 @@ query/response from the NOAA Axis server.
 @author: U{Kurt Schwehr<http://schwehr.org/>}
 @author: '''+__author__+'''
 @version: ''' + __version__ +'''
-@license: GPL v2
+@license: Apache 2.0
 @copyright: (C) 2006 Kurt Schwehr
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser success 
-
 '''
 
 import sys, httplib

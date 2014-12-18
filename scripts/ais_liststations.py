@@ -5,17 +5,9 @@ __date__ = '$Date: 2009-07-21 15:19:01 -0400 (Tue, 21 Jul 2009) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-
 List all of the AIS stations within a set of log files.
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: GPL
+@license: Apache 2.0
 '''
 
 import sys, os

@@ -34,7 +34,7 @@ convert -delay 200 -loop  100 2006-01-31.xymt*.gif anim.gif
 @status: Intial working version.  Still needs development
 @organization: U{CCOM<http://ccom.unh.edu/>}
 
-@license: GPL v2
+@license: Apache 2.0
 
 
 @todo: Allow the code to pull data from sqlite and postgis

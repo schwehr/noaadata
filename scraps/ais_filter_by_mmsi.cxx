@@ -1,6 +1,6 @@
 // Since: 18-Apr-2010
 // Kurt Schwehr
-// License: LGPL v3
+// License: Apache 2.0
 // g++ ais_filter_by_mmsi.cxx -o ais_filter_by_mmsi -Wall -O3 -funroll-loops -fexpensive-optimizations 
 
 #include <fstream>

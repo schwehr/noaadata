@@ -64,7 +64,7 @@ Still in development.  Some rough edges.
             'Development Status :: 4 - Beta',
             'Environment :: Console',
             'Intended Audience :: Science/Research',
-            'License :: OSI Approved :: GNU General Public License (GPL)',
+            'License :: OSI Approved :: Apache 2.0',
             'Topic :: Communications',
             'Topic :: Database',
             'Topic :: Scientific/Engineering :: Information Analysis',

@@ -9,12 +9,7 @@ in to the binary messages.  They need to be able to handle themselves.
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
 @requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
 
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: GPL v2
+@license: Apache 2.0
 '''
 
 import sys

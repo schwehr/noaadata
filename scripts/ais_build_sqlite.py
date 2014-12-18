@@ -5,7 +5,7 @@ __version__   = '$Revision: 12565 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2009-09-08 21:37:44 -0400 (Tue, 08 Sep 2009) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
+__license__   = 'Apache 2.0'
 __contact__   = 'kurt at ccom.unh.edu'
 
 __doc__='''

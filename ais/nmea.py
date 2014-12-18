@@ -7,28 +7,13 @@ __author__ = 'Kurt Schwehr'
 __doc__='''
 Handle creation and extraction of NMEA strings.  Maybe need a separate VDM class like ais-py?
 
-@requires: U{lxml<http://codespeak.net/lxml/>} - For libxml2 ElementTree interface.  Not actually required for the template, but this is just a demo or requirements.
-@requires: U{Python<http://python.org/>} >= 2.4
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0alpha3
-@requires: BitVector
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
-@copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
 @since: 2006-Sep-26  FIX: replace with the file creation date
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} - FIX: if not CCOM change the name and link
-
-@license: GPL v2
+@license: Apache 2.0
 
 @note: This package does not respence the maximum number of characters
 per line that is required in the NMEA specification.
-
 '''
 
-# Python standard libraries
 import time, sys
 
 # Local Modules

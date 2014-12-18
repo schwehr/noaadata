@@ -4,8 +4,7 @@ __version__ = '$Revision: 13852 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2010-05-31 19:41:35 -0400 (Mon, 31 May 2010) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__='''
 Command line AIS database utilities.

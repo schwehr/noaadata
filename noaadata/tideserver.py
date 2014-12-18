@@ -8,13 +8,10 @@ Connect to the NOAA SOAP server and rebroadcast the results.
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
 @version: ''' + __version__ +'''
-@license: GPL v2
+@license: Apache 2.0
 @copyright: (C) 2006 Kurt Schwehr
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
 
 @bug: FIX: NOT WRITTEN YET.  Doh!
-
 '''
 import sys #, os, shutil
 import time

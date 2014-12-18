@@ -11,13 +11,8 @@ Retrieve 6 minute raw water level data from NOAA CO-OPS server.
 @requires: U{epydoc<http://epydoc.sourceforge.net/>}
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
-@license: GPL v2
+@license: Apache 2.0
 @copyright: (C) 2006 Kurt Schwehr
-@version: ''' + __version__ +'''
-
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser success 
-
 '''
 
 import sys, httplib, dap.client

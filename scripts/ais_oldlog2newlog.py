@@ -5,23 +5,13 @@ __date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-
 Convert the old ais-py log format with ZDA nmea strings to the USCG log format
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
 @copyright: 2007
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
 @since: 2007-Jun-20
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
-
+@license: Apache 2.0
 '''
-
 
 import sys, calendar
 

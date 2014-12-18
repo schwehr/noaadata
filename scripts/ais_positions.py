@@ -4,8 +4,7 @@ __version__ = '$Revision: 9672 $'.split()[1]
 __date__ = '$Date: 2008-06-20 01:49:30 -0400 (Fri, 20 Jun 2008) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 __copyright__ = '2007'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__ = '''
 
@@ -17,7 +16,7 @@ Return positions of vessels, but require a minimum distance moved before emittin
 @var __date__: Date of last svn commit
 @undocumented: __doc__ parser
 @status: under development
-@license: GPL
+@license: Apache 2.0
 '''
 
 import sys

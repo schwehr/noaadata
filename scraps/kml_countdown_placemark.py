@@ -3,8 +3,7 @@ __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 8283 $'.split()[1]
 __date__      = '$Date: 2008-01-17 16:20:22 -0500 (Thu, 17 Jan 2008) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v2'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 __doc__="""
 Make a series of placemarks that are a count down sequence
 

@@ -18,7 +18,7 @@ complicated type of ship and cargo 8 bit table (Table 18 in ITU-R M.1371-1).
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2007-Mar-04
 '''
 

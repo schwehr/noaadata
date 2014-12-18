@@ -10,15 +10,9 @@ version with no error checking.
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0alpha3
 @requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>} >= 1.2
 
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
 @copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@since: 2006-Dec
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
+@license: Apache 2.0
 
 @bug: Cheap hack
 @todo: Add option to make sure the that the receive stations are the same for uscg N-AIS data

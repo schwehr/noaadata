@@ -1,9 +1,5 @@
 __version__   = '$Revision: 4799 $'.split()[1]
 __docformat__ = 'epytext en'
-__author__ = 'Kurt Schwehr <kurt@ccom.unh.edu>'
-'''The primary author of ais-py'''
-__url__ = 'http://vislab-ccom.unh.edu/~schwehr/src/noaadata/'
-'''The ais-py homepage'''
 
 __doc__='''
 
@@ -22,8 +18,8 @@ products in the future.
 @requires: U{epydoc<http://epydoc.sourceforge.net>} >= 3.0alpha3
 @version: '''+__version__+'''
 
-@license: GPL version 2
-@copyright: (C) 2006-2007 Kurt Schwehr/UNH
+@license: Apache 2.0
+@copyright: (C) 2006-2007 Kurt Schwehr
 
 @undocumented: __doc__
 @undocumented: __url__

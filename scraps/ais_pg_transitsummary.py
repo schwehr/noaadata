@@ -12,14 +12,8 @@ Create a table of statistics for the SBNMS traffic analysis
 @requires: U{postgreSQL<http://www.postgresql.org/>} => 8.2
 @requires: U{postgis<http://postgis.org>} => 8.2
 
-@author: """+__author__+"""
-@version: """ + __version__ +"""
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: GPL v3
+@license: Apache 2.0
 @since: 2007-Jul-11
-
 """
 
 import os,sys

@@ -7,21 +7,10 @@ __author__ = ''
 __doc__='''
 Produce reports of AIS message 5 reports
 
-
-@requires: U{Python<http://python.org/>} >= 2.4
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0beta1
-@requires: U{pyExcelerator<http://pyexcelerator.sourceforge.net/>}
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
 @copyright: 2007
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser success
-@since: 2007-May-05
 @status: Intial working version.  Still needs development
-@organization: U{CCOM<http://ccom.unh.edu/>}
 
-@license: GPL v2
+@license: Apache 2.0
 
 @todo: Deal with ships that have there messages wag back and forth
 @todo: Maybe make a flag that has the code always check for the same message and not repeat

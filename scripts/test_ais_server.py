@@ -4,8 +4,7 @@ __version__ = '$Revision: 2275 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__='''
 Feed AIS data to who ever connects at a moderated rate.
@@ -14,8 +13,6 @@ Feed AIS data to who ever connects at a moderated rate.
 @undocumented: __doc__ myparser
 @status: under development
 @since: 05-May-2009
-
-@requires: U{Python<http://python.org/>} >= 2.5
 '''
 
 import sys

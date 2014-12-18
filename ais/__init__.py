@@ -1,11 +1,4 @@
-__version__   = '$Revision: 4799 $'.split()[1]
-__docformat__ = 'epytext en'
-__author__ = 'Kurt Schwehr <kurt@ccom.unh.edu>'
-'''The primary author of ais-py'''
-__url__ = 'http://vislab-ccom.unh.edu/~schwehr/src/noaadata/'
-'''The ais-py homepage'''
-
-__doc__='''
+'''
 Python module for Automatic Indentification System (AIS).  This is
 the 3rd iteration of creating an AIS codec package in python.  This
 version is more a compiler so that it could be altered to emit
@@ -16,23 +9,12 @@ requirement is the BitVector package by Avi Kak.  BitVector is included
 with permission for your convenience, but it is best if you install
 BitVector yourself from the original distribution.
 
-@see: NMEA strings at U{http://gpsd.berlios.de/NMEA.txt}
-@see: Wikipedia at U{http://en.wikipedia.org/wiki/Automatic_Identification_System}
+See Also:
+  http://gpsd.berlios.de/NMEA.txt
+  http://en.wikipedia.org/wiki/Automatic_Identification_System
 
-@author: Kurt Schwehr U{email<mailto:kurt@ccom.unh.edu>} U{homepage<http://schwehr.org>}
-@requires: U{Python<http://python.org/>} >= 2.4
-@requires: U{lxml<http://codespeak.net/lxml/>} >= 1.1.2
-@requires: U{libxml2<http://xmlsoft.org/>} for xmllint
-@requires: U{BitVector<http://cobweb.ecn.purdue.edu/~kak/dist/>} >= 1.2
-@requires: U{epydoc<http://epydoc.sourceforge.net>} >= 3.0alpha3
-@version: '''+__version__+'''
-
-@license: GPL version 2
-@copyright: (C) 2006-2007 Kurt Schwehr/UNH
-
-@undocumented: __doc__
-@undocumented: __version__ __author__ __url__
-@todo: the msgName variable should be generated from the XML
+License: Apache 2.0
+TODO: the msgName variable should be generated from the XML
 '''
 
 msgNames = {

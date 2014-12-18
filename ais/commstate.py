@@ -3,17 +3,12 @@ __version__   = '$Revision: 4799 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
 __copyright__ = '2009'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
-__deprecated__ = 'what goes here?'
+__license__   = 'Apache 2.0'
 
 __doc__ ='''
 Handle communication state as described in Annex 2 - 3.3.7.2.1 of ITU 1371.3
 
-@undocumented: __doc__
 @since: 2009-Jul-21
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 sotdma_fields = (

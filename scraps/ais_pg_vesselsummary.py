@@ -4,8 +4,7 @@ __version__   = '$Revision: 9918 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2008-07-21 14:12:23 -0400 (Mon, 21 Jul 2008) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt@ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__ ='''
 Produce a summary of vessels from the ais msg 5, shipdata.  Designed based

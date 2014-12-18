@@ -6,7 +6,7 @@ __author__ = 'Kurt Schwehr'
 __doc__='''
 Helper functions to create SQL statements.
 
-@license: GPL
+@license: Apache 2.0
 @todo: How do I assemble queries like this::
 
     SELECT COUNT(samplename) AS count FROM \\

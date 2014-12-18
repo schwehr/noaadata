@@ -4,18 +4,14 @@ __version__   = '$Revision: 8524 $'.split()[1]
 __revision__  = __version__
 __date__      = '$Date: 2008-02-05 11:03:16 -0500 (Tue, 05 Feb 2008) $'.split()[1]
 __copyright__ = '2007-2009'
-__license__   = 'GPL v3'
+__license__   = 'Apache 2.0'
 __doc__ = '''
 Simple serial port logger.  Log times added to the stream are in UTC
 seconds since the Epoch (UTC).
 
-Modified by Chaoyi Yin Fall 2009.
+Modified by Chaoyi Yin Fall 2009 as work for hire.
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{pyserial<http://pyserial.sourceforge.net/>}
-@status: under development
 @since: 2007-Feb-17
-@undocumented: __doc__ parser defaultPort defaultPorts speeds
 @todo: Add a line for STOP LOGGING when a log file is closed
 @todo: Add lines at start of logging for computer name, user name, and ???
 @todo: Follow up on suggestions from A. Maitland Bottom

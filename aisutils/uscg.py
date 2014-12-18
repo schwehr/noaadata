@@ -13,7 +13,7 @@ Filter to a list of AIS receivers/basestations.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ myparser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: Jan 2008
 
 @todo: For speed, provide functions that only parse the timestamp, station, etc.

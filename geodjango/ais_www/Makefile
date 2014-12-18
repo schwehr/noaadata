@@ -1,7 +1,7 @@
 # Author: Kurt Schwehr
 # Contact: http://schwehr.org
 # Copyright: 2008
-# License: GPL
+# License: Apache 2.0
 
 default:
 	@echo "         djano web interface to the noaadata AIS database"

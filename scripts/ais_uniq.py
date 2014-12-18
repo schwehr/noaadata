@@ -8,14 +8,7 @@ This would be wise to drop messages after a fixed set of time so
 that the list of messages does not get too large.  Perhaps 30
 minutes for 123 and 6 hours for msg 5?
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2007-Jun-28
 
 @todo: need a real ring buffer!

@@ -17,10 +17,9 @@ Expand structs in ais xml to include-struct elements while applying name manglin
 @undocumented: __version__ __author__ __doc__ parser
 @since: 2006-Sep-26
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @bug: WHY IS THE IMO message screwing up the day field?
-@license: GPL v2
+@license: Apache 2.0
 '''
 
 import sys

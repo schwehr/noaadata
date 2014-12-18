@@ -92,7 +92,8 @@ SplitOff: <<
 
 
 DocFiles: LICENSE README MANIFEST.in ChangeLog.html TODO
-License: GPL
+# Apache 2.0
+License: BSD
 Homepage: http://vislab-ccom.unh.edu/~schwehr/software/noaadata
 Maintainer: Kurt Schwehr <kurt@ccom.unh.edu>
 

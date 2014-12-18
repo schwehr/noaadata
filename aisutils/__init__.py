@@ -15,10 +15,6 @@ Utilities related to AIS data, but not necessarily with the binary format.
 @requires: U{epydoc<http://epydoc.sourceforge.net>} >= 3.0alpha3
 @version: '''+__version__+'''
 @since: 2007-09
-@license: GPL version 2
+@license: Apache 2.0
 @copyright: (C) 2007
-
-@undocumented: __doc__
-@undocumented: __version__ __author__ __url__
-
 '''

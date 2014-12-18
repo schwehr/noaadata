@@ -18,17 +18,10 @@ FIX: how do I do epydoc indented text?
 <description>My unsigned integer field</description>
 </field>
 
-
-
 @author: U{'''+__author__+'''<http://xenon.stanford.edu/~schwehr/>}
 @version: ''' + __version__ +'''
 @copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ myparser
-@since: 2006-Sep-21
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL
+@license: Apache 2.0
 '''
 
 import sys

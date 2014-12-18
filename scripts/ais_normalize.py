@@ -17,7 +17,7 @@ for some reason.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 
 @todo: report on the number of message fragments that got dropped
 @todo: allow for a single receiver and no uscg station

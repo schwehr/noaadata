@@ -14,7 +14,7 @@ stations.  Does NOT use the St Lawrence Seaway message format.
 @requires: U{epydoc<http://epydoc.sourceforge.net/>}
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
-@license: GPL v2
+@license: Apache 2.0
 @copyright: (C) 2007 Kurt Schwehr
 @version: ''' + __version__ +'''
 @since: 04-Jan-2007

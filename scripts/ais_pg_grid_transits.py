@@ -5,25 +5,11 @@ __date__ = '$Date: 2009-09-21 08:25:58 -0400 (Mon, 21 Sep 2009) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__="""
-
 Create a grid from ais transit lines.  Improved from
 ais_pg_grid.py to allow arbitrary gridding of any set of transits
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{psycopg2<http://initd.org/projects/psycopg2>}
-@requires: U{postgreSQL<http://www.postgresql.org/>} => 8.2
-@requires: U{postgis<http://postgis.org>} => 8.2
-@requires: U{pyproj<>}
-@requires: grid.py
-
-@author: """+__author__+"""
-@version: """ + __version__ +"""
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: GPL v3
+@license: Apache 2.0
 @since: 2010-Mar-11
-
 """
 
 import math

@@ -3,8 +3,7 @@ __author__    = 'Kurt Schwehr'
 __version__   = '$Revision: 8608 $'.split()[1]
 __date__      = '$Date: 2008-02-10 17:54:09 -0500 (Sun, 10 Feb 2008) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v2'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 __doc__='''
 Rebuild the cache tables for high speed access to the current vessel
 traffic status.  This works on the last_position and track_lines

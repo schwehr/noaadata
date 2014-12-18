@@ -4,8 +4,7 @@ __version__   = '$Revision: 9833 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2008-07-03 22:21:26 -0400 (Thu, 03 Jul 2008) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 __doc__ ='''
 Process the data for summer Hydro 2008.
 

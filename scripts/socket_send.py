@@ -20,7 +20,7 @@ Send a message to a socket.  Used to control an AIS base station over ethernet.
 @since: 2007-Mar-05
 @status: under development
 @organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
+@license: Apache 2.0
 '''
 
 import socket,select

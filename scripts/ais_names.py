@@ -20,7 +20,7 @@ interleaving of msg 5 nmea strings.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL
+@license: Apache 2.0
 
 @todo: is this a repeat of merge5?
 

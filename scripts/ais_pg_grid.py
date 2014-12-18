@@ -19,9 +19,8 @@ in a separate grid class such that it might actually work correctly.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v3
+@license: Apache 2.0
 @since: 2007-Jul-20
-
 """
 
 import math,sys,os

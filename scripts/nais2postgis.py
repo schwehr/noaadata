@@ -4,20 +4,14 @@ __version__ = '$Revision: 2275 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__='''
 Connect to N-AIS and pump the data into Postgres/Postgis.  This is a
 non-threaded rewrite of ais-port-forward and ais-net-to-postgis.
 Which are just cranky.
 
-@var __date__: Date of last svn commit
-@undocumented: __doc__ myparser
-@status: under development
 @since: 05-May-2009
-
-@requires: U{Python<http://python.org/>} >= 2.5
 '''
 
 errors_file = file('errors-nais2postgis','w+')

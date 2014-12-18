@@ -8,7 +8,7 @@ __author__ = 'Kurt Schwehr'
 # NOTE: I happily violate the 80 character line limit in NMEA.
 # Author: Kurt Schwehr
 # Since: 2010-Apr-3
-# License: LGPL
+# License: Apache 2.0
 
 # returns "#" when ntp not ready... ntplib.ref_id_to_text(response.ref_id, response.stratum)
 

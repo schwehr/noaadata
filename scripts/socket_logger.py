@@ -6,20 +6,12 @@ __author__ = 'Kurt Schwehr'
 __doc__="""
 FIX: write a description
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: """+__author__+"""
-@version: """ + __version__ +"""
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2007-Mar-05
-@organization: U{CCOM<http://ccom.unh.edu/>}
 
 @todo: give this a optparse interface
 @todo: make it flexible.
-
 """
 
 import socket,select

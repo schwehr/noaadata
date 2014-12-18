@@ -4,7 +4,7 @@ __version__   = '$Revision: 11839 $'.split()[1]
 __revision__  = __version__
 __date__      = '$Date: 2009-05-05 17:34:17 -0400 (Tue, 05 May 2009) $'.split()[1]
 __copyright__ = '2007, 2008'
-__license__   = 'GPL v2'
+__license__   = 'Apache 2.0'
 __doc__ = '''
 Daemon tool to detach from the terminal
 

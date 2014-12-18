@@ -5,14 +5,7 @@ __date__ = '$Date: 2006-09-24 14:01:41 -0400 (Sun, 24 Sep 2006) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-
 Use NMEA GGA and ZDA messages to construct a synthetic AIS track.
-
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{BitVector <http://>} 
-@requires: U{pyproj <http://>} 
-@requires: U{<http://>} 
-@requires: U{<http://>} 
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
 @version: ''' + __version__ +'''
@@ -21,8 +14,7 @@ Use NMEA GGA and ZDA messages to construct a synthetic AIS track.
 @undocumented: __version__ __author__ __doc__ parser
 @since: 2006-Sep-24
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
+@license: Apache 2.0
 
 @todo: Calc ROT and make sure the Kurt coded ROT correctly in the message
 @todo: Handle the comm state so that they make some sort of sense

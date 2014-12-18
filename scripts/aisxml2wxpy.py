@@ -8,19 +8,8 @@ Build a wxpython interface that uses the aisxmlbinmsg2py generated file to creat
 
 aisxmlbinmsg2py was getting too long, so this functionality is completely broken out.
 
-@requires: U{lxml<http://codespeak.net/lxml/>}
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0alpha3
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>} >= 1.2
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
 @copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@since: 2006-Sep-24
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@license: GPL v2
+@license: Apache 2.0
 
 @bug: FIX: Handle text fields
 @bug: FIX: deal with the name mangling flag in the xml?

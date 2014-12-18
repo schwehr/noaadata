@@ -4,18 +4,15 @@ __version__   = '$Revision: 4799 $'.split()[1]
 __revision__  = __version__ # For pylint
 __date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
 __copyright__ = '2008'
-__license__   = 'GPL v3'
-__contact__   = 'kurt at ccom.unh.edu'
+__license__   = 'Apache 2.0'
 
 __doc__ ='''
 Output python code for BBM encode and decode for a particular binary message
 
 @requires: U{Python<http://python.org/>} >= 2.5
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0.1
-@undocumented: __doc__
 @since: 2008-Mar-30
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
 @see: IEC-PAS 61162-100 Ed. 1 Page 19: BBM - AIS Broadcast Binary Message
 '''
 

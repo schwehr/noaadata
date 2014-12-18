@@ -25,7 +25,7 @@ fugly code
 @status: Intial working version.  Still needs development
 @organization: U{CCOM<http://ccom.unh.edu/>}
 
-@license: GPL v2
+@license: Apache 2.0
 
 '''
 

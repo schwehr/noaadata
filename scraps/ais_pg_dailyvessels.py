@@ -17,7 +17,7 @@ Purely graph the vessels per day.  Vessels seen per day
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser
 @status: under development
-@license: GPL v2
+@license: Apache 2.0
 @since: 2007-Nov-24
 
 @todo: calculate the day of the year for each date and writeout value number
