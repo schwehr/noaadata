@@ -28,7 +28,6 @@ def parse_msgs(infile, verbose=False):
         if msg_type not in ('6', '8'):
             continue
 
-        print 'cp 1'
         if msg_type == '6' and len(match['body']) < 15:
             continue
         if msg_type == '8' and len(match['body']) < 10:
