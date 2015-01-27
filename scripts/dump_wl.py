@@ -1,31 +1,20 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 8197 $'.split()[1]
-__date__ = '$Date: 2008-01-11 10:57:46 -0500 (Fri, 11 Jan 2008) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-__doc__='''
-Dump a waterlevel message from the nmea msg 8.  This should be built
-in to the binary messages.  They need to be able to handle themselves.
+"""Dump a waterlevel message from nmea msg 8.
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
-
-@license: Apache 2.0
-'''
-
-import sys
+This should be built in to the binary messages.  They need to be able
+to handle themselves.
+"""
 from decimal import Decimal
-from BitVector import BitVector
+from optparse import OptionParser
+import sys
 
-import ais.binary    as binary
-import ais.aisstring as aisstring
+from aisutils.BitVector import BitVector
+from aisutils import binary
+from aisutils import aisstring as
 
 
-############################################################
 if __name__=='__main__':
-
-        from optparse import OptionParser
-        parser = OptionParser(usage="%prog [options]",
-                version="%prog "+__version__)
+        parser = OptionParser(usage="%prog [options]")
 
         parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
                 help='run the documentation tests')

@@ -1,44 +1,22 @@
 #!/usr/bin/env python
 
-__version__ = '$Revision: 6398 $'.split()[1] # See man ident
-__date__ = '$Date: 2007-06-20 13:42:04 -0400 (Wed, 20 Jun 2007) $'.split()[1] # FIX: pull out just the date
-__author__ = 'Kurt Schwehr'
-__doc__='''
-Helper functions to create SQL statements.
+"""Helper functions to create SQL statements.
 
-@license: Apache 2.0
-@todo: How do I assemble queries like this::
+License: Apache 2.0
 
-    SELECT COUNT(samplename) AS count FROM \\
-        (SELECT DISTINCT(samplename) AS samplename FROM \\
-         ams WHERE corenum=1 AND coretype='p');
-
-@todo: subqueries
-@todo: make a super class so that inserts and selects can verify based on the create str
-@todo: take the super class info from the database?
-
-@bug: FIX: write some doc tests!
-@bug: had no protection from SQL injection attacks or quoting mistakes
-
-@note: This is not as snazzy as SQLAlchemy or SQLObject, but it works and is simple
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@copyright: 2006
-@note: postgres is sort of case sensitive, so go all lowercase for fields and tables
-@var __date__: Date of last svn commit
-
-@undocumented: __version__ __author__ __doc__ myparser
-'''
+Note: Postgres is semi of case sensitive, so use all lowercase for fields
+and tables.
+"""
 
 # Python standard libraries
+import datetime
+import doctest
+from optparse import OptionParser
+import os
 import sys
 
 from BitVector import BitVector
 
-# Local modules
-# import verbosity
-# from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
 
 BOMBASTIC= 4
 VERBOSE  = 3
@@ -50,58 +28,55 @@ NEVER    = 0 # Confusing, eh?
 
 
 def addVerbosityOptions(parser):
-    '''
-    Added the verbosity options to a parser
-    '''
-    parser.add_option('-v','--verbose',action="count",dest='verbosity',default=0,
-                        help='how much information to give.  Specify multiple times to increase verbosity')
-    parser.add_option('--verbosity',dest='verbosity',type='int',
-                        help='Specify verbosity.  Should be in the range of '
-                        +str(ALWAYS)+'...'+str(BOMBASTIC)+' (None...Bombastic)')
-    parser.add_option('--noisy',dest='verbosity', action='store_const', const=2*BOMBASTIC,
-                        help='Go for the max verbosity ['+str(2*BOMBASTIC)+']')
+    """Add the verbosity options to a parser."""
+    parser.add_option('-v', '--verbose', action="count", dest='verbosity',
+        default=0,
+        help='how much information to give.  Specify multiple times to '
+        'increase verbosity')
+    parser.add_option('--verbosity', dest='verbosity', type='int',
+        help='Specify verbosity.  Should be in the range of '
+        + str(ALWAYS) + '...' + str(BOMBASTIC) + ' (None...Bombastic)')
+    parser.add_option('--noisy', dest='verbosity', action='store_const',
+        const=2 * BOMBASTIC,
+        help='Go for the max verbosity [' + str(2 * BOMBASTIC) + ']')
 
-######################################################################
-import datetime
+
 def sec2timestamp(utcsec):
-    '''
-    Convert a UTC sec time to a SQL timestamp
+    """Convert a UTC sec time to a SQL timestamp.
 
     >>> sec2timestamp(int(1169703371))
     '2007-01-25 05:36:11'
-
-    '''
-
+    """
     d = datetime.datetime.utcfromtimestamp(utcsec)
     s = '%d-%02d-%02d %02d:%02d:%02d' % (d.year,d.month,d.day,d.hour,d.minute,d.second)
     return s
 
-######################################################################
+
 class select:
-    '''
-    Construct an sql select query
+    """Construct an sql select query.
 
     Sometimes it just gets ugly having all that comma and WHERE AND
-    logic in there.  This code takes care of that
-    '''
+    logic in there.
+    """
+
     def __init__(self,dbType='postgres'):
         self.fields = []
         self.where = []
         self.limit = None
         self.from_tables = []
         self.orderby = None
-        self.desc = False # descending sort if true
+        self.desc = False  # Descending sort if true.
         return
 
     def setorderby(self,field,desc=False):
-        "Make the returned rows come in some order"
+        """Make the returned rows come in some order."""
         if str != type(field): print "ERROR: fix throw type exception"
         self.orderby = field
         self.desc = desc
         return
 
     def addfield(self,fieldname):
-        "Add a field name to return"
+        """Add a field name to return."""
         if str != type(fieldname): print "ERROR: fix throw type exception"
         self.fields.append(fieldname)
         return
@@ -433,13 +408,10 @@ class insert:
         return
 
 
-
-######################################################################
-import datetime
-
 def sqlInsertStrFromList (table,aList,dbType='postgres'):
-    ''' Take a list and make an insert string.  This works with
-    dictionaries too.  Here is a quick example:
+    """Take a list and make an insert string.
+
+    This works with dictionaries too.  Here is a quick example:
 
     >>> aList = [('one',1),('2','two'),('threepoint',3.)]
     >>> sqlInsertStrFromList('myTable',aList,dbType='sqlite')
@@ -453,7 +425,7 @@ def sqlInsertStrFromList (table,aList,dbType='postgres'):
     @type aList(list)
     @return: complete SQL insert command
     @rtype: str
-    '''
+    """
 
     if 'postgres'==dbType: table = table.lower()
     ins = "insert into " + table + " ("
@@ -474,35 +446,32 @@ def sqlInsertStrFromList (table,aList,dbType='postgres'):
         if type(value)!=int and type(value)!=float: ins+="'"
         ins+=str(value)
         if type(value)!=int and type(value)!=float: ins+="'"
-        #if type(value) == str or type(value) == type(datetime()): ins+="'"
     ins += ");"
     return ins
 
 
-
-######################################################################
 if __name__=='__main__':
-    from optparse import OptionParser
-    myparser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
-    myparser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
-                        help='run the documentation tests')
+    myparser = OptionParser(usage='%prog [options]')
+    myparser.add_option('--test', '--doc-test', dest='doctest',
+        default=False,action='store_true', help='Run the documentation tests.')
 
     addVerbosityOptions(myparser)
-    (options,args) = myparser.parse_args()
+    options, args = myparser.parse_args()
 
-    success=True
+    success = True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-	if options.verbosity>=TERSE: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else:
-	    print 'FAILED'
-	    success=False
+      print os.path.basename(sys.argv[0]), 'doctests ...'
+      sys.argv = [sys.argv[0]]
+      if options.verbosity >= TERSE:
+        sys.argv.append('-v')
 
-    if not success:
-	sys.exit('Something Failed')
+      numfail, numtests=doctest.testmod()
+      if numfail==0:
+        print 'ok'
+      else:
+        print 'FAILED'
+        success = False
+
+      if not success:
+        sys.exit('Something Failed')

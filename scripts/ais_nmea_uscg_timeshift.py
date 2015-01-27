@@ -1,31 +1,20 @@
 #!/usr/bin/env python
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 12308 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2009-07-22 17:22:17 -0400 (Wed, 22 Jul 2009) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-
-__doc__='''
-
-Calculate the within minute slew of the USCG timestamp compared to the
-extended "T" time within the minute.  I hope this comes from the
+"""Calculate the within minute slew of the USCG timestamp compared to
+the extended "T" time within the minute.  I hope this comes from the
 receiver GPS time and not from AISLogger.  Actually, this just shows
 that they all move together.  I thought that this was done by the
 receiver, but no, it appears to be done by the java logging code.
+"""
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0
-@since: 2010-Apr-01
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: In progress
-'''
+import datetime
+import sys
 
-from aisutils.uscg import uscg_ais_nmea_regex
-from ais import binary
-import sys, datetime
 import ais.ais_msg_1_handcoded as ais_msg_1
 import ais.ais_msg_4_handcoded as ais_msg_4
+
+from aisutils.uscg import uscg_ais_nmea_regex
+from aisutils import binary
+
 
 print '* emacs org-mode table'
 

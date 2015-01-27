@@ -40,10 +40,10 @@ sqlite3.OperationalError: near "00": syntax error
 
 import sys
 from decimal import Decimal
-from BitVector import BitVector
 import StringIO
 
-import ais.binary    as binary
+from aisutils import BitVector
+from aisutils import binary
 
 import ais.ais_msg_1
 import ais.ais_msg_2

@@ -39,12 +39,11 @@ You may need to some intial setup: (examples assume mac osx + fink)
 
 import sys, os
 from decimal import Decimal
-from BitVector import BitVector
 import StringIO
 
-import ais.binary as binary
-import ais.sqlhelp as sqlhelp
-#import ais.aisstring as aisstring
+from aisutils.BitVector import BitVector
+from aisutils import binary
+from aisutils import sqlhelp
 
 import ais
 import ais.ais_msg_1

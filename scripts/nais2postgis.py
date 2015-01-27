@@ -28,7 +28,7 @@ import aisutils.daemon
 import aisutils.uscg
 import aisutils.normalize
 
-import ais.sqlhelp
+from aisutils import sqlhelp
 import aisutils.database
 
 #import ais.ais_msg_1 as msg1

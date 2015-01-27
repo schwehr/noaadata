@@ -16,16 +16,18 @@ Try to get the mmsi info as fast as possible
 @todo: Option to check the AIVDM tags to make sure that the messages should be combined
 '''
 
+from optparse import OptionParser
 import sys
-from ais import binary as binary
+
+from aisutils import binary
 #from ais import ais_msg_1 as m1
 # Going to do this by hand
-from ais import aisstring as aisstring
-from ais.BitVector import BitVector
+from aisutils import aisstring
+from aisutils.BitVector import BitVector
 
-######################################################################
+
 if __name__=='__main__':
-    from optparse import OptionParser
+
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
 			    version="%prog "+__version__)
 

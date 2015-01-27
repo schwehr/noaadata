@@ -20,15 +20,13 @@ Return positions of vessels, but require a minimum distance moved before emittin
 '''
 
 import sys
-#import os
-
-# Can decode messages 1,2,3 will any of the three codecs
-import ais.binary    as binary
-import ais.ais_msg_1 as ais_msg_1
-#import ais.aisstring as aisstring
-
 from pyproj import Proj
 import math
+
+# Can decode messages 1,2,3 with any of the three codecs.
+import ais.ais_msg_1 as ais_msg_1
+from aisutils import binary
+
 
 def dist (lon1, lat1, lon2, lat2):
     'calculate 2D distance.  Should be good enough for points that are close together'

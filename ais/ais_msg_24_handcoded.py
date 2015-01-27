@@ -25,6 +25,7 @@ from decimal import Decimal
 from BitVector import BitVector
 
 import binary, aisstring
+from aisutils import sqlhelp
 
 # FIX: check to see if these will be needed
 TrueBV  = BitVector(bitstring="1")
@@ -281,7 +282,7 @@ def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='p
 	@rtype: sqlhelp.create
 	'''
 	if None == fields: fields = fieldList
-	import sqlhelp
+
 	c = sqlhelp.create(dbTableName,dbType=dbType)
 	c.addPrimaryKey()
 	if 'MessageID' in fields: c.addInt ('MessageID')
@@ -336,7 +337,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 	@todo: allow optional type checking of params?
 	@warning: this will take invalid keys happily and do what???
 	'''
-	import sqlhelp
+
 	i = sqlhelp.insert('b_staticdata',dbType=dbType)
 
 	for key in params:

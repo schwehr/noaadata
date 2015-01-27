@@ -19,22 +19,19 @@ Trying to do better than ais_nmea_uptime*.py
 @undocumented: __version__ __author__ __doc__ parser
 @status: In progress
 '''
+import datetime
+import math
+from optparse import OptionParser
+import os
+import sys
 
 import ais
-from ais import binary
+from aisutils.ais import binary
 from aisutils.uscg import uscg_ais_nmea_regex
 
-import ais.binary
-import ais
-import datetime
+from aisutils import binary
 
-from BitVector import BitVector
-
-from optparse import OptionParser
-import math
-#from numpy import array
-
-import sys, os
+from aisutils.BitVector import BitVector
 
 day_sec = 24*60*60.
 'seconds in a day'
@@ -372,8 +369,7 @@ class AisStreamInfo:
     def __init__(self, station_location = None, max_dist_km = 500,
                  dt_raw_filename=None, min_gap_sec = 2, verbose=False):
         # intialize all counts to 0 for major numbers
-        #print 'AisStreamInfo min_gap_sec:',min_gap_sec
-        self.msgs_counts = dict([(val,0) for val in ais.binary.encode])
+        self.msgs_counts = dict([(val,0) for val in binary.encode])
         self.up = Uptime(dt_raw_filename = dt_raw_filename,
                          min_gap_sec=min_gap_sec, verbose=verbose)
         if station_location is not None:
@@ -387,10 +383,6 @@ class AisStreamInfo:
             if len(line) < 10 or line[0] == '#':
                 continue
             line = line.rstrip()
-            #if line_num > 100:
-            #    break
-            #if line_num % 5000 == 0:
-            #    print '%s: line %d' % (filename,line_num)
             try:
                 timestamp = float(line.split(',')[-1])
             except:

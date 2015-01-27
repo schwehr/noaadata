@@ -38,9 +38,11 @@ which should be packaged with the resulting files.
 
 import sys
 from decimal import Decimal
-from BitVector import BitVector
+from aisutils.BitVector import BitVector
 
-import binary
+from aisutils import binary
+
+
 def waterlevelEncode(*aDict, **params):
 	'''Serializer for the waterlevel binary message
 	

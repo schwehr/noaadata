@@ -37,14 +37,10 @@ import sys
 from decimal import Decimal
 from BitVector import BitVector
 
-import binary, aisstring
-
-# FIX: check to see if these will be needed
-TrueBV  = BitVector(bitstring="1")
-"Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
-"Why always rebuild the False bit?  This should speed things up a bunch"
-
+from aisutils import uscg
+from aisutils import sqlhelp
+import aisstring
+import binary
 
 fieldList = (
 	'MessageID',
@@ -447,7 +443,7 @@ def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='p
 	@rtype: sqlhelp.create
 	'''
 	if None == fields: fields = fieldList
-	import sqlhelp
+
 	c = sqlhelp.create('binack',dbType=dbType)
 	c.addPrimaryKey()
 	if 'MessageID' in fields: c.addInt ('MessageID')
@@ -500,7 +496,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 	@todo: allow optional type checking of params?
 	@warning: this will take invalid keys happily and do what???
 	'''
-	import sqlhelp
+
 	i = sqlhelp.insert('binack',dbType=dbType)
 
 	if dbType=='postgres':
@@ -809,17 +805,8 @@ def main():
 
 		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
 		elif 'nmea'==options.ioType:
-		    #bitLen=len(bits)
-                    #if bitLen%6!=0:
-		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-                    import aisutils.uscg as uscg
                     nmea = uscg.create_nmea(bits)
                     print nmea
-                    #
-                    #
-
-
-                    #sys.exit("FIX: need to implement creating nmea capability")
 		else: sys.exit('ERROR: unknown ioType.  Help!')
 
 

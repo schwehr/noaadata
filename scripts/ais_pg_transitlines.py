@@ -42,8 +42,11 @@ AS '
 @todo: find a pure sql way to do this on the server side.  This would be the run section of the SQL boo
 """
 
+import os
+import sys
+import psycopg2 as psycopg
+from aistuils import sqlhelp
 
-import os,sys
 
 if __name__=='__main__':
     from optparse import OptionParser
@@ -68,8 +71,6 @@ if __name__=='__main__':
 
     (options,args) = parser.parse_args()
     verbose = options.verbose
-    import psycopg2 as psycopg
-    import ais.sqlhelp as sqlhelp
 
     connectStr = "dbname='"+options.databaseName+"' user='"+options.databaseUser+"' host='"+options.databaseHost+"'"
     if verbose:

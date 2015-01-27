@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 """Summarize AIS binary messages (6 and 8) in files."""
 
+import datetime
+from decimal import Decimal
+import exceptions
+import StringIO
 import sys
 import traceback
-import datetime
-import exceptions
 
-from decimal import Decimal
-from BitVector import BitVector
-import StringIO
-
-import ais.binary    as binary
-
+from aisutils.BitVector import BitVector
+from aisutils import binary
 from aisutils.uscg import uscg_ais_nmea_regex
 
 

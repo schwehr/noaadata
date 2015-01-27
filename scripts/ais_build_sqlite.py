@@ -1,17 +1,10 @@
 #!/usr/bin/env python
 
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 12565 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2009-09-08 21:37:44 -0400 (Tue, 08 Sep 2009) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
-__contact__   = 'kurt at ccom.unh.edu'
+"""Create or add to a database.
 
-__doc__='''
-
-Create or add to a database.  First attempt.  This could be made better/faster.
-Assumes that all ais messages have been "normalized" - messages are one line only.
+First attempt.  This could be made better/faster.
+Assumes that all ais messages have been "normalized."
+Messages are one line only.
 
 Only deals with sqlite right now.
 
@@ -30,30 +23,18 @@ CREATE INDEX bsrep_cg_r_idx ON bsreport(cg_r);
 CREATE INDEX bsrep_dup_idx ON bsreport(dup_flag);
 
 VACUUM;
+"""
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
-
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: Works, but not complete
-'''
-
+import datetime
+from decimal import Decimal
+import exceptions
+from optparse import OptionParser
+import StringIO
 import sys
 import traceback
-import datetime
-import exceptions
 
-from decimal import Decimal
-from BitVector import BitVector
-import StringIO
-
-import ais.binary    as binary
-#import ais.aisstring as aisstring
-
-#import ais
-
-#import aisutils.database
+import pysqlite2.dbapi2 as sqlite
+import pysqlite2.dbapi2
 
 import ais.ais_msg_1_handcoded
 import ais.ais_msg_2_handcoded
@@ -65,10 +46,10 @@ import ais.ais_msg_19
 #import ais.ais_msg_8
 #import ais.ais_msg_21
 
-import nmea.checksum # for isChecksumValid
+from aisutils.BitVector import BitVector
+from aisutils import binary
 
-import pysqlite2.dbapi2 as sqlite
-import pysqlite2.dbapi2
+import nmea.checksum # for isChecksumValid
 
 
 class TrackDuplicates:
@@ -376,8 +357,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 
 ############################################################
 if __name__=='__main__':
-    from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
+    parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]")
 
     parser.add_option('-d','--database-file',dest='databaseFilename',default='ais.db3',
                       help='Name of the python file to write [default: %default]')

@@ -5,10 +5,11 @@ Run a water level message from NMEA to decoded
 '''
 
 import sys
-from BitVector import BitVector
-import binary
+
+from aisutils.BitVector import BitVector
+from aisutils import binary
+
 import ais_msg_8
-#import sls.header
 import sls.waterlevel
 
 if __name__=='__main__':

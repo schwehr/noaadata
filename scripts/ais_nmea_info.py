@@ -18,12 +18,15 @@ Summarize the AIS message traffic at the NMEA level without decoding the content
 @status: Works, but not complete
 '''
 
-from aisutils.uscg import uscg_ais_nmea_regex
-import ais.binary
+from optparse import OptionParser
+
 import ais
+from aisutils.uscg import uscg_ais_nmea_regex
+from aisutils import binary
+
 
 def nmea_summary(filename):
-    msgs = dict([(val,0) for val in ais.binary.encode])
+    msgs = dict([(val,0) for val in binary.encode])
 
     station_counts = {}
     channel_counts = {'A':0, 'B':0}
@@ -52,7 +55,7 @@ def nmea_summary(filename):
 
 
 def main():
-    from optparse import OptionParser
+
 
     parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
     (options,args) = parser.parse_args()
@@ -63,9 +66,9 @@ def main():
 
         msgs = results['msgs']
 
-        for msg in ais.binary.encode:
+        for msg in binary.encode:
             if msgs[msg] > 0:
-                msg_num = ais.binary.encode.index(msg)
+                msg_num = binary.encode.index(msg)
                 try:
                     msg_name = ais.msgNames[msg_num]
                 except KeyError:

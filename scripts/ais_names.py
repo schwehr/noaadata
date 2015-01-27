@@ -26,11 +26,13 @@ interleaving of msg 5 nmea strings.
 
 '''
 
-import sys, os
+from optparse import OptionParser
+import os
+import sys
 
-from ais import binary
 from ais import ais_msg_5
-from ais import aisstring
+from aisutils import binary
+from aisutils import aisstring
 
 def getNameMMSI(logfile,outfile):
     for line in logfile:
@@ -45,7 +47,6 @@ def getNameMMSI(logfile,outfile):
         outfile.write(str(mmsi)+' '+str(name)+'\n')
 
 if __name__=='__main__':
-    from optparse import OptionParser
     parser = OptionParser(usage="%prog [options] logfile1 [logfile2 logfile3 ...] ", version="%prog "+__version__)
     parser.add_option('-o','--output',dest='outputFileName',default=None,
                       help='Name of the file to write [default: stdout]')

@@ -38,7 +38,10 @@ from decimal import Decimal
 import math
 
 from BitVector import BitVector
-import binary, aisstring
+from aisutils import aisstring
+from aisutils import binary
+from aisutils import uscg
+from aisutils import sqlhelp
 
 # FIX: check to see if these will be needed
 TrueBV  = BitVector(bitstring="1")
@@ -48,69 +51,69 @@ FalseBV = BitVector(bitstring="0")
 
 
 fieldList = (
-	'MessageID',
-	'RepeatIndicator',
-	'UserID',
-	'type',
-	'name',
-	'PositionAccuracy',
-	'longitude',
-	'latitude',
-	'dimA',
-	'dimB',
-	'dimC',
-	'dimD',
-	'FixType',
-	'timestamp',
-	'OffPosition',
-	'status',
-	'RAIM',
-	'virtual_aton_flag',
-	'assigned_mode_flag',
-	'spare',
-	'spare2',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'type',
+    'name',
+    'PositionAccuracy',
+    'longitude',
+    'latitude',
+    'dimA',
+    'dimB',
+    'dimC',
+    'dimD',
+    'FixType',
+    'timestamp',
+    'OffPosition',
+    'status',
+    'RAIM',
+    'virtual_aton_flag',
+    'assigned_mode_flag',
+    'spare',
+    'spare2',
 )
 
 fieldListPostgres = (
-	'MessageID',
-	'RepeatIndicator',
-	'UserID',
-	'type',
-	'name',
-	'PositionAccuracy',
-	'Position',	# PostGIS data type
-	'dimA',
-	'dimB',
-	'dimC',
-	'dimD',
-	'FixType',
-	'timestamp',
-	'OffPosition',
-	'status',
-	'RAIM',
-	'virtual_aton_flag',
-	'assigned_mode_flag',
-	'spare',
-	'spare2',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'type',
+    'name',
+    'PositionAccuracy',
+    'Position',  # PostGIS data type.
+    'dimA',
+    'dimB',
+    'dimC',
+    'dimD',
+    'FixType',
+    'timestamp',
+    'OffPosition',
+    'status',
+    'RAIM',
+    'virtual_aton_flag',
+    'assigned_mode_flag',
+    'spare',
+    'spare2',
 )
 
 toPgFields = {
-	'longitude':'Position',
-	'latitude':'Position',
+    'longitude':'Position',
+    'latitude':'Position',
 }
 '''
 Go to the Postgis field names from the straight field name
 '''
 
 fromPgFields = {
-	'Position':('longitude','latitude',),
+    'Position':('longitude','latitude',),
 }
 '''
 Go from the Postgis field names to the straight field name
 '''
 
 pgTypes = {
-	'Position':'POINT',
+    'Position':'POINT',
 }
 '''
 Lookup table for each postgis field name to get its type.
@@ -208,661 +211,662 @@ def encode(params, validate=False):
 	return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-	'''Unpack a AidsToNavReport message
+    """Unpack a AidsToNavReport message
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
-	  - type(uint): IALA type of aid-to-navigation
-	  - name(aisstr6): Name of the aid-to-navigation
-	  - PositionAccuracy(uint): Accuracy of positioning fixes
-	  - longitude(decimal): Location of the AtoN  East West location
-	  - latitude(decimal): Location of the AtoN  North South location
-	  - dimA(uint): Distance from bow to reference position
-	  - dimB(uint): Distance from reference position to stern
-	  - dimC(uint): Distance from port side to reference position
-	  - dimD(uint): Distance from reference position to starboard side
-	  - FixType(uint): Type of electronic position fixing device
-	  - timestamp(uint): UTC second when report was generated
-	  - OffPosition(bool): True when the AtoN is off station
-	  - status(uint): Unknown
-	  - RAIM(bool): Receiver autonomous integrity monitoring flag
-	  - virtual_aton_flag(bool): Does the unit physically exist?
-	  - assigned_mode_flag(bool): autonomous or controlled
-	  - spare(uint): Not Used (field automatically set to "0")
-	  - spare2(uint): Not Used (field automatically set to "0")
-	@type bv: BitVector
-	@param bv: Bits defining a message
-	@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-	@rtype: dict
-	@return: params
-	'''
-
-	#Would be nice to check the bit count here..
-	#if validate:
-	#	assert (len(bv)==FIX: SOME NUMBER)
-	r = {}
-	r['MessageID']=21
-	r['RepeatIndicator']=int(bv[6:8])
-	r['UserID']=int(bv[8:38])
-	r['type']=int(bv[38:43])
-	r['name']=aisstring.decode(bv[43:163])
-	r['PositionAccuracy']=int(bv[163:164])
-	r['longitude']=Decimal(binary.signedIntFromBV(bv[164:192]))/Decimal('600000')
-	r['latitude']=Decimal(binary.signedIntFromBV(bv[192:219]))/Decimal('600000')
-	r['dimA']=int(bv[219:228])
-	r['dimB']=int(bv[228:237])
-	r['dimC']=int(bv[237:243])
-	r['dimD']=int(bv[243:249])
-	r['FixType']=int(bv[249:253])
-	r['timestamp']=int(bv[253:259])
-	r['OffPosition']=bool(int(bv[259:260]))
-	r['status']=int(bv[260:268])
-	r['RAIM']=bool(int(bv[268:269]))
-	r['virtual_aton_flag']=bool(int(bv[269:270]))
-	r['assigned_mode_flag']=bool(int(bv[270:271]))
-        r['spare']=int(bv[271])
-        r['spare2'] = 0
-        #if len(bv) > 272:
-        if len(bv) > 276:
-                # Have an extended name
-                ext_len = int(math.floor((len(bv) - 272) / 6.))
-                print 'ext:',len(bv),ext_len,len(bv[272:])
-                text = aisstring.decode(bv[272:272 + 6 * ext_len])
-                r['name'] += text
-                if len(bv) > 272 + 6*ext_len:
-                        #print 'found spare bits at end',bv[272 + 6*ext_len:]
-                        #assert (len(bv) - (272 + 6*ext_len)) in (0,2,4,6)
-                        #print 'spare_len:',len(bv) - (272 + 6*ext_len)
-                        r['spare2'] = int(bv[272 + 6*ext_len:])
-	return r
+    Fields in params:
+      - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI)
+      - type(uint): IALA type of aid-to-navigation
+      - name(aisstr6): Name of the aid-to-navigation
+      - PositionAccuracy(uint): Accuracy of positioning fixes
+      - longitude(decimal): Location of the AtoN  East West location
+      - latitude(decimal): Location of the AtoN  North South location
+      - dimA(uint): Distance from bow to reference position
+      - dimB(uint): Distance from reference position to stern
+      - dimC(uint): Distance from port side to reference position
+      - dimD(uint): Distance from reference position to starboard side
+      - FixType(uint): Type of electronic position fixing device
+      - timestamp(uint): UTC second when report was generated
+      - OffPosition(bool): True when the AtoN is off station
+      - status(uint): Unknown
+      - RAIM(bool): Receiver autonomous integrity monitoring flag
+      - virtual_aton_flag(bool): Does the unit physically exist?
+      - assigned_mode_flag(bool): autonomous or controlled
+      - spare(uint): Not Used (field automatically set to "0")
+      - spare2(uint): Not Used (field automatically set to "0")
+    @type bv: BitVector
+    @param bv: Bits defining a message
+    @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+    @rtype: dict
+    @return: params
+    """
+    r = {}
+    r['MessageID']=21
+    r['RepeatIndicator']=int(bv[6:8])
+    r['UserID']=int(bv[8:38])
+    r['type']=int(bv[38:43])
+    r['name']=aisstring.decode(bv[43:163])
+    r['PositionAccuracy']=int(bv[163:164])
+    r['longitude']=Decimal(binary.signedIntFromBV(bv[164:192]))/Decimal('600000')
+    r['latitude']=Decimal(binary.signedIntFromBV(bv[192:219]))/Decimal('600000')
+    r['dimA']=int(bv[219:228])
+    r['dimB']=int(bv[228:237])
+    r['dimC']=int(bv[237:243])
+    r['dimD']=int(bv[243:249])
+    r['FixType']=int(bv[249:253])
+    r['timestamp']=int(bv[253:259])
+    r['OffPosition']=bool(int(bv[259:260]))
+    r['status']=int(bv[260:268])
+    r['RAIM']=bool(int(bv[268:269]))
+    r['virtual_aton_flag']=bool(int(bv[269:270]))
+    if len(bv) == 270:
+        print 'Short 270 msg'
+        return r
+    r['assigned_mode_flag']=bool(int(bv[270:271]))
+    r['spare']=int(bv[271])
+    r['spare2'] = 0
+    #if len(bv) > 272:
+    if len(bv) > 276:
+        # Have an extended name
+        ext_len = int(math.floor((len(bv) - 272) / 6.))
+        print 'ext:',len(bv),ext_len,len(bv[272:])
+        text = aisstring.decode(bv[272:272 + 6 * ext_len])
+        r['name'] += text
+        if len(bv) > 272 + 6*ext_len:
+                #print 'found spare bits at end',bv[272 + 6*ext_len:]
+                #assert (len(bv) - (272 + 6*ext_len)) in (0,2,4,6)
+                #print 'spare_len:',len(bv) - (272 + 6*ext_len)
+                r['spare2'] = int(bv[272 + 6*ext_len:])
+    return r
 
 def decodeMessageID(bv, validate=False):
-	return 21
+    return 21
 
 def decodeRepeatIndicator(bv, validate=False):
-	return int(bv[6:8])
+    return int(bv[6:8])
 
 def decodeUserID(bv, validate=False):
-	return int(bv[8:38])
+    return int(bv[8:38])
 
 def decodetype(bv, validate=False):
-	return int(bv[38:43])
+    return int(bv[38:43])
 
 def decodename(bv, validate=False):
-        print 'FIX: handle extended name if it is there'
-	return aisstring.decode(bv[43:163])
+    print 'FIX: handle extended name if it is there'
+    return aisstring.decode(bv[43:163])
 
 def decodePositionAccuracy(bv, validate=False):
-	return int(bv[163:164])
+    return int(bv[163:164])
 
 def decodelongitude(bv, validate=False):
-	return Decimal(binary.signedIntFromBV(bv[164:192]))/Decimal('600000')
+    return Decimal(binary.signedIntFromBV(bv[164:192]))/Decimal('600000')
 
 def decodelatitude(bv, validate=False):
-	return Decimal(binary.signedIntFromBV(bv[192:219]))/Decimal('600000')
+    return Decimal(binary.signedIntFromBV(bv[192:219]))/Decimal('600000')
 
 def decodedimA(bv, validate=False):
-	return int(bv[219:228])
+    return int(bv[219:228])
 
 def decodedimB(bv, validate=False):
-	return int(bv[228:237])
+    return int(bv[228:237])
 
 def decodedimC(bv, validate=False):
-	return int(bv[237:243])
+    return int(bv[237:243])
 
 def decodedimD(bv, validate=False):
-	return int(bv[243:249])
+    return int(bv[243:249])
 
 def decodeFixType(bv, validate=False):
-	return int(bv[249:253])
+    return int(bv[249:253])
 
 def decodetimestamp(bv, validate=False):
-	return int(bv[253:259])
+    return int(bv[253:259])
 
 def decodeOffPosition(bv, validate=False):
-	return bool(int(bv[259:260]))
+    return bool(int(bv[259:260]))
 
 def decodestatus(bv, validate=False):
-	return int(bv[260:268])
+    return int(bv[260:268])
 
 def decodeRAIM(bv, validate=False):
-	return bool(int(bv[268:269]))
+    return bool(int(bv[268:269]))
 
 def decodevirtual_aton_flag(bv, validate=False):
-	return bool(int(bv[269:270]))
+    return bool(int(bv[269:270]))
 
 def decodeassigned_mode_flag(bv, validate=False):
-	return bool(int(bv[270:271]))
+    return bool(int(bv[270:271]))
 
 def decodespare(bv, validate=False):
-	return 0 # FIX: return the bits
+    return 0 # FIX: return the bits
 
 def decodespare2(bv, validate=False):
-	assert False # FIX: actually decode this
+    assert False # FIX: actually decode this
 
 
 def printHtml(params, out=sys.stdout):
-		out.write("<h3>AidsToNavReport</h3>\n")
-		out.write("<table border=\"1\">\n")
-		out.write("<tr bgcolor=\"orange\">\n")
-		out.write("<th align=\"left\">Field Name</th>\n")
-		out.write("<th align=\"left\">Type</th>\n")
-		out.write("<th align=\"left\">Value</th>\n")
-		out.write("<th align=\"left\">Value in Lookup Table</th>\n")
-		out.write("<th align=\"left\">Units</th>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>MessageID</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'MessageID' in params:
-			out.write("	<td>"+str(params['MessageID'])+"</td>\n")
-			out.write("	<td>"+str(params['MessageID'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>RepeatIndicator</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'RepeatIndicator' in params:
-			out.write("	<td>"+str(params['RepeatIndicator'])+"</td>\n")
-			if str(params['RepeatIndicator']) in RepeatIndicatorDecodeLut:
-				out.write("<td>"+RepeatIndicatorDecodeLut[str(params['RepeatIndicator'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>UserID</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'UserID' in params:
-			out.write("	<td>"+str(params['UserID'])+"</td>\n")
-			out.write("	<td>"+str(params['UserID'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>type</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'type' in params:
-			out.write("	<td>"+str(params['type'])+"</td>\n")
-			if str(params['type']) in typeDecodeLut:
-				out.write("<td>"+typeDecodeLut[str(params['type'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>name</td>\n")
-		out.write("<td>aisstr6</td>\n")
-		if 'name' in params:
-			out.write("	<td>"+str(params['name'])+"</td>\n")
-			out.write("	<td>"+str(params['name'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>PositionAccuracy</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'PositionAccuracy' in params:
-			out.write("	<td>"+str(params['PositionAccuracy'])+"</td>\n")
-			if str(params['PositionAccuracy']) in PositionAccuracyDecodeLut:
-				out.write("<td>"+PositionAccuracyDecodeLut[str(params['PositionAccuracy'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>longitude</td>\n")
-		out.write("<td>decimal</td>\n")
-		if 'longitude' in params:
-			out.write("	<td>"+str(params['longitude'])+"</td>\n")
-			out.write("	<td>"+str(params['longitude'])+"</td>\n")
-		out.write("<td>degrees</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>latitude</td>\n")
-		out.write("<td>decimal</td>\n")
-		if 'latitude' in params:
-			out.write("	<td>"+str(params['latitude'])+"</td>\n")
-			out.write("	<td>"+str(params['latitude'])+"</td>\n")
-		out.write("<td>degrees</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>dimA</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'dimA' in params:
-			out.write("	<td>"+str(params['dimA'])+"</td>\n")
-			out.write("	<td>"+str(params['dimA'])+"</td>\n")
-		out.write("<td>m</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>dimB</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'dimB' in params:
-			out.write("	<td>"+str(params['dimB'])+"</td>\n")
-			out.write("	<td>"+str(params['dimB'])+"</td>\n")
-		out.write("<td>m</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>dimC</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'dimC' in params:
-			out.write("	<td>"+str(params['dimC'])+"</td>\n")
-			if str(params['dimC']) in dimCDecodeLut:
-				out.write("<td>"+dimCDecodeLut[str(params['dimC'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("<td>m</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>dimD</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'dimD' in params:
-			out.write("	<td>"+str(params['dimD'])+"</td>\n")
-			if str(params['dimD']) in dimDDecodeLut:
-				out.write("<td>"+dimDDecodeLut[str(params['dimD'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("<td>m</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>FixType</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'FixType' in params:
-			out.write("	<td>"+str(params['FixType'])+"</td>\n")
-			if str(params['FixType']) in FixTypeDecodeLut:
-				out.write("<td>"+FixTypeDecodeLut[str(params['FixType'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>timestamp</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'timestamp' in params:
-			out.write("	<td>"+str(params['timestamp'])+"</td>\n")
-			if str(params['timestamp']) in timestampDecodeLut:
-				out.write("<td>"+timestampDecodeLut[str(params['timestamp'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>OffPosition</td>\n")
-		out.write("<td>bool</td>\n")
-		if 'OffPosition' in params:
-			out.write("	<td>"+str(params['OffPosition'])+"</td>\n")
-			if str(params['OffPosition']) in OffPositionDecodeLut:
-				out.write("<td>"+OffPositionDecodeLut[str(params['OffPosition'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>status</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'status' in params:
-			out.write("	<td>"+str(params['status'])+"</td>\n")
-			out.write("	<td>"+str(params['status'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>RAIM</td>\n")
-		out.write("<td>bool</td>\n")
-		if 'RAIM' in params:
-			out.write("	<td>"+str(params['RAIM'])+"</td>\n")
-			if str(params['RAIM']) in RAIMDecodeLut:
-				out.write("<td>"+RAIMDecodeLut[str(params['RAIM'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>virtual_aton_flag</td>\n")
-		out.write("<td>bool</td>\n")
-		if 'virtual_aton_flag' in params:
-			out.write("	<td>"+str(params['virtual_aton_flag'])+"</td>\n")
-			if str(params['virtual_aton_flag']) in virtual_aton_flagDecodeLut:
-				out.write("<td>"+virtual_aton_flagDecodeLut[str(params['virtual_aton_flag'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>assigned_mode_flag</td>\n")
-		out.write("<td>bool</td>\n")
-		if 'assigned_mode_flag' in params:
-			out.write("	<td>"+str(params['assigned_mode_flag'])+"</td>\n")
-			if str(params['assigned_mode_flag']) in assigned_mode_flagDecodeLut:
-				out.write("<td>"+assigned_mode_flagDecodeLut[str(params['assigned_mode_flag'])]+"</td>")
-			else:
-				out.write("<td><i>Missing LUT entry</i></td>")
-		out.write("</tr>\n")
-		out.write("\n")
-		out.write("<tr>\n")
-		out.write("<td>spare</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'spare' in params:
-			out.write("	<td>"+str(params['spare'])+"</td>\n")
-			out.write("	<td>"+str(params['spare'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("<tr>\n")
-		out.write("<td>spare2</td>\n")
-		out.write("<td>uint</td>\n")
-		if 'spare' in params:
-			out.write("	<td>"+str(params['spare2'])+"</td>\n")
-			out.write("	<td>"+str(params['spare2'])+"</td>\n")
-		out.write("</tr>\n")
-		out.write("</table>\n")
+        out.write("<h3>AidsToNavReport</h3>\n")
+        out.write("<table border=\"1\">\n")
+        out.write("<tr bgcolor=\"orange\">\n")
+        out.write("<th align=\"left\">Field Name</th>\n")
+        out.write("<th align=\"left\">Type</th>\n")
+        out.write("<th align=\"left\">Value</th>\n")
+        out.write("<th align=\"left\">Value in Lookup Table</th>\n")
+        out.write("<th align=\"left\">Units</th>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>MessageID</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'MessageID' in params:
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>RepeatIndicator</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'RepeatIndicator' in params:
+            out.write("    <td>"+str(params['RepeatIndicator'])+"</td>\n")
+            if str(params['RepeatIndicator']) in RepeatIndicatorDecodeLut:
+                out.write("<td>"+RepeatIndicatorDecodeLut[str(params['RepeatIndicator'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>UserID</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'UserID' in params:
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>type</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'type' in params:
+            out.write("    <td>"+str(params['type'])+"</td>\n")
+            if str(params['type']) in typeDecodeLut:
+                out.write("<td>"+typeDecodeLut[str(params['type'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>name</td>\n")
+        out.write("<td>aisstr6</td>\n")
+        if 'name' in params:
+            out.write("    <td>"+str(params['name'])+"</td>\n")
+            out.write("    <td>"+str(params['name'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>PositionAccuracy</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'PositionAccuracy' in params:
+            out.write("    <td>"+str(params['PositionAccuracy'])+"</td>\n")
+            if str(params['PositionAccuracy']) in PositionAccuracyDecodeLut:
+                out.write("<td>"+PositionAccuracyDecodeLut[str(params['PositionAccuracy'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>longitude</td>\n")
+        out.write("<td>decimal</td>\n")
+        if 'longitude' in params:
+            out.write("    <td>"+str(params['longitude'])+"</td>\n")
+            out.write("    <td>"+str(params['longitude'])+"</td>\n")
+        out.write("<td>degrees</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>latitude</td>\n")
+        out.write("<td>decimal</td>\n")
+        if 'latitude' in params:
+            out.write("    <td>"+str(params['latitude'])+"</td>\n")
+            out.write("    <td>"+str(params['latitude'])+"</td>\n")
+        out.write("<td>degrees</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>dimA</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'dimA' in params:
+            out.write("    <td>"+str(params['dimA'])+"</td>\n")
+            out.write("    <td>"+str(params['dimA'])+"</td>\n")
+        out.write("<td>m</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>dimB</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'dimB' in params:
+            out.write("    <td>"+str(params['dimB'])+"</td>\n")
+            out.write("    <td>"+str(params['dimB'])+"</td>\n")
+        out.write("<td>m</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>dimC</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'dimC' in params:
+            out.write("    <td>"+str(params['dimC'])+"</td>\n")
+            if str(params['dimC']) in dimCDecodeLut:
+                out.write("<td>"+dimCDecodeLut[str(params['dimC'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("<td>m</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>dimD</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'dimD' in params:
+            out.write("    <td>"+str(params['dimD'])+"</td>\n")
+            if str(params['dimD']) in dimDDecodeLut:
+                out.write("<td>"+dimDDecodeLut[str(params['dimD'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("<td>m</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>FixType</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'FixType' in params:
+            out.write("    <td>"+str(params['FixType'])+"</td>\n")
+            if str(params['FixType']) in FixTypeDecodeLut:
+                out.write("<td>"+FixTypeDecodeLut[str(params['FixType'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>timestamp</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'timestamp' in params:
+            out.write("    <td>"+str(params['timestamp'])+"</td>\n")
+            if str(params['timestamp']) in timestampDecodeLut:
+                out.write("<td>"+timestampDecodeLut[str(params['timestamp'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>OffPosition</td>\n")
+        out.write("<td>bool</td>\n")
+        if 'OffPosition' in params:
+            out.write("    <td>"+str(params['OffPosition'])+"</td>\n")
+            if str(params['OffPosition']) in OffPositionDecodeLut:
+                out.write("<td>"+OffPositionDecodeLut[str(params['OffPosition'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>status</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'status' in params:
+            out.write("    <td>"+str(params['status'])+"</td>\n")
+            out.write("    <td>"+str(params['status'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>RAIM</td>\n")
+        out.write("<td>bool</td>\n")
+        if 'RAIM' in params:
+            out.write("    <td>"+str(params['RAIM'])+"</td>\n")
+            if str(params['RAIM']) in RAIMDecodeLut:
+                out.write("<td>"+RAIMDecodeLut[str(params['RAIM'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>virtual_aton_flag</td>\n")
+        out.write("<td>bool</td>\n")
+        if 'virtual_aton_flag' in params:
+            out.write("    <td>"+str(params['virtual_aton_flag'])+"</td>\n")
+            if str(params['virtual_aton_flag']) in virtual_aton_flagDecodeLut:
+                out.write("<td>"+virtual_aton_flagDecodeLut[str(params['virtual_aton_flag'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>assigned_mode_flag</td>\n")
+        out.write("<td>bool</td>\n")
+        if 'assigned_mode_flag' in params:
+            out.write("    <td>"+str(params['assigned_mode_flag'])+"</td>\n")
+            if str(params['assigned_mode_flag']) in assigned_mode_flagDecodeLut:
+                out.write("<td>"+assigned_mode_flagDecodeLut[str(params['assigned_mode_flag'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>spare</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'spare' in params:
+            out.write("    <td>"+str(params['spare'])+"</td>\n")
+            out.write("    <td>"+str(params['spare'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("<tr>\n")
+        out.write("<td>spare2</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'spare' in params:
+            out.write("    <td>"+str(params['spare2'])+"</td>\n")
+            out.write("    <td>"+str(params['spare2'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("</table>\n")
 
 
 def printKml(params, out=sys.stdout):
-	'''KML (Keyhole Markup Language) for Google Earth, but without the header/footer'''
-	out.write("\	<Placemark>\n")
-	out.write("\t	<name>"+str(params['UserID'])+"</name>\n")
-	out.write("\t\t<description>\n")
-	import StringIO
-	buf = StringIO.StringIO()
-	printHtml(params,buf)
-	import cgi
-	out.write(cgi.escape(buf.getvalue()))
-	out.write("\t\t</description>\n")
-	out.write("\t\t<styleUrl>#m_ylw-pushpin_copy0</styleUrl>\n")
-	out.write("\t\t<Point>\n")
-	out.write("\t\t\t<coordinates>")
-	out.write(str(params['longitude']))
-	out.write(',')
-	out.write(str(params['latitude']))
-	out.write(",0</coordinates>\n")
-	out.write("\t\t</Point>\n")
-	out.write("\t</Placemark>\n")
+    '''KML (Keyhole Markup Language) for Google Earth, but without the header/footer'''
+    out.write("\    <Placemark>\n")
+    out.write("\t    <name>"+str(params['UserID'])+"</name>\n")
+    out.write("\t\t<description>\n")
+    import StringIO
+    buf = StringIO.StringIO()
+    printHtml(params,buf)
+    import cgi
+    out.write(cgi.escape(buf.getvalue()))
+    out.write("\t\t</description>\n")
+    out.write("\t\t<styleUrl>#m_ylw-pushpin_copy0</styleUrl>\n")
+    out.write("\t\t<Point>\n")
+    out.write("\t\t\t<coordinates>")
+    out.write(str(params['longitude']))
+    out.write(',')
+    out.write(str(params['latitude']))
+    out.write(",0</coordinates>\n")
+    out.write("\t\t</Point>\n")
+    out.write("\t</Placemark>\n")
 
 def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='postgres'):
-	'''Print a AidsToNavReport message to stdout.
+    '''Print a AidsToNavReport message to stdout.
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
-	  - type(uint): IALA type of aid-to-navigation
-	  - name(aisstr6): Name of the aid-to-navigation
-	  - PositionAccuracy(uint): Accuracy of positioning fixes
-	  - longitude(decimal): Location of the AtoN  East West location
-	  - latitude(decimal): Location of the AtoN  North South location
-	  - dimA(uint): Distance from bow to reference position
-	  - dimB(uint): Distance from reference position to stern
-	  - dimC(uint): Distance from port side to reference position
-	  - dimD(uint): Distance from reference position to starboard side
-	  - FixType(uint): Type of electronic position fixing device
-	  - timestamp(uint): UTC second when report was generated
-	  - OffPosition(bool): True when the AtoN is off station
-	  - RegionalApp(uint): Should be set to zero (field automatically set to "0")
-	  - RAIM(bool): Receiver autonomous integrity monitoring flag
-	  - virtual_aton_flag(bool): Does the unit physically exist?
-	  - assigned_mode_flag(bool): autonomous or controlled
-	  - spare(uint): Not Used (field automatically set to "0")
-	  - spare2(uint): Not Used (field automatically set to "0")
-	@param params: Dictionary of field names/values. 
-	@param out: File like object to write to
-	@rtype: stdout
-	@return: text to out
-	'''
+    Fields in params:
+      - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI)
+      - type(uint): IALA type of aid-to-navigation
+      - name(aisstr6): Name of the aid-to-navigation
+      - PositionAccuracy(uint): Accuracy of positioning fixes
+      - longitude(decimal): Location of the AtoN  East West location
+      - latitude(decimal): Location of the AtoN  North South location
+      - dimA(uint): Distance from bow to reference position
+      - dimB(uint): Distance from reference position to stern
+      - dimC(uint): Distance from port side to reference position
+      - dimD(uint): Distance from reference position to starboard side
+      - FixType(uint): Type of electronic position fixing device
+      - timestamp(uint): UTC second when report was generated
+      - OffPosition(bool): True when the AtoN is off station
+      - RegionalApp(uint): Should be set to zero (field automatically set to "0")
+      - RAIM(bool): Receiver autonomous integrity monitoring flag
+      - virtual_aton_flag(bool): Does the unit physically exist?
+      - assigned_mode_flag(bool): autonomous or controlled
+      - spare(uint): Not Used (field automatically set to "0")
+      - spare2(uint): Not Used (field automatically set to "0")
+    @param params: Dictionary of field names/values.
+    @param out: File like object to write to
+    @rtype: stdout
+    @return: text to out
+    '''
+    if 'std'==format:
+        out.write("AidsToNavReport:\n")
+        if 'MessageID' in params: out.write("    MessageID:           "+str(params['MessageID'])+"\n")
+        if 'RepeatIndicator' in params: out.write("    RepeatIndicator:     "+str(params['RepeatIndicator'])+"\n")
+        if 'UserID' in params: out.write("    UserID:              "+str(params['UserID'])+"\n")
+        if 'type' in params: out.write("    type:                "+str(params['type'])+"\n")
+        if 'name' in params: out.write("    name:                "+str(params['name'])+"\n")
+        if 'PositionAccuracy' in params: out.write("    PositionAccuracy:    "+str(params['PositionAccuracy'])+"\n")
+        if 'longitude' in params: out.write("    longitude:           %.7f\n" % params['longitude'])
+        if 'latitude' in params: out.write("    latitude:            %.7f\n" % params['latitude'])
+        if 'dimA' in params: out.write("    dimA:                "+str(params['dimA'])+"\n")
+        if 'dimB' in params: out.write("    dimB:                "+str(params['dimB'])+"\n")
+        if 'dimC' in params: out.write("    dimC:                "+str(params['dimC'])+"\n")
+        if 'dimD' in params: out.write("    dimD:                "+str(params['dimD'])+"\n")
+        if 'FixType' in params: out.write("    FixType:             "+str(params['FixType'])+"\n")
+        if 'timestamp' in params: out.write("    timestamp:           "+str(params['timestamp'])+"\n")
+        if 'OffPosition' in params: out.write("    OffPosition:         "+str(params['OffPosition'])+"\n")
+        if 'status' in params: out.write("    status:              "+str(params['status'])+"\n")
+        if 'RAIM' in params: out.write("    RAIM:                "+str(params['RAIM'])+"\n")
+        if 'virtual_aton_flag' in params: out.write("    virtual_aton_flag:   "+str(params['virtual_aton_flag'])+"\n")
+        if 'assigned_mode_flag' in params:
+            out.write("    assigned_mode_flag:  "+str(params['assigned_mode_flag'])+"\n")
+        if 'spare' in params:
+            out.write("    spare:               "+str(params['spare'])+"\n")
+        if 'spare2' in params:
+            out.write("    spare2:              "+str(params['spare2'])+"\n")
+    elif 'csv'==format:
+        if None == options.fieldList:
+            options.fieldList = fieldList
+        needComma = False;
+        for field in fieldList:
+            if needComma: out.write(',')
+            needComma = True
+            if field in params:
+                out.write(str(params[field]))
+            # else: leave it empty
+        out.write("\n")
+    elif 'html'==format:
+        printHtml(params,out)
+    elif 'sql'==format:
+        sqlInsertStr(params,out,dbType=dbType)
+    elif 'kml'==format:
+        printKml(params,out)
+    elif 'kml-full'==format:
+        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        out.write("<kml xmlns=\"http://earth.google.com/kml/2.1\">\n")
+        out.write("<Document>\n")
+        out.write("    <name>AidsToNavReport</name>\n")
+        printKml(params,out)
+        out.write("</Document>\n")
+        out.write("</kml>\n")
+    else:
+        print "ERROR: unknown format:",format
+        assert False
 
-	if 'std'==format:
-		out.write("AidsToNavReport:\n")
-		if 'MessageID' in params: out.write("	MessageID:           "+str(params['MessageID'])+"\n")
-		if 'RepeatIndicator' in params: out.write("	RepeatIndicator:     "+str(params['RepeatIndicator'])+"\n")
-		if 'UserID' in params: out.write("	UserID:              "+str(params['UserID'])+"\n")
-		if 'type' in params: out.write("	type:                "+str(params['type'])+"\n")
-		if 'name' in params: out.write("	name:                "+str(params['name'])+"\n")
-		if 'PositionAccuracy' in params: out.write("	PositionAccuracy:    "+str(params['PositionAccuracy'])+"\n")
-		if 'longitude' in params: out.write("	longitude:           %.7f\n" % params['longitude'])
-		if 'latitude' in params: out.write("	latitude:            %.7f\n" % params['latitude'])
-		if 'dimA' in params: out.write("	dimA:                "+str(params['dimA'])+"\n")
-		if 'dimB' in params: out.write("	dimB:                "+str(params['dimB'])+"\n")
-		if 'dimC' in params: out.write("	dimC:                "+str(params['dimC'])+"\n")
-		if 'dimD' in params: out.write("	dimD:                "+str(params['dimD'])+"\n")
-		if 'FixType' in params: out.write("	FixType:             "+str(params['FixType'])+"\n")
-		if 'timestamp' in params: out.write("	timestamp:           "+str(params['timestamp'])+"\n")
-		if 'OffPosition' in params: out.write("	OffPosition:         "+str(params['OffPosition'])+"\n")
-		if 'status' in params: out.write("	status:              "+str(params['status'])+"\n")
-		if 'RAIM' in params: out.write("	RAIM:                "+str(params['RAIM'])+"\n")
-		if 'virtual_aton_flag' in params: out.write("	virtual_aton_flag:   "+str(params['virtual_aton_flag'])+"\n")
-		if 'assigned_mode_flag' in params: out.write("	assigned_mode_flag:  "+str(params['assigned_mode_flag'])+"\n")
-		if 'spare' in params: out.write("	spare:               "+str(params['spare'])+"\n")
-		if 'spare2' in params: out.write("	spare2:              "+str(params['spare2'])+"\n")
-	elif 'csv'==format:
-		if None == options.fieldList:
-			options.fieldList = fieldList
-		needComma = False;
-		for field in fieldList:
-			if needComma: out.write(',')
-			needComma = True
-			if field in params:
-				out.write(str(params[field]))
-			# else: leave it empty
-		out.write("\n")
-	elif 'html'==format:
-		printHtml(params,out)
-	elif 'sql'==format:
-		sqlInsertStr(params,out,dbType=dbType)
-	elif 'kml'==format:
-		printKml(params,out)
-	elif 'kml-full'==format:
-		out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-		out.write("<kml xmlns=\"http://earth.google.com/kml/2.1\">\n")
-		out.write("<Document>\n")
-		out.write("	<name>AidsToNavReport</name>\n")
-		printKml(params,out)
-		out.write("</Document>\n")
-		out.write("</kml>\n")
-	else:
-		print "ERROR: unknown format:",format
-		assert False
-
-	return # Nothing to return
+    return # Nothing to return
 
 RepeatIndicatorEncodeLut = {
-	'default':'0',
-	'do not repeat any more':'3',
-	} #RepeatIndicatorEncodeLut
+    'default':'0',
+    'do not repeat any more':'3',
+    } #RepeatIndicatorEncodeLut
 
 RepeatIndicatorDecodeLut = {
-	'0':'default',
-	'3':'do not repeat any more',
-	} # RepeatIndicatorEncodeLut
+    '0':'default',
+    '3':'do not repeat any more',
+    } # RepeatIndicatorEncodeLut
 
 typeEncodeLut = {
-	'Default, Type of A to N not specified':'0',
-	'Reference point':'1',
-	'RACON':'2',
-	'Off Shore Structure':'3',
-	'Spare':'4',
-	'Light, without sectors':'5',
-	'Light, with sectors':'6',
-	'Leading Light Front':'7',
-	'Leading Light Rear':'8',
-	'Beacon, Cardinal N':'9',
-	'Beacon, Cardinal E':'10',
-	'Beacon, Cardinal S':'11',
-	'Beacon, Cardinal W':'12',
-	'Beacon, Port hand':'13',
-	'Beacon, Starbord hand':'14',
-	'Beacon, Preferred channel port hand':'15',
-	'Beacon, Preferred channel starboard hand':'16',
-	'Beacon, Isolated danger':'17',
-	'Beacon, Safe water':'18',
-	'Beacon, Special mark':'19',
-	'Cardinal Mark N':'20',
-	'Cardinal Mark E':'21',
-	'Cardinal Mark S':'22',
-	'Cardinal Mark W':'23',
-	'Port hand Mark':'24',
-	'Starbord hand Mark':'25',
-	'Preferred Channel Port hand':'26',
-	'Preferred Channel Starboard hand':'27',
-	'Isolated danger':'28',
-	'Safe water':'29',
-	'Special Mark':'30',
-	'Light Vessel/LANBY':'31',
-	} #typeEncodeLut
+    'Default, Type of A to N not specified':'0',
+    'Reference point':'1',
+    'RACON':'2',
+    'Off Shore Structure':'3',
+    'Spare':'4',
+    'Light, without sectors':'5',
+    'Light, with sectors':'6',
+    'Leading Light Front':'7',
+    'Leading Light Rear':'8',
+    'Beacon, Cardinal N':'9',
+    'Beacon, Cardinal E':'10',
+    'Beacon, Cardinal S':'11',
+    'Beacon, Cardinal W':'12',
+    'Beacon, Port hand':'13',
+    'Beacon, Starbord hand':'14',
+    'Beacon, Preferred channel port hand':'15',
+    'Beacon, Preferred channel starboard hand':'16',
+    'Beacon, Isolated danger':'17',
+    'Beacon, Safe water':'18',
+    'Beacon, Special mark':'19',
+    'Cardinal Mark N':'20',
+    'Cardinal Mark E':'21',
+    'Cardinal Mark S':'22',
+    'Cardinal Mark W':'23',
+    'Port hand Mark':'24',
+    'Starbord hand Mark':'25',
+    'Preferred Channel Port hand':'26',
+    'Preferred Channel Starboard hand':'27',
+    'Isolated danger':'28',
+    'Safe water':'29',
+    'Special Mark':'30',
+    'Light Vessel/LANBY':'31',
+    } #typeEncodeLut
 
 typeDecodeLut = {
-	'0':'Default, Type of A to N not specified',
-	'1':'Reference point',
-	'2':'RACON',
-	'3':'Off Shore Structure',
-	'4':'Spare',
-	'5':'Light, without sectors',
-	'6':'Light, with sectors',
-	'7':'Leading Light Front',
-	'8':'Leading Light Rear',
-	'9':'Beacon, Cardinal N',
-	'10':'Beacon, Cardinal E',
-	'11':'Beacon, Cardinal S',
-	'12':'Beacon, Cardinal W',
-	'13':'Beacon, Port hand',
-	'14':'Beacon, Starbord hand',
-	'15':'Beacon, Preferred channel port hand',
-	'16':'Beacon, Preferred channel starboard hand',
-	'17':'Beacon, Isolated danger',
-	'18':'Beacon, Safe water',
-	'19':'Beacon, Special mark',
-	'20':'Cardinal Mark N',
-	'21':'Cardinal Mark E',
-	'22':'Cardinal Mark S',
-	'23':'Cardinal Mark W',
-	'24':'Port hand Mark',
-	'25':'Starbord hand Mark',
-	'26':'Preferred Channel Port hand',
-	'27':'Preferred Channel Starboard hand',
-	'28':'Isolated danger',
-	'29':'Safe water',
-	'30':'Special Mark',
-	'31':'Light Vessel/LANBY',
-	} # typeEncodeLut
+    '0':'Default, Type of A to N not specified',
+    '1':'Reference point',
+    '2':'RACON',
+    '3':'Off Shore Structure',
+    '4':'Spare',
+    '5':'Light, without sectors',
+    '6':'Light, with sectors',
+    '7':'Leading Light Front',
+    '8':'Leading Light Rear',
+    '9':'Beacon, Cardinal N',
+    '10':'Beacon, Cardinal E',
+    '11':'Beacon, Cardinal S',
+    '12':'Beacon, Cardinal W',
+    '13':'Beacon, Port hand',
+    '14':'Beacon, Starbord hand',
+    '15':'Beacon, Preferred channel port hand',
+    '16':'Beacon, Preferred channel starboard hand',
+    '17':'Beacon, Isolated danger',
+    '18':'Beacon, Safe water',
+    '19':'Beacon, Special mark',
+    '20':'Cardinal Mark N',
+    '21':'Cardinal Mark E',
+    '22':'Cardinal Mark S',
+    '23':'Cardinal Mark W',
+    '24':'Port hand Mark',
+    '25':'Starbord hand Mark',
+    '26':'Preferred Channel Port hand',
+    '27':'Preferred Channel Starboard hand',
+    '28':'Isolated danger',
+    '29':'Safe water',
+    '30':'Special Mark',
+    '31':'Light Vessel/LANBY',
+    } # typeEncodeLut
 
 PositionAccuracyEncodeLut = {
-	'low (greater than 10 m)':'0',
-	'high (less than 10 m)':'1',
-	} #PositionAccuracyEncodeLut
+    'low (greater than 10 m)':'0',
+    'high (less than 10 m)':'1',
+    } #PositionAccuracyEncodeLut
 
 PositionAccuracyDecodeLut = {
-	'0':'low (greater than 10 m)',
-	'1':'high (less than 10 m)',
-	} # PositionAccuracyEncodeLut
+    '0':'low (greater than 10 m)',
+    '1':'high (less than 10 m)',
+    } # PositionAccuracyEncodeLut
 
 dimCEncodeLut = {
-	'63 m or greater':'63',
-	} #dimCEncodeLut
+    '63 m or greater':'63',
+    } #dimCEncodeLut
 
 dimCDecodeLut = {
-	'63':'63 m or greater',
-	} # dimCEncodeLut
+    '63':'63 m or greater',
+    } # dimCEncodeLut
 
 dimDEncodeLut = {
-	'63 m or greater':'63',
-	} #dimDEncodeLut
+    '63 m or greater':'63',
+    } #dimDEncodeLut
 
 dimDDecodeLut = {
-	'63':'63 m or greater',
-	} # dimDEncodeLut
+    '63':'63 m or greater',
+    } # dimDEncodeLut
 
 FixTypeEncodeLut = {
-	'Undefined (default)':'0',
-	'GPS':'1',
-	'GLONASS':'2',
-	'Combined GPS/GLONASS':'3',
-	'Loran-C':'4',
-	'Chayka':'5',
-	'Integrated Navigation System':'6',
-	'surveyed':'7',
-	'not used - 8':'8',
-	'not used - 9':'9',
-	'not used - 10':'10',
-	'not used - 11':'11',
-	'not used - 12':'12',
-	'not used - 13':'13',
-	'not used - 14':'14',
-	'not used - 15':'15',
-	} #FixTypeEncodeLut
+    'Undefined (default)':'0',
+    'GPS':'1',
+    'GLONASS':'2',
+    'Combined GPS/GLONASS':'3',
+    'Loran-C':'4',
+    'Chayka':'5',
+    'Integrated Navigation System':'6',
+    'surveyed':'7',
+    'not used - 8':'8',
+    'not used - 9':'9',
+    'not used - 10':'10',
+    'not used - 11':'11',
+    'not used - 12':'12',
+    'not used - 13':'13',
+    'not used - 14':'14',
+    'not used - 15':'15',
+    } #FixTypeEncodeLut
 
 FixTypeDecodeLut = {
-	'0':'Undefined (default)',
-	'1':'GPS',
-	'2':'GLONASS',
-	'3':'Combined GPS/GLONASS',
-	'4':'Loran-C',
-	'5':'Chayka',
-	'6':'Integrated Navigation System',
-	'7':'surveyed',
-	'8':'not used - 8',
-	'9':'not used - 9',
-	'10':'not used - 10',
-	'11':'not used - 11',
-	'12':'not used - 12',
-	'13':'not used - 13',
-	'14':'not used - 14',
-	'15':'not used - 15',
-	} # FixTypeEncodeLut
+    '0':'Undefined (default)',
+    '1':'GPS',
+    '2':'GLONASS',
+    '3':'Combined GPS/GLONASS',
+    '4':'Loran-C',
+    '5':'Chayka',
+    '6':'Integrated Navigation System',
+    '7':'surveyed',
+    '8':'not used - 8',
+    '9':'not used - 9',
+    '10':'not used - 10',
+    '11':'not used - 11',
+    '12':'not used - 12',
+    '13':'not used - 13',
+    '14':'not used - 14',
+    '15':'not used - 15',
+    } # FixTypeEncodeLut
 
 timestampEncodeLut = {
-	'Positioning system is in manual mode':'61',
-	'Electronic position fixing system operates in estimated mode':'62',
-	'Positioning system is inoperative':'63',
-	} #timestampEncodeLut
+    'Positioning system is in manual mode':'61',
+    'Electronic position fixing system operates in estimated mode':'62',
+    'Positioning system is inoperative':'63',
+    } #timestampEncodeLut
 
 timestampDecodeLut = {
-	'61':'Positioning system is in manual mode',
-	'62':'Electronic position fixing system operates in estimated mode',
-	'63':'Positioning system is inoperative',
-	} # timestampEncodeLut
+    '61':'Positioning system is in manual mode',
+    '62':'Electronic position fixing system operates in estimated mode',
+    '63':'Positioning system is inoperative',
+    } # timestampEncodeLut
 
 OffPositionEncodeLut = {
-	'On position':'False',
-	'Off position':'True',
-	} #OffPositionEncodeLut
+    'On position':'False',
+    'Off position':'True',
+    } #OffPositionEncodeLut
 
 OffPositionDecodeLut = {
-	'False':'On position',
-	'True':'Off position',
-	} # OffPositionEncodeLut
+    'False':'On position',
+    'True':'Off position',
+    } # OffPositionEncodeLut
 
 RAIMEncodeLut = {
-	'not in use':'False',
-	'in use':'True',
-	} #RAIMEncodeLut
+    'not in use':'False',
+    'in use':'True',
+    } #RAIMEncodeLut
 
 RAIMDecodeLut = {
-	'False':'not in use',
-	'True':'in use',
-	} # RAIMEncodeLut
+    'False':'not in use',
+    'True':'in use',
+    } # RAIMEncodeLut
 
 virtual_aton_flagEncodeLut = {
-	'Unit physically exists':'False',
-	'Virtual AtoN':'True',
-	} #virtual_aton_flagEncodeLut
+    'Unit physically exists':'False',
+    'Virtual AtoN':'True',
+    } #virtual_aton_flagEncodeLut
 
 virtual_aton_flagDecodeLut = {
-	'False':'Unit physically exists',
-	'True':'Virtual AtoN',
-	} # virtual_aton_flagEncodeLut
+    'False':'Unit physically exists',
+    'True':'Virtual AtoN',
+    } # virtual_aton_flagEncodeLut
 
 assigned_mode_flagEncodeLut = {
-	'autonomous and continuous mode':'False',
-	'in assigned mode':'True',
-	} #assigned_mode_flagEncodeLut
+    'autonomous and continuous mode':'False',
+    'in assigned mode':'True',
+    } #assigned_mode_flagEncodeLut
 
 assigned_mode_flagDecodeLut = {
-	'False':'autonomous and continuous mode',
-	'True':'in assigned mode',
-	} # assigned_mode_flagEncodeLut
+    'False':'autonomous and continuous mode',
+    'True':'in assigned mode',
+    } # assigned_mode_flagEncodeLut
 
 ######################################################################
 # SQL SUPPORT
@@ -872,162 +876,158 @@ dbTableName='AidsToNavReport'
 'Database table name'
 
 def sqlCreateStr(outfile=sys.stdout, fields=None, extraFields=None
-		,addCoastGuardFields=True
-		,dbType='postgres'
-		):
-	'''
-	Return the SQL CREATE command for this message type
-	@param outfile: file like object to print to.
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@type addCoastGuardFields: bool
-	@return: sql create string
-	@rtype: str
+        ,addCoastGuardFields=True
+        ,dbType='postgres'
+        ):
+    '''
+    Return the SQL CREATE command for this message type
+    @param outfile: file like object to print to.
+    @param fields: which fields to put in the create.  Defaults to all.
+    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    @type addCoastGuardFields: bool
+    @return: sql create string
+    @rtype: str
 
-	@see: sqlCreate
-	'''
-	# FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
-	outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
+    @see: sqlCreate
+    '''
+    # FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
+    outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
 
 def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='postgres'):
-	'''
-	Return the sqlhelp object to create the table.
+    '''
+    Return the sqlhelp object to create the table.
 
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@type addCoastGuardFields: bool
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@return: An object that can be used to generate a return
-	@rtype: sqlhelp.create
-	'''
-	if None == fields: fields = fieldList
-	import sqlhelp
-	c = sqlhelp.create('AidsToNavReport',dbType=dbType)
-	c.addPrimaryKey()
-	if 'MessageID' in fields: c.addInt ('MessageID')
-	if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
-	if 'UserID' in fields: c.addInt ('UserID')
-	if 'type' in fields: c.addInt ('type')
-	if 'name' in fields: c.addVarChar('name',20+14) # Up to 14 characters in the extended name
-	if 'PositionAccuracy' in fields: c.addInt ('PositionAccuracy')
-	if dbType != 'postgres':
-		if 'longitude' in fields: c.addDecimal('longitude',8,5)
-	if dbType != 'postgres':
-		if 'latitude' in fields: c.addDecimal('latitude',8,5)
-	if 'dimA' in fields: c.addInt ('dimA')
-	if 'dimB' in fields: c.addInt ('dimB')
-	if 'dimC' in fields: c.addInt ('dimC')
-	if 'dimD' in fields: c.addInt ('dimD')
-	if 'FixType' in fields: c.addInt ('FixType')
-	if 'timestamp' in fields: c.addInt ('timestamp')
-	if 'OffPosition' in fields: c.addBool('OffPosition')
-	if 'status' in fields: c.addInt ('status')
-	if 'RAIM' in fields: c.addBool('RAIM')
-	if 'virtual_aton_flag' in fields: c.addBool('virtual_aton_flag')
-	if 'assigned_mode_flag' in fields: c.addBool('assigned_mode_flag')
-	if 'spare' in fields: c.addInt ('spare')
-	if 'spare2' in fields: c.addInt ('spare2') # Just in case someone uses these bits for something
+    @param fields: which fields to put in the create.  Defaults to all.
+    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+    @type addCoastGuardFields: bool
+    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    @return: An object that can be used to generate a return
+    @rtype: sqlhelp.create
+    '''
+    if None == fields: fields = fieldList
 
-	if addCoastGuardFields:
-		# c.addInt('cg_s_rssi')     # Relative signal strength indicator
-		# c.addInt('cg_d_strength')        # dBm receive strength
-		# c.addVarChar('cg_x',10) # Idonno
-		c.addInt('cg_t_arrival')        # Receive timestamp from the AIS equipment 'T'
-		c.addInt('cg_s_slotnum')        # Slot received in
-		c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
-		c.addInt('cg_sec')        # UTC seconds since the epoch
+    c = sqlhelp.create('AidsToNavReport',dbType=dbType)
+    c.addPrimaryKey()
+    if 'MessageID' in fields: c.addInt ('MessageID')
+    if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
+    if 'UserID' in fields: c.addInt ('UserID')
+    if 'type' in fields: c.addInt ('type')
+    if 'name' in fields: c.addVarChar('name',20+14) # Up to 14 characters in the extended name
+    if 'PositionAccuracy' in fields: c.addInt ('PositionAccuracy')
+    if dbType != 'postgres':
+        if 'longitude' in fields: c.addDecimal('longitude',8,5)
+    if dbType != 'postgres':
+        if 'latitude' in fields: c.addDecimal('latitude',8,5)
+    if 'dimA' in fields: c.addInt ('dimA')
+    if 'dimB' in fields: c.addInt ('dimB')
+    if 'dimC' in fields: c.addInt ('dimC')
+    if 'dimD' in fields: c.addInt ('dimD')
+    if 'FixType' in fields: c.addInt ('FixType')
+    if 'timestamp' in fields: c.addInt ('timestamp')
+    if 'OffPosition' in fields: c.addBool('OffPosition')
+    if 'status' in fields: c.addInt ('status')
+    if 'RAIM' in fields: c.addBool('RAIM')
+    if 'virtual_aton_flag' in fields: c.addBool('virtual_aton_flag')
+    if 'assigned_mode_flag' in fields: c.addBool('assigned_mode_flag')
+    if 'spare' in fields: c.addInt ('spare')
+    if 'spare2' in fields: c.addInt ('spare2') # Just in case someone uses these bits for something
 
-		c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
+    if addCoastGuardFields:
+        # c.addInt('cg_s_rssi')     # Relative signal strength indicator
+        # c.addInt('cg_d_strength')        # dBm receive strength
+        # c.addVarChar('cg_x',10) # Idonno
+        c.addInt('cg_t_arrival')        # Receive timestamp from the AIS equipment 'T'
+        c.addInt('cg_s_slotnum')        # Slot received in
+        c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
+        c.addInt('cg_sec')        # UTC seconds since the epoch
 
-	if dbType == 'postgres':
-		c.addPostGIS('Position','POINT',2,SRID=4326);
+        c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
 
-	return c
+    if dbType == 'postgres':
+        c.addPostGIS('Position','POINT',2,SRID=4326);
+
+    return c
 
 def sqlInsertStr(params, outfile=sys.stdout, extraParams=None, dbType='postgres'):
-	'''
-	Return the SQL INSERT command for this message type
-	@param params: dictionary of values keyed by field name
-	@param outfile: file like object to print to.
-	@param extraParams: A sequence of tuples containing (name,sql type) for additional fields
-	@return: sql create string
-	@rtype: str
+    '''
+    Return the SQL INSERT command for this message type
+    @param params: dictionary of values keyed by field name
+    @param outfile: file like object to print to.
+    @param extraParams: A sequence of tuples containing (name,sql type) for additional fields
+    @return: sql create string
+    @rtype: str
 
-	@see: sqlCreate
-	'''
-	outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
+    @see: sqlCreate
+    '''
+    outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
 
 
 def sqlInsert(params,extraParams=None,dbType='postgres'):
-	'''
-	Give the SQL INSERT statement
-	@param params: dict keyed by field name of values
-	@param extraParams: any extra fields that you have created beyond the normal ais message fields
-	@rtype: sqlhelp.insert
-	@return: insert class instance
-	@todo: allow optional type checking of params?
-	@warning: this will take invalid keys happily and do what???
-	'''
-	import sqlhelp
-	i = sqlhelp.insert('AidsToNavReport',dbType=dbType)
+    '''
+    Give the SQL INSERT statement
+    @param params: dict keyed by field name of values
+    @param extraParams: any extra fields that you have created beyond the normal ais message fields
+    @rtype: sqlhelp.insert
+    @return: insert class instance
+    @todo: allow optional type checking of params?
+    @warning: this will take invalid keys happily and do what???
+    '''
+    i = sqlhelp.insert('AidsToNavReport',dbType=dbType)
 
-	if dbType=='postgres':
-		finished = []
-		for key in params:
-			if key in finished:
-				continue
+    if dbType=='postgres':
+    	finished = []
+    	for key in params:
+    		if key in finished:
+    			continue
 
-			if key not in toPgFields and key not in fromPgFields:
-				if type(params[key])==Decimal: i.add(key,float(params[key]))
-				else: i.add(key,params[key])
-			else:
-				if key in fromPgFields:
-					val = params[key]
-				        # Had better be a WKT type like POINT(-88.1 30.321)
-					i.addPostGIS(key,val)
-					finished.append(key)
-				else:
-					# Need to construct the type.
-					pgName = toPgFields[key]
-					#valStr='GeomFromText(\''+pgTypes[pgName]+'('
-					valStr=pgTypes[pgName]+'('
-					vals = []
-					for nonPgKey in fromPgFields[pgName]:
-						vals.append(str(params[nonPgKey]))
-						finished.append(nonPgKey)
-					valStr+=' '.join(vals)+')'
-					i.addPostGIS(pgName,valStr)
-	else:
-		for key in params:
-			if type(params[key])==Decimal: i.add(key,float(params[key]))
-			else: i.add(key,params[key])
+    		if key not in toPgFields and key not in fromPgFields:
+    			if type(params[key])==Decimal: i.add(key,float(params[key]))
+    			else: i.add(key,params[key])
+    		else:
+    			if key in fromPgFields:
+    				val = params[key]
+    			        # Had better be a WKT type like POINT(-88.1 30.321)
+    				i.addPostGIS(key,val)
+    				finished.append(key)
+    			else:
+    				# Need to construct the type.
+    				pgName = toPgFields[key]
+    				#valStr='GeomFromText(\''+pgTypes[pgName]+'('
+    				valStr=pgTypes[pgName]+'('
+    				vals = []
+    				for nonPgKey in fromPgFields[pgName]:
+    					vals.append(str(params[nonPgKey]))
+    					finished.append(nonPgKey)
+    				valStr+=' '.join(vals)+')'
+    				i.addPostGIS(pgName,valStr)
+    else:
+    	for key in params:
+    		if type(params[key])==Decimal: i.add(key,float(params[key]))
+    		else: i.add(key,params[key])
 
-	if None != extraParams:
-		for key in extraParams:
-			i.add(key,extraParams[key])
+    if None != extraParams:
+    	for key in extraParams:
+    		i.add(key,extraParams[key])
 
-	return i
+    return i
 
 ######################################################################
 # LATEX SUPPORT
 ######################################################################
 
-def latexDefinitionTable(outfile=sys.stdout
-		):
-	'''
-	Return the LaTeX definition table for this message type
-	@param outfile: file like object to print to.
-	@type outfile: file obj
-	@return: LaTeX table string via the outfile
-	@rtype: str
+def latexDefinitionTable(outfile=sys.stdout):
+    """Return the LaTeX definition table for this message type.
+    @param outfile: file like object to print to.
+    @type outfile: file obj
+    @return: LaTeX table string via the outfile
+    @rtype: str
+    """
+    o = outfile
 
-	'''
-	o = outfile
-
-	o.write('''
+    o.write('''
 \\begin{table}%[htb]
 \\centering
 \\begin{tabular}{|l|c|l|}
@@ -1210,206 +1210,195 @@ def addMsgOptions(parser):
 		,help='Field parameter value [default: %default]')
 
 def main():
-	from optparse import OptionParser
-	parser = OptionParser(usage="%prog [options]",
-		version="%prog "+__version__)
+    from optparse import OptionParser
+    parser = OptionParser(usage="%prog [options]",
+        version="%prog "+__version__)
 
-	parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
-		help='run the documentation tests')
-	parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
-		help='run the unit tests')
-	parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		help='Make the test output verbose')
+    parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
+        help='run the documentation tests')
+    parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
+        help='run the unit tests')
+    parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
+        help='Make the test output verbose')
 
-	# FIX: remove nmea from binary messages.  No way to build the whole packet?
-	# FIX: or build the surrounding msg 8 for a broadcast?
-	typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
-	parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
-		,default='nmeapayload'
-		,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
-
-
-	outputChoices = ('std','html','csv','sql' , 'kml','kml-full')
-	parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
-		,default='std'
-		,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
-
-	parser.add_option('-o','--output',dest='outputFileName',default=None,
-			  help='Name of the python file to write [default: stdout]')
-
-	parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
-			  choices=fieldList,
-			  help='Which fields to include in the output.  Currently only for csv output [default: all]')
-
-	parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
-			  help='Print the field name for csv')
-
-	parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
-			  help='Print out an sql create command for the table.')
-
-	parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
-			  help='Print a LaTeX table of the type')
-
-	parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
-			  help='Print delimited table of the type (for Word table importing)')
-	parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
-			  ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
+    # FIX: remove nmea from binary messages.  No way to build the whole packet?
+    # FIX: or build the surrounding msg 8 for a broadcast?
+    typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
+    parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
+        ,default='nmeapayload'
+        ,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
 
 
-	dbChoices = ('sqlite','postgres')
-	parser.add_option('-D','--db-type',dest='dbType',default='postgres'
-			  ,choices=dbChoices,type='choice'
-			  ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
+    outputChoices = ('std','html','csv','sql' , 'kml','kml-full')
+    parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
+        ,default='std'
+        ,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
 
-	addMsgOptions(parser)
+    parser.add_option('-o','--output',dest='outputFileName',default=None,
+              help='Name of the python file to write [default: stdout]')
 
-	(options,args) = parser.parse_args()
-	success=True
+    parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
+              choices=fieldList,
+              help='Which fields to include in the output.  Currently only for csv output [default: all]')
 
-	if options.doctest:
-		import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-		sys.argv= [sys.argv[0]]
-		if options.verbose: sys.argv.append('-v')
-		import doctest
-		numfail,numtests=doctest.testmod()
-		if numfail==0: print 'ok'
-		else:
-			print 'FAILED'
-			success=False
+    parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
+              help='Print the field name for csv')
 
-	if not success: sys.exit('Something Failed')
-	del success # Hide success from epydoc
+    parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
+              help='Print out an sql create command for the table.')
 
-	if options.unittest:
-		sys.argv = [sys.argv[0]]
-		if options.verbose: sys.argv.append('-v')
-		unittest.main()
+    parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
+              help='Print a LaTeX table of the type')
 
-	outfile = sys.stdout
-	if None!=options.outputFileName:
-		outfile = file(options.outputFileName,'w')
+    parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
+              help='Print delimited table of the type (for Word table importing)')
+    parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
+              ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
 
 
-	if options.doEncode:
-		# First make sure all non required options are specified
-		if None==options.RepeatIndicatorField: parser.error("missing value for RepeatIndicatorField")
-		if None==options.UserIDField: parser.error("missing value for UserIDField")
-		if None==options.typeField: parser.error("missing value for typeField")
-		if None==options.nameField: parser.error("missing value for nameField")
-		if None==options.PositionAccuracyField: parser.error("missing value for PositionAccuracyField")
-		if None==options.longitudeField: parser.error("missing value for longitudeField")
-		if None==options.latitudeField: parser.error("missing value for latitudeField")
-		if None==options.dimAField: parser.error("missing value for dimAField")
-		if None==options.dimBField: parser.error("missing value for dimBField")
-		if None==options.dimCField: parser.error("missing value for dimCField")
-		if None==options.dimDField: parser.error("missing value for dimDField")
-		if None==options.FixTypeField: parser.error("missing value for FixTypeField")
-		if None==options.timestampField: parser.error("missing value for timestampField")
-		if None==options.OffPositionField: parser.error("missing value for OffPositionField")
-		if None==options.statusField: parser.error("missing value for statusField")
-		if None==options.RAIMField: parser.error("missing value for RAIMField")
-		if None==options.virtual_aton_flagField: parser.error("missing value for virtual_aton_flagField")
-		if None==options.assigned_mode_flagField: parser.error("missing value for assigned_mode_flagField")
-		msgDict={
-			'MessageID': '21',
-			'RepeatIndicator': options.RepeatIndicatorField,
-			'UserID': options.UserIDField,
-			'type': options.typeField,
-			'name': options.nameField,
-			'PositionAccuracy': options.PositionAccuracyField,
-			'longitude': options.longitudeField,
-			'latitude': options.latitudeField,
-			'dimA': options.dimAField,
-			'dimB': options.dimBField,
-			'dimC': options.dimCField,
-			'dimD': options.dimDField,
-			'FixType': options.FixTypeField,
-			'timestamp': options.timestampField,
-			'OffPosition': options.OffPositionField,
-			'status': options.statusField,
-			'RAIM': options.RAIMField,
-			'virtual_aton_flag': options.virtual_aton_flagField,
-			'assigned_mode_flag': options.assigned_mode_flagField,
-			'spare': '0',
-			'spare2': '0',
-		}
+    dbChoices = ('sqlite','postgres')
+    parser.add_option('-D','--db-type',dest='dbType',default='postgres'
+              ,choices=dbChoices,type='choice'
+              ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
 
-		bits = encode(msgDict)
-		if 'binary'==options.ioType: print str(bits)
-		elif 'nmeapayload'==options.ioType:
-		    # FIX: figure out if this might be necessary at compile time
-		    #print "bitLen",len(bits)
-		    bitLen=len(bits)
-		    if bitLen%6!=0:
-			bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-		    #print "result:",binary.bitvectoais6(bits)[0]
-		    print binary.bitvectoais6(bits)[0]
+    addMsgOptions(parser)
+
+    (options,args) = parser.parse_args()
+    success=True
+
+    if options.doctest:
+        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        sys.argv= [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print 'ok'
+        else:
+            print 'FAILED'
+            success=False
+
+    if not success: sys.exit('Something Failed')
+    del success # Hide success from epydoc
+
+    if options.unittest:
+        sys.argv = [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        unittest.main()
+
+    outfile = sys.stdout
+    if None!=options.outputFileName:
+        outfile = file(options.outputFileName,'w')
 
 
-		# FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-		elif 'nmea'==options.ioType:
-		    #bitLen=len(bits)
-                    #if bitLen%6!=0:
-		    #	bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-                    import aisutils.uscg as uscg
-                    nmea = uscg.create_nmea(bits)
-                    print nmea
-                    #
-                    #
+    if options.doEncode:
+        # First make sure all non required options are specified
+        if None==options.RepeatIndicatorField: parser.error("missing value for RepeatIndicatorField")
+        if None==options.UserIDField: parser.error("missing value for UserIDField")
+        if None==options.typeField: parser.error("missing value for typeField")
+        if None==options.nameField: parser.error("missing value for nameField")
+        if None==options.PositionAccuracyField: parser.error("missing value for PositionAccuracyField")
+        if None==options.longitudeField: parser.error("missing value for longitudeField")
+        if None==options.latitudeField: parser.error("missing value for latitudeField")
+        if None==options.dimAField: parser.error("missing value for dimAField")
+        if None==options.dimBField: parser.error("missing value for dimBField")
+        if None==options.dimCField: parser.error("missing value for dimCField")
+        if None==options.dimDField: parser.error("missing value for dimDField")
+        if None==options.FixTypeField: parser.error("missing value for FixTypeField")
+        if None==options.timestampField: parser.error("missing value for timestampField")
+        if None==options.OffPositionField: parser.error("missing value for OffPositionField")
+        if None==options.statusField: parser.error("missing value for statusField")
+        if None==options.RAIMField: parser.error("missing value for RAIMField")
+        if None==options.virtual_aton_flagField: parser.error("missing value for virtual_aton_flagField")
+        if None==options.assigned_mode_flagField: parser.error("missing value for assigned_mode_flagField")
+        msgDict={
+            'MessageID': '21',
+            'RepeatIndicator': options.RepeatIndicatorField,
+            'UserID': options.UserIDField,
+            'type': options.typeField,
+            'name': options.nameField,
+            'PositionAccuracy': options.PositionAccuracyField,
+            'longitude': options.longitudeField,
+            'latitude': options.latitudeField,
+            'dimA': options.dimAField,
+            'dimB': options.dimBField,
+            'dimC': options.dimCField,
+            'dimD': options.dimDField,
+            'FixType': options.FixTypeField,
+            'timestamp': options.timestampField,
+            'OffPosition': options.OffPositionField,
+            'status': options.statusField,
+            'RAIM': options.RAIMField,
+            'virtual_aton_flag': options.virtual_aton_flagField,
+            'assigned_mode_flag': options.assigned_mode_flagField,
+            'spare': '0',
+            'spare2': '0',
+        }
+
+        bits = encode(msgDict)
+        if 'binary'==options.ioType: print str(bits)
+        elif 'nmeapayload'==options.ioType:
+            # FIX: figure out if this might be necessary at compile time
+            #print "bitLen",len(bits)
+            bitLen=len(bits)
+            if bitLen%6!=0:
+                bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
+            #print "result:",binary.bitvectoais6(bits)[0]
+                print binary.bitvectoais6(bits)[0]
+        elif 'nmea'==options.ioType:
+            nmea = uscg.create_nmea(bits)
+            print nmea
+        else:
+            sys.exit('ERROR: unknown ioType.  Help!')
 
 
-                    #sys.exit("FIX: need to implement creating nmea capability")
-		else: sys.exit('ERROR: unknown ioType.  Help!')
+    if options.sqlCreate:
+        sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
 
+    if options.latexDefinitionTable:
+        latexDefinitionTable(outfile)
 
-	if options.sqlCreate:
-		sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
+    # For conversion to word tables
+    if options.textDefinitionTable:
+        textDefinitionTable(outfile,options.delimTextDefinitionTable)
 
-	if options.latexDefinitionTable:
-		latexDefinitionTable(outfile)
+    if options.printCsvfieldList:
+        # Make a csv separated list of fields that will be displayed for csv
+        if None == options.fieldList: options.fieldList = fieldList
+        import StringIO
+        buf = StringIO.StringIO()
+        for field in options.fieldList:
+            buf.write(field+',')
+        result = buf.getvalue()
+        if result[-1] == ',': print result[:-1]
+        else: print result
 
-	# For conversion to word tables
-	if options.textDefinitionTable:
-		textDefinitionTable(outfile,options.delimTextDefinitionTable)
+    if options.doDecode:
+        if len(args)==0: args = sys.stdin
+        for msg in args:
+            print msg
+            bv = None
 
-	if options.printCsvfieldList:
-		# Make a csv separated list of fields that will be displayed for csv
-		if None == options.fieldList: options.fieldList = fieldList
-		import StringIO
-		buf = StringIO.StringIO()
-		for field in options.fieldList:
-			buf.write(field+',')
-		result = buf.getvalue()
-		if result[-1] == ',': print result[:-1]
-		else: print result
+            if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
+                # FIX: do checksum
+                bv = binary.ais6tobitvec(msg.split(',')[5])
+            else: # either binary or nmeapayload... expect mostly nmeapayloads
+                # assumes that an all 0 and 1 string can not be a nmeapayload
+                binaryMsg=True
+                for c in msg:
+                    if c not in ('0','1'):
+                        binaryMsg=False
+                        break
+                if binaryMsg:
+                    bv = BitVector(bitstring=msg)
+                else: # nmeapayload
+                    bv = binary.ais6tobitvec(msg)
 
-	if options.doDecode:
-		if len(args)==0: args = sys.stdin
-		for msg in args:
-			bv = None
-
-			if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
-				# Found nmea
-				# FIX: do checksum
-				bv = binary.ais6tobitvec(msg.split(',')[5])
-			else: # either binary or nmeapayload... expect mostly nmeapayloads
-				# assumes that an all 0 and 1 string can not be a nmeapayload
-				binaryMsg=True
-				for c in msg:
-					if c not in ('0','1'):
-						binaryMsg=False
-						break
-				if binaryMsg:
-					bv = BitVector(bitstring=msg)
-				else: # nmeapayload
-					bv = binary.ais6tobitvec(msg)
-
-			printFields(decode(bv)
-				    ,out=outfile
-				    ,format=options.outputType
-				    ,fieldList=options.fieldList
-				    ,dbType=options.dbType
-				    )
+            printFields(
+                decode(bv),
+                out=outfile,
+                format=options.outputType,
+                fieldList=options.fieldList,
+                dbType=options.dbType)
 
 ############################################################
 if __name__=='__main__':

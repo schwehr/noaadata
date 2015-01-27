@@ -21,9 +21,9 @@ import os
 import pyExcelerator as excel
 from datetime import datetime
 
-from ais import binary
 from ais import ais_msg_5 as m5
-from ais import aisstring
+from aisutils import binary
+from aisutils import aisstring
 
 ######################################################################
 # Code that runs when this is this file is executed directly

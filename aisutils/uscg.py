@@ -1,37 +1,24 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2275 $'.split()[1]
-__date__ = '$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+"""Connect to a socket and forward what is received to another port.
 
-__doc__ = '''
-Connect to a socket and forward what is received to another port.
 Filter to a list of AIS receivers/basestations.
 
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@copyright: 2006
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ myparser
-@status: under development
-@license: Apache 2.0
-@since: Jan 2008
 
-@todo: For speed, provide functions that only parse the timestamp, station, etc.
-'''
-import sys
-
-#import datetime
-import time
+TODO: For speed, provide functions that only parse the timestamp, station, etc.
+"""
+import doctest
 import datetime
+import re
+import sys
+import time
 import unittest
 
 from BitVector import BitVector
 
-import ais.sqlhelp # for sec2timestamp
-import ais.binary
-import ais.nmea
+import sqlhelp
+import binary
+import nmea
 
-import re
 
 ######################################################################
 # NEW Regular Expression Parsing Style
@@ -39,15 +26,15 @@ import re
 #FIX: make the field names be name1_name2 rather than camel case
 
 # USCG has some receivers that emit corrupted fields, so loosen from this
-#   | (,s(?P<s_rssi>\d*))
-#   | (,d(?P<signal_strength>[-0-9]*))
-#   | (,t(?P<t_recver_hhmmss>(?P<t_hour>\d\d)(?P<t_min>\d\d)(?P<t_sec>\d\d.\d*)))
-#   | (,T(?P<time_of_arrival>[0-9.]*))
-#   | (,x(?P<x_station_counter>[0-9]*))
-#   | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9]*))
+#  | (,s(?P<s_rssi>\d*))
+#  | (,d(?P<signal_strength>[-0-9]*))
+#  | (,t(?P<t_recver_hhmmss>(?P<t_hour>\d\d)(?P<t_min>\d\d)(?P<t_sec>\d\d.\d*)))
+#  | (,T(?P<time_of_arrival>[0-9.]*))
+#  | (,x(?P<x_station_counter>[0-9]*))
+#  | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9]*))
 
 # AIVDO might not have a channel associated.
-uscg_ais_nmea_regex_str = r'''[!$](?P<talker>AI)(?P<stringType>VD[MO])
+uscg_ais_nmea_regex_str = r"""[!$](?P<talker>AI)(?P<stringType>VD[MO])
 ,(?P<total>\d?)
 ,(?P<senNum>\d?)
 ,(?P<seqId>[0-9]?)
@@ -64,8 +51,8 @@ uscg_ais_nmea_regex_str = r'''[!$](?P<talker>AI)(?P<stringType>VD[MO])
   | (,(?P<station>(?P<station_type>[rbB])[a-zA-Z0-9_-]*))
 )*
 ,(?P<timeStamp>\d+([.]\d+)?)?
-'''
-'''
+"""
+"""
 Regular expression for parsing a USCG.
 
 * s - receive signal strength indicator (RSSI)
@@ -82,22 +69,19 @@ Regular expression for parsing a USCG.
 @bug: does not match this>???? !AIVDM,1,1,,B,85MwqdAKf=Wsd5sKUfl@u>DMk70JwpQ2hjnTHlbfcWj<2n<jRtHd,0*7E,x151038,r003669947,1222129826
 @bug: is S missing a comma?
 @bug: make this conform to the python coding style guides... time_stamp
-'''
+"""
 
 uscg_ais_nmea_regex = re.compile(uscg_ais_nmea_regex_str,  re.VERBOSE)
-'''
-Use this pre-comiled regular expression to parse USCG NMEA strings with the extended fields after the checksum
-'''
+"""Use this regex to parse USCG NMEA strings fields after the checksum."""
 
 def write_uscg_nmea_fields(nmea_str,out=sys.stdout,indent='\t'):
-    '''
-    Write out the fields of a USCG nmea string
+    """Write out the fields of a USCG nmea string.
 
     @param nmea_str: USCG style nmea string
     @param out: stream object to write to
     @param separator: string to put between each field
     @param indent: how to indent each field
-    '''
+    """
     match_obj = uscg_ais_nmea_regex.search(nmea_str)
     write(out,indent+'         prefix = '+match_obj.group('prefix')+'\n')
     write(out,indent+'     stringType = '+match_obj.group('stringType')+'\n')
@@ -123,7 +107,7 @@ def write_uscg_nmea_fields(nmea_str,out=sys.stdout,indent='\t'):
 
 
 def get_station(nmeaStr):
-    '''Return the station without doing anything else.  Try to be fast'''
+    """Return the station without doing anything else.  Try to be fast"""
     fields = nmeaStr.split(',')
     station = None
     for i in range(len(fields)-1,5,-1):
@@ -135,12 +119,12 @@ def get_station(nmeaStr):
     return station
 
 def get_contents(nmeaStr):
-    '''Return the AIS msg string.  AIS goo'''
+    """Return the AIS msg string.  AIS goo"""
     return nmeaStr.split(',')[5]
 
 class UscgNmea:
     def __init__(self,nmeaStr=None):
-        '''
+        """
         Fields:
          - rssi ('s'): relative signal strength indicator
          - signalStrength ('d') - signal strendth in dBm
@@ -158,23 +142,18 @@ class UscgNmea:
               and multiple listeners - Extra requirements to IEC
               61162-1 for the UAIS. (80_330e_PAS) Draft...
 
-        '''
+        """
         if None!=nmeaStr:
-            #if len(nmeaStr)<6:
-            #    # FIX: throw exception
-            #    sys.stderr.write('Not a AIVDM... too short\n')
-
             fields = nmeaStr.split(',')
             self.cg_sec=float(fields[-1])
             self.timestamp = datetime.datetime.utcfromtimestamp(self.cg_sec)
             self.sqlTimestampStr = ais.sqlhelp.sec2timestamp(self.cg_sec)
             # See 80_330e_PAS
-            #
             self.nmeaType=fields[0][1:]
             self.totalSentences = int(fields[1])
             self.sentenceNum = int(fields[2])
             tmp = fields[3]
-            if len(tmp)>0:
+            if len(tmp) > 0:
                 self.sequentialMsgId = int(tmp)
             else:
                 self.sequentialMsgId = None
@@ -220,10 +199,10 @@ class UscgNmea:
                     self.x = int(f[1:])
                     continue
     def getBitVector(self):
-        '''
+        """
         @return: bits for the payload (even if this is a multipart)
         @rtype: BitVector
-        '''
+        """
         return ais.binary.ais6tobitvec(self.contents)
 
     def __eq__(self,other):
@@ -248,7 +227,7 @@ class UscgNmea:
         return self.buildNmea()
 
     def buildNmea(self):
-        '''Use the values in this message to reconstruct a single line nmea string'''
+        """Use the values in this message to reconstruct a single line nmea string"""
 
         parts=['!'+self.nmeaType,str(self.totalSentences),str(self.sentenceNum)]
         if self.sequentialMsgId is None:
@@ -270,9 +249,9 @@ class UscgNmea:
         return ','.join(parts)
 
 #    def getDriver(self):
-#        '''
+#        """
 #        Return the python module that handles this message type
-#        '''
+#        """
         # FIX: where did I do this nicely?
 
 class TestUscgNmea(unittest.TestCase):
@@ -332,58 +311,24 @@ class TestUscgNmea(unittest.TestCase):
         self.failUnless(m1!=m14)
 
 
-############################################################
-if __name__=='__main__':
-
-    from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options]",
-                          version="%prog "+__version__)
-
-    parser.add_option('--doc-test',dest='doctest',default=False,action='store_true'
-                      ,help='run the documentation tests')
-    parser.add_option('--unit-test',dest='unittest',default=False,action='store_true'
-                      ,help='run the unit tests')
-    parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
-                      ,help='Make the test output verbose')
-
-    (options,args) = parser.parse_args()
-
-    if options.doctest:
-        success=True
-        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-        sys.argv= [sys.argv[0]]
-        if options.verbose: sys.argv.append('-v')
-        import doctest
-        numfail,numtests=doctest.testmod()
-        if numfail==0: print 'ok'
-        else:
-            print 'FAILED'
-            success=False
-
-        if not success: sys.exit('Something Failed')
-	#del success # Hide success from epydoc
-
-    if options.unittest:
-        sys.argv = [sys.argv[0]]
-        if options.verbose: sys.argv.append('-v')
-        unittest.main()
 
 
-def create_nmea(bits
-                ,nmeaType='!AIVDM'
-                #,nmeaType='$AIVDM'  # I think both are valid, but some parsers don't like it
-                ,totalSentences=None
-                ,sentenceNum=None
-                ,sequentialMsgId=None
-                ,aisChannel='A'
-                ,station='runknown'
-                ,cg_sec=None):
-    '''
-    Build a NMEA string for an AIS binary message payload.
+def create_nmea(bits,
+                nmeaType='!AIVDM',  # Could also use $.
+                totalSentences=None,
+                sentenceNum=None,
+                sequentialMsgId=None,
+                aisChannel='A',
+                station='runknown',
+                cg_sec=None):
+    """Build a NMEA string for an AIS binary message payload.
 
     e.g. !AIVDM,1,1,,B,13UIAT001mmL=vhP1Sa:?8>l06A<,0*37,s24467,rNDBC46001,1202235568
 
-    >>> bv=BitVector(bitstring='001000000101000010011000011000001100110001011011101111110011001010110001011011010111100111110010001100110011000001110100011001000000000000000000000000111001111000000000')
+    >>> bv=BitVector(bitstring='0010000001010000100110000110000011001100010110'
+                               '1110111111001100101011000101101101011110011111'
+                               '0010001100110011000001110100011001000000000000'
+                               '000000000000111001111000000000')
     >>> create_nmea(bv,cg_sec=1202235568)
     'AIVDM,1,1,,A,852HH<iKgk:iKG_j<k1lI0000qp0,0*13,runknown,1202235568'
 
@@ -398,15 +343,17 @@ def create_nmea(bits
 
     @todo: handle the rest of the uscg fields
     @todo: handle multi-line messages
-    '''
-    bitLen=len(bits)
-    assert (bitLen <= 168)  # If larger, this needs to be a multi-line set of nmea msgs
+    """
+    bitLen = len(bits)
+    # If larger, this needs to be a multi-line set of nmea msgs.
+    assert bitLen <= 168
+
     if totalSentences is not None:
         # FIX: what is the right max number for a 5 slot message?
         assert(totalSentences < 5)
     else:
         # FIX: for multi-line, calculate this
-        totalSentences=1
+        totalSentences = 1
     if sentenceNum is not None:
         # FIX: should not be done here for multi-line
         assert(sentenceNum < totalSentences)
@@ -420,13 +367,14 @@ def create_nmea(bits
         sequentialMsgId = ''
 
     pad = 6 - (bitLen%6)
-    if 6==pad: pad=0
-    if pad!=0: #bitLen%6!=0:
-        #sys.stderr.write( 'padding '+str(pad)+'\n')
-        bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
+    if 6 == pad:
+        pad = 0
+    if pad:
+        # Pad out to multiple of 6
+        bits = bits + BitVector(size=(6 - (bitLen%6)))
     payload = ais.binary.bitvectoais6(bits)[0]
 
-    fields=[nmeaType,]
+    fields = [nmeaType,]
     fields.append(str(totalSentences))
     fields.append(str(sentenceNum))
     fields.append(sequentialMsgId)
@@ -445,18 +393,13 @@ def create_nmea(bits
 
 
 def test():
-    #if options.doctest:
-    #import os; print os.path.basename(sys.argv[0]),
-    print 'doctests ...',
-    #sys.argv= [sys.argv[0]]
-    #if options.verbose: sys.argv.append('-v')
-    import doctest
-    numfail,numtests=doctest.testmod()
-    if numfail==0:
+    print 'doctests ...'
+    numfail, _ = doctest.testmod()
+    if not numfail:
         print 'ok'
     else:
         print 'FAILED'
-        success=False
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     test()

@@ -19,17 +19,18 @@ version with no error checking.
 @todo: Option to check the AIVDM tags to make sure that the messages should be combined
 '''
 
+from optparse import OptionParser
 import sys
-from ais import binary as binary
-from ais import ais_msg_5 as ais_msg_5
-from ais import aisstring as aisstring
-from ais.BitVector import BitVector
 
+from ais import ais_msg_5 as ais_msg_5
+from aisutils import aisstring
+from aisutils import binary
+from aisutils.BitVector import BitVector
 from aisutils.uscg import uscg_ais_nmea_regex
 
 ######################################################################
 if __name__=='__main__':
-    from optparse import OptionParser
+
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
                             version="%prog "+__version__)
     parser.add_option('-o','--output',dest='outputFilename',default=None,
