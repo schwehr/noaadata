@@ -1,33 +1,21 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 13936 $'.split()[1]
-__date__ = '$Date: 2010-06-09 21:13:20 -0400 (Wed, 09 Jun 2010) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-__doc__='''
+'''
 Normalize AIS messages so that each message takes exactly one line.
 
 Hopefully should be able to handle streams with multiple receivers if they have
 proper "r" or "b" tagged station names.  -t is needed for the USCG feed
 for some reason.
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
 @license: Apache 2.0
 
 @todo: report on the number of message fragments that got dropped
 @todo: allow for a single receiver and no uscg station
 
-@note: errors mostly seem to be comming from station r00370003 in Puerto Rico
+@note: errors mostly seem to be coming from station r00370003 in Puerto Rico
 @bug: The code currently thinks that all parts must be received in the same timestamp (second)
 @todo: Allow the parts to be separated by one (or two?) seconds for the messages that go over timestamp boundaries between parts.
 
 @todo: use the normalize class!!!!
-
 '''
 
 import sys
@@ -185,17 +173,18 @@ def assembleAisNmeaMessages(infile=sys.stdin,
 
 if __name__=='__main__':
         from optparse import OptionParser
-        parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
+        parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog ")
 
         parser.add_option('-a','--allow-unknown',dest='allowUnknown'
                           ,default=False
                           ,action='store_true'
                           ,help='Allow unknown station messages (adds ",sUNKNOWN")')
 
-        parser.add_option('-t','--treat-ab-euqal',dest='treatABequal'
+        parser.add_option('-t','--treat-ab-equal',dest='treatABequal'
                           ,default=False
                           ,action='store_true'
-                          ,help='Treat message parts in A and B as in the same channel.')
+                          ,help='Treat message parts in A and B as in the '
+                           'same channel.')
 
 
         parser.add_option('-o','--outfile',dest='outFile',default=None,#default='normalized.ais',
@@ -204,7 +193,9 @@ if __name__=='__main__':
         parser.add_option('-w','--window',dest='window'
                            ,type='int'
                            ,default=2
-                           ,help='Amount of time that training nmea strings can be considered for joining [default: %default]')
+                           ,help='Amount of time (seconds) that trailing nmea '
+                            'strings can be considered for joining '
+                            '[default: %default]')
 
         parser.add_option('-T','--allow-missing-timestamps', default=False, action='store_true',
                           help='Process lines without timestamps.  [default: drop lines without timestampes]')
