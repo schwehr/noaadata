@@ -20,205 +20,181 @@ Hand coded processing of ais msg 24
 @todo: FIX: put in a description of the message here with fields and types.
 '''
 
-import sys
 from decimal import Decimal
+import logging
+import sys
+
+from aisutils import sqlhelp
+import binary, aisstring
 from BitVector import BitVector
 
-import binary, aisstring
-from aisutils import sqlhelp
-
-# FIX: check to see if these will be needed
-TrueBV  = BitVector(bitstring="1")
-"Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
-"Why always rebuild the False bit?  This should speed things up a bunch"
-
-
 fieldList = (
-	'MessageID',
-	'RepeatIndicator',
-	'UserID',
-	'partnum',
-	'name',
-        'shipandcargo',
-        'vendorid',
-        'callsign',
-        'dimA',
-        'dimB',
-        'dimC',
-        'dimD',
-        'mothership',
-        'spare',
+  'MessageID',
+  'RepeatIndicator',
+  'UserID',
+  'partnum',
+  'name',
+  'shipandcargo',
+  'vendorid',
+  'callsign',
+  'dimA',
+  'dimB',
+  'dimC',
+  'dimD',
+  'mothership',
+  'spare',
+  'bits'
 )
+
+ALL_FIELDS = fieldList
 
 fieldListPostgres = fieldList
 
+# Go to the Postgis field names from the straight field name.
 toPgFields = {}
-'''
-Go to the Postgis field names from the straight field name
-'''
-
+# Go from the Postgis field names to the straight field name.
 fromPgFields = {}
-'''
-Go from the Postgis field names to the straight field name
-'''
-
+# Lookup table for each postgis field name to get its type.
 pgTypes = {}
-'''
-Lookup table for each postgis field name to get its type.
-'''
+
 
 def encode(params, validate=False):
-	'''Create a b_staticdata
+  """Create a b_staticdata.
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
-          - FIX... add the rest
-	@param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
-	@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-	@rtype: BitVector
-	@return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
-	@note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
-	'''
+  Fields in params:
+    - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
+    - RepeatIndicator(uint): Indicated how many times a message has been repeated
+    - UserID(uint): Unique ship identification number (MMSI)
+    - FIX... add the rest
+  @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
+  @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+  @rtype: BitVector
+  @return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
+  @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
+  """
+  bvList = []
+  bvList.append(binary.setBitVectorSize(BitVector(intVal=19),6))
+  if 'RepeatIndicator' in params:
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
+  else:
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+  bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
 
-	bvList = []
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=19),6))
-	if 'RepeatIndicator' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
+  assert False
 
-        assert False
-
-	return binary.joinBV(bvList)
+  return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-	'''Unpack a b_staticdata
+  '''Unpack a b_staticdata
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
+  Fields in params:
+    - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
+    - RepeatIndicator(uint): Indicated how many times a message has been repeated
+    - UserID(uint): Unique ship identification number (MMSI)
           - FIX: ... add the rest of the fields
-	@type bv: BitVector
-	@param bv: Bits defining a message
-	@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-	@rtype: dict
-	@return: params
-	'''
+  @type bv: BitVector
+  @param bv: Bits defining a message
+  @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+  @rtype: dict
+  @return: params
+  '''
 
-	if len(bv) not in (160,162,168): # 162 is 160 with 2 bits padding
-		print 'warning... len is not 160 or 168.  Found',len(bv)
+  if len(bv) not in (160,162,168): # 162 is 160 with 2 bits padding
+    print 'warning... len is not 160 or 168.  Found',len(bv)
 
-	r = {}
-	r['MessageID']=24
-	r['RepeatIndicator']=int(bv[6:8])
-	r['UserID']=int(bv[8:38])
-        r['partnum']=int(bv[38:40])
-        assert r['partnum'] in (0,1)
+  r = {}
+  r['MessageID']=24
+  r['RepeatIndicator']=int(bv[6:8])
+  r['UserID']=int(bv[8:38])
+  r['partnum']=int(bv[38:40])
 
-        if 0 == r['partnum']: # Part A message
-            r['name']=aisstring.decode(bv[40:160]).rstrip(' @')
+  if 0 == r['partnum']: # Part A message
+      r['name']=aisstring.decode(bv[40:160]).rstrip(' @')
 
-        elif 1 == r['partnum']: # Part B message
-            r['shipandcargo']=int(bv[40:48])
-            r['vendorid']=aisstring.decode(bv[48:90]).rstrip(' @')
-            r['callsign']=aisstring.decode(bv[90:132]).rstrip(' @')
-            r['dimA']=int(bv[132:141])
-            r['dimB']=int(bv[141:150])
-            r['dimC']=int(bv[150:156])
-            r['dimD']=int(bv[156:162])
-            r['mothership']=int(bv[132:162])
-            r['spare']=int(bv[162:168])
-        elif 2 == r['partnum']: # Part C message - no such thing
-            assert False
-        elif 3 == r['partnum']: # Part D message - no such thing
-            assert False
+  elif 1 == r['partnum']: # Part B message
+      r['shipandcargo']=int(bv[40:48])
+      r['vendorid']=aisstring.decode(bv[48:90]).rstrip(' @')
+      r['callsign']=aisstring.decode(bv[90:132]).rstrip(' @')
+      r['dimA']=int(bv[132:141])
+      r['dimB']=int(bv[141:150])
+      r['dimC']=int(bv[150:156])
+      r['dimD']=int(bv[156:162])
+      r['mothership']=int(bv[132:162])
+      r['spare']=int(bv[162:168])
+  elif 2 == r['partnum']: # Part C message - no such thing
+      logging.info('Msg 24 with invalid part C.')
+      r['bits'] = str(bv[40:])
+  elif 3 == r['partnum']: # Part D message - no such thing
+      logging.info('Msg 24 with invalid part D.')
+      r['bits'] = str(bv[40:])
 
-	return r
+  return r
 
 def decodeMessageID(bv, validate=False):
-	return 24
+  return 24
 
 def decodeRepeatIndicator(bv, validate=False):
-	return int(bv[6:8])
+  return int(bv[6:8])
 
 def decodeUserID(bv, validate=False):
-	return int(bv[8:38])
+  return int(bv[8:38])
 
 ### Removed lots
 
 def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='postgres'):
-	'''Print a b_staticdata message to stdout.
+  '''Print a b_staticdata message to stdout.
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
-	  - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
-	  - SOG(udecimal): Speed over ground
-	  - PositionAccuracy(uint): Accuracy of positioning fixes
-	  - longitude(decimal): Location of the vessel  East West location
-	  - latitude(decimal): Location of the vessel  North South location
-	  - COG(udecimal): Course over ground
-	  - TrueHeading(uint): True heading (relative to true North)
-	  - TimeStamp(uint): UTC second when the report was generated
-	  - Spare2(uint): Not used.  Should be set to zero.  Researched for future use. (field automatically set to "0")
-	  - name(aisstr6): Vessel name
-	  - shipandcargo(uint): what
-	  - dimA(uint): Distance from bow to reference position
-	  - dimB(uint): Distance from reference position to stern
-	  - dimC(uint): Distance from port side to reference position
-	  - dimD(uint): Distance from reference position to starboard side
-	  - fixtype(uint): Method used for positioning
-	  - RAIM(bool): Receiver autonomous integrity monitoring flag
-	  - DTE(uint): Data terminal ready
-	  - Spare3(uint): Not used. Should be set to zero (field automatically set to "0")
-	@param params: Dictionary of field names/values.
-	@param out: File like object to write to
-	@rtype: stdout
-	@return: text to out
-	'''
+  Fields in params:
+    - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
+    - RepeatIndicator(uint): Indicated how many times a message has been repeated
+    - UserID(uint): Unique ship identification number (MMSI)
+    - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+    - SOG(udecimal): Speed over ground
+    - PositionAccuracy(uint): Accuracy of positioning fixes
+    - longitude(decimal): Location of the vessel  East West location
+    - latitude(decimal): Location of the vessel  North South location
+    - COG(udecimal): Course over ground
+    - TrueHeading(uint): True heading (relative to true North)
+    - TimeStamp(uint): UTC second when the report was generated
+    - Spare2(uint): Not used.  Should be set to zero.  Researched for future use. (field automatically set to "0")
+    - name(aisstr6): Vessel name
+    - shipandcargo(uint): what
+    - dimA(uint): Distance from bow to reference position
+    - dimB(uint): Distance from reference position to stern
+    - dimC(uint): Distance from port side to reference position
+    - dimD(uint): Distance from reference position to starboard side
+    - fixtype(uint): Method used for positioning
+    - RAIM(bool): Receiver autonomous integrity monitoring flag
+    - DTE(uint): Data terminal ready
+    - Spare3(uint): Not used. Should be set to zero (field automatically set to "0")
+  @param params: Dictionary of field names/values.
+  @param out: File like object to write to
+  @rtype: stdout
+  @return: text to out
+  '''
 
-	if 'std'==format:
-		out.write("b_staticdata:\n")
-		if 'MessageID' in params: out.write("	MessageID:         "+str(params['MessageID'])+"\n")
-		if 'RepeatIndicator' in params: out.write("	RepeatIndicator:   "+str(params['RepeatIndicator'])+"\n")
-		if 'UserID' in params: out.write("	UserID:            "+str(params['UserID'])+"\n")
-		if 'partnum' in params: out.write("	partnum:            "+str(params['partnum'])+"\n")
-                if 0==params['partnum']:
-                    out.write('\tname: \t%s\n' % (params['name'],) )
-                elif 1==params['partnum']:
-			out.write('''\tshipandcargo: {shipandcargo}
-\tvendorid: {vendorid}
-\tcallsign: {callsign}
-\tdimA: {dimA}
-\tdimB: {dimB}
-\tdimC: {dimC}
-\tdimD: {dimD}
-\tmothership: {mothership}
-\tspare: {spare}
-'''.format(**params))
-	elif 'sql'==format:
-		sqlInsertStr(params,out,dbType=dbType)
-	else:
-		print "ERROR: unknown format:",format
-		assert False
+  if format == 'std':
+    out.write("b_staticdata:\n")
+    for field in (ALL_FIELDS):
+      if field in params:
+        out.write('  {0:<20} {1}\n'.format(field, params[field]))
+  elif 'sql' == format:
+    sqlInsertStr(params,out,dbType=dbType)
+  else:
+    logging.fatal("ERROR: unknown format: %s", format)
 
-	return # Nothing to return
+  return
+
 
 RepeatIndicatorEncodeLut = {
-	'default':'0',
-	'do not repeat any more':'3',
-	} #RepeatIndicatorEncodeLut
+  'default': '0',
+  'do not repeat any more': '3',
+}
 
 RepeatIndicatorDecodeLut = {
 	'0':'default',
 	'3':'do not repeat any more',
-	} # RepeatIndicatorEncodeLut
+}
 
 import ais.ais_msg_5
 
@@ -227,19 +203,19 @@ shipandcargoDecodeLut = ais.ais_msg_5.shipandcargoDecodeLut
 
 dimCEncodeLut = {
 	'63 m or greater':'63',
-	} #dimCEncodeLut
+}
 
 dimCDecodeLut = {
-	'63':'63 m or greater',
-	} # dimCEncodeLut
+  '63':'63 m or greater',
+}
 
 dimDEncodeLut = {
-	'63 m or greater':'63',
-	} #dimDEncodeLut
+  '63 m or greater':'63',
+}
 
 dimDDecodeLut = {
-	'63':'63 m or greater',
-	} # dimDEncodeLut
+  '63':'63 m or greater',
+}
 
 
 ######################################################################
