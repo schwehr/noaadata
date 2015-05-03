@@ -1,42 +1,15 @@
 #!/usr/bin/env python
 
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 10403 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-09-24 22:44:22 -0400 (Wed, 24 Sep 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
+# License: Apache 2.0
 
-__doc__='''
+"""Create or add to a database.
 
-Create or add to a database.  First attempt.  This could be made better/faster.
-Assumes that all ais messages have been "normalized" - messages are one line only.
+First attempt.  This could be made better/faster.
+Assumes that all ais messages have been "normalized" - messages are one line
+only.
 
-Only works with sqlite3 and python 2.5.  Uses the internal python sqlite db interface.
-
-@see: U{Using adapters to tore additinal Python types in SQLite databases <http://docs.python.org/lib/node347.html>}
-@requires: U{python <http://python.org/>} >= 2.5
-@requires: U{sqlite3 <http://www.sqlite.org/>} >= 2.5
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
-
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: Works, but underdevelopment
-@since: 2007-Dec-17
-@organization: U{CCOM<http://ccom.unh.edu/>}
-@todo: Can I merge messages 1-3 and 18 together?
-
-@bug: seems to fail where pysqlite2 does not
-
-INSERT INTO position (RegionalReserved,NavigationStatus,COG,SOG,TimeStamp,RepeatIndicator,UserID,RAIM,longitude,state_slottimeout,Spare,state_syncstate,PositionAccuracy,MessageID,latitude,TrueHeading,ROT,state_slotoffset,cg_timestamp) VALUES (0,15,285.3,0.0,59,0,316005624,0,-123.060903333,0,0,0,0,1,49.29086,511,-128,2304,2008-02-11 00:00:00);
-Traceback (most recent call last):
-  File "/Users/schwehr/projects/src/noaadata/scripts/ais_build_sqlite3.py", line 267, in <module>
-    loadData(cx,file(filename,'r'),verbose=options.verbose,uscg=options.uscgTail)
-  File "/Users/schwehr/projects/src/noaadata/scripts/ais_build_sqlite3.py", line 202, in loadData
-    cu.execute(str(ins))
-sqlite3.OperationalError: near "00": syntax error
-'''
+Only works with sqlite3.  Uses the internal python sqlite db interface.
+"""
 
 import sys
 from decimal import Decimal
@@ -50,22 +23,23 @@ import ais.ais_msg_2
 import ais.ais_msg_3
 import ais.ais_msg_4
 import ais.ais_msg_5
-import ais.ais_msg_18 # Class B position report
-import ais.ais_msg_19 # Class B position and shipdata
-#import ais.ais_msg_8
-#import ais.ais_msg_21
+import ais.ais_msg_18
+import ais.ais_msg_19
 
 import sqlite3
 
 import datetime, time
 
-def createTables(cx,verbose=False):
-    '''
-    param cx: database connection
-    '''
+def createTables(cx, verbose=False):
+    """Create tables in a SQLite databases.
+
+    Args:
+      cx: database connection
+    """
     cu = cx.cursor()
 
-    if verbose: print str(ais.ais_msg_1.sqlCreate(dbType='sqlite'))
+    if verbose:
+        print str(ais.ais_msg_1.sqlCreate(dbType='sqlite'))
     try:
         cu.execute(str(ais.ais_msg_1.sqlCreate(dbType='sqlite')))
     except:
