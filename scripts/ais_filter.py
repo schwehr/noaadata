@@ -1,21 +1,11 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 7470 $'.split()[1]
-__date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+"""Filter AIS data to remove duplicates.
 
-__doc__='''
-Filter AIS data to remove duplicates
+@todo: Be able to look out across a couple seconds for messages that are dup receives
+"""
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-
-@author: """+__author__+"""
-@version: """ + __version__ +"""
-@status: under development
-@license: Apache 2.0
-
-@todo: be able to look out across a couple seconds for messages that are dup receives
-'''
 import sys
+
 
 def getMsg(nmeaMsg):
     ''' Return everything in the base nmea message'''

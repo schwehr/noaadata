@@ -11,9 +11,12 @@ only.
 Only works with sqlite3.  Uses the internal python sqlite db interface.
 """
 
-import sys
+import datetime
 from decimal import Decimal
 import StringIO
+import sqlite3
+import sys
+import time
 
 from aisutils import BitVector
 from aisutils import binary
@@ -26,9 +29,6 @@ import ais.ais_msg_5
 import ais.ais_msg_18
 import ais.ais_msg_19
 
-import sqlite3
-
-import datetime, time
 
 def createTables(cx, verbose=False):
     """Create tables in a SQLite databases.
@@ -217,7 +217,8 @@ def loadData(cx,datafile,verbose=False
 ############################################################
 if __name__=='__main__':
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
+    parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",
+                          version='%prog ')
 
     parser.add_option('-d','--database-file',dest='databaseFilename',default='ais.db3'
                       ,help='Name of the sqlite3 database file to write [default: %default]')

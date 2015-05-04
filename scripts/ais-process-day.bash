@@ -4,8 +4,6 @@
 
 # Get a list of mmsi and name pairs
 
-#today=`date +%Y%m%d-%H%M`
-
 if [ $# != 1 ]; then
     echo "ERROR: must specify 1 argument the N-AIS log file:"
     echo "  $0 filefile"
@@ -24,7 +22,6 @@ echo Processing day $day ...
 
 rm -rf $day
 
-# -v
 ./ais_uscg_splitstations.py -s $day -S $filename
 
 ls -1 $day > $day/.stations

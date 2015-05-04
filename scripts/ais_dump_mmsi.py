@@ -1,27 +1,16 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 7470 $'.split()[1]
-__date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
-__author__ = 'Kurt Schwehr'
 
-__doc__='''
-Try to get the mmsi info as fast as possible
-
-@copyright: 2006
-@since: 2006-Dec
-@status: under development
-@license: Apache 2.0
+"""Try to get the mmsi info as fast as possible.
 
 @bug: Cheap hack
 @todo: Add option to make sure the that the receive stations are the same for uscg N-AIS data
 @todo: Option to check the AIVDM tags to make sure that the messages should be combined
-'''
+"""
 
 from optparse import OptionParser
 import sys
 
 from aisutils import binary
-#from ais import ais_msg_1 as m1
-# Going to do this by hand
 from aisutils import aisstring
 from aisutils.BitVector import BitVector
 
@@ -29,14 +18,15 @@ from aisutils.BitVector import BitVector
 if __name__=='__main__':
 
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
-			    version="%prog "+__version__)
+                          version="%prog ")
 
-    parser.add_option('-d','--dump-line',dest='dumpLine',default=False
-                      ,action='store_true'
-		      ,help='Append the nmea string after the line [default: do not print the line]')
+    parser.add_option(
+        '-d','--dump-line',dest='dumpLine',default=False,
+        action='store_true',
+        help='Append the nmea string after the line [default: do not print the line]')
 
     parser.add_option('-o','--output',dest='outputFilename',default=None,
-		      help='Name of the file to write [default: stdout]')
+                      help='Name of the file to write [default: stdout]')
 
     (options,args) = parser.parse_args()
     o = sys.stdout
@@ -45,8 +35,8 @@ if __name__=='__main__':
 
     print args
     for filename in args:
-	print filename
-	for line in file(filename):
+        print filename
+        for line in file(filename):
             if line[0]=='#':
                 continue
 	    fields = line.split(',')[:6]
@@ -60,4 +50,3 @@ if __name__=='__main__':
             if options.dumpLine:
                 o.write(' '+line.strip())
 	    o.write ('\n')
-

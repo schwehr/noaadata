@@ -1,16 +1,12 @@
 #!/usr/bin/env python
-
-__version__ = '$Revision: 12294 $'.split()[1]
-__date__ = '$Date: 2009-07-21 15:19:01 -0400 (Tue, 21 Jul 2009) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-
-__doc__='''
-List all of the AIS stations within a set of log files.
+"""List all of the AIS stations within a set of log files.
 
 @license: Apache 2.0
-'''
+"""
 
-import sys, os
+import os
+import sys
+
 
 def getStation(line, withR=False):
     fields=line.split(',')
@@ -34,11 +30,10 @@ def getStation(line, withR=False):
     return None
 
 
-######################################################################
 if __name__=='__main__':
 
         from optparse import OptionParser
-        parser = OptionParser(usage="%prog [options] file1.ais [file2 ...]", version="%prog "+__version__)
+        parser = OptionParser(usage="%prog [options] file1.ais [file2 ...]", version="%prog ")
 
         parser.add_option('-c','--count-for-station',dest='count_each_station',default=False,action='store_true',
                           help='Count the number of lines for each station')
@@ -88,7 +83,6 @@ if __name__=='__main__':
                         print 'New station:',station
 
                     stations.add(station)
-
 
             for item in stations:
                 print item

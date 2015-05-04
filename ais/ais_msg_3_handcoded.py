@@ -9,8 +9,8 @@ import StringIO
 
 from BitVector import BitVector
 
-import aisstring
-import binary
+from aisutils import aisstring
+from aisutils import binary
 import commstate
 from aisutils import sqlhelp
 

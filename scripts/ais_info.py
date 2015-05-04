@@ -1,24 +1,14 @@
 #!/usr/bin/env python
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 12308 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2009-07-22 17:22:17 -0400 (Wed, 22 Jul 2009) $'.split()[1]
-__copyright__ = '2010'
-__license__   = 'Apache 2.0'
+"""Summarize AIS traffic.
 
-__doc__=''' Summarize AIS traffic.  Calculate distances of receives.
+Calculate distances of receives.
 Time ranges, gaps, etc.  To calculate per receiver stats or per day,
 you will need run this per day log file.  Times must be monotonically
 increasing, sorry.
 
 Trying to do better than ais_nmea_uptime*.py
+"""
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0
-@since: 2010-Mar-26
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: In progress
-'''
 import datetime
 import math
 from optparse import OptionParser
@@ -33,8 +23,9 @@ from aisutils import binary
 
 from aisutils.BitVector import BitVector
 
+# Seconds in a day
 day_sec = 24*60*60.
-'seconds in a day'
+
 
 def get_sec_to_end_of_day(timestamp):
     'For a unix timestamp, how many seconds until the end of the day?'
@@ -43,12 +34,14 @@ def get_sec_to_end_of_day(timestamp):
     delta = d2 - d1
     return delta.seconds
 
+
 def date_generator(start_date, end_date):
     cur_date = start_date
     dt = datetime.timedelta(days=1)
     while cur_date < end_date:
         yield cur_date
         cur_date += dt
+
 
 class AisError(Exception):
     def __init__(self,msg):
@@ -66,6 +59,7 @@ class AisErrorPositionTooFar(Exception):
     def __str__(self):
         return 'AisErrorPositionTooFar: ' + self.msg
 
+
 class Histogram:
     'build up a histogram on point at a time.  Must know the range and bins needed'
     def __init__(self, min_val, max_val, num_bins):
@@ -81,6 +75,7 @@ class Histogram:
         bin = int ( math.floor ( (value - self.min_val) / self.bin_size ) )
         #print 'bin:',value,'->',bin
         self.bins[bin] += 1
+
 
 class  Uptime:
     'Calculated as downtime and then flipped.  Questionable which way makes more sense to calculate things'
@@ -418,7 +413,7 @@ def get_parser():
 
     parser = OptionParser(option_class=magicdate.MagicDateOption,
                           usage='%prog [options] file1 [file2] [file3] ...',
-                          version='%prog '+__version__)
+                          version='%prog ')
 
     parser.add_option('--min-gap-sec', default=60*6, type='int', help='Suggest 21 seconds for a busy area with a basestation [default: %default]')
     parser.add_option('-s', '--start-time', type='magicdate', default=None, help='Force a start time (magicdate) [default: use first timestamp in file]')

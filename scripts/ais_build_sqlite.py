@@ -43,13 +43,11 @@ import ais.ais_msg_4_handcoded
 import ais.ais_msg_5
 import ais.ais_msg_18
 import ais.ais_msg_19
-#import ais.ais_msg_8
-#import ais.ais_msg_21
 
 from aisutils.BitVector import BitVector
 from aisutils import binary
 
-import nmea.checksum # for isChecksumValid
+import nmea.checksum
 
 
 class TrackDuplicates:

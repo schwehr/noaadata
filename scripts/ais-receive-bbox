@@ -6,31 +6,21 @@ __date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
 __copyright__ = '2008'
 __license__   = 'Apache 2.0'
 
-__doc__ ='''
-Run through AIS messages to find the receive bounding box for each station in a dataset.
+"""Filter AIS messages to a bounding box.
 
-Decimate these requirements to meet what you need
+Decimate these requirements to meet what you need.
 
-@requires: U{Python<http://python.org/>} >= 2.5
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0.1
-
-@undocumented: __doc__ parser
-@since: 2008-Feb-09
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-
-@todo: how to deal with bad positions?
-'''
+TODO(schwehr): How to deal with bad positions?
+"""
 import sys
 
 import ais.ais_msg_1 as m1
-import aisutils.uscg as uscg
 import ais.binary
+import aisutils.uscg as uscg
+
 
 def get_stations_bboxes(filename,current_stations=None,verbose=False):
-    '''
-    FIX: move to utils
-    '''
+    """TODO(schwehr): move to utils."""
     v = verbose
     s = current_stations
     if s is None:
@@ -47,7 +37,6 @@ def get_stations_bboxes(filename,current_stations=None,verbose=False):
 
         # FIX: switch to a function that only pulls the station and payload
         try:
-            #cgMsg = uscg.UscgNmea(line)
             contents = uscg.get_contents(line)
             station = uscg.get_station(line)
         except (ValueError,IndexError),inst:

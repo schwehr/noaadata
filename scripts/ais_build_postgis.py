@@ -1,10 +1,5 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 12832 $'.split()[1]
-__date__ = '$Date: 2009-11-30 15:38:45 -0500 (Mon, 30 Nov 2009) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-
-__doc__='''
-Build a postgres/postgis database of the raw ais messages.
+"""Build a postgres/postgis database of the raw ais messages.
 
 NOTE: this following sets up postgres totally open.  You need to use a
 password and firewall on any deployment on the internet!
@@ -20,25 +15,12 @@ You may need to some intial setup: (examples assume mac osx + fink)
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/spatial_ref_sys.sql -d ais
 
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>}
-@requires: U{psycopg2<http://initd.org/projects/psycopg2>}
-@requires: U{postgreSQL<http://www.postgresql.org/>} => 8.2
-@requires: U{postgis<http://postgis.org>} => 8.2
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser
-@status: under development
-@license: Apache 2.0
-@since: 2007-Feb-15
-
 @todo: Add an option to allow a prefix to the database table names.
-'''
+"""
 
-import sys, os
 from decimal import Decimal
+import os
+import sys
 import StringIO
 
 from aisutils.BitVector import BitVector
@@ -49,31 +31,6 @@ import ais
 import ais.ais_msg_1
 import ais.ais_msg_2
 import ais.ais_msg_3
-#import ais.ais_msg_4
-#import ais.ais_msg_5
-#import ais.ais_msg_6 # Addressed binary message
-#import ais.ais_msg_7 # ACK for address binary message
-#import ais.ais_msg_8  # need to do each one carefully
-#import ais.ais_msg_9 # SAR position
-#import ais.ais_msg_10 # utcquery
-#import ais.ais_msg_11 #
-#import ais.ais_msg_12 # asrm
-#import ais.ais_msg_13 #
-#import ais.ais_msg_14 # srbm
-#import ais.ais_msg_15 # Interrogation
-#import ais.ais_msg_16 #
-#import ais.ais_msg_17 #
-#import ais.ais_msg_18 # Class B position report
-#import ais.ais_msg_19 # Class B extended position and ship type report
-#import ais.ais_msg_20 # data link management
-#import ais.ais_msg_21
-#import ais.ais_msg_22
-#import ais.ais_msg_22
-#import ais.ais_msg_23 # GroupAssignmentCommand
-#import ais.ais_msg_24 # StaticDataReport
-#import ais.ais_msg_25 # SingleSlotBinaryMessage - addressed or broadcast
-#import ais.ais_msg_26 # Multi slot binary message with comm state
-
 
 
 def createTables(cx,verbose=False):
@@ -246,7 +203,9 @@ def loadData(cx,datafile,verbose=False
 ############################################################
 if __name__=='__main__':
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] file1.ais [file2.ais ...]",version="%prog "+__version__)
+    parser = OptionParser(
+        usage="%prog [options] file1.ais [file2.ais ...]",
+        version='%prog ')
 
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')

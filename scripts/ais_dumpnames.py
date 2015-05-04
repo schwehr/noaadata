@@ -1,23 +1,11 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 10020 $'.split()[1]
-__date__ = '$Date: 2008-08-05 07:47:54 -0400 (Tue, 05 Aug 2008) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-
-__doc__='''
-Pull out names from msg 5 packages as fast as possible.  Dirty trick
+"""Pull out names from msg 5 packages as fast as possible.  Dirty trick
 version with no error checking.
-
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0alpha3
-@requires: U{BitVector<http://cheeseshop.python.org/pypi/BitVector>} >= 1.2
-
-@copyright: 2006
-@status: under development
-@license: Apache 2.0
 
 @bug: Cheap hack
 @todo: Add option to make sure the that the receive stations are the same for uscg N-AIS data
 @todo: Option to check the AIVDM tags to make sure that the messages should be combined
-'''
+"""
 
 from optparse import OptionParser
 import sys
@@ -32,21 +20,20 @@ from aisutils.uscg import uscg_ais_nmea_regex
 if __name__=='__main__':
 
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
-                            version="%prog "+__version__)
+                            version='%prog ')
     parser.add_option('-o','--output',dest='outputFilename',default=None,
                       help='Name of the file to write [default: stdout]')
     parser.add_option('-v','--verbose',dest='verbose',default=False
                       ,action='store_true'
                       ,help='Name of the file to write [default: stdout]')
 
-    (options,args) = parser.parse_args()
+    options, args = parser.parse_args()
     o = sys.stdout
     if None != options.outputFilename:
         o = open(options.outputFilename,'w')
 
     verbose = options.verbose
 
-    #print args
     for filename in args:
         print filename
         linenum=1

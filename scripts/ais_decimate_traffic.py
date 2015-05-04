@@ -3,11 +3,13 @@
 # Try to decimate messages for ships
 
 import math
-from pyproj import Proj
 import sqlite3
 import datetime
 
+from pyproj import Proj
 import pytz
+
+
 EST = pytz.timezone('EST')
 
 def dist (lon1, lat1, lon2, lat2):
