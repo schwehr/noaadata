@@ -13,25 +13,25 @@ import exceptions
 import logging
 import Queue
 import thread
-import traceback
 import select
 import socket
 import sys
 import time
+import traceback
 
 import aisutils.daemon
-import aisutils.uscg
 import aisutils.normalize
+import aisutils.uscg
 import ais.ais_msg_1 as msg1
 
 
 class PassThroughServer:
-    '''Receive data from a socket and write the data to all clients that
+    """Receive data from a socket and write the data to all clients that
     are connected.  Starts two threads and returns to the caller.
-    '''
+    """
     def __init__(self,options,maxSendQueue=1000,verbose=False):
         self.v = verbose
-        self.clients=[]
+        self.clients = []
         self.options = options
         self.count=0
         self.running=True
@@ -48,13 +48,13 @@ class PassThroughServer:
         self.sQueue=Queue.Queue() # messages ready to send
 
     def start(self):
-	print 'starting thread'
-	thread.start_new_thread(self.startRecvThread,(self,))
-	thread.start_new_thread(self.startFilterThread,(self,))
-	thread.start_new_thread(self.startSendThread,(self,))
-	#thread.start_new_thread(self.filterThread,(self,))
-	#thread.start_new_thread(self.sendThread,(self,))
-	return
+        print 'starting thread'
+        thread.start_new_thread(self.startRecvThread,(self,))
+        thread.start_new_thread(self.startFilterThread,(self,))
+        thread.start_new_thread(self.startSendThread,(self,))
+        #thread.start_new_thread(self.filterThread,(self,))
+        #thread.start_new_thread(self.sendThread,(self,))
+        return
 
     def startRecvThread(self,unused=None):
         '''
@@ -83,11 +83,11 @@ class PassThroughServer:
 
 
     def recvThread(self,unused=None):
-	'''Do not use this.  Call start() instead.
+        '''Do not use this.  Call start() instead.
 
-	@bug: how can I get rid of unused?
-	'''
-	sys.stderr.write('starting receive thread\n')
+        @bug: how can I get rid of unused?
+        '''
+        sys.stderr.write('starting receive thread\n')
         v = self.v
         connected=False
         logCount=0
@@ -113,7 +113,7 @@ class PassThroughServer:
             readersready,outputready,exceptready = select.select([src,],[],[],self.timeout)
             if len(readersready)==0:
                 sys.stderr.write('r')
-	    for sock in readersready:
+            for sock in readersready:
                 m = sock.recv(10000)
                 if self.v:
                     tmp_msg = m
@@ -162,10 +162,10 @@ class PassThroughServer:
         logging.warn('exiting filter_thread')
 
     def filterThread(self,unused=None):
-	'''Do not use this.  Call start() instead.
-	TODO(schwehr): How can I get rid of unused?
+        '''Do not use this.  Call start() instead.
+        TODO(schwehr): How can I get rid of unused?
         TODO(schwehr): Normalize messages.
-	'''
+        '''
         v = self.v # Verbose flag
         normQueue = aisutils.normalize.Normalize()
         usebbox = self.options.useBox
@@ -177,7 +177,7 @@ class PassThroughServer:
             if v:
                 sys.stderr.write('bbox lon: %f.2 ... %.2f lat: %f.2 ... %.2f\n'  % (x1,x2,y1,y2))
 
-	sys.stderr.write('beginning filterThread\n')
+        sys.stderr.write('beginning filterThread\n')
         if v:
             if self.options.allowStations is None:
                 sys.stderr.write('Allowing all stations\n')
@@ -186,7 +186,7 @@ class PassThroughServer:
         buf = None
 
         logCount=0
-	while self.running:
+        while self.running:
             logCount += 1
             if logCount % self.log_count_interval == 1:
                 logging.warn('filter count '+str(logCount))
@@ -303,15 +303,15 @@ class PassThroughServer:
         logging.warn('exiting send_thread')
 
     def sendThread(self,unused=None):
-	'''Do not use this.  Call start() instead.
+        '''Do not use this.  Call start() instead.
 
-	@bug: how can I get rid of unused?
-	'''
+        @bug: how can I get rid of unused?
+        '''
         v = self.v # Verbose flag
 
-	sys.stderr.write('beginning  sendThread\n')
+        sys.stderr.write('beginning  sendThread\n')
 
-	# dst is where our data comes from
+        # dst is where our data comes from
         connected=False
 
         logCount=0
@@ -460,9 +460,9 @@ if __name__=='__main__':
     #print [type(x) for x in (options.lonMin,options.lonMax,options.latMin,options.latMax)]
 
     if options.inHostname:
-	options.inHost=socket.gethostname()
+        options.inHost=socket.gethostname()
     if options.outHostname:
-	options.outHost=socket.gethostname()
+        options.outHost=socket.gethostname()
 
     if options.daemon_mode:
         aisutils.daemon.start(options.pid_file)
