@@ -53,7 +53,7 @@ def createTables(cx,verbose=False):
 
 
 def loadData(cx,datafile,verbose=False
-	     , uscg=True):
+             , uscg=True):
     '''
     Try to read data from an open file object.  Not yet well tested.
 
@@ -77,79 +77,60 @@ def loadData(cx,datafile,verbose=False
 
 
     for line in datafile:
-	lineNum += 1
-	if lineNum%1000==0:
-	    print lineNum
-# 	if lineNum%1000==0:
-#             try:
-#                 cu.execute('BEGIN;'+';'.join(buf)+'COMMIT;')
-#             except psycopg2.ProgrammingError:
-#                 # FIX: how do display the exception?
-#                 print 'psycopg2.ProgrammingError:\n  ',line
-#                 continue
-#             buf=[]
-#             cx.commit()
+        lineNum += 1
+        if lineNum%1000==0:
+            print lineNum
 
-#	    if lineNum>3000:
-#		print 'Early exit from load'
-#		break
+        if line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
+        try:
+            msgNum = int(binary.ais6tobitvec(line.split(',')[5][0]))
+        except:
+            print '# line would not decode',line
+            continue
+        if verbose: print '# msgNum:',msgNum
+        if msgNum not in (1,2,3,5):
+            if verbose: print '# skipping',line
+            continue
 
-	if line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
-	try:
-	    msgNum = int(binary.ais6tobitvec(line.split(',')[5][0]))
-	except:
-	    print '# line would not decode',line
-	    continue
-	if verbose: print '# msgNum:',msgNum
-	if msgNum not in (1,2,3,5):
-	    if verbose: print '# skipping',line
-	    continue
-	
-	payload = bv = binary.ais6tobitvec(line.split(',')[5])
+        payload = bv = binary.ais6tobitvec(line.split(',')[5])
 
-# FIX: need to take padding into account ... right before the *
-	if msgNum in (1,2,3):
-#	    if len(bv) != 168:
-	    if len(bv) < 168:
-		print '# ERROR: skipping bad position message, line:',lineNum
-		print '#  ',line,
-		print '#   Got length',len(bv), 'expected', 168
-		continue
-	elif msgNum == 5:
-#	    if len(bv) != 424:
-	    if len(bv) < 424:
-		print '# ERROR: skipping bad shipdata message, line:',lineNum
-		print '#  ',line,
-		print '#   Got length',len(bv), 'expected', 424
-		continue
+        # TODO(schwehr): Need to take padding into account.
+        if msgNum in (1,2,3):
+            if len(bv) < 168:
+                print '# ERROR: skipping bad position message, line:',lineNum
+                print '#  ',line,
+                print '#   Got length',len(bv), 'expected', 168
+                continue
+        elif msgNum == 5:
+            if len(bv) < 424:
+                print '# ERROR: skipping bad shipdata message, line:',lineNum
+                print '#  ',line,
+                print '#   Got length',len(bv), 'expected', 424
+                continue
 
 
 
-	fields=line.split(',')
+        fields=line.split(',')
 
-	cg_sec = None
-	cg_station   = None
-	if uscg:
-	    cg_sec = int(float(fields[-1])) # US Coast Guard time stamp.
-            cg_timestamp = sqlhelp.sec2timestamp(cg_sec)
-	    #print len(fields),fields
-	    for i in range(len(fields)-1,5,-1):
-		if 0<len(fields[i]) and 'r' == fields[i][0]:
-		    cg_station = fields[i]
-		    break # Found it so ditch the for loop
+        cg_sec = None
+        cg_station   = None
+        if uscg:
+            cg_sec = int(float(fields[-1])) # US Coast Guard time stamp.
 
-	#print station
-	#sys.exit('stations please work')
+            #print len(fields),fields
+            for i in range(len(fields)-1,5,-1):
+                if 0<len(fields[i]) and 'r' == fields[i][0]:
+                    cg_station = fields[i]
+                    break # Found it so ditch the for loop
 
-	ins = None
+        ins = None
 
         # FIX: redo this for all messages using the new aisutils structure
-#	try:
         if True:
-	    if   msgNum==1: ins = ais.ais_msg_1.sqlInsert(ais.ais_msg_1.decode(bv),dbType='postgres')
-	    elif msgNum==2: ins = ais.ais_msg_2.sqlInsert(ais.ais_msg_2.decode(bv),dbType='postgres')
-	    elif msgNum==3: ins = ais.ais_msg_3.sqlInsert(ais.ais_msg_3.decode(bv),dbType='postgres')
-	    elif msgNum==5:
+            if   msgNum==1: ins = ais.ais_msg_1.sqlInsert(ais.ais_msg_1.decode(bv),dbType='postgres')
+            elif msgNum==2: ins = ais.ais_msg_2.sqlInsert(ais.ais_msg_2.decode(bv),dbType='postgres')
+            elif msgNum==3: ins = ais.ais_msg_3.sqlInsert(ais.ais_msg_3.decode(bv),dbType='postgres')
+            elif msgNum==5:
                 params = ais.ais_msg_5.decode(bv)
                 #print params
                 # FIX: make this a command line option
@@ -160,33 +141,27 @@ def loadData(cx,datafile,verbose=False
                 #params. = params..strip()
                 ins = ais.ais_msg_5.sqlInsert(params,dbType='postgres')
             else:
-		print '# Warning... not handling type',msgNum,'line:',lineNum
-		continue
-#	except:
-#	    print '# ERROR:  some decode error?','line:',lineNum
-#	    print '#  ',line
-#	    continue
+                print '# Warning... not handling type',msgNum,'line:',lineNum
+                continue
 
-	counts[msgNum] += 1
+        counts[msgNum] += 1
 
-	if uscg:
-	    if None != cg_sec:       ins.add('cg_sec',       cg_sec)
+        if uscg:
+            if None != cg_sec:       ins.add('cg_sec',       cg_sec)
             if None != cg_timestamp: ins.add('cg_timestamp', cg_timestamp)
-	    if None != cg_station:   ins.add('cg_r',         cg_station)
-	if verbose:
+            if None != cg_station:   ins.add('cg_r',         cg_station)
+        if verbose:
             print str(ins)
             print '# line:',line
-        #print str(ins)
         try:
             cu.execute(str(ins))
-            #buf.append(str(ins))
-	except Exception, e:
+        except Exception, e:
             print params
-#            # FIX: give a better error message
+            # TODO(schwehr): Give a better error message.
             print '# exception:',str(type(Exception)), str(e)
-	    print '# ERROR: sql error?','line:',lineNum
-	    print '#  ', str(ins)
-	    print '#  ',line
+            print '# ERROR: sql error?','line:',lineNum
+            print '#  ', str(ins)
+            print '#  ',line
             sys.exit('EARLY!!!')
 
         if lineNum%5000==0:

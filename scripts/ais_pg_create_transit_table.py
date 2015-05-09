@@ -24,25 +24,25 @@ Talk to a postgres/postgis db to build the transit table
 import os,sys
 
 if __name__=='__main__':
-	from optparse import OptionParser
-	parser = OptionParser(usage="%prog [options] ",version="%prog "+__version__)
-	parser.add_option('-d','--database-name',dest='databaseName',default='ais',
-			  help='Name of database within the postgres server [default: %default]')
-	parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+        from optparse import OptionParser
+        parser = OptionParser(usage="%prog [options] ",version="%prog "+__version__)
+        parser.add_option('-d','--database-name',dest='databaseName',default='ais',
+                          help='Name of database within the postgres server [default: %default]')
+        parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
+                          help='Host name of the computer serving the dbx [default: %default]')
         defaultUser = os.getlogin()
-	parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
-			  help='Host name of the to access the database with [default: %default]')
+        parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
+                          help='Host name of the to access the database with [default: %default]')
 # FIX: add password
-	parser.add_option('-C','--with-create',dest='createTables',default=False, action='store_true',
-			  help='Do not create the tables in the database')
+        parser.add_option('-C','--with-create',dest='createTables',default=False, action='store_true',
+                          help='Do not create the tables in the database')
 
-	parser.add_option('-t','--delta-time',dest='deltaT'
+        parser.add_option('-t','--delta-time',dest='deltaT'
                           ,default=60*60
                           ,type='int'
-			  ,help='Time gap in seconds that determines when a new transit starts [default: %default]')
+                          ,help='Time gap in seconds that determines when a new transit starts [default: %default]')
 
-	(options,args) = parser.parse_args()
+        (options,args) = parser.parse_args()
 
         import psycopg2 as psycopg
 
@@ -73,11 +73,10 @@ CREATE TABLE transit
             cx.commit()
 
         cu.execute('SELECT DISTINCT(userid) FROM position;');
+
         ships= [ship[0] for ship in cu.fetchall()]
-        #print ships
-        #print 'FIX: hack... only one ship'
-        #ships=[338029917]
         print ships
+
         for ship in ships:
             print 'Processing ship: ',ship
             cu.execute('SELECT key,cg_sec FROM position WHERE userid=%s ORDER BY cg_sec',(ship,))
@@ -98,7 +97,6 @@ CREATE TABLE transit
                     startKey,startTime=key,time
                     needFinal=False
                 lastKey,lastTime=key,time # Save for the next loop
-                #sys.exit()
 
             if needFinal:
                 print 'Final transit...'

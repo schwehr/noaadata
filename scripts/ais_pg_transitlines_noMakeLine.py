@@ -156,7 +156,7 @@ CREATE TABLE '''+options.tableName+'''
                     +' FROM position'
                     +' WHERE userid='+str(userid)+' AND key>='+str(startpos)+' AND key<='+str(endpos)+';')
 
-        pointsDB = cu2.fetchall()	# This can take some time for large lines
+        pointsDB = cu2.fetchall()  # This can take some time for large lines.
 
         linePoints = []
         if count==1:

@@ -93,7 +93,7 @@ class  Uptime:
         self.gap_counts_raw={} # Count all dt, even 0 and 1 sec
         self.gap_counts={}  # Positive only
         self.gap_counts_neg={}
-        self.old_sec = None	# Only monotonic increasing?
+        self.old_sec = None  # Only monotonic increasing?
         self.old_sec_raw = None # To track negative dt's from the USCG
         self.min_sec = None
         self.max_sec = None

@@ -294,8 +294,6 @@ def main():
                         help='Where the data comes from [default: %default]')
     parser.add_option('-I', '--in-host', dest='inHost', type='string', default='localhost',
                         help='What host to read data from [default: %default]')
-#    parser.add_option('--in-gethostname',dest='inHostname', action='store_true', default=False,
-#			help='Where the data comes from [default: %default]')
 
     parser.add_option('-o', '--out-port', dest="outPort", type='int', default=31401,
                         help='Where the data will be available to others [default: %default]')

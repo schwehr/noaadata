@@ -36,11 +36,11 @@ mv $day/.stations $day/stations
 #if false; then
 if true; then
     for file in $day/*/log.ais; do
-	echo $file
-	grep -A 1 ',[AB],5' $file | grep -v '\-\-' | egrep 'VD[MO]' > $file.5
-	egrep ',[AB],[123]' $file | egrep 'VD[MO]' > $file.123
-	#./ais_positions.py $file.123 > $file.123.positions
-	./ais_names.py $file.5 | sort -un > $file.5.names
+        echo $file
+        grep -A 1 ',[AB],5' $file | grep -v '\-\-' | egrep 'VD[MO]' > $file.5
+        egrep ',[AB],[123]' $file | egrep 'VD[MO]' > $file.123
+        #./ais_positions.py $file.123 > $file.123.positions
+        ./ais_names.py $file.5 | sort -un > $file.5.names
     done
     sort -un $day/*/log.ais.5.names > $day/ships-seen
 else

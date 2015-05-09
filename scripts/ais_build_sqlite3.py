@@ -87,14 +87,9 @@ def loadData(cx,datafile,verbose=False
         if lineNum%1000==0:
             print lineNum
             cx.commit()
-#           if lineNum>3000:
-#		print 'Early exit from load'
-#		break
 
         if line[3:6] not in ('VDM|VDO'):
-#            if verbose:
-#                sys.stderr.write
-            continue # Not an AIS VHF message
+            continue  # Not an AIS VHF message.
         try:
             msgNum = int(binary.ais6tobitvec(line.split(',')[5][0]))
         except:
@@ -104,30 +99,22 @@ def loadData(cx,datafile,verbose=False
         countsTotal[msgNum]+=1
 
         if verbose: print 'msgNum:',msgNum
-#	if msgNum not in (1,2,3,4,5):
-#           if verbose: print 'skipping',line
-#           continue
 
         payload = bv = binary.ais6tobitvec(line.split(',')[5])
 
-# FIX: need to take badding into account ... right before the *
+        # TODO(schwehr): Take padding into account.x
         if msgNum in (1,2,3):
-#           if len(bv) != 168:
             if len(bv) < 168:
                 print 'ERROR: skipping bad position message, line:',lineNum
                 print '  ',line,
                 print '   Got length',len(bv), 'expected', 168
                 continue
-#	elif msgNum == 4:
         elif msgNum == 5:
-#           if len(bv) != 424:
             if len(bv) < 424:
                 print 'ERROR: skipping bad shipdata message, line:',lineNum
                 print '  ',line,
                 print '   Got length',len(bv), 'expected', 424
                 continue
-
-
 
         fields=line.split(',')
 
@@ -139,15 +126,11 @@ def loadData(cx,datafile,verbose=False
                 print 'cg_sec:',cg_sec,type(cg_sec)
                 cg_timestamp = datetime.datetime.utcfromtimestamp(float(cg_sec))
             except:
-                print 'ERROR getting timestamp for',lineNum,line
             #print len(fields),fields
             for i in range(len(fields)-1,5,-1):
                 if 0<len(fields[i]) and 'r' == fields[i][0]:
                     cg_station = fields[i]
                     break # Found it so ditch the for loop
-
-        #print station
-        #sys.exit('stations please work')
 
         ins = None
 
@@ -181,27 +164,6 @@ def loadData(cx,datafile,verbose=False
         #try:
         print str(ins)
         cu.execute(str(ins))
-        #except:
-        #    sys.stderr.write('FIX: write some sort of exception handler\n')
-#         except pysqlite2.dbapi2.OperationalError, params:
-#       #except OperationalError,  params:
-#             if -1 != params.message.find('no such table'):
-#                 print 'ERROR:',params.message
-#                 sys.exit('You probably need to run with --with-create')
-#             print 'params',params
-#             print type(params)
-#           print 'ERROR: sql error?','line:',lineNum
-#           print '  ', str(ins)
-#           print '  ',line
-
-#             if False:
-#                 # Give some debugging flexibility
-#                 from IPython.Shell import IPShellEmbed
-#                 ipshell = IPShellEmbed(argv=[])
-#                 ipshell()
-#                 sys.exit('Gave up')
-
-    #print counts
     print '\nMessages found:'
     for key in countsTotal:
         if countsTotal[key]>0:

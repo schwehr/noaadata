@@ -39,14 +39,14 @@ if __name__=='__main__':
         for line in file(filename):
             if line[0]=='#':
                 continue
-	    fields = line.split(',')[:6]
-	    if '1'!=fields[2]: # Must be the start of a sequence
-		continue
-	    if len(fields[5])<7: continue
-	    bv = binary.ais6tobitvec(fields[5][:7]) # Hacked for speed
+            fields = line.split(',')[:6]
+            if '1'!=fields[2]: # Must be the start of a sequence
+                continue
+            if len(fields[5])<7: continue
+            bv = binary.ais6tobitvec(fields[5][:7]) # Hacked for speed
             int(bv[8:38])
-	    mmsi = str(int(bv[8:38]))
-	    o.write (mmsi)
+            mmsi = str(int(bv[8:38]))
+            o.write (mmsi)
             if options.dumpLine:
                 o.write(' '+line.strip())
-	    o.write ('\n')
+            o.write ('\n')

@@ -3,8 +3,7 @@
 import socket
 import time
 
-#host='192.168.8.31'
-host='0.0.0.0' # All interfaces
+host='0.0.0.0'  # All interfaces.
 port=4000
 buffer = 10000
 
@@ -19,7 +18,7 @@ while 1:
 
     if not data:
         log.write("NO DATA")
-	break
+        break
     else:
         timestamp = time.time()
     log_str = '%s,%s' % (data.strip(),addr[0])

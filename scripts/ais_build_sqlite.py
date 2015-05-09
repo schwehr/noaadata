@@ -180,9 +180,9 @@ def get_max_key(cx):
 
 
 def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
-#	     uscg=True, payload_table=False):
-    '''
-    Try to read data from an open file object.  Not yet well tested.
+    """Try to read data from an open file object.
+
+    Not yet well tested.
 
     @param cx: database connection
     @param verbose: pring out more if true
@@ -191,8 +191,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
     @return: Nothing
 
     @note: can not handle multiline AIS messages.  They must be normalized first.
-    '''
-#    @param payload_table: Create a table that contains the nmea payload text (useful for distinguisig unique messages)
+    """
 
     v = verbose # Hmm... "v"... the irony
 
@@ -215,12 +214,12 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
     track_dups = TrackDuplicates(lookback_length=1000)
 
     for line in datafile:
-	lineNum += 1
-	if lineNum%1000==0:
-	    print lineNum
-	    cx.commit()
+        lineNum += 1
+        if lineNum%1000==0:
+            print lineNum
+            cx.commit()
 
-	if len(line)<15 or line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
+        if len(line)<15 or line[3:6] not in ('VDM|VDO'): continue # Not an AIS VHF message
 
         #print 'FIX: validate checksum'
         if not nmea.checksum.isChecksumValid(line):
@@ -228,19 +227,19 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
             print >> sys.stderr, '   ',nmea.checksum.checksumStr(line)
             counts['checksum_failed'] += 1
 
-	fields=line.split(',') # FIX: use this split throughout below...
+        fields=line.split(',') # FIX: use this split throughout below...
 
-	try:
-	    msg_num = int(binary.ais6tobitvec(fields[5][0]))
-	except:
-	    print 'line would not decode',line
-	    continue
-	if verbose: print 'msg_num:',msg_num
-	if msg_num not in message_set:
-	    if verbose:
+        try:
+            msg_num = int(binary.ais6tobitvec(fields[5][0]))
+        except:
+            print 'line would not decode',line
+            continue
+        if verbose: print 'msg_num:',msg_num
+        if msg_num not in message_set:
+            if verbose:
                 print 'skipping',line
                 print '  not in msg set:',str(message_set)
-	    continue
+            continue
 
         try:
             bv = binary.ais6tobitvec(fields[5])
@@ -250,41 +249,41 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
             continue
 
         # FIX: need to take padding into account ... right before the *
-	if msg_num in (1,2,3,4,18):
-	    if len(bv) != 168:
-		print 'ERROR: skipping bad one slot message, line:',lineNum
-		print '  ',line,
-		print '   Got length',len(bv), 'expected', 168
-		continue
-	elif msg_num == 5:
+        if msg_num in (1,2,3,4,18):
+            if len(bv) != 168:
+                print 'ERROR: skipping bad one slot message, line:',lineNum
+                print '  ',line,
+                print '   Got length',len(bv), 'expected', 168
+                continue
+        elif msg_num == 5:
             # 426 has 2 pad bits
-	    if len(bv) not in (424,426):
-		print 'ERROR: skipping bad shipdata message, line:',lineNum
-		print '  ',line,
-		print '   Got length',len(bv), 'expected', 424
-		continue
+            if len(bv) not in (424,426):
+                print 'ERROR: skipping bad shipdata message, line:',lineNum
+                print '  ',line,
+                print '   Got length',len(bv), 'expected', 424
+                continue
 
-	ins = None
+        ins = None
 
-	try:
-	    if   msg_num== 1: ins = ais.ais_msg_1_handcoded.sqlInsert(ais.ais_msg_1_handcoded.decode(bv),dbType='sqlite')
-	    elif msg_num== 2: ins = ais.ais_msg_2_handcoded.sqlInsert(ais.ais_msg_2_handcoded.decode(bv),dbType='sqlite')
-	    elif msg_num== 3: ins = ais.ais_msg_3_handcoded.sqlInsert(ais.ais_msg_3_handcoded.decode(bv),dbType='sqlite')
-	    elif msg_num== 4: ins = ais.ais_msg_4_handcoded.sqlInsert(ais.ais_msg_4_handcoded.decode(bv),dbType='sqlite')
-	    elif msg_num== 5: ins = ais.ais_msg_5.sqlInsert(ais.ais_msg_5.decode(bv),dbType='sqlite')
+        try:
+            if   msg_num== 1: ins = ais.ais_msg_1_handcoded.sqlInsert(ais.ais_msg_1_handcoded.decode(bv),dbType='sqlite')
+            elif msg_num== 2: ins = ais.ais_msg_2_handcoded.sqlInsert(ais.ais_msg_2_handcoded.decode(bv),dbType='sqlite')
+            elif msg_num== 3: ins = ais.ais_msg_3_handcoded.sqlInsert(ais.ais_msg_3_handcoded.decode(bv),dbType='sqlite')
+            elif msg_num== 4: ins = ais.ais_msg_4_handcoded.sqlInsert(ais.ais_msg_4_handcoded.decode(bv),dbType='sqlite')
+            elif msg_num== 5: ins = ais.ais_msg_5.sqlInsert(ais.ais_msg_5.decode(bv),dbType='sqlite')
             elif msg_num==18: ins = ais.ais_msg_18.sqlInsert(ais.ais_msg_18.decode(bv),dbType='sqlite') # Class B position
             elif msg_num==19: ins = ais.ais_msg_19.sqlInsert(ais.ais_msg_19.decode(bv),dbType='sqlite') # Class B position
             else:
-		print 'Warning... not handling type',msg_num,'line:',lineNum
-		continue
-	except:
-	    print 'ERROR:  some decode error?','line:',lineNum
-	    print '  ',line
-	    continue
+                print 'Warning... not handling type',msg_num,'line:',lineNum
+                continue
+        except:
+            print 'ERROR:  some decode error?','line:',lineNum
+            print '  ',line
+            continue
 
-	counts[msg_num] += 1
+        counts[msg_num] += 1
 
-	if uscg:
+        if uscg:
             from aisutils.uscg import uscg_ais_nmea_regex
             match = uscg_ais_nmea_regex.search(line).groupdict()
 
@@ -323,20 +322,20 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
         ins.add('key',next_key)
         next_key += 1
 
-	if verbose:
+        if verbose:
             print str(ins)
-	try:
+        try:
             cu.execute(str(ins))
         except pysqlite2.dbapi2.OperationalError, params:
-	#except OperationalError,  params:
+        #except OperationalError,  params:
             if -1 != params.message.find('no such table'):
                 print 'ERROR:',params.message
                 sys.exit('You probably need to run with --with-create')
             print 'params',params
             print type(params)
-	    print 'ERROR: sql error?','line:',lineNum
-	    print '  ', str(ins)
-	    print '  ',line
+            print 'ERROR: sql error?','line:',lineNum
+            print '  ', str(ins)
+            print '  ',line
 
             if False:
                 # Give some debugging flexibility
@@ -351,7 +350,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 
     print counts
     cx.commit()
-	
+
 
 ############################################################
 if __name__=='__main__':
