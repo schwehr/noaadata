@@ -15,7 +15,7 @@ You may need to some intial setup: (examples assume mac osx + fink)
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais
       - sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/spatial_ref_sys.sql -d ais
 
-@todo: Add an option to allow a prefix to the database table names.
+ TODO(schwehr):Add an option to allow a prefix to the database table names.
 """
 
 from decimal import Decimal

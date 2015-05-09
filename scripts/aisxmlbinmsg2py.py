@@ -11,17 +11,17 @@ which should be packaged with the resulting files.
 
 @license: Apache 2.0
 
-@todo: add a link to generated doc string to bring up the html for the pretty version
-@todo: write a separate validation script that distinguishes standard messages and bin messages
-@todo: make sure binary is only used in AIS ITU messages and not within the binary messages!
-@todo: arrays
-@todo: handle entry ranges in lookup tables
-@todo: arraylength of -1 for messages 12 and 14
-@todo: in the table html/kml form output, if no LUT and value is the unknown case, say so in the converted column!
-@todo: stop using sqlhelp.  Can have trouble with corrupted data.
+ TODO(schwehr):add a link to generated doc string to bring up the html for the pretty version
+ TODO(schwehr):write a separate validation script that distinguishes standard messages and bin messages
+ TODO(schwehr):make sure binary is only used in AIS ITU messages and not within the binary messages!
+ TODO(schwehr):arrays
+ TODO(schwehr):handle entry ranges in lookup tables
+ TODO(schwehr):arraylength of -1 for messages 12 and 14
+ TODO(schwehr):in the table html/kml form output, if no LUT and value is the unknown case, say so in the converted column!
+ TODO(schwehr):stop using sqlhelp.  Can have trouble with corrupted data.
 @bug: NOT complete
 @note: This compiler assumes that all locations are in WGS 84 (EPSG 4326)
-@todo: add type checking of command line parameters for crafting AIS messages
+ TODO(schwehr):add type checking of command line parameters for crafting AIS messages
 """
 
 import datetime
@@ -97,7 +97,7 @@ which should be packaged with the resulting files.
 ''')
 
     o.write('''
-@todo: FIX: put in a description of the message here with fields and types.
+ TODO(schwehr):FIX: put in a description of the message here with fields and types.
 \"\"\"
 import doctest
 import sys
@@ -177,9 +177,9 @@ def buildHelpers(o,msgET, verbose=False, prefixName=False):
     @param o: open file where resulting code will be written
     @param msgET: Element Tree starting at a message node
 
-    @todo: for lookuptable/entry values, make it also print the decoded value.
-    @todo: use a different name for message and field
-    @todo: put in comments with the python and sql data type for each field
+     TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
+     TODO(schwehr):use a different name for message and field
+     TODO(schwehr):put in comments with the python and sql data type for each field
     '''
 
     if verbose:
@@ -316,14 +316,14 @@ def haveLocatableMessage(msgET):
 def getLongitudeFieldName(msgET):
     '''
     Dig up the first field name that include longitude and return it
-    @todo: might want to allow a search for a special tag to mark this
+     TODO(schwehr):might want to allow a search for a special tag to mark this
     '''
     return msgET.xpath('field[contains(@name, "longitude")]')[0].attrib['name']
 
 def getLatitudeFieldName(msgET):
     '''
     Dig up the first field name that include longitude and return it
-    @todo: might want to allow a search for a special tag to mark this
+     TODO(schwehr):might want to allow a search for a special tag to mark this
     '''
     return msgET.xpath('field[contains(@name, "latitude")]')[0].attrib['name']
 
@@ -334,8 +334,8 @@ def buildPrint(o,msgET, verbose=False, prefixName=False):
     @param o: open file where resulting code will be written
     @param msgET: Element Tree starting at a message node
 
-    @todo: for lookuptable/entry values, make it also print the decoded value.
-    @todo: use a different name for message and field
+     TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
+     TODO(schwehr):use a different name for message and field
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
@@ -582,7 +582,7 @@ def buildTextDef(o,msgET, verbose=False, prefixName=False):
     @param verbose: talk lots in the process
     @param prefixName: set to a string to have the commands prefixed by that character.
 
-    @todo: should this be a style sheet thing instead?
+     TODO(schwehr):should this be a style sheet thing instead?
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
@@ -654,7 +654,7 @@ def buildLaTeX(o,msgET, verbose=False, prefixName=False):
     @param verbose: talk lots in the process
     @param prefixName: set to a string to have the commands prefixed by that character.
 
-    @todo: should this be a style sheet thing instead?
+     TODO(schwehr):should this be a style sheet thing instead?
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']
@@ -914,7 +914,7 @@ def buildSQL(o,msgET, verbose=False, prefixName=False):
         @param extraParams: any extra fields that you have created beyond the normal ais message fields
         @rtype: sqlhelp.insert
         @return: insert class instance
-        @todo: allow optional type checking of params?
+         TODO(schwehr):allow optional type checking of params?
         @warning: this will take invalid keys happily and do what???
         \"\"\"
 
@@ -969,8 +969,8 @@ def buildLUT(o,msgET, verbose=False, prefixName=False):
     '''
     Write lookup tables for enumerated types (uint or int, maybe bool too).
 
-    @todo: FIX: what to do about multiple entries with the same text?  Need to ban that kind of thing
-    @todo: Make doc strings for each LUT.
+     TODO(schwehr):FIX: what to do about multiple entries with the same text?  Need to ban that kind of thing
+     TODO(schwehr):Make doc strings for each LUT.
 
     @param o: open file where resulting code will be written
     @param msgET: Element Tree starting at a message node
@@ -1930,7 +1930,7 @@ def buildEncode(o,msgET, verbose=False, prefixName=False):
 
     @param o: open file where resulting code will be written
     @param msgET: Element Tree starting at a message node
-    @todo: handle ais message 20 optional.  very troublesome
+     TODO(schwehr):handle ais message 20 optional.  very troublesome
     '''
     assert(msgET.tag=='message')
     name = msgET.attrib['name'] # fix rename this variable to avoid hiding later on by field name
@@ -2035,9 +2035,9 @@ def buildDecodeParts(o,msgET, verbose=False, prefixName=False):
     @param msgET: Element Tree starting at a message node
     @return: None
 
-    @todo: FIX: doc strings for each decode!
-    @todo: FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
-    @todo: May want to take a dictionary of already decoded fields to speed things that need prior info
+     TODO(schwehr):FIX: doc strings for each decode!
+     TODO(schwehr):FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
+     TODO(schwehr):May want to take a dictionary of already decoded fields to speed things that need prior info
     for things like variable length arrays
     '''
 
@@ -2114,7 +2114,7 @@ def buildDecode(o,msgET, verbose=False, prefixName=False):
     @param msgET: Element Tree starting at a message node
     @return: None
 
-    @todo: FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
+     TODO(schwehr):FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
     '''
 
     assert(msgET.tag=='message')

@@ -10,8 +10,8 @@ Basic traffic analysis by counting message types.
 @license: Apache 2.0
 @since: 2007-Sep-01
 
-@todo: make option to parse the station if present and present by station stats
-@todo: optionally split to A and B counts
+ TODO(schwehr):make option to parse the station if present and present by station stats
+ TODO(schwehr):optionally split to A and B counts
 '''
 
 import sys

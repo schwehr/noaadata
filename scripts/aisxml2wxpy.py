@@ -135,8 +135,8 @@ def buildWxPythonMsg(o,msgET, verbose=False, prefixName=False):
     @param o: open file where resulting code will be written
     @param msgET: Element Tree starting at a message node
 
-    @todo: for lookuptable/entry values, make it also print the decoded value.
-    @todo: use a different name for message and field
+     TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
+     TODO(schwehr):use a different name for message and field
     '''
     assert(msgET.tag=='message')
     msgName = msgET.attrib['name']

@@ -8,10 +8,10 @@ Split an USCG N-AIS log file into one file per receiving station.
 @since: 2006-Sep-24
 @license: Apache 2.0
 
-@todo: add a link to generated doc string to bring up the html for the pretty version
+ TODO(schwehr):add a link to generated doc string to bring up the html for the pretty version
 
 @bug: NOT complete
-@todo: make sure binary is only used in AIS ITU messages and not within the binary messages!
+ TODO(schwehr):make sure binary is only used in AIS ITU messages and not within the binary messages!
 '''
 
 import sys, os

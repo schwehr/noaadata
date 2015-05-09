@@ -89,9 +89,9 @@ class DatabaseHandler:
     def commit(self):
         """Slow loop that commits groups of position reports to the database.
 
-        @todo: Build the lines/shiptracks from the position reports for the ships with new positions.
-        @todo: Where do I decimate reports received from multiple receivers?
-        @todo: Need to track the ships in the put.
+        TODO(schwehr): Build the lines/shiptracks from the position reports for the ships with new positions.
+        TODO(schwehr): Where do I decimate reports received from multiple receivers?
+        TODO(schwehr): Need to track the ships in the put.
         """
         q = self.q
         cx = self.cx

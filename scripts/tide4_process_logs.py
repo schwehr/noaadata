@@ -17,9 +17,9 @@ Try to process the tide data for summer hydro 2009.  Don't trust this code!
 @status: under development
 @organization: U{CCOM<http://ccom.unh.edu/>}
 
-@todo: verify this whole deal
-@todo: check the time zones
-@todo: get gyre to ntp rather than windows time service
+ TODO(schwehr):verify this whole deal
+ TODO(schwehr):check the time zones
+ TODO(schwehr):get gyre to ntp rather than windows time service
 @see: internal ccom wiki on tide4 at Star Island
 '''
 

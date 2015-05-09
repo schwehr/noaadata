@@ -10,8 +10,8 @@ FIX: write a description
 @license: Apache 2.0
 @since: 2007-Mar-05
 
-@todo: give this a optparse interface
-@todo: make it flexible.
+ TODO(schwehr):give this a optparse interface
+ TODO(schwehr):make it flexible.
 """
 
 import socket,select

@@ -37,14 +37,14 @@ convert -delay 200 -loop  100 2006-01-31.xymt*.gif anim.gif
 @license: Apache 2.0
 
 
-@todo: Allow the code to pull data from sqlite and postgis
-@todo: Optional bounding box or polygon decimation
-@todo: Speadup by using a C++ ais decoder
-@todo: Try putting a background image in the gnuplot
-@todo: Let the user specify the gnuplot plotting range
-@todo: Allow user to specify local time zone rather than hard coding the local one configured by the os
-@todo: Add GMT output to parallel what I am doing with gnuplot.  Probably better to do it off of a transit db?
-@todo: KML... put a ship info popup for the beginning of each track.
+ TODO(schwehr):Allow the code to pull data from sqlite and postgis
+ TODO(schwehr):Optional bounding box or polygon decimation
+ TODO(schwehr):Speadup by using a C++ ais decoder
+ TODO(schwehr):Try putting a background image in the gnuplot
+ TODO(schwehr):Let the user specify the gnuplot plotting range
+ TODO(schwehr):Allow user to specify local time zone rather than hard coding the local one configured by the os
+ TODO(schwehr):Add GMT output to parallel what I am doing with gnuplot.  Probably better to do it off of a transit db?
+ TODO(schwehr):KML... put a ship info popup for the beginning of each track.
 
 @warning: This assumes that ship track data is sorted by time
 '''
@@ -67,7 +67,7 @@ def detectTransits(inFile, basename, options):
    @param basename: prepend this str to filenames written
    @param options: FIX... list options
 
-   @todo: detect if the input is AIS VDM or XYMT messages
+    TODO(schwehr):detect if the input is AIS VDM or XYMT messages
    '''
    ships={}
 

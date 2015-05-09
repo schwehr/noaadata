@@ -5,8 +5,8 @@
 
 Filter to a list of AIS receivers/basestations.
 
-@todo: there is a crashing bug in the send thread
-@todo: need to log time and messages received/sent.
+TODO(schwehr): there is a crashing bug in the send thread
+TODO(schwehr): need to log time and messages received/sent.
 """
 
 import exceptions
@@ -163,8 +163,8 @@ class PassThroughServer:
 
     def filterThread(self,unused=None):
 	'''Do not use this.  Call start() instead.
-	@bug: how can I get rid of unused?
-        @todo: normalize messages
+	TODO(schwehr): How can I get rid of unused?
+        TODO(schwehr): Normalize messages.
 	'''
         v = self.v # Verbose flag
         normQueue = aisutils.normalize.Normalize()

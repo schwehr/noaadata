@@ -3,8 +3,8 @@
 
 @license: Apache 2.0
 
-@todo: Deal with ships that have there messages wag back and forth
-@todo: Maybe make a flag that has the code always check for the same message and not repeat
+ TODO(schwehr):Deal with ships that have there messages wag back and forth
+ TODO(schwehr):Maybe make a flag that has the code always check for the same message and not repeat
 """
 
 from datetime import datetime

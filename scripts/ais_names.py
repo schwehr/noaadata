@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
-__version__ = '$Revision: 7470 $'.split()[1]
-__date__ = '$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-
-__doc__='''
-
-Get the name and mmsi (User ID) for each msg 5 identification message.
+"""Get the name and mmsi (User ID) for each msg 5 identification message.
 
 This program requires that the nmea strings be sorted such that the
 2nd part of the message comes directly after the first.  You can do
@@ -22,9 +16,8 @@ interleaving of msg 5 nmea strings.
 @status: under development
 @license: Apache 2.0
 
-@todo: is this a repeat of merge5?
-
-'''
+ TODO(schwehr):is this a repeat of merge5?
+"""
 
 from optparse import OptionParser
 import os

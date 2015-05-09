@@ -3,8 +3,8 @@
 version with no error checking.
 
 @bug: Cheap hack
-@todo: Add option to make sure the that the receive stations are the same for uscg N-AIS data
-@todo: Option to check the AIVDM tags to make sure that the messages should be combined
+ TODO(schwehr):Add option to make sure the that the receive stations are the same for uscg N-AIS data
+ TODO(schwehr):Option to check the AIVDM tags to make sure that the messages should be combined
 """
 
 from optparse import OptionParser

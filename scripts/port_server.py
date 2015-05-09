@@ -14,16 +14,16 @@ Migrated from ais-py in August 2007.
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ myparser
 
-@todo: log rotation!!  Optionally compress the logs when done.  They compress well.
-@todo: add udp in and udp out
-@todo: line oriented mode so that
-@todo: allow the feed in and the exports to be on different interfaces
-@todo: rewrite this as a SocketServer?
-@todo: optionally read data from a serial port
-@todo: multicast out
-@todo: timestamps in line mode
-@todo: multiple socket inputs and multiple serial port inputs
-@todo: use select for blocking IO
+ TODO(schwehr):log rotation!!  Optionally compress the logs when done.  They compress well.
+ TODO(schwehr):add udp in and udp out
+ TODO(schwehr):line oriented mode so that
+ TODO(schwehr):allow the feed in and the exports to be on different interfaces
+ TODO(schwehr):rewrite this as a SocketServer?
+ TODO(schwehr):optionally read data from a serial port
+ TODO(schwehr):multicast out
+ TODO(schwehr):timestamps in line mode
+ TODO(schwehr):multiple socket inputs and multiple serial port inputs
+ TODO(schwehr):use select for blocking IO
 '''
 
 import sys, os

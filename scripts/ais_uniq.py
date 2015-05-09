@@ -11,7 +11,7 @@ minutes for 123 and 6 hours for msg 5?
 @license: Apache 2.0
 @since: 2007-Jun-28
 
-@todo: need a real ring buffer!
+ TODO(schwehr):need a real ring buffer!
 '''
 
 import sys

@@ -12,11 +12,11 @@ seconds since the Epoch (UTC).
 Modified by Chaoyi Yin Fall 2009 as work for hire.
 
 @since: 2007-Feb-17
-@todo: Add a line for STOP LOGGING when a log file is closed
-@todo: Add lines at start of logging for computer name, user name, and ???
-@todo: Follow up on suggestions from A. Maitland Bottom
-@todo: Optional WWW and UDP transmitting
-@todo: Clean way to shut down
+ TODO(schwehr):Add a line for STOP LOGGING when a log file is closed
+ TODO(schwehr):Add lines at start of logging for computer name, user name, and ???
+ TODO(schwehr):Follow up on suggestions from A. Maitland Bottom
+ TODO(schwehr):Optional WWW and UDP transmitting
+ TODO(schwehr):Clean way to shut down
 '''
 
 import os,socket,serial

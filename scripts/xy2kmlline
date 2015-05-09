@@ -7,7 +7,7 @@ Convert xy mmsi time files to Google Earth ship tracks
 
 @license: Apache 2.0
 @since: 2007-May
-@todo: Decimate ships that are not moving and updating fast
+ TODO(schwehr):Decimate ships that are not moving and updating fast
 """
 
 import sys

@@ -18,7 +18,7 @@ Talk to a postgres/postgis db to build the transit table
 @license: Apache 2.0
 @since: 2007-Jul-01
 
-@todo: find a pure sql way to do this on the server side.  This would be the run section of the SQL boo
+ TODO(schwehr):find a pure sql way to do this on the server side.  This would be the run section of the SQL boo
 '''
 
 import os,sys

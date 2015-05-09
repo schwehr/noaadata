@@ -42,8 +42,8 @@ egrep '!AIVDM,1,1,[0-9]?,[AB],[1-3]' biglog.ais > pos_msgs.ais
 @organization: U{CCOM<http://ccom.unh.edu/>}
 @license: Apache 2.0
 
-@todo: add a link to generated doc string to bring up the html for the pretty version
-@todo: allow for buffering.  poly._transform into more a better projection, buffer and then convert back
+ TODO(schwehr):add a link to generated doc string to bring up the html for the pretty version
+ TODO(schwehr):allow for buffering.  poly._transform into more a better projection, buffer and then convert back
 '''
 
 import sys, os

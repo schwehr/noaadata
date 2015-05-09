@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Filter AIS data to remove duplicates.
 
-@todo: Be able to look out across a couple seconds for messages that are dup receives
+ TODO(schwehr):Be able to look out across a couple seconds for messages that are dup receives
 """
 
 import sys
@@ -16,9 +16,9 @@ def getMsg(nmeaMsg):
 def filterInTimestamp(lineList):
     '''
     Decimate lines to only return unique reports
-    @todo: have it prefer reports with s, d, and T fields
+     TODO(schwehr):have it prefer reports with s, d, and T fields
 
-    @todo: preserve order within each second and support multi line messages
+     TODO(schwehr):preserve order within each second and support multi line messages
     '''
     if 1==len(lineList):
         # NOP
