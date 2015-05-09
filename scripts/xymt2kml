@@ -1,30 +1,22 @@
 #!/usr/bin/env python
+# License: Apache 2.0.
 
-__version__ = '$Revision: 15974 $'.split()[1]
-__date__ = '$Date: 2011-05-07 07:27:13 -0400 (Sat, 07 May 2011) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+"""Convert xy mmsi time files to Google Earth ship tracks.
 
-__doc__="""
-Convert xy mmsi time files to Google Earth ship tracks
-
-@license: Apache 2.0
-@since: 2007-May
- TODO(schwehr):Decimate ships that are not moving and updating fast
+TODO(schwehr):Decimate ships that are not moving and updating fast.
 """
 
 import sys
 import time
 def timeSec2KmlTime(timeSec):
-#    try:
     t = time.gmtime(float(timeSec))
-#    except:
-#	sys.exit('ERROR: this is not a valid time:'+str(timeSec)+' '+str(type(timeSec)))
 
     s = "%4d-%02d-%02dT%02d:%02d:%02dZ" % (t[0],t[1],t[2],t[3],t[4],t[5])
     return s
 
 
-def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpacity=.5,lineWidth=5,indent='    ',styleName='style'):
+def addStyle(out, lineColor='a0a0a0', polyColor="808080", polyOpacity=.25,
+             lineOpacity=0.5, lineWidth=5, indent='    ', styleName='style'):
     '''
     @param polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
     '''
@@ -50,8 +42,8 @@ def addStyle(out,lineColor='a0a0a0',polyColor="808080",polyOpacity=.25,lineOpaci
 if __name__ == '__main__':
     from optparse import OptionParser
 
-    parser = OptionParser(usage="%prog [options] [file1] [file2] ...",
-                          version="%prog "+__version__+' ('+__date__+')')
+    parser = OptionParser(usage='%prog [options] [file1] [file2] ...',
+                          version='%prog ')
 
     parser.add_option('-S','--with-style',dest='withStyle'
                       ,default=False
@@ -64,46 +56,52 @@ if __name__ == '__main__':
                       ,help='Make the folder not open')
 
 
-    parser.add_option('--line-color'  ,dest='lineColor'  ,type='string',default='ffffff',help=' [default: %default (white)]')
-    parser.add_option('--line-opacity',dest='lineOpacity',type='float' ,default=1       ,help=' 0..1 [default: %default]')
-    parser.add_option('--line-width'  ,dest='lineWidth'  ,type='float',default=1        ,help=' [default: %default]')
-    parser.add_option('--style-name',dest='styleName',default='s',help='Name of the style for the polygon [default: %default]')
+    parser.add_option('--line-color', dest='lineColor', type='string',
+                      default='ffffff',help=' [default: %default (white)]')
+    parser.add_option('--line-opacity', dest='lineOpacity', type='float',
+                      default=1, help=' 0..1 [default: %default]')
+    parser.add_option('--line-width', dest='lineWidth', type='float',default=1,
+                      help=' [default: %default]')
+    parser.add_option('--style-name', dest='styleName', default='s',
+                      help='Name of the style for the polygon '
+                      '[default: %default]')
 
-    parser.add_option('-z',dest='z',default=None,type='float',help='Add a z component [Default: %default]')
-    parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
+    parser.add_option('-z', dest='z', default=None, type='float',
+                      help='Add a z component [Default: %default]')
+    parser.add_option('-v', '--verbose', dest='verbose', default=False,
+                      action='store_true',
                       help='run the tests run in verbose mode')
 
     (options,args) = parser.parse_args()
     v = options.verbose
 
-    print '''<?xml version="1.0" encoding="UTF-8"?>
-<!-- xymt2kml - by Kurt Schwehr from noaadata-py -->
-<kml xmlns="http://earth.google.com/kml/2.1">
-  <Document>
-'''
+    print (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        '<!-- xymt2kml - by Kurt Schwehr from noaadata-py -->\n'
+        '<kml xmlns="http://earth.google.com/kml/2.1">\n'
+        '<Document>'
+    )
     if options.withStyle:
-        addStyle(sys.stdout
-                 ,lineColor=options.lineColor
-                 ,lineOpacity=options.lineOpacity
-                 ,lineWidth=options.lineWidth
-                 ,styleName=options.styleName
-                 )
+        addStyle(sys.stdout,
+                 lineColor=options.lineColor,
+                 lineOpacity=options.lineOpacity,
+                 lineWidth=options.lineWidth,
+                 styleName=options.styleName)
 
     ships={}
     position_count = 0
     for filename in args:
         for line in file(filename):
             try:
-                x,y,m,t = line.split()
-                #print >> sys.stderr, 'VALUES: %.3f %.3f %s %d' % (float(x),float(y),m,int(t))
+                x, y, m, t = line.split()
             except:
-                sys.stderr.write('ERROR:'+line)
+                sys.stderr.write('ERROR: %s\n' % line)
                 continue
             if x == '181':
-                continue # bad data
+                continue  # Position report without a location.
             position_count += 1
             if m not in ships:
-                ships[m]=[(x,y,m,t)]
+                ships[m] = [(x, y, m, t)]
             else:
                 ships[m].append((x,y,m,int(float(t))))
 
@@ -113,39 +111,41 @@ if __name__ == '__main__':
 
     ship_list = ships.keys()
     ship_list.sort()
-    #for ship in ships.keys():
     for ship in ship_list:
         last = None
         if len (ships[ship])<2:
-            continue # not enough data for ship
+            continue  # Not enough data for ship.
         print '<Folder><name>'+ship+' ('+str(len(ships[ship]))+')</name>'
         if options.hideChildren:
-            print '<Style><ListStyle><listItemType>checkHideChildren</listItemType></ListStyle></Style>\n'
+            print (
+                '<Style><ListStyle><listItemType>checkHideChildren'
+                '</listItemType></ListStyle></Style>\n'
+            )
         for point in ships[ship]:
-            x,y,m,t = point
+            x, y, m, t = point
             if last==None:
                 last = point
                 continue
-            _x,_y,_m,_t = last
+            _x, _y, _m, _t = last
             last = point
-
-#             print '  <Placemark>'
-#             if options.withStyle: print '    <styleUrl>#'+options.styleName+'</styleUrl>'
-#             print '    <LineString><coordinates>'
-#             print '      '+_x+','+_y+',0'
-#             print '      '+ x+','+ y+',0'
-#             print '    </coordinates></LineString>'
-#             print '    <TimeSpan><begin>'+timeSec2KmlTime(_t)+'</begin><end>'+timeSec2KmlTime(t)+'</end></TimeSpan>'
-#             print '  </Placemark>'
-
 
             print '<Placemark>'
             if options.withStyle: print '<styleUrl>#'+options.styleName+'</styleUrl>'
             if options.z is not None:
-                print '<LineString><coordinates>'+_x+','+_y+','+str(options.z)+' '+x+','+y+','+str(options.z)+'</coordinates></LineString>'
+                print (
+                    '<LineString><coordinates>' + _x + ',' + _y + ',' +
+                    str(options.z) + ' ' + x + ',' + y + ',' +
+                    str(options.z)+'</coordinates></LineString>'
+                )
             else:
-                print '<LineString><coordinates>'+_x+','+_y+',0 '+x+','+y+',0</coordinates></LineString>'
-            print '<TimeSpan><begin>'+timeSec2KmlTime(_t)+'</begin><end>'+timeSec2KmlTime(t)+'</end></TimeSpan>'
+                print (
+                    '<LineString><coordinates>' + _x + ',' + _y + ',0 ' + x +
+                    ',' + y + ',0</coordinates></LineString>'
+                )
+            print (
+                '<TimeSpan><begin>' + timeSec2KmlTime(_t) + '</begin>'
+                '<end>' + timeSec2KmlTime(t) + '</end></TimeSpan>'
+            )
             print '</Placemark>'
         print '</Folder>'
 
