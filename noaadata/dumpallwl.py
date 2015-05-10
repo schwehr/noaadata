@@ -1,46 +1,22 @@
 #!/usr/bin/env python2.4
+# License: Apache 2.0
 
+"""Create AIS NMEA strings for NOAA CO-OPS tide data.
 
-__version__ = '$Revision: 6041 $'.split()[1]
-__date__ = '$Date: 2007-04-23 11:22:18 -0400 (Mon, 23 Apr 2007) $'.split()[1]
-__author__ = ''
+Try to pull all the water level messages for a station over a long
+time period.
+"""
 
-__doc__=''' 
-Create AIS NMEA strings for NOAA CO-OPS tide data. Try to pull all the
-water level messages for a station over a long time period
-
-fugly code
-
-@requires: U{Python<http://python.org/>} >= 2.4
-@requires: U{epydoc<http://epydoc.sourceforge.net/>} >= 3.0beta1
-@requires: U{lxml}
-@requires: U{soappy}
-
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@version: ''' + __version__ +'''
-@copyright: 2007
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser success
-@since: 2007-Apr-23
-@status: Intial working version.  Still needs development
-@organization: U{CCOM<http://ccom.unh.edu/>}
-
-@license: Apache 2.0
-
-'''
-
-import sys
-from SOAPpy import SOAPProxy
-#import pysqlite2.dbapi2 as sqlite
-#import pysqlite2.dbapi2
-
-#import make_waterlevel_ais as wl_ais
-import ais.waterlevel as wl_ais
-import ais.ais_msg_8 as msg8_ais
-from ais.nmea import buildNmea
-import noaadata.stations as Stations
 from decimal import Decimal
 import calendar
+import sys
+
+from SOAPpy import SOAPProxy
+
+import ais.ais_msg_8 as msg8_ais
+from ais.nmea import buildNmea
+import ais.waterlevel as wl_ais
+import noaadata.stations as Stations
 
 stations = Stations.ActiveStations(forceCache=True)
 
@@ -62,6 +38,8 @@ monthLUT = {
     'Nov':11,
     'Dec':12
 }
+
+
 def splitNoaaDateTimeSoap(datetimeStr):
     '''
     Splits a noaa utc time into fields that are more usable.
@@ -80,11 +58,11 @@ def splitNoaaDateTimeSoap(datetimeStr):
 
     return yr,mo,da,hr,mi
 
+
 def noaawaterlevel2aisMsg8Nmea(stationID,mmsi,datum,wl,verbose=False,debug=False):
     '''
     Return one long NMEA string.  This will be oversized for the nmea spec.
     '''
-    #print 'noaawaterlevel2aisMsg8Nmea\n  ',wl
     payloadBits = noaawaterlevel2aisBits(stationID,mmsi=mmsi,datum=datum,wl=wl,verbose=verbose,debug=debug)
 
     nmeaStr = buildNmea(payloadBits)
@@ -115,9 +93,10 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
     '''
     #wl = None
     #wl = wl_dap.getWaterLevelNow(stationID,verbose,datum)
-    if verbose: print 'water level dict:',wl
+    if verbose:
+        print 'water level dict:', wl
 
-    # FIX: check for link down state and return a link down packet
+    # TODO(schwehr): Check for link down state and return a link down packet.
 
     params = {}
 
@@ -145,11 +124,11 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
     params['datum']      = int(wl_ais.datumEncodeLut[datum])
     params['sigma']      = float(wl.sigma)
     params['o']          = int(wl.O)
-    
+
     if params['o']<0:
         print 'wl.O',wl.O, params['o'],'FIX: what does this mean?  Forcing O to be positive'
         params['o'] = -params['o']
-    
+
 
     if bool(wl.L): params['levelinferred'] = True
     else:          params['levelinferred'] = False
@@ -157,17 +136,18 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
     else:          params['flat_tolerance_exceeded'] = False
     if bool(wl.R): params['rate_tolerance_exceeded'] = True
     else:          params['rate_tolerance_exceeded'] = False
-    params['temp_tolerance_exceeded']  = False	# FIX: Where is the code for this???
+    params['temp_tolerance_exceeded']  = False  # FIX: Where is the code for this???
     params['expected_height_exceeded'] = False  # FIX: Where is the code for this???
-    params['link_down'] = False         
+    params['link_down'] = False
 
     if verbose:
-	wl_ais.printFields(params)
+        wl_ais.printFields(params)
         print 'params dump:'
         for item in params.keys():
             print '  ',item,params[item]
 
     return wl_ais.encode(params)
+
 
 if __name__=='__main__':
 
@@ -189,45 +169,32 @@ if __name__=='__main__':
     parser.add_option('--mmsi',dest='mmsi',default='338040883'
                       ,help='Specify the station to print.  (Default MMSI belongs to Kurt) [default: %default]')
     parser.add_option('-o','--output',dest='outputFileName',default=None,
-		      help='Name of the python file to write [default: stdout]')
+                      help='Name of the python file to write [default: stdout]')
 
     # FIX: make choice...
     parser.add_option('-d','--datum',dest='datum',default='MSL',
-		      help='What reference datum to use for the water levels [default: %default]')
+                      help='What reference datum to use for the water levels [default: %default]')
 
 
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		      help='Make the test output verbose')
+                      help='Make the test output verbose')
 
-    (options,args) = parser.parse_args()
+    options, args = parser.parse_args()
 
     verbose = options.verbose
     stationId=options.station
     mmsi = options.mmsi
-    #stationId=8638610
-    #mmsi=338040883
 
     o=sys.stdout
-    if options.outputFileName!=None:
-        o = file(options.outputFileName,'w')
+    if options.outputFileName:
+        o = open(options.outputFileName, 'w')
 
 
     server = SOAPProxy(url,namespace)
 
-#     for mon in range(1,13):
-#         beginDate='2006'+('%02d' % mon )+'01'
-#         endDate='2006'+('%02d' % mon )+str(daysPerMon[mon])
-#         print beginDate,'...',endDate
-#         response = server.getWaterLevelRawSixMin(stationId=str(stationId),beginDate=beginDate,endDate=endDate,datum='MSL',unit=0,timeZone=0)
-#         print len(response.item)
-#         #print response
-
-
     for mon in range(options.monthStart,options.monthEnd+1):
-        #print mon
         beginDate=str(options.year)+('%02d' % mon )+'01'
         endDate=str(options.year)+('%02d' % mon )+str(daysPerMon[mon])
-        #if verbose:
         print beginDate,'...', endDate
         response = server.getWaterLevelRawSixMin(stationId=str(stationId)
                                                  ,beginDate=beginDate,endDate=endDate,
@@ -243,7 +210,6 @@ if __name__=='__main__':
                 print 'ERROR: something with this line'
                 print wl
                 continue
-            #if verbose: print wlStr
             o.write( wlStr + '\n' )
 
     if False:
@@ -257,7 +223,7 @@ if __name__=='__main__':
         for wl in response.item:
             #print wl
             wlStr = noaawaterlevel2aisMsg8Nmea(stationId,mmsi,datum=options.datum,wl=wl)
-            if verbose: 
+            if verbose:
                 print wlStr
             o.write( wlStr + '\n' )
 
