@@ -1,9 +1,5 @@
-######################################################################
-# $Id$
-# 
-# AUTHOR: Kurt Schwehr
-# COPYRIGHT: 2006 University of New Hampshire, Center for Coastal and Ocean Mapping
-######################################################################
+SHELL := /bin/bash
+
 help:
 	@echo
 	@echo " Welcome to the AIS python module:"
@@ -16,7 +12,6 @@ help:
 	@echo "  make xml-validate - Cross check the XML and XML Schema"
 
 
-SHELL=/bin/bash
 
 .PHONY: clean
 clean:
@@ -25,14 +20,6 @@ clean:
 .PHONY: real-clean
 real-clean: clean
 	rm -rf html
-
-.PHONY: status
-status:
-	svn status
-
-.PHONY: diff
-diff:
-	svn diff
 
 full-test: check xml-validate test
 
@@ -72,7 +59,3 @@ check-fix:
 #	xmllint --noout --schema ais.xsd ais.xml
 #	xsv ais.xml ais.xsd
 #	xml val -e --xsd ais.xsd ais.xml
-
-tags: etags
-etags:
-	etags *.py
