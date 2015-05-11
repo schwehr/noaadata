@@ -3,36 +3,26 @@ __version__ = '$Revision: 4762 $'.split()[1]
 __date__ = '$Date: 2006-09-19 14:56:22 -0400 (Tue, 19 Sep 2006) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
-__doc__='''
-Build the water level binary broadcast message for NOAA water level
-stations.  Does NOT use the St Lawrence Seaway message format.
+"""Water level binary broadcast message for NOAA water level stations.
 
-@todo: How do I sync the clocks on my computer to those at NOAA?
+Does NOT use the St Lawrence Seaway message format.
 
-@see: U{NOAA DODS/OPeNDAP page<http://opendap.co-ops.nos.noaa.gov/dods/>}
-@requires: U{pydap/dap-py<http://pydap.org/>}
-@requires: U{epydoc<http://epydoc.sourceforge.net/>}
+TODO(schwehr): How do I sync the clocks on my computer to those at NOAA?
 
-@author: U{'''+__author__+'''<http://schwehr.org/>}
-@license: Apache 2.0
-@copyright: (C) 2007 Kurt Schwehr
-@version: ''' + __version__ +'''
-@since: 04-Jan-2007
+NOAA DODS/OPeNDAP page: http://opendap.co-ops.nos.noaa.gov/dods/
 
-@var __date__: Date of last svn commit
-@undocumented: __version__ __author__ __doc__ parser success 
+TODO(schwehr): Switch this to one of the waterlevel standards.
+"""
 
-'''
-
-import sys, os
 from decimal import Decimal
-#import decimal.Decimal as Decimal
+import os
+import sys
 
+from ais.nmea import buildNmea
 import noaadata.stations as Stations
 import noaadata.waterlevel_dap as wl_dap
-from ais.nmea import buildNmea
 
-import ais.waterlevel as wl_ais
+# import ais.waterlevel as wl_ais
 import ais.ais_msg_8 as msg8_ais
 import ais.nmea
 from BitVector import BitVector
@@ -151,7 +141,7 @@ def noaawaterlevel2aisBits(stationID,mmsi,verbose=False,debug=False,datum='MSL')
 	    '_END_DATE': '20070104 16:54',
 	    'DCP': '1',
 	    'SENSOR_ID': 'A1',
-	    'DATE_TIME': 'Jan  4 2007  4:36PM', 
+	    'DATE_TIME': 'Jan  4 2007  4:36PM',
 	    'WL_VALUE': 0.674,
 	    'SIGMA': 0.005,
 	    'O': 0, # Samples outside of 3 sigma
@@ -191,12 +181,9 @@ def noaawaterlevel2aisBits(stationID,mmsi,verbose=False,debug=False,datum='MSL')
     params['sigma']      = float(wl['SIGMA'])
     params['o']          = wl['O']
 
- 
-
-
     #
     # FIX: I think I am missing some values in the returned data!
-    # 
+    #
 
     if bool(wl['L']): params['levelinferred'] = True
     else:             params['levelinferred'] = False
@@ -204,13 +191,12 @@ def noaawaterlevel2aisBits(stationID,mmsi,verbose=False,debug=False,datum='MSL')
     else:             params['flat_tolerance_exceeded'] = False
     if bool(wl['R']): params['rate_tolerance_exceeded'] = True
     else:             params['rate_tolerance_exceeded'] = False
-    params['temp_tolerance_exceeded']  = False	# FIX: Where is the code for this???
-    params['expected_height_exceeded'] = False  # FIX: Where is the code for this???
-    params['link_down'] = False         
+    params['temp_tolerance_exceeded']  = False  # FIX: Where is the code for this?
+    params['expected_height_exceeded'] = False  # FIX: Where is the code for this?
+    params['link_down'] = False
 
     # FIX: put in the timeLastMeastured
 
-        
     #params['timeLastMeasured_month'] = params['timetag_month']
     #params['timeLastMeasured_day']   = params['timetag_day']
     #params['timeLastMeasured_hour']  = params['timetag_hour']
@@ -218,7 +204,7 @@ def noaawaterlevel2aisBits(stationID,mmsi,verbose=False,debug=False,datum='MSL')
     #params['timeLastMeasured_sec']   = 0
 
     if verbose:
-	wl_ais.printFields(params)
+        wl_ais.printFields(params)
         print 'params dump:'
         for item in params.keys():
             print '  ',item,params[item]
@@ -257,7 +243,7 @@ if __name__ == '__main__':
 	import doctest
 	numfail,numtests=doctest.testmod()
 	if numfail==0: print 'ok'
-        else: 
+        else:
 	    print 'FAILED'
 	    success=False
 
