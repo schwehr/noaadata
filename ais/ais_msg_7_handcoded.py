@@ -35,41 +35,42 @@ which should be packaged with the resulting files.
 
 import sys
 from decimal import Decimal
+
+from aisutils import aisstring
+from aisutils import binary
+from aisutils import sqlhelp
+from aisutils import uscg
+
 from BitVector import BitVector
 
-from aisutils import uscg
-from aisutils import sqlhelp
-import aisstring
-import binary
-
 fieldList = (
-	'MessageID',
-	'RepeatIndicator',
-	'UserID',
-	'Spare',
-	'DestID1',
-	'SeqID1',
-	'DestID2',
-	'SeqID2',
-	'DestID3',
-	'SeqID3',
-	'DestID4',
-	'SeqID4',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
+    'DestID1',
+    'SeqID1',
+    'DestID2',
+    'SeqID2',
+    'DestID3',
+    'SeqID3',
+    'DestID4',
+    'SeqID4',
 )
 
 fieldListPostgres = (
-	'MessageID',
-	'RepeatIndicator',
-	'UserID',
-	'Spare',
-	'DestID1',
-	'SeqID1',
-	'DestID2',
-	'SeqID2',
-	'DestID3',
-	'SeqID3',
-	'DestID4',
-	'SeqID4',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
+    'DestID1',
+    'SeqID1',
+    'DestID2',
+    'SeqID2',
+    'DestID3',
+    'SeqID3',
+    'DestID4',
+    'SeqID4',
 )
 
 toPgFields = {

@@ -30,16 +30,19 @@ import sys
 # Module Variables
 ######################################################################
 
-typeBitsGuess = { 'bool':1,
-		  'uint':8, 'sint':8,
-		  'udecimal':8, 'sdecimal':8,
-		  'float':32, 'double':64,   # These are mandatory
-		  'aisstr6':6, 'ascii7':7,   # These are mandatory
+# Best initial guess for each type size.  The floating point and
+# string values must be these sizes.
+typeBitsGuess = {
+    'bool':1,
+    'uint':8,
+    'sint':8,
+    'udecimal':8,
+    'sdecimal':8,
+    'float':32,
+    'double':64,
+    'aisstr6':6,
+    'ascii7':7,
 }
-'''
-Best initial guess for each type size.  The floating point and
-string values must be these sizes.
-'''
 
 typeChoices = ['bool','uint','sint','udecimal','sdecimal','float','double','aisstr6','ascii7']
 '''

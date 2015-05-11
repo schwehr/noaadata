@@ -14,8 +14,7 @@ deserialize: ais binary to python
 The generated code uses translators.py, binary.py, and aisstring.py
 which should be packaged with the resulting files.
 
-
- TODO(schwehr):FIX: put in a description of the message here with fields and types.
+TODO(schwehr):FIX: put in a description of the message here with fields and types.
 """
 import doctest
 import sys
@@ -29,11 +28,8 @@ from aisutils import binary
 from aisutils import sqlhelp
 from aisutils import uscg
 
-# FIX: check to see if these will be needed
 TrueBV  = BitVector(bitstring="1")
-"Why always rebuild the True bit?  This should speed things up a bunch"
 FalseBV = BitVector(bitstring="0")
-"Why always rebuild the False bit?  This should speed things up a bunch"
 
 
 fieldList = (

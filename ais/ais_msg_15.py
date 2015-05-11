@@ -29,13 +29,6 @@ from aisutils import binary
 from aisutils import sqlhelp
 from aisutils import uscg
 
-# FIX: check to see if these will be needed
-TrueBV  = BitVector(bitstring="1")
-"Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
-"Why always rebuild the False bit?  This should speed things up a bunch"
-
-
 fieldList = (
     'MessageID',
     'RepeatIndicator',

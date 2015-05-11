@@ -24,8 +24,10 @@ from decimal import Decimal
 import logging
 import sys
 
+import ais_msg_5
+from aisutils import aisstring
+from aisutils import binary
 from aisutils import sqlhelp
-import binary, aisstring
 from BitVector import BitVector
 
 fieldList = (
@@ -196,10 +198,9 @@ RepeatIndicatorDecodeLut = {
 	'3':'do not repeat any more',
 }
 
-import ais.ais_msg_5
 
-shipandcargoEncodeLut = ais.ais_msg_5.shipandcargoEncodeLut
-shipandcargoDecodeLut = ais.ais_msg_5.shipandcargoDecodeLut
+shipandcargoEncodeLut = ais_msg_5.shipandcargoEncodeLut
+shipandcargoDecodeLut = ais_msg_5.shipandcargoDecodeLut
 
 dimCEncodeLut = {
 	'63 m or greater':'63',

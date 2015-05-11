@@ -2,10 +2,10 @@
 
 """Adds SOTDMA commstate to messages 1 and 2."""
 
-import sys
 from decimal import Decimal
 from optparse import OptionParser
 import StringIO
+import sys
 
 from BitVector import BitVector
 
@@ -13,8 +13,6 @@ from aisutils import aisstring
 from aisutils import binary
 import commstate
 from aisutils import sqlhelp
-
-# from ais_msg_1 import *
 
 fieldList = (
     'MessageID',
