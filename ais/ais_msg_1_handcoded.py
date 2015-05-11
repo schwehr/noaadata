@@ -174,6 +174,43 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 
 	return # Nothing to return
 
+def addMsgOptions(parser):
+    parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
+                help='decode a "position" AIS message')
+    parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
+                help='encode a "position" AIS message')
+    parser.add_option('--RepeatIndicator-field', dest='RepeatIndicatorField',default=0,metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--UserID-field', dest='UserIDField',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--NavigationStatus-field', dest='NavigationStatusField',default=15,metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--ROT-field', dest='ROTField',default=-128,metavar='int',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--SOG-field', dest='SOGField',default=Decimal('102.3'),metavar='udecimal',type='string'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--PositionAccuracy-field', dest='PositionAccuracyField',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--longitude-field', dest='longitudeField',default=Decimal('181'),metavar='decimal',type='string'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--latitude-field', dest='latitudeField',default=Decimal('91'),metavar='decimal',type='string'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--COG-field', dest='COGField',default=Decimal('360'),metavar='udecimal',type='string'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--TrueHeading-field', dest='TrueHeadingField',default=511,metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--TimeStamp-field', dest='TimeStampField',default=60,metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--RAIM-field', dest='RAIMField',metavar='bool',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--state_syncstate-field', dest='state_syncstateField',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--state_slottimeout-field', dest='state_slottimeoutField',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--state_slotoffset-field', dest='state_slotoffsetField',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+
+
 def main():
 
 	parser = OptionParser(usage="%prog [options]")
@@ -215,7 +252,6 @@ def main():
 	parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
 			  ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
 
-
 	dbChoices = ('sqlite','postgres')
 	parser.add_option('-D','--db-type',dest='dbType',default='postgres'
 			  ,choices=dbChoices,type='choice'
@@ -223,7 +259,7 @@ def main():
 
 	addMsgOptions(parser)
 
-	(options,args) = parser.parse_args()
+	options, args = parser.parse_args()
 
 	outfile = sys.stdout
 	if None!=options.outputFileName:

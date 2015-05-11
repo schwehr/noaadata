@@ -226,8 +226,6 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 def main():
     parser = OptionParser(usage="%prog [options]")
 
-    parser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
-        help='run the documentation tests')
     parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
         help='run the unit tests')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',

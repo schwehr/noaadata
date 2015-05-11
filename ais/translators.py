@@ -98,26 +98,9 @@ decode['float']=float_dec
 encode['string']=aisstring.encode
 decode['string']=aisstring.decode
 
-######################################################################
+
 if __name__=='__main__':
     myparser = OptionParser(usage="%prog [options]")
-    myparser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
-                        help='run the documentation tests')
-#    verbosity.addVerbosityOptions(myparser)
-    (options,args) = myparser.parse_args()
+    options, args = myparser.parse_args()
 
-    success=True
-
-    if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-#	if options.verbosity>=VERBOSE: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else:
-	    print 'FAILED'
-	    success=False
-
-    if not success:
-	sys.exit('Something Failed')
+    # TODO(schwehr): Call something or delete this main or file.

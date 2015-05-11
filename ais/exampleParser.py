@@ -51,7 +51,6 @@ def waterlevelEncode(*aDict, **params):
 	  - dac:  uint
 	  - unavail_uint:  uint
 	  - uint:  uint
-	FIX: generate CORRECT doctest string that does all the defaults
 
 	The default message:
 
@@ -94,36 +93,14 @@ if __name__=='__main__':
     myparser = OptionParser(usage="%prog [options]",
 			    version="%prog "+__version__)
 
-    #sys.exit('EARLY EXIT - FIX: remove')
-    myparser.add_option('--doc-test',dest='doctest',default=False,action='store_true',
-                        help='run the documentation tests')
     myparser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
                         help='run the unit tests')
     myparser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
                         help='Make the test output verbose')
 
-    (options,args) = myparser.parse_args()
-    success=True
-
-    if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-	if options.verbose: sys.argv+='-v'
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else:
-	    print 'FAILED'
-	    success=False
-
-    if not success:
-	sys.exit('Something Failed')
-
-    del success # Hide success from epydoc
-
+    options, args = myparser.parse_args()
 
     if options.unittest:
 	sys.argv = [sys.argv[0]]
 	if options.verbose: sys.argv+='-v'
         print 'Currently no unit tests'
-	#unittest.main()
