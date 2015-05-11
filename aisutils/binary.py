@@ -46,17 +46,6 @@ def float2bitvec(floatval):
     '''
     Get the IEEE floating point bits for a python float
 
-    >>> print float2bitvec(1.)
-    00111111100000000000000000000000
-
-    >>> print float2bitvec (-1.)
-    10111111100000000000000000000000
-
-    >>> print float2bitvec (-999999.)
-    11001001011101000010001111110000
-
-
-
     @bug: May have bite order backwards
     @type floatval: number
     @param floatval: number to convert to bits
@@ -74,9 +63,9 @@ def float2bitvec(floatval):
     # FIX: make this go in one step now that bitvector 1.3 is out.
     bvList = []
     for i in range(4):
- 	bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
-	#bv2 = BitVector(intVal=ord(s[i]),size=8)
-	bvList.append(bv1)
+         bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
+        #bv2 = BitVector(intVal=ord(s[i]),size=8)
+        bvList.append(bv1)
     return joinBV(bvList)
 
 def bitvec2float(bv):
@@ -101,8 +90,8 @@ def joinBV(bvSeq):
     '''
     bvTotal=BitVector(size=0)
     for bv in bvSeq:
-	bvTotal = bvTotal + bv
-	
+        bvTotal = bvTotal + bv
+
     return bvTotal
 
 def setBitVectorSize(bv,size=8):
@@ -126,12 +115,6 @@ def addone(bv):
     '''
     Add one bit to a bit vector.  Overflows are silently dropped.
 
-    >>> print addone(BitVector(bitstring='1100'))
-    1101
-
-    >>> print addone(BitVector(bitstring='1111'))
-    0000
-
     @param bv: Add one to these bits
     @type bv: BitVector
     @return: Bits with one added
@@ -140,23 +123,16 @@ def addone(bv):
     new = bv
     r = range(1,len(bv)+1)
     for i in r:
-	index = len(bv)-i
-	if 0==bv[index]:
-	    new[index]=1
-	    break
-	new[index]=0
+        index = len(bv)-i
+        if 0==bv[index]:
+            new[index]=1
+            break
+        new[index]=0
     return new
 
 def subone(bv):
     '''
     Subtract one bit from a bit vector
-
-    >>> print subone(BitVector(bitstring='1111'))
-    1110
-    >>> print subone(BitVector(bitstring='0010'))
-    0001
-    >>> print subone(BitVector(bitstring='0000'))
-    1111
 
     @param bv: Bits to add one bit to the right side
     @type bv: BitVector
@@ -165,11 +141,11 @@ def subone(bv):
     new = bv
     r = range(1,len(bv)+1)
     for i in r:
-	index = len(bv)-i
-	if 1==bv[index]:
-	    new[index]=0
-	    break
-	new[index]=1
+        index = len(bv)-i
+        if 1==bv[index]:
+            new[index]=0
+            break
+        new[index]=1
     return new
 
 
@@ -179,27 +155,7 @@ def bvFromSignedInt(intVal,bitSize=None):
 
     Positives must have a '0' in the left hand position.
 
-    >>> print bvFromSignedInt(0,bitSize=4)
-    0000
-    >>> print bvFromSignedInt(1,bitSize=4)
-    0001
-    >>> print bvFromSignedInt(7,bitSize=4)
-    0111
-
     Negative numbers must have a '1' in the left hand position.
-
-    >>> print bvFromSignedInt(-2,bitSize=2)
-    10
-
-    >>> print bvFromSignedInt(-1,bitSize=4)
-    1111
-    >>> print bvFromSignedInt(-2,bitSize=4)
-    1110
-    >>> print bvFromSignedInt(-7,bitSize=4)
-    1001
-    >>> print bvFromSignedInt(-8,bitSize=4)
-    1000
-
 
     @param intVal: integer value to turn into a bit vector
     @type intVal: int
@@ -219,11 +175,11 @@ def bvFromSignedInt(intVal,bitSize=None):
             assert(False)
         if len(bv) == bitSize and bv[0] == 1: return bv
     if intVal>=0:
-	bv = BitVector(intVal=0) + bv
+        bv = BitVector(intVal=0) + bv
     else:
-	bv = subone(bv)
-	bv = ~bv
-	bv = BitVector(intVal=1) + bv
+        bv = subone(bv)
+        bv = ~bv
+        bv = BitVector(intVal=1) + bv
     return bv
 
 def signedIntFromBV(bv):
@@ -236,26 +192,7 @@ def signedIntFromBV(bv):
 
     Positive values decode like so:
 
-    >>> signedIntFromBV(BitVector(bitstring='0000'))
-    0
-    >>> signedIntFromBV(BitVector(bitstring='0101'))
-    5
-
     Here are some negative integer examples:
-
-    >>> signedIntFromBV(BitVector(bitstring='1111'))
-    -1
-    >>> signedIntFromBV(BitVector(bitstring='1110'))
-    -2
-    >>> signedIntFromBV(BitVector(bitstring='1010'))
-    -6
-    >>> signedIntFromBV(BitVector(bitstring='1001'))
-    -7
-    >>> signedIntFromBV(BitVector(bitstring='1000'))
-    -8
-
-    >>> signedIntFromBV(BitVector(bitstring='10'))
-    -2
 
     @param bv: Bits to treat as an signed int
     @type bv: BitVector
@@ -277,38 +214,6 @@ def signedIntFromBV(bv):
 def ais6chartobitvec(char6):
     '''
     Create a 6 bit BitVector for a single character
-
-    >>> print int(ais6chartobitvec('0'))
-    0
-    >>> print int(ais6chartobitvec('1'))
-    1
-    >>> print int(ais6chartobitvec('9'))
-    9
-    >>> print int(ais6chartobitvec('<'))
-    12
-    >>> print int(ais6chartobitvec('='))
-    13
-    >>> print int(ais6chartobitvec('@'))
-    16
-    >>> print int(ais6chartobitvec('A'))
-    17
-
-    >>> print int(ais6chartobitvec('O'))
-    31
-    >>> print int(ais6chartobitvec('P'))
-    32
-    >>> print int(ais6chartobitvec('Q'))
-    33
-
-    >>> print int(ais6chartobitvec('R'))
-    34
-
-    >>> print int(ais6chartobitvec('a'))
-    41
-    >>> print int(ais6chartobitvec('w'))
-    63
-    >>> print ais6chartobitvec('w')
-    111111
 
     x, y, and z will not appear.
 
@@ -346,17 +251,17 @@ def ais6tobitvecSLOW(str6):
     bvtotal = BitVector(size=0)
 
     for c in str6:
-	c = ord(c)
-	val = c - 48
-	if val>=40: val -= 8
-	bv = None
-	#print 'slow: ',c,val
-	if 0==val:
-	    bv = BitVector(size=6)
-	else:
-	    bv = setBitVectorSize(BitVector(intVal=val),6)
-	    #bv = BitVector(intVal=val,size=6)  # FIX: I thought this would work, but it is more than 6 bits?
-	bvtotal += bv
+        c = ord(c)
+        val = c - 48
+        if val>=40: val -= 8
+        bv = None
+        #print 'slow: ',c,val
+        if 0==val:
+            bv = BitVector(size=6)
+        else:
+            bv = setBitVectorSize(BitVector(intVal=val),6)
+            #bv = BitVector(intVal=val,size=6)  # FIX: I thought this would work, but it is more than 6 bits?
+        bvtotal += bv
     return bvtotal
 
 
@@ -370,14 +275,14 @@ def buildLookupTables():
     #encode={}
     for i in range(127):
 #    for i in range(64):  # FIX: is this the right range?
-	if i<48: continue
-	c = chr(i)
-	bv = ais6tobitvecSLOW(c)
-	val = int (bv)
-	if val>=64: continue
-	#encode[val] = c
-	decode[c] = bv
-	#print i, val, bv, "'"+str(c)+"'"
+        if i<48: continue
+        c = chr(i)
+        bv = ais6tobitvecSLOW(c)
+        val = int (bv)
+        if val>=64: continue
+        #encode[val] = c
+        decode[c] = bv
+        #print i, val, bv, "'"+str(c)+"'"
     #return encode,decode
     return decode
 
@@ -425,15 +330,6 @@ def ais6tobitvec(str6):
     then there will be pad bits in the str6.  This function has no way
     to know how many pad bits there are.
 
-    >>> print ais6tobitvec('6')
-    000110
-
-    >>> print ais6tobitvec('6b')
-    000110101010
-
-    >>> print ais6tobitvec('6bF:R')
-    000110101010010110001010100010
-
     @bug: Need to add pad bit handling
 
     @param str6: ASCII that as it appears in the NMEA string
@@ -446,34 +342,18 @@ def ais6tobitvec(str6):
     bvtotal = BitVector(size=6*len(str6))
 
     for pos in range(len(str6)):
-	bv = decode[str6[pos]]
-	start = pos*6
-	for i in range(6):
-	    bvtotal[i+start] = bv[i]
+        bv = decode[str6[pos]]
+        start = pos*6
+        for i in range(6):
+            bvtotal[i+start] = bv[i]
     return bvtotal
 
 def getPadding(bv):
     '''
     Return the number of bits that need to be padded for a bit vector
 
-    >>> getPadding(BitVector(bitstring='0'))
-    5
-    >>> getPadding(BitVector(bitstring='01'))
-    4
-    >>> getPadding(BitVector(bitstring='010'))
-    3
-    >>> getPadding(BitVector(bitstring='0101'))
-    2
-    >>> getPadding(BitVector(bitstring='01010'))
-    1
-    >>> getPadding(BitVector(bitstring='010101'))
-    0
-    >>> getPadding(BitVector(bitstring='0101010'))
-    5
-
     @rtype: int
     @return: number of pad bits required for this bitvector to make it bit aligned to the ais nmea string
-
     '''
     pad = 6-(len(bv)%6)
     if 6==pad: pad = 0
@@ -481,9 +361,6 @@ def getPadding(bv):
 
 def bitvectoais6(bv,doPadding=True):
     """Convert bit vector int an ITU AIS 6 bit string.  Each character represents 6 bits
-
-    >>> print bitvectoais6(BitVector(bitstring='000110101010010110001010100010'))
-    ('6bF:R', 0)
 
     @param bv: message bits (must be already stuffed)
     @type bv: BitVector
@@ -493,7 +370,6 @@ def bitvectoais6(bv,doPadding=True):
     @todo: make a test base for needing padding
     @bug: handle case when padding needed
     """
-    #print "FIX: need to test"
     pad = 6-(len(bv)%6)
     if 6==pad: pad = 0
     strLen = len(bv)/6
@@ -501,25 +377,21 @@ def bitvectoais6(bv,doPadding=True):
     aisStrLst = []
 
     if pad!=0:
-	if doPadding:
-	    #print 'FIX: check padding to make sure it works right'
+        if doPadding:
             print 'pad befaore',len(bv)
-	    bv = bv + BitVector(size=pad)
+            bv = bv + BitVector(size=pad)
             print 'pad after',len(bv)
-	else:
-	    print 'ERROR: What are you doing with a non-align entity?  Let me pad it!'
-	    assert False
+        else:
+            print 'ERROR: What are you doing with a non-align entity?  Let me pad it!'
+            assert False
 
     #else: # No pad needed
     for i in range(strLen):
-	start = i*6
-	end = (i+1)*6
-	val = int(bv[start:end])
-	#assert(0 <= val)
-	#assert(64 >= val)
-	c = encode[val]
-	aisStrLst.append(c)
-        #print 'appending',c,'for',val
+        start = i*6
+        end = (i+1)*6
+        val = int(bv[start:end])
+        c = encode[val]
+        aisStrLst.append(c)
 
     aisStr = ''.join(aisStrLst)
 
@@ -558,23 +430,23 @@ if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",version="%prog "+__version__)
     parser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
-		      help='run the documentation tests')
+                      help='run the documentation tests')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		      help='Make the test output verbose')
+                      help='Make the test output verbose')
     (options,args) = parser.parse_args()
 
     success=True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-	if options.verbose: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else:
-	    print 'FAILED'
-	    success=False
+        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        sys.argv= [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print 'ok'
+        else:
+            print 'FAILED'
+            success=False
 
     if not success:
-	sys.exit('Something Failed')
+        sys.exit('Something Failed')

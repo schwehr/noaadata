@@ -121,13 +121,14 @@ goal is to illustrated the Tide Aware ENC and the AIS XML engine.
       <testvalue>0</testvalue>
     </field>
 
+<!--
     <field name="sigma" numberofbits="32" type="float">
       <description>Standard deviation of 1 second samples used to compute the water level height</description>
       <note>could easily be make a more compact decimal</note>
       <units>m</units>
       <testvalue>-1.234</testvalue>
     </field>
-
+-->
     <field name="o" numberofbits="8" type="uint">
       <description>Count of number of samples that fall outside a 3-sigma band about the mean</description>
       <unavailable>255</unavailable>

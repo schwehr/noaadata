@@ -67,11 +67,6 @@
     </field>
 
 
-    <field name="aFloat" numberofbits="32" type="float">
-      <description>An IEEE floating point number</description>
-      <testvalue>-1234.5678</testvalue>
-    </field>
-
   </message>
   <!-- waterlevel -->
 

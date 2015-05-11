@@ -36,7 +36,6 @@ AISXMLFILES += imo_001_13.xml
 AISXMLFILES += imo_001_14.xml
 
 # Move to a prototypes subdir
-AISXMLFILES += waterlevel.xml
 AISXMLFILES += waterlevel2.xml
 AISXMLFILES += whalenotice.xml
 AISXMLFILES += whalenotice1.xml

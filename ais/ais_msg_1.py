@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """Python functions to serialize/deserialize binary messages.
 
 Need to then wrap these functions with the outer AIS packet and then
