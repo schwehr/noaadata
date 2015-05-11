@@ -48,17 +48,11 @@ AISXMLFILES += allaistypes.xml
 AISPYFILES := ${AISXMLFILES:.xml=.py} ais_msg_2_handcoded.py
 AISHTMLFILES := ${AISXMLFILES:.xml=.html}
 
-######################################################################
-# Rules
-######################################################################
-
 default: ${AISHTMLFILES} ${AISPYFILES}
 
 py: ${AISPYFILES}
 html: ${AISHTMLFILES}
 
-#view-html: 
-#	open $<
 clean:
 	rm -f *expanded*.{xml,html}
 	-rm -f *.pyc
@@ -74,6 +68,5 @@ clean:
 	xsltproc ais.xsl $<.expanded > $@
 	rm $<.expanded
 
-.PHONY: test
 test:
-	./binary.py --test
+	echo 'nop'
