@@ -1,6 +1,5 @@
-AISXMLFILES:=${wildcard [a-gi-rt-z]*.xml}
+AISXMLFILES:=${wildcard *.xml}
 
-GEN:=../../scripts/aisxmlbinmsg2py.py
 EXP:=../expandais.py
 
 PP=PYTHONPATH=..:../..
@@ -10,12 +9,10 @@ PP=PYTHONPATH=..:../..
 	xsltproc ../ais.xsl $<.expanded > $@
 	rm $<.expanded
 
-AISPYFILES := ${AISXMLFILES:.xml=.py}
 AISHTMLFILES := ${AISXMLFILES:.xml=.html}
 
-default: ${AISPYFILES} ${AISHTMLFILES}
+default: ${AISHTMLFILES}
 
-py: ${AISPYFILES}
 html: ${AISHTMLFILES}
 
 clean:
