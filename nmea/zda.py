@@ -1,51 +1,39 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2068 $'.split()[1]
-__date__ = '$Date: 2006-05-02 08:17:59 -0400 (Tue, 02 May 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+"""Generate/decode NMEA messages for ZDA time.
 
-__doc__='''
-Generate/decode NMEA messages.  For now, this just supports ZDA time stamps.
+For now, this just supports ZDA time stamps.
+"""
 
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@copyright: 2006
+import time
+import sys
 
-@var __date__: Date of last svn commit
-
-@undocumented: __version__ __author__ __doc__ myparser
-'''
-
-# Python standard libraries
-import time, sys
-
-# Local
 import nmea
-#import verbosity
-#from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
-import calendar # to make the seconds since the epoch
+import calendar
 
-
+# List of the valide clock sources.
 timekeepers={
     'ZA': 'atomic clock',
     'ZC': 'chronometer',
     'ZQ': 'quartz',
     'ZV': 'radio update'
 }
-'list of the valide clock sources'
+
 
 def zdaEpochSeconds(nmeaStr):
-    '''
-    Return the seconds since the Epoch 
+    """
+    Return the seconds since the Epoch
 
     @return: seconds since the Epoch UTC
     @rtype: float
-    '''
+    """
     z = zdaDecode(nmeaStr)
-    return calendar.timegm((z['year'],z['mon'],z['day'],z['hour'],z['min'],z['decimalsec']))
+    return calendar.timegm((
+        z['year'], z['mon'], z['day'],
+        z['hour'], z['min'], z['decimalsec']))
 
 
 def zdaDecode(nmeaStr):
-    '''
+    """
     Decode quartz time nmea messages.
 
     >>> zdaDecode('$ZQZDA,110003.00,27,03,2006,-5,00*47')
@@ -55,7 +43,7 @@ def zdaDecode(nmeaStr):
     @type nmeaStr: str
     @rtype: dict
     @return: name value pairs for the GMT time of the message
-    '''
+    """
     # FIX: strip off new line here?
     assert(len(nmeaStr)>20)
     assert(nmeaStr[0] in ('$','!'))
@@ -80,13 +68,13 @@ def zdaDecode(nmeaStr):
     return val
 
 def ggaDecode(nmeaStr,validate=False):
-    '''
+    """
     Decode NMEA GPS FIX data
 
     $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 
     @param nmeaStr: nmea string to decode
-    '''
+    """
     if validate:
         assert(len(nmeaStr)>=71)
         assert(len(nmeaStr)<=78)
@@ -102,7 +90,7 @@ def ggaDecode(nmeaStr,validate=False):
     r['lat']=float(fields[2][0:2]) + float(fields[2][2:])/60.
     if fields[3]=='S': r['lat']=-r['lat']
 
-    # FIX: lon probably will fail for 
+    # FIX: lon probably will fail for
     lon = fields[4][:3]
     if lon[0]=='0': lon = lon[1:]
     r['lon']=float(lon) + float(fields[4][3:])/60.
@@ -121,7 +109,7 @@ def ggaDecode(nmeaStr,validate=False):
     r['diff_ref_station']=fields[14]
     return r
 
-'''
+"""
 GGA - Global Positioning System Fix Data
 Time, Position and fix related data for a GPS receiver.
 
@@ -129,7 +117,7 @@ Time, Position and fix related data for a GPS receiver.
         |         |       | |        | | |  |   |   | |   | |   |    |
  $--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh<CR><LF>
 
- Field Number: 
+ Field Number:
   1) Universal Time Coordinated (UTC)
   2) Latitude
   3) N or S (North or South)
@@ -160,10 +148,10 @@ Time, Position and fix related data for a GPS receiver.
  15) Checksum
 
 $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
-'''
+"""
 
 def zdaDict2TIMESTAMP(zdaDict):
-    '''
+    """
     Make an SQL TIMESTAMP from the results of a zdaDecode
 
     >>> zdaDict2TIMESTAMP({'hour': 11, 'min': 0, 'hsec': 0, 'sec': 3, 'mon': 3, 'year': 2006, 'day': 27})
@@ -173,40 +161,12 @@ def zdaDict2TIMESTAMP(zdaDict):
     @type zdaDict: dict
     @return: TIMESTAMP
     @rtype: str
-    '''
-    s=''
-    s+=str(zdaDict['year'])
-    s+='-'+('%02d' % zdaDict['mon'])
-    s+='-'+('%02d' % zdaDict['day'])
-    s+=' '+('%02d' % zdaDict['hour'])
-    s+=':'+('%02d' % zdaDict['min'])
-    s+=':'+('%02d' % zdaDict['sec'])
+    """
+    s = ''
+    s += str(zdaDict['year'])
+    s += '-' + ('%02d' % zdaDict['mon'])
+    s += '-' + ('%02d' % zdaDict['day'])
+    s += ' ' + ('%02d' % zdaDict['hour'])
+    s += ':' + ('%02d' % zdaDict['min'])
+    s += ':' + ('%02d' % zdaDict['sec'])
     return s
-
-
-######################################################################
-
-# if __name__=='__main__':
-#     from optparse import OptionParser
-#     myparser = OptionParser(usage="%prog [options]",
-# 			    version="%prog "+__version__)
-#     myparser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
-#                         help='run the documentation tests')
-#     verbosity.addVerbosityOptions(myparser)
-#     (options,args) = myparser.parse_args()
-
-#     success=True
-
-#     if options.doctest:
-# 	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-# 	sys.argv= [sys.argv[0]]
-# 	if options.verbosity>=VERBOSE: sys.argv.append('-v')
-# 	import doctest
-# 	numfail,numtests=doctest.testmod()
-# 	if numfail==0: print 'ok'
-# 	else: 
-# 	    print 'FAILED'
-# 	    success=False
-
-#     if not success:
-# 	sys.exit('Something Failed')

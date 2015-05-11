@@ -1,26 +1,20 @@
 # -*- shell-script -*- for emacs
-# $Revision: 10140 $
 
-# support:
+# Support.
 include VERSION
 include MANIFEST.in ChangeLog.html
-include control.in
-include noaadata-py.info.in
 include Makefile
 include LICENSE README COPYING
 include TODO
 include doc/*
-include doc/*/*
-include doc/data/*
-include doc/templates/*
-include noaadata/*.xml
+
+recursive-include noaadata Makefile *.py *.xml
 
 include nmea/*.py
 
 # extra stuff in ais:
 include ais/*.xsl
 include ais/*.xml 
-include ais/*.html
 include ais/*.wx.py
 include ais/Makefile
 
@@ -31,14 +25,11 @@ include ais/*/Makefile
 
 # St. Lawrence Seaway messages
 include ais/sls/*.xml 
-#include ais/sls/*.html
 
 # River Information System in Europe
 include ais/ris/*.xml 
-#include ais/ris/*.html
 
 # Documentation and testing
-#include html/* html-man/* 
 include test/* ais/test/*
 include ChangeLog.html
 
