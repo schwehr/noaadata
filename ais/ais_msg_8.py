@@ -37,29 +37,23 @@ FalseBV = BitVector(bitstring="0")
 
 
 fieldList = (
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
     'dac',
-    'reqDecimal',
-    'unavail_uint',
-    'anUInt',
-    'anInt',
-    'aBool',
-    'aStr',
-    'anUDecimal',
-    'aDecimal',
-    'aFloat',
+    'fi',
+    'BinaryData',
 )
 
 fieldListPostgres = (
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
     'dac',
-    'reqDecimal',
-    'unavail_uint',
-    'anUInt',
-    'anInt',
-    'aBool',
-    'aStr',
-    'anUDecimal',
-    'aDecimal',
-    'aFloat',
+    'fi',
+    'BinaryData',
 )
 
 toPgFields = {
@@ -81,19 +75,16 @@ Lookup table for each postgis field name to get its type.
 """
 
 def encode(params, validate=False):
-    '''Create a alltypesmsg binary message payload to pack into an AIS Msg alltypesmsg.
+    '''Create a bin_broadcast binary message payload to pack into an AIS Msg bin_broadcast.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 8 (field automatically set to "8")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI)
+      - Spare(uint): Reserved for definition by a regional authority. (field automatically set to "0")
+      - dac(uint): Appid designated area code (country)
+      - fi(uint): Appid functional identifier
+      - BinaryData(binary): Bits for a binary broadcast message
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
     @rtype: BitVector
@@ -102,37 +93,30 @@ def encode(params, validate=False):
     '''
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=366),16))
-    bvList.append(binary.bvFromSignedInt(122,8))
-    if 'unavail_uint' in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['unavail_uint']),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=8),6))
+    if 'RepeatIndicator' in params:
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3),2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['anUInt']),2))
-    bvList.append(binary.bvFromSignedInt(params['anInt'],3))
-    if params["aBool"]: bvList.append(TrueBV)
-    else: bvList.append(FalseBV)
-    bvList.append(aisstring.encode(params['aStr'],30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params['anUDecimal'])*Decimal('10')))),16))
-    bvList.append(binary.bvFromSignedInt(int(Decimal(params['aDecimal'])*Decimal('10')),16))
-    bvList.append(binary.float2bitvec(params['aFloat']))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dac']),10))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['fi']),6))
+    bvList.append(params['BinaryData'])
 
     return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-    '''Unpack a alltypesmsg message.
+    '''Unpack a bin_broadcast message.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 8 (field automatically set to "8")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI)
+      - Spare(uint): Reserved for definition by a regional authority. (field automatically set to "0")
+      - dac(uint): Appid designated area code (country)
+      - fi(uint): Appid functional identifier
+      - BinaryData(binary): Bits for a binary broadcast message
     @type bv: BitVector
     @param bv: Bits defining a message
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
@@ -144,51 +128,39 @@ def decode(bv, validate=False):
     #if validate:
     #    assert (len(bv)==FIX: SOME NUMBER)
     r = {}
-    r['dac']=366
-    r['reqDecimal']=122/Decimal('1')
-    r['unavail_uint']=int(bv[24:26])
-    r['anUInt']=int(bv[26:28])
-    r['anInt']=binary.signedIntFromBV(bv[28:31])
-    r['aBool']=bool(int(bv[31:32]))
-    r['aStr']=aisstring.decode(bv[32:62])
-    r['anUDecimal']=Decimal(int(bv[62:78]))/Decimal('10')
-    r['aDecimal']=Decimal(binary.signedIntFromBV(bv[78:94]))/Decimal('10')
-    r['aFloat']=binary.bitvec2float(bv[94:126])
+    r['MessageID']=8
+    r['RepeatIndicator']=int(bv[6:8])
+    r['UserID']=int(bv[8:38])
+    r['Spare']=0
+    r['dac']=int(bv[40:50])
+    r['fi']=int(bv[50:56])
+    r['BinaryData']=bv[56:]
     return r
 
+def decodeMessageID(bv, validate=False):
+    return 8
+
+def decodeRepeatIndicator(bv, validate=False):
+    return int(bv[6:8])
+
+def decodeUserID(bv, validate=False):
+    return int(bv[8:38])
+
+def decodeSpare(bv, validate=False):
+    return 0
+
 def decodedac(bv, validate=False):
-    return 366
+    return int(bv[40:50])
 
-def decodereqDecimal(bv, validate=False):
-    return 122/Decimal('1')
+def decodefi(bv, validate=False):
+    return int(bv[50:56])
 
-def decodeunavail_uint(bv, validate=False):
-    return int(bv[24:26])
-
-def decodeanUInt(bv, validate=False):
-    return int(bv[26:28])
-
-def decodeanInt(bv, validate=False):
-    return binary.signedIntFromBV(bv[28:31])
-
-def decodeaBool(bv, validate=False):
-    return bool(int(bv[31:32]))
-
-def decodeaStr(bv, validate=False):
-    return aisstring.decode(bv[32:62])
-
-def decodeanUDecimal(bv, validate=False):
-    return Decimal(int(bv[62:78]))/Decimal('10')
-
-def decodeaDecimal(bv, validate=False):
-    return Decimal(binary.signedIntFromBV(bv[78:94]))/Decimal('10')
-
-def decodeaFloat(bv, validate=False):
-    return binary.bitvec2float(bv[94:126])
+def decodeBinaryData(bv, validate=False):
+    return bv[56:]
 
 
 def printHtml(params, out=sys.stdout):
-        out.write("<h3>alltypesmsg</h3>\n")
+        out.write("<h3>bin_broadcast</h3>\n")
         out.write("<table border=\"1\">\n")
         out.write("<tr bgcolor=\"orange\">\n")
         out.write("<th align=\"left\">Field Name</th>\n")
@@ -196,6 +168,41 @@ def printHtml(params, out=sys.stdout):
         out.write("<th align=\"left\">Value</th>\n")
         out.write("<th align=\"left\">Value in Lookup Table</th>\n")
         out.write("<th align=\"left\">Units</th>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>MessageID</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'MessageID' in params:
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>RepeatIndicator</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'RepeatIndicator' in params:
+            out.write("    <td>"+str(params['RepeatIndicator'])+"</td>\n")
+            if str(params['RepeatIndicator']) in RepeatIndicatorDecodeLut:
+                out.write("<td>"+RepeatIndicatorDecodeLut[str(params['RepeatIndicator'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>UserID</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'UserID' in params:
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>Spare</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'Spare' in params:
+            out.write("    <td>"+str(params['Spare'])+"</td>\n")
+            out.write("    <td>"+str(params['Spare'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
@@ -207,92 +214,33 @@ def printHtml(params, out=sys.stdout):
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>reqDecimal</td>\n")
-        out.write("<td>decimal</td>\n")
-        if 'reqDecimal' in params:
-            out.write("    <td>"+str(params['reqDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['reqDecimal'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>unavail_uint</td>\n")
+        out.write("<td>fi</td>\n")
         out.write("<td>uint</td>\n")
-        if 'unavail_uint' in params:
-            out.write("    <td>"+str(params['unavail_uint'])+"</td>\n")
-            out.write("    <td>"+str(params['unavail_uint'])+"</td>\n")
+        if 'fi' in params:
+            out.write("    <td>"+str(params['fi'])+"</td>\n")
+            out.write("    <td>"+str(params['fi'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>anUInt</td>\n")
-        out.write("<td>uint</td>\n")
-        if 'anUInt' in params:
-            out.write("    <td>"+str(params['anUInt'])+"</td>\n")
-            out.write("    <td>"+str(params['anUInt'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>anInt</td>\n")
-        out.write("<td>int</td>\n")
-        if 'anInt' in params:
-            out.write("    <td>"+str(params['anInt'])+"</td>\n")
-            out.write("    <td>"+str(params['anInt'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>aBool</td>\n")
-        out.write("<td>bool</td>\n")
-        if 'aBool' in params:
-            out.write("    <td>"+str(params['aBool'])+"</td>\n")
-            out.write("    <td>"+str(params['aBool'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>aStr</td>\n")
-        out.write("<td>aisstr6</td>\n")
-        if 'aStr' in params:
-            out.write("    <td>"+str(params['aStr'])+"</td>\n")
-            out.write("    <td>"+str(params['aStr'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>anUDecimal</td>\n")
-        out.write("<td>udecimal</td>\n")
-        if 'anUDecimal' in params:
-            out.write("    <td>"+str(params['anUDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['anUDecimal'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>aDecimal</td>\n")
-        out.write("<td>decimal</td>\n")
-        if 'aDecimal' in params:
-            out.write("    <td>"+str(params['aDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['aDecimal'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>aFloat</td>\n")
-        out.write("<td>float</td>\n")
-        if 'aFloat' in params:
-            out.write("    <td>"+str(params['aFloat'])+"</td>\n")
-            out.write("    <td>"+str(params['aFloat'])+"</td>\n")
+        out.write("<td>BinaryData</td>\n")
+        out.write("<td>binary</td>\n")
+        if 'BinaryData' in params:
+            out.write("    <td>"+str(params['BinaryData'])+"</td>\n")
+            out.write("    <td>"+str(params['BinaryData'])+"</td>\n")
         out.write("</tr>\n")
         out.write("</table>\n")
 
 def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='postgres'):
-    '''Print a alltypesmsg message to stdout.
+    '''Print a bin_broadcast message to stdout.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 8 (field automatically set to "8")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI)
+      - Spare(uint): Reserved for definition by a regional authority. (field automatically set to "0")
+      - dac(uint): Appid designated area code (country)
+      - fi(uint): Appid functional identifier
+      - BinaryData(binary): Bits for a binary broadcast message
     @param params: Dictionary of field names/values.
     @param out: File like object to write to.
     @rtype: stdout
@@ -300,17 +248,14 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     '''
 
     if 'std'==format:
-        out.write("alltypesmsg:\n")
-        if 'dac' in params: out.write("    dac:           "+str(params['dac'])+"\n")
-        if 'reqDecimal' in params: out.write("    reqDecimal:    "+str(params['reqDecimal'])+"\n")
-        if 'unavail_uint' in params: out.write("    unavail_uint:  "+str(params['unavail_uint'])+"\n")
-        if 'anUInt' in params: out.write("    anUInt:        "+str(params['anUInt'])+"\n")
-        if 'anInt' in params: out.write("    anInt:         "+str(params['anInt'])+"\n")
-        if 'aBool' in params: out.write("    aBool:         "+str(params['aBool'])+"\n")
-        if 'aStr' in params: out.write("    aStr:          "+str(params['aStr'])+"\n")
-        if 'anUDecimal' in params: out.write("    anUDecimal:    "+str(params['anUDecimal'])+"\n")
-        if 'aDecimal' in params: out.write("    aDecimal:      "+str(params['aDecimal'])+"\n")
-        if 'aFloat' in params: out.write("    aFloat:        "+str(params['aFloat'])+"\n")
+        out.write("bin_broadcast:\n")
+        if 'MessageID' in params: out.write("    MessageID:        "+str(params['MessageID'])+"\n")
+        if 'RepeatIndicator' in params: out.write("    RepeatIndicator:  "+str(params['RepeatIndicator'])+"\n")
+        if 'UserID' in params: out.write("    UserID:           "+str(params['UserID'])+"\n")
+        if 'Spare' in params: out.write("    Spare:            "+str(params['Spare'])+"\n")
+        if 'dac' in params: out.write("    dac:              "+str(params['dac'])+"\n")
+        if 'fi' in params: out.write("    fi:               "+str(params['fi'])+"\n")
+        if 'BinaryData' in params: out.write("    BinaryData:       "+str(params['BinaryData'])+"\n")
         elif 'csv'==format:
                 if None == options.fieldList:
                         options.fieldList = fieldList
@@ -332,11 +277,21 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 
     return # Nothing to return
 
+RepeatIndicatorEncodeLut = {
+    'default':'0',
+    'do not repeat any more':'3',
+    } #RepeatIndicatorEncodeLut
+
+RepeatIndicatorDecodeLut = {
+    '0':'default',
+    '3':'do not repeat any more',
+    } # RepeatIndicatorEncodeLut
+
 ######################################################################
 # SQL SUPPORT
 ######################################################################
 
-dbTableName='alltypesmsg'
+dbTableName='bin_broadcast'
 'Database table name'
 
 def sqlCreateStr(outfile=sys.stdout, fields=None, extraFields=None
@@ -372,18 +327,15 @@ def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='p
     """
     if fields is None:
         fields = fieldList
-    c = sqlhelp.create('alltypesmsg',dbType=dbType)
+    c = sqlhelp.create('bin_broadcast',dbType=dbType)
     c.addPrimaryKey()
+    if 'MessageID' in fields: c.addInt ('MessageID')
+    if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
+    if 'UserID' in fields: c.addInt ('UserID')
+    if 'Spare' in fields: c.addInt ('Spare')
     if 'dac' in fields: c.addInt ('dac')
-    if 'reqDecimal' in fields: c.addDecimal('reqDecimal',3,0)
-    if 'unavail_uint' in fields: c.addInt ('unavail_uint')
-    if 'anUInt' in fields: c.addInt ('anUInt')
-    if 'anInt' in fields: c.addInt ('anInt')
-    if 'aBool' in fields: c.addBool('aBool')
-    if 'aStr' in fields: c.addVarChar('aStr',5)
-    if 'anUDecimal' in fields: c.addDecimal('anUDecimal',5,1)
-    if 'aDecimal' in fields: c.addDecimal('aDecimal',4,0)
-    if 'aFloat' in fields: c.addReal('aFloat')
+    if 'fi' in fields: c.addInt ('fi')
+    if 'BinaryData' in fields: c.addBitVarying('BinaryData',1024)
 
     if addCoastGuardFields:
         # c.addInt('cg_s_rssi')  # Relative signal strength indicator
@@ -423,7 +375,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
         @warning: this will take invalid keys happily and do what???
         """
 
-        i = sqlhelp.insert('alltypesmsg',dbType=dbType)
+        i = sqlhelp.insert('bin_broadcast',dbType=dbType)
 
         if dbType=='postgres':
                 finished = []
@@ -485,20 +437,17 @@ def latexDefinitionTable(outfile=sys.stdout
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-dac & 16 & Designated Area Code \\\\ \hline
-reqDecimal & 8 & required decimal value... FIX: scale or no? \\\\ \hline
-unavail\_uint & 2 & Unavailable unsigned integer \\\\ \hline
-anUInt & 2 & NO unavailable unsigned integer \\\\ \hline
-anInt & 3 & NO unavailable signed integer \\\\ \hline
-aBool & 1 & Simple bool \\\\ \hline
-aStr & 30 & An ais string of 5 characters \\\\ \hline
-anUDecimal & 16 & An unsigned decimal.  Allow smaller numbers \\\\ \hline
-aDecimal & 16 & A decimal \\\\ \hline
-aFloat & 32 & An IEEE floating point number\\\\ \\hline \\hline
-Total bits & 126 & Appears to take 1 slot with 42 pad bits to fill the last slot \\\\ \\hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
+dac & 10 & Appid designated area code (country) \\\\ \hline
+fi & 6 & Appid functional identifier \\\\ \hline
+BinaryData & -1 & Bits for a binary broadcast message\\\\ \\hline \\hline
+Total bits & 55 & Appears to take 1 slot with 113 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
-\\caption{AIS message number 8: Message to demonstrate all the ais types.  Good for testing}
-\\label{tab:alltypesmsg}
+\\caption{AIS message number 8: Variable length broadcast taking 1..5 slots}
+\\label{tab:bin_broadcast}
 \\end{table}
 """)
 
@@ -517,17 +466,14 @@ def textDefinitionTable(outfile=sys.stdout ,delim='    '):
     """
     o = outfile
     o.write('Parameter'+delim+'Number of bits'+delim+"""Description
-dac"""+delim+'16'+delim+"""Designated Area Code
-reqDecimal"""+delim+'8'+delim+"""required decimal value... FIX: scale or no?
-unavail_uint"""+delim+'2'+delim+"""Unavailable unsigned integer
-anUInt"""+delim+'2'+delim+"""NO unavailable unsigned integer
-anInt"""+delim+'3'+delim+"""NO unavailable signed integer
-aBool"""+delim+'1'+delim+"""Simple bool
-aStr"""+delim+'30'+delim+"""An ais string of 5 characters
-anUDecimal"""+delim+'16'+delim+"""An unsigned decimal.  Allow smaller numbers
-aDecimal"""+delim+'16'+delim+"""A decimal
-aFloat"""+delim+'32'+delim+"""An IEEE floating point number
-Total bits"""+delim+"""126"""+delim+"""Appears to take 1 slot with 42 pad bits to fill the last slot""")
+MessageID"""+delim+'6'+delim+"""AIS message number.  Must be 8
+RepeatIndicator"""+delim+'2'+delim+"""Indicated how many times a message has been repeated
+UserID"""+delim+'30'+delim+"""Unique ship identification number (MMSI)
+Spare"""+delim+'2'+delim+"""Reserved for definition by a regional authority.
+dac"""+delim+'10'+delim+"""Appid designated area code (country)
+fi"""+delim+'6'+delim+"""Appid functional identifier
+BinaryData"""+delim+'-1'+delim+"""Bits for a binary broadcast message
+Total bits"""+delim+"""55"""+delim+"""Appears to take 1 slot with 113 pad bits to fill the last slot""")
 
 
 ######################################################################
@@ -539,21 +485,18 @@ def testParams():
     @return: params based on testvalue tags
     '''
     params = {}
+    params['MessageID'] = 8
+    params['RepeatIndicator'] = 1
+    params['UserID'] = 1193046
+    params['Spare'] = 0
     params['dac'] = 366
-    params['reqDecimal'] = Decimal('122')
-    params['unavail_uint'] = 2
-    params['anUInt'] = 1
-    params['anInt'] = -1
-    params['aBool'] = True
-    params['aStr'] = 'ASDF1'
-    params['anUDecimal'] = Decimal('9.5')
-    params['aDecimal'] = Decimal('-9.6')
-    params['aFloat'] = -1234.5678
+    params['fi'] = 42
+    params['BinaryData'] = BitVector(bitstring='110000101100000111100010010101001110111001101010011011111111100000110001011100001011111111101111111110011001000000010001110')
 
     return params
 
-class Testalltypesmsg(unittest.TestCase):
-    '''Use testvalue tag text from each type to build test case the alltypesmsg message'''
+class Testbin_broadcast(unittest.TestCase):
+    '''Use testvalue tag text from each type to build test case the bin_broadcast message'''
     def testEncodeDecode(self):
 
         params = testParams()
@@ -561,37 +504,28 @@ class Testalltypesmsg(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
+        self.failUnlessEqual(r['MessageID'],params['MessageID'])
+        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.failUnlessEqual(r['UserID'],params['UserID'])
+        self.failUnlessEqual(r['Spare'],params['Spare'])
         self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessAlmostEqual(r['reqDecimal'],params['reqDecimal'],0)
-        self.failUnlessEqual(r['unavail_uint'],params['unavail_uint'])
-        self.failUnlessEqual(r['anUInt'],params['anUInt'])
-        self.failUnlessEqual(r['anInt'],params['anInt'])
-        self.failUnlessEqual(r['aBool'],params['aBool'])
-        self.failUnlessEqual(r['aStr'],params['aStr'])
-        self.failUnlessAlmostEqual(r['anUDecimal'],params['anUDecimal'],1)
-        self.failUnlessAlmostEqual(r['aDecimal'],params['aDecimal'],0)
-        self.failUnlessAlmostEqual(r['aFloat'],params['aFloat'],3)
+        self.failUnlessEqual(r['fi'],params['fi'])
+        self.failUnlessEqual(r['BinaryData'],params['BinaryData'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
-                help='decode a "alltypesmsg" AIS message')
+                help='decode a "bin_broadcast" AIS message')
     parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
-                help='encode a "alltypesmsg" AIS message')
-    parser.add_option('--unavail_uint-field', dest='unavail_uintField',default=3,metavar='uint',type='int'
+                help='encode a "bin_broadcast" AIS message')
+    parser.add_option('--RepeatIndicator-field', dest='RepeatIndicatorField',default=0,metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--anUInt-field', dest='anUIntField',metavar='uint',type='int'
+    parser.add_option('--UserID-field', dest='UserIDField',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--anInt-field', dest='anIntField',metavar='int',type='int'
+    parser.add_option('--dac-field', dest='dacField',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aBool-field', dest='aBoolField',metavar='bool',type='int'
+    parser.add_option('--fi-field', dest='fiField',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aStr-field', dest='aStrField',metavar='aisstr6',type='string'
-        ,help='Field parameter value [default: %default]')
-    parser.add_option('--anUDecimal-field', dest='anUDecimalField',metavar='udecimal',type='string'
-        ,help='Field parameter value [default: %default]')
-    parser.add_option('--aDecimal-field', dest='aDecimalField',metavar='decimal',type='string'
-        ,help='Field parameter value [default: %default]')
-    parser.add_option('--aFloat-field', dest='aFloatField',metavar='float',type='float'
+    parser.add_option('--BinaryData-field', dest='BinaryDataField',metavar='binary',type='string'
         ,help='Field parameter value [default: %default]')
 
 def main():
@@ -687,25 +621,19 @@ def main():
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None==options.unavail_uintField: parser.error("missing value for unavail_uintField")
-        if None==options.anUIntField: parser.error("missing value for anUIntField")
-        if None==options.anIntField: parser.error("missing value for anIntField")
-        if None==options.aBoolField: parser.error("missing value for aBoolField")
-        if None==options.aStrField: parser.error("missing value for aStrField")
-        if None==options.anUDecimalField: parser.error("missing value for anUDecimalField")
-        if None==options.aDecimalField: parser.error("missing value for aDecimalField")
-        if None==options.aFloatField: parser.error("missing value for aFloatField")
+        if None==options.RepeatIndicatorField: parser.error("missing value for RepeatIndicatorField")
+        if None==options.UserIDField: parser.error("missing value for UserIDField")
+        if None==options.dacField: parser.error("missing value for dacField")
+        if None==options.fiField: parser.error("missing value for fiField")
+        if None==options.BinaryDataField: parser.error("missing value for BinaryDataField")
     msgDict = {
-        'dac': '366',
-        'reqDecimal': '122',
-        'unavail_uint': options.unavail_uintField,
-        'anUInt': options.anUIntField,
-        'anInt': options.anIntField,
-        'aBool': options.aBoolField,
-        'aStr': options.aStrField,
-        'anUDecimal': options.anUDecimalField,
-        'aDecimal': options.aDecimalField,
-        'aFloat': options.aFloatField,
+        'MessageID': '8',
+        'RepeatIndicator': options.RepeatIndicatorField,
+        'UserID': options.UserIDField,
+        'Spare': '0',
+        'dac': options.dacField,
+        'fi': options.fiField,
+        'BinaryData': options.BinaryDataField,
     }
 
     bits = encode(msgDict)

@@ -37,29 +37,33 @@ FalseBV = BitVector(bitstring="0")
 
 
 fieldList = (
-    'dac',
-    'reqDecimal',
-    'unavail_uint',
-    'anUInt',
-    'anInt',
-    'aBool',
-    'aStr',
-    'anUDecimal',
-    'aDecimal',
-    'aFloat',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
+    'DestID1',
+    'SeqID1',
+    'DestID2',
+    'SeqID2',
+    'DestID3',
+    'SeqID3',
+    'DestID4',
+    'SeqID4',
 )
 
 fieldListPostgres = (
-    'dac',
-    'reqDecimal',
-    'unavail_uint',
-    'anUInt',
-    'anInt',
-    'aBool',
-    'aStr',
-    'anUDecimal',
-    'aDecimal',
-    'aFloat',
+    'MessageID',
+    'RepeatIndicator',
+    'UserID',
+    'Spare',
+    'DestID1',
+    'SeqID1',
+    'DestID2',
+    'SeqID2',
+    'DestID3',
+    'SeqID3',
+    'DestID4',
+    'SeqID4',
 )
 
 toPgFields = {
@@ -81,19 +85,21 @@ Lookup table for each postgis field name to get its type.
 """
 
 def encode(params, validate=False):
-    '''Create a alltypesmsg binary message payload to pack into an AIS Msg alltypesmsg.
+    '''Create a binack binary message payload to pack into an AIS Msg binack.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 7 (field automatically set to "7")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI).  Also known as the Source ID
+      - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
+      - DestID1(uint): MMSI destication to ACK
+      - SeqID1(uint): Sequence ID of the message to be acknowledged
+      - DestID2(uint): MMSI destication to ACK
+      - SeqID2(uint): Sequence ID of the message to be acknowledged
+      - DestID3(uint): MMSI destication to ACK
+      - SeqID3(uint): Sequence ID of the message to be acknowledged
+      - DestID4(uint): MMSI destication to ACK
+      - SeqID4(uint): Sequence ID of the message to be acknowledged
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
     @rtype: BitVector
@@ -102,37 +108,40 @@ def encode(params, validate=False):
     '''
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=366),16))
-    bvList.append(binary.bvFromSignedInt(122,8))
-    if 'unavail_uint' in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['unavail_uint']),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=7),6))
+    if 'RepeatIndicator' in params:
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3),2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['anUInt']),2))
-    bvList.append(binary.bvFromSignedInt(params['anInt'],3))
-    if params["aBool"]: bvList.append(TrueBV)
-    else: bvList.append(FalseBV)
-    bvList.append(aisstring.encode(params['aStr'],30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params['anUDecimal'])*Decimal('10')))),16))
-    bvList.append(binary.bvFromSignedInt(int(Decimal(params['aDecimal'])*Decimal('10')),16))
-    bvList.append(binary.float2bitvec(params['aFloat']))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['DestID1']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['SeqID1']),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['DestID2']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['SeqID2']),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['DestID3']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['SeqID3']),2))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['DestID4']),30))
+    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['SeqID4']),2))
 
     return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
-    '''Unpack a alltypesmsg message.
+    '''Unpack a binack message.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 7 (field automatically set to "7")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI).  Also known as the Source ID
+      - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
+      - DestID1(uint): MMSI destication to ACK
+      - SeqID1(uint): Sequence ID of the message to be acknowledged
+      - DestID2(uint): MMSI destication to ACK
+      - SeqID2(uint): Sequence ID of the message to be acknowledged
+      - DestID3(uint): MMSI destication to ACK
+      - SeqID3(uint): Sequence ID of the message to be acknowledged
+      - DestID4(uint): MMSI destication to ACK
+      - SeqID4(uint): Sequence ID of the message to be acknowledged
     @type bv: BitVector
     @param bv: Bits defining a message
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
@@ -144,51 +153,59 @@ def decode(bv, validate=False):
     #if validate:
     #    assert (len(bv)==FIX: SOME NUMBER)
     r = {}
-    r['dac']=366
-    r['reqDecimal']=122/Decimal('1')
-    r['unavail_uint']=int(bv[24:26])
-    r['anUInt']=int(bv[26:28])
-    r['anInt']=binary.signedIntFromBV(bv[28:31])
-    r['aBool']=bool(int(bv[31:32]))
-    r['aStr']=aisstring.decode(bv[32:62])
-    r['anUDecimal']=Decimal(int(bv[62:78]))/Decimal('10')
-    r['aDecimal']=Decimal(binary.signedIntFromBV(bv[78:94]))/Decimal('10')
-    r['aFloat']=binary.bitvec2float(bv[94:126])
+    r['MessageID']=7
+    r['RepeatIndicator']=int(bv[6:8])
+    r['UserID']=int(bv[8:38])
+    r['Spare']=0
+    r['DestID1']=int(bv[40:70])
+    r['SeqID1']=int(bv[70:72])
+    r['DestID2']=int(bv[72:102])
+    r['SeqID2']=int(bv[102:104])
+    r['DestID3']=int(bv[104:134])
+    r['SeqID3']=int(bv[134:136])
+    r['DestID4']=int(bv[136:166])
+    r['SeqID4']=int(bv[166:168])
     return r
 
-def decodedac(bv, validate=False):
-    return 366
+def decodeMessageID(bv, validate=False):
+    return 7
 
-def decodereqDecimal(bv, validate=False):
-    return 122/Decimal('1')
+def decodeRepeatIndicator(bv, validate=False):
+    return int(bv[6:8])
 
-def decodeunavail_uint(bv, validate=False):
-    return int(bv[24:26])
+def decodeUserID(bv, validate=False):
+    return int(bv[8:38])
 
-def decodeanUInt(bv, validate=False):
-    return int(bv[26:28])
+def decodeSpare(bv, validate=False):
+    return 0
 
-def decodeanInt(bv, validate=False):
-    return binary.signedIntFromBV(bv[28:31])
+def decodeDestID1(bv, validate=False):
+    return int(bv[40:70])
 
-def decodeaBool(bv, validate=False):
-    return bool(int(bv[31:32]))
+def decodeSeqID1(bv, validate=False):
+    return int(bv[70:72])
 
-def decodeaStr(bv, validate=False):
-    return aisstring.decode(bv[32:62])
+def decodeDestID2(bv, validate=False):
+    return int(bv[72:102])
 
-def decodeanUDecimal(bv, validate=False):
-    return Decimal(int(bv[62:78]))/Decimal('10')
+def decodeSeqID2(bv, validate=False):
+    return int(bv[102:104])
 
-def decodeaDecimal(bv, validate=False):
-    return Decimal(binary.signedIntFromBV(bv[78:94]))/Decimal('10')
+def decodeDestID3(bv, validate=False):
+    return int(bv[104:134])
 
-def decodeaFloat(bv, validate=False):
-    return binary.bitvec2float(bv[94:126])
+def decodeSeqID3(bv, validate=False):
+    return int(bv[134:136])
+
+def decodeDestID4(bv, validate=False):
+    return int(bv[136:166])
+
+def decodeSeqID4(bv, validate=False):
+    return int(bv[166:168])
 
 
 def printHtml(params, out=sys.stdout):
-        out.write("<h3>alltypesmsg</h3>\n")
+        out.write("<h3>binack</h3>\n")
         out.write("<table border=\"1\">\n")
         out.write("<tr bgcolor=\"orange\">\n")
         out.write("<th align=\"left\">Field Name</th>\n")
@@ -199,100 +216,121 @@ def printHtml(params, out=sys.stdout):
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>dac</td>\n")
+        out.write("<td>MessageID</td>\n")
         out.write("<td>uint</td>\n")
-        if 'dac' in params:
-            out.write("    <td>"+str(params['dac'])+"</td>\n")
-            out.write("    <td>"+str(params['dac'])+"</td>\n")
+        if 'MessageID' in params:
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
+            out.write("    <td>"+str(params['MessageID'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>reqDecimal</td>\n")
-        out.write("<td>decimal</td>\n")
-        if 'reqDecimal' in params:
-            out.write("    <td>"+str(params['reqDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['reqDecimal'])+"</td>\n")
-        out.write("</tr>\n")
-        out.write("\n")
-        out.write("<tr>\n")
-        out.write("<td>unavail_uint</td>\n")
+        out.write("<td>RepeatIndicator</td>\n")
         out.write("<td>uint</td>\n")
-        if 'unavail_uint' in params:
-            out.write("    <td>"+str(params['unavail_uint'])+"</td>\n")
-            out.write("    <td>"+str(params['unavail_uint'])+"</td>\n")
+        if 'RepeatIndicator' in params:
+            out.write("    <td>"+str(params['RepeatIndicator'])+"</td>\n")
+            if str(params['RepeatIndicator']) in RepeatIndicatorDecodeLut:
+                out.write("<td>"+RepeatIndicatorDecodeLut[str(params['RepeatIndicator'])]+"</td>")
+            else:
+                out.write("<td><i>Missing LUT entry</i></td>")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>anUInt</td>\n")
+        out.write("<td>UserID</td>\n")
         out.write("<td>uint</td>\n")
-        if 'anUInt' in params:
-            out.write("    <td>"+str(params['anUInt'])+"</td>\n")
-            out.write("    <td>"+str(params['anUInt'])+"</td>\n")
+        if 'UserID' in params:
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
+            out.write("    <td>"+str(params['UserID'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>anInt</td>\n")
-        out.write("<td>int</td>\n")
-        if 'anInt' in params:
-            out.write("    <td>"+str(params['anInt'])+"</td>\n")
-            out.write("    <td>"+str(params['anInt'])+"</td>\n")
+        out.write("<td>Spare</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'Spare' in params:
+            out.write("    <td>"+str(params['Spare'])+"</td>\n")
+            out.write("    <td>"+str(params['Spare'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>aBool</td>\n")
-        out.write("<td>bool</td>\n")
-        if 'aBool' in params:
-            out.write("    <td>"+str(params['aBool'])+"</td>\n")
-            out.write("    <td>"+str(params['aBool'])+"</td>\n")
+        out.write("<td>DestID1</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'DestID1' in params:
+            out.write("    <td>"+str(params['DestID1'])+"</td>\n")
+            out.write("    <td>"+str(params['DestID1'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>aStr</td>\n")
-        out.write("<td>aisstr6</td>\n")
-        if 'aStr' in params:
-            out.write("    <td>"+str(params['aStr'])+"</td>\n")
-            out.write("    <td>"+str(params['aStr'])+"</td>\n")
+        out.write("<td>SeqID1</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'SeqID1' in params:
+            out.write("    <td>"+str(params['SeqID1'])+"</td>\n")
+            out.write("    <td>"+str(params['SeqID1'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>anUDecimal</td>\n")
-        out.write("<td>udecimal</td>\n")
-        if 'anUDecimal' in params:
-            out.write("    <td>"+str(params['anUDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['anUDecimal'])+"</td>\n")
+        out.write("<td>DestID2</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'DestID2' in params:
+            out.write("    <td>"+str(params['DestID2'])+"</td>\n")
+            out.write("    <td>"+str(params['DestID2'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>aDecimal</td>\n")
-        out.write("<td>decimal</td>\n")
-        if 'aDecimal' in params:
-            out.write("    <td>"+str(params['aDecimal'])+"</td>\n")
-            out.write("    <td>"+str(params['aDecimal'])+"</td>\n")
+        out.write("<td>SeqID2</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'SeqID2' in params:
+            out.write("    <td>"+str(params['SeqID2'])+"</td>\n")
+            out.write("    <td>"+str(params['SeqID2'])+"</td>\n")
         out.write("</tr>\n")
         out.write("\n")
         out.write("<tr>\n")
-        out.write("<td>aFloat</td>\n")
-        out.write("<td>float</td>\n")
-        if 'aFloat' in params:
-            out.write("    <td>"+str(params['aFloat'])+"</td>\n")
-            out.write("    <td>"+str(params['aFloat'])+"</td>\n")
+        out.write("<td>DestID3</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'DestID3' in params:
+            out.write("    <td>"+str(params['DestID3'])+"</td>\n")
+            out.write("    <td>"+str(params['DestID3'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>SeqID3</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'SeqID3' in params:
+            out.write("    <td>"+str(params['SeqID3'])+"</td>\n")
+            out.write("    <td>"+str(params['SeqID3'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>DestID4</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'DestID4' in params:
+            out.write("    <td>"+str(params['DestID4'])+"</td>\n")
+            out.write("    <td>"+str(params['DestID4'])+"</td>\n")
+        out.write("</tr>\n")
+        out.write("\n")
+        out.write("<tr>\n")
+        out.write("<td>SeqID4</td>\n")
+        out.write("<td>uint</td>\n")
+        if 'SeqID4' in params:
+            out.write("    <td>"+str(params['SeqID4'])+"</td>\n")
+            out.write("    <td>"+str(params['SeqID4'])+"</td>\n")
         out.write("</tr>\n")
         out.write("</table>\n")
 
 def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='postgres'):
-    '''Print a alltypesmsg message to stdout.
+    '''Print a binack message to stdout.
 
     Fields in params:
-      - dac(uint): Designated Area Code (field automatically set to "366")
-      - reqDecimal(decimal): required decimal value... FIX: scale or no? (field automatically set to "122")
-      - unavail_uint(uint): Unavailable unsigned integer
-      - anUInt(uint): NO unavailable unsigned integer
-      - anInt(int): NO unavailable signed integer
-      - aBool(bool): Simple bool
-      - aStr(aisstr6): An ais string of 5 characters
-      - anUDecimal(udecimal): An unsigned decimal.  Allow smaller numbers
-      - aDecimal(decimal): A decimal
-      - aFloat(float): An IEEE floating point number
+      - MessageID(uint): AIS message number.  Must be 7 (field automatically set to "7")
+      - RepeatIndicator(uint): Indicated how many times a message has been repeated
+      - UserID(uint): Unique ship identification number (MMSI).  Also known as the Source ID
+      - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
+      - DestID1(uint): MMSI destication to ACK
+      - SeqID1(uint): Sequence ID of the message to be acknowledged
+      - DestID2(uint): MMSI destication to ACK
+      - SeqID2(uint): Sequence ID of the message to be acknowledged
+      - DestID3(uint): MMSI destication to ACK
+      - SeqID3(uint): Sequence ID of the message to be acknowledged
+      - DestID4(uint): MMSI destication to ACK
+      - SeqID4(uint): Sequence ID of the message to be acknowledged
     @param params: Dictionary of field names/values.
     @param out: File like object to write to.
     @rtype: stdout
@@ -300,17 +338,19 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     '''
 
     if 'std'==format:
-        out.write("alltypesmsg:\n")
-        if 'dac' in params: out.write("    dac:           "+str(params['dac'])+"\n")
-        if 'reqDecimal' in params: out.write("    reqDecimal:    "+str(params['reqDecimal'])+"\n")
-        if 'unavail_uint' in params: out.write("    unavail_uint:  "+str(params['unavail_uint'])+"\n")
-        if 'anUInt' in params: out.write("    anUInt:        "+str(params['anUInt'])+"\n")
-        if 'anInt' in params: out.write("    anInt:         "+str(params['anInt'])+"\n")
-        if 'aBool' in params: out.write("    aBool:         "+str(params['aBool'])+"\n")
-        if 'aStr' in params: out.write("    aStr:          "+str(params['aStr'])+"\n")
-        if 'anUDecimal' in params: out.write("    anUDecimal:    "+str(params['anUDecimal'])+"\n")
-        if 'aDecimal' in params: out.write("    aDecimal:      "+str(params['aDecimal'])+"\n")
-        if 'aFloat' in params: out.write("    aFloat:        "+str(params['aFloat'])+"\n")
+        out.write("binack:\n")
+        if 'MessageID' in params: out.write("    MessageID:        "+str(params['MessageID'])+"\n")
+        if 'RepeatIndicator' in params: out.write("    RepeatIndicator:  "+str(params['RepeatIndicator'])+"\n")
+        if 'UserID' in params: out.write("    UserID:           "+str(params['UserID'])+"\n")
+        if 'Spare' in params: out.write("    Spare:            "+str(params['Spare'])+"\n")
+        if 'DestID1' in params: out.write("    DestID1:          "+str(params['DestID1'])+"\n")
+        if 'SeqID1' in params: out.write("    SeqID1:           "+str(params['SeqID1'])+"\n")
+        if 'DestID2' in params: out.write("    DestID2:          "+str(params['DestID2'])+"\n")
+        if 'SeqID2' in params: out.write("    SeqID2:           "+str(params['SeqID2'])+"\n")
+        if 'DestID3' in params: out.write("    DestID3:          "+str(params['DestID3'])+"\n")
+        if 'SeqID3' in params: out.write("    SeqID3:           "+str(params['SeqID3'])+"\n")
+        if 'DestID4' in params: out.write("    DestID4:          "+str(params['DestID4'])+"\n")
+        if 'SeqID4' in params: out.write("    SeqID4:           "+str(params['SeqID4'])+"\n")
         elif 'csv'==format:
                 if None == options.fieldList:
                         options.fieldList = fieldList
@@ -332,11 +372,21 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
 
     return # Nothing to return
 
+RepeatIndicatorEncodeLut = {
+    'default':'0',
+    'do not repeat any more':'3',
+    } #RepeatIndicatorEncodeLut
+
+RepeatIndicatorDecodeLut = {
+    '0':'default',
+    '3':'do not repeat any more',
+    } # RepeatIndicatorEncodeLut
+
 ######################################################################
 # SQL SUPPORT
 ######################################################################
 
-dbTableName='alltypesmsg'
+dbTableName='binack'
 'Database table name'
 
 def sqlCreateStr(outfile=sys.stdout, fields=None, extraFields=None
@@ -372,18 +422,20 @@ def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='p
     """
     if fields is None:
         fields = fieldList
-    c = sqlhelp.create('alltypesmsg',dbType=dbType)
+    c = sqlhelp.create('binack',dbType=dbType)
     c.addPrimaryKey()
-    if 'dac' in fields: c.addInt ('dac')
-    if 'reqDecimal' in fields: c.addDecimal('reqDecimal',3,0)
-    if 'unavail_uint' in fields: c.addInt ('unavail_uint')
-    if 'anUInt' in fields: c.addInt ('anUInt')
-    if 'anInt' in fields: c.addInt ('anInt')
-    if 'aBool' in fields: c.addBool('aBool')
-    if 'aStr' in fields: c.addVarChar('aStr',5)
-    if 'anUDecimal' in fields: c.addDecimal('anUDecimal',5,1)
-    if 'aDecimal' in fields: c.addDecimal('aDecimal',4,0)
-    if 'aFloat' in fields: c.addReal('aFloat')
+    if 'MessageID' in fields: c.addInt ('MessageID')
+    if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
+    if 'UserID' in fields: c.addInt ('UserID')
+    if 'Spare' in fields: c.addInt ('Spare')
+    if 'DestID1' in fields: c.addInt ('DestID1')
+    if 'SeqID1' in fields: c.addInt ('SeqID1')
+    if 'DestID2' in fields: c.addInt ('DestID2')
+    if 'SeqID2' in fields: c.addInt ('SeqID2')
+    if 'DestID3' in fields: c.addInt ('DestID3')
+    if 'SeqID3' in fields: c.addInt ('SeqID3')
+    if 'DestID4' in fields: c.addInt ('DestID4')
+    if 'SeqID4' in fields: c.addInt ('SeqID4')
 
     if addCoastGuardFields:
         # c.addInt('cg_s_rssi')  # Relative signal strength indicator
@@ -423,7 +475,7 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
         @warning: this will take invalid keys happily and do what???
         """
 
-        i = sqlhelp.insert('alltypesmsg',dbType=dbType)
+        i = sqlhelp.insert('binack',dbType=dbType)
 
         if dbType=='postgres':
                 finished = []
@@ -485,20 +537,22 @@ def latexDefinitionTable(outfile=sys.stdout
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-dac & 16 & Designated Area Code \\\\ \hline
-reqDecimal & 8 & required decimal value... FIX: scale or no? \\\\ \hline
-unavail\_uint & 2 & Unavailable unsigned integer \\\\ \hline
-anUInt & 2 & NO unavailable unsigned integer \\\\ \hline
-anInt & 3 & NO unavailable signed integer \\\\ \hline
-aBool & 1 & Simple bool \\\\ \hline
-aStr & 30 & An ais string of 5 characters \\\\ \hline
-anUDecimal & 16 & An unsigned decimal.  Allow smaller numbers \\\\ \hline
-aDecimal & 16 & A decimal \\\\ \hline
-aFloat & 32 & An IEEE floating point number\\\\ \\hline \\hline
-Total bits & 126 & Appears to take 1 slot with 42 pad bits to fill the last slot \\\\ \\hline
+MessageID & 6 & AIS message number.  Must be 7 \\\\ \hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
+UserID & 30 & Unique ship identification number (MMSI).  Also known as the Source ID \\\\ \hline
+Spare & 2 & Not used.  Should be set to zero. \\\\ \hline
+DestID1 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID1 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID2 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID2 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID3 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID3 & 2 & Sequence ID of the message to be acknowledged \\\\ \hline
+DestID4 & 30 & MMSI destication to ACK \\\\ \hline
+SeqID4 & 2 & Sequence ID of the message to be acknowledged\\\\ \\hline \\hline
+Total bits & 168 & Appears to take 1 slot \\\\ \\hline
 \\end{tabular}
-\\caption{AIS message number 8: Message to demonstrate all the ais types.  Good for testing}
-\\label{tab:alltypesmsg}
+\\caption{AIS message number 7: Binary acknowledgement of addressed message}
+\\label{tab:binack}
 \\end{table}
 """)
 
@@ -517,17 +571,19 @@ def textDefinitionTable(outfile=sys.stdout ,delim='    '):
     """
     o = outfile
     o.write('Parameter'+delim+'Number of bits'+delim+"""Description
-dac"""+delim+'16'+delim+"""Designated Area Code
-reqDecimal"""+delim+'8'+delim+"""required decimal value... FIX: scale or no?
-unavail_uint"""+delim+'2'+delim+"""Unavailable unsigned integer
-anUInt"""+delim+'2'+delim+"""NO unavailable unsigned integer
-anInt"""+delim+'3'+delim+"""NO unavailable signed integer
-aBool"""+delim+'1'+delim+"""Simple bool
-aStr"""+delim+'30'+delim+"""An ais string of 5 characters
-anUDecimal"""+delim+'16'+delim+"""An unsigned decimal.  Allow smaller numbers
-aDecimal"""+delim+'16'+delim+"""A decimal
-aFloat"""+delim+'32'+delim+"""An IEEE floating point number
-Total bits"""+delim+"""126"""+delim+"""Appears to take 1 slot with 42 pad bits to fill the last slot""")
+MessageID"""+delim+'6'+delim+"""AIS message number.  Must be 7
+RepeatIndicator"""+delim+'2'+delim+"""Indicated how many times a message has been repeated
+UserID"""+delim+'30'+delim+"""Unique ship identification number (MMSI).  Also known as the Source ID
+Spare"""+delim+'2'+delim+"""Not used.  Should be set to zero.
+DestID1"""+delim+'30'+delim+"""MMSI destication to ACK
+SeqID1"""+delim+'2'+delim+"""Sequence ID of the message to be acknowledged
+DestID2"""+delim+'30'+delim+"""MMSI destication to ACK
+SeqID2"""+delim+'2'+delim+"""Sequence ID of the message to be acknowledged
+DestID3"""+delim+'30'+delim+"""MMSI destication to ACK
+SeqID3"""+delim+'2'+delim+"""Sequence ID of the message to be acknowledged
+DestID4"""+delim+'30'+delim+"""MMSI destication to ACK
+SeqID4"""+delim+'2'+delim+"""Sequence ID of the message to be acknowledged
+Total bits"""+delim+"""168"""+delim+"""Appears to take 1 slot""")
 
 
 ######################################################################
@@ -539,21 +595,23 @@ def testParams():
     @return: params based on testvalue tags
     '''
     params = {}
-    params['dac'] = 366
-    params['reqDecimal'] = Decimal('122')
-    params['unavail_uint'] = 2
-    params['anUInt'] = 1
-    params['anInt'] = -1
-    params['aBool'] = True
-    params['aStr'] = 'ASDF1'
-    params['anUDecimal'] = Decimal('9.5')
-    params['aDecimal'] = Decimal('-9.6')
-    params['aFloat'] = -1234.5678
+    params['MessageID'] = 7
+    params['RepeatIndicator'] = 1
+    params['UserID'] = 1193046
+    params['Spare'] = 0
+    params['DestID1'] = 1193001
+    params['SeqID1'] = 1
+    params['DestID2'] = 1193002
+    params['SeqID2'] = 2
+    params['DestID3'] = 1193003
+    params['SeqID3'] = 3
+    params['DestID4'] = 1193004
+    params['SeqID4'] = 0
 
     return params
 
-class Testalltypesmsg(unittest.TestCase):
-    '''Use testvalue tag text from each type to build test case the alltypesmsg message'''
+class Testbinack(unittest.TestCase):
+    '''Use testvalue tag text from each type to build test case the binack message'''
     def testEncodeDecode(self):
 
         params = testParams()
@@ -561,37 +619,43 @@ class Testalltypesmsg(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessAlmostEqual(r['reqDecimal'],params['reqDecimal'],0)
-        self.failUnlessEqual(r['unavail_uint'],params['unavail_uint'])
-        self.failUnlessEqual(r['anUInt'],params['anUInt'])
-        self.failUnlessEqual(r['anInt'],params['anInt'])
-        self.failUnlessEqual(r['aBool'],params['aBool'])
-        self.failUnlessEqual(r['aStr'],params['aStr'])
-        self.failUnlessAlmostEqual(r['anUDecimal'],params['anUDecimal'],1)
-        self.failUnlessAlmostEqual(r['aDecimal'],params['aDecimal'],0)
-        self.failUnlessAlmostEqual(r['aFloat'],params['aFloat'],3)
+        self.failUnlessEqual(r['MessageID'],params['MessageID'])
+        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.failUnlessEqual(r['UserID'],params['UserID'])
+        self.failUnlessEqual(r['Spare'],params['Spare'])
+        self.failUnlessEqual(r['DestID1'],params['DestID1'])
+        self.failUnlessEqual(r['SeqID1'],params['SeqID1'])
+        self.failUnlessEqual(r['DestID2'],params['DestID2'])
+        self.failUnlessEqual(r['SeqID2'],params['SeqID2'])
+        self.failUnlessEqual(r['DestID3'],params['DestID3'])
+        self.failUnlessEqual(r['SeqID3'],params['SeqID3'])
+        self.failUnlessEqual(r['DestID4'],params['DestID4'])
+        self.failUnlessEqual(r['SeqID4'],params['SeqID4'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
-                help='decode a "alltypesmsg" AIS message')
+                help='decode a "binack" AIS message')
     parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
-                help='encode a "alltypesmsg" AIS message')
-    parser.add_option('--unavail_uint-field', dest='unavail_uintField',default=3,metavar='uint',type='int'
+                help='encode a "binack" AIS message')
+    parser.add_option('--RepeatIndicator-field', dest='RepeatIndicatorField',default=0,metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--anUInt-field', dest='anUIntField',metavar='uint',type='int'
+    parser.add_option('--UserID-field', dest='UserIDField',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--anInt-field', dest='anIntField',metavar='int',type='int'
+    parser.add_option('--DestID1-field', dest='DestID1Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aBool-field', dest='aBoolField',metavar='bool',type='int'
+    parser.add_option('--SeqID1-field', dest='SeqID1Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aStr-field', dest='aStrField',metavar='aisstr6',type='string'
+    parser.add_option('--DestID2-field', dest='DestID2Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--anUDecimal-field', dest='anUDecimalField',metavar='udecimal',type='string'
+    parser.add_option('--SeqID2-field', dest='SeqID2Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aDecimal-field', dest='aDecimalField',metavar='decimal',type='string'
+    parser.add_option('--DestID3-field', dest='DestID3Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
-    parser.add_option('--aFloat-field', dest='aFloatField',metavar='float',type='float'
+    parser.add_option('--SeqID3-field', dest='SeqID3Field',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--DestID4-field', dest='DestID4Field',metavar='uint',type='int'
+        ,help='Field parameter value [default: %default]')
+    parser.add_option('--SeqID4-field', dest='SeqID4Field',metavar='uint',type='int'
         ,help='Field parameter value [default: %default]')
 
 def main():
@@ -687,25 +751,29 @@ def main():
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None==options.unavail_uintField: parser.error("missing value for unavail_uintField")
-        if None==options.anUIntField: parser.error("missing value for anUIntField")
-        if None==options.anIntField: parser.error("missing value for anIntField")
-        if None==options.aBoolField: parser.error("missing value for aBoolField")
-        if None==options.aStrField: parser.error("missing value for aStrField")
-        if None==options.anUDecimalField: parser.error("missing value for anUDecimalField")
-        if None==options.aDecimalField: parser.error("missing value for aDecimalField")
-        if None==options.aFloatField: parser.error("missing value for aFloatField")
+        if None==options.RepeatIndicatorField: parser.error("missing value for RepeatIndicatorField")
+        if None==options.UserIDField: parser.error("missing value for UserIDField")
+        if None==options.DestID1Field: parser.error("missing value for DestID1Field")
+        if None==options.SeqID1Field: parser.error("missing value for SeqID1Field")
+        if None==options.DestID2Field: parser.error("missing value for DestID2Field")
+        if None==options.SeqID2Field: parser.error("missing value for SeqID2Field")
+        if None==options.DestID3Field: parser.error("missing value for DestID3Field")
+        if None==options.SeqID3Field: parser.error("missing value for SeqID3Field")
+        if None==options.DestID4Field: parser.error("missing value for DestID4Field")
+        if None==options.SeqID4Field: parser.error("missing value for SeqID4Field")
     msgDict = {
-        'dac': '366',
-        'reqDecimal': '122',
-        'unavail_uint': options.unavail_uintField,
-        'anUInt': options.anUIntField,
-        'anInt': options.anIntField,
-        'aBool': options.aBoolField,
-        'aStr': options.aStrField,
-        'anUDecimal': options.anUDecimalField,
-        'aDecimal': options.aDecimalField,
-        'aFloat': options.aFloatField,
+        'MessageID': '7',
+        'RepeatIndicator': options.RepeatIndicatorField,
+        'UserID': options.UserIDField,
+        'Spare': '0',
+        'DestID1': options.DestID1Field,
+        'SeqID1': options.SeqID1Field,
+        'DestID2': options.DestID2Field,
+        'SeqID2': options.SeqID2Field,
+        'DestID3': options.DestID3Field,
+        'SeqID3': options.SeqID3Field,
+        'DestID4': options.DestID4Field,
+        'SeqID4': options.SeqID4Field,
     }
 
     bits = encode(msgDict)
