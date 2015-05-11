@@ -51,12 +51,8 @@ include init.d/*
 include data/*
 
 # Extra stuff.  Less polished and project specific
-#include scraps/*.py scraps/*.pl scraps/gsc*.dat scraps/*.m
 include scraps/*
 
 include aisutils/*.py
 include test/*
-
-include django-ais/* django-ais/*/* django-ais/*/*/*
-include geodjango/* geodjango/*/* geodjango/*/*/*
 
