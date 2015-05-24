@@ -1,37 +1,27 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2075 $'.split()[1]
-__date__ = '$Date: 2006-05-03 04:18:20 -0400 (Wed, 03 May 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
-
-__doc__='''
-Connect to the NOAA SOAP server and rebroadcast the results.
+# License: Apache 2.0
+"""Connect to the NOAA SOAP server and rebroadcast the results.
 
 @author: U{'''+__author__+'''<http://schwehr.org/>}
 @version: ''' + __version__ +'''
-@license: Apache 2.0
 @copyright: (C) 2006 Kurt Schwehr
 
 @bug: FIX: NOT WRITTEN YET.  Doh!
-'''
+"""
 import sys #, os, shutil
 import time
 import socket
 import thread
 import select
-#import tty,termios
-#import calendar
 
 
 class TideDataServer:
-    '''
-    wheee
-    '''
 
     def __init__(self,options):
-	self.running = True
-	self.options = options
+        self.running = True
+        self.options = options
 
-######################################################################
+
 if __name__=='__main__':
     from optparse import OptionParser
 
