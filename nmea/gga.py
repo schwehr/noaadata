@@ -1,41 +1,27 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2068 $'.split()[1]
-__date__ = '$Date: 2006-05-02 08:17:59 -0400 (Tue, 02 May 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+"""Generate/decode NMEA GGA GPS positionmessages.
 
-__doc__='''
-Generate/decode NMEA messages.  For now, this just supports ZDA time stamps.
-
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
-@copyright: 2006
-
-@var __date__: Date of last svn commit
-
-@undocumented: __version__ __author__ __doc__ myparser
-'''
-
+For now, this just supports ZDA time stamps.
+"""
 # Python standard libraries
-import time, sys
+import calendar
+import sys
+import time
 
-# Local
 import nmea
-#import verbosity
-#from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
-import calendar # to make the seconds since the epoch
 
+# List of the valide clock sources.
+# timekeepers={
+#     'ZA': 'atomic clock',
+#     'ZC': 'chronometer',
+#     'ZQ': 'quartz',
+#     'ZV': 'radio update'
+# }
 
-timekeepers={
-    'ZA': 'atomic clock',
-    'ZC': 'chronometer',
-    'ZQ': 'quartz',
-    'ZV': 'radio update'
-}
-'list of the valide clock sources'
 
 def zdaEpochSeconds(nmeaStr):
     '''
-    Return the seconds since the Epoch 
+    Return the seconds since the Epoch
 
     @todo: implement
     '''
@@ -101,7 +87,7 @@ def ggaDecode(nmeaStr,validate=False):
     r['lat']=float(fields[2][0:2]) + float(fields[2][2:])/60.
     if fields[3]=='S': r['lat']=-r['lat']
 
-    # FIX: lon probably will fail for 
+    # FIX: lon probably will fail for
     lon = fields[4][:3]
     if lon[0]=='0': lon = lon[1:]
     r['lon']=float(lon) + float(fields[4][3:])/60.
@@ -128,7 +114,7 @@ Time, Position and fix related data for a GPS receiver.
         |         |       | |        | | |  |   |   | |   | |   |    |
  $--GGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh<CR><LF>
 
- Field Number: 
+ Field Number:
   1) Universal Time Coordinated (UTC)
   2) Latitude
   3) N or S (North or South)
@@ -203,7 +189,7 @@ def zdaDict2TIMESTAMP(zdaDict):
 # 	import doctest
 # 	numfail,numtests=doctest.testmod()
 # 	if numfail==0: print 'ok'
-# 	else: 
+# 	else:
 # 	    print 'FAILED'
 # 	    success=False
 

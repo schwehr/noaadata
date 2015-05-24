@@ -6,41 +6,29 @@ __date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
 __copyright__ = '2008'
 __license__   = 'Apache 2.0'
 
-__doc__ ='''
-RMC - GPS Position
+"""RMC - GPS Position.
 
-@undocumented: __doc__
-@since: 2009-Jan-06
-@status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
-
-@todo: FIX!!! turn this something useful
-@todo: Document the field names
-@todo: What is 'N' for the mode?  Got it from the SR162G? N must be for no lock
-'''
+TODO(schwehr): What is 'N' for the mode?
+  Sent by SR162G.   N must be for no lock.
+"""
 
 import re
 
-rawstr = r'''^[$!](?P<prefix>[A-Z][A-Z])(?P<msg_type>RMC)
-,(?P<hour>\d\d)(?P<minute>\d\d)(?P<second>\d\d\.\d\d)
-,(?P<status>[A-Z])
-,(?P<latitude>(?P<lat_deg>\d\d)(?P<lat_min>\d\d*.\d*))
-,(?P<north_south>[NS])
-,(?P<longitude>(?P<lon_deg>\d\d\d)(?P<lon_min>\d\d.\d*))
-,(?P<east_west>[EW])
-,(?P<speed_knots>\d*.\d*)
-,(?P<course_degrees>\d*.\d*)
-,(?P<day>\d\d)(?P<month>\d\d)(?P<year>\d\d)
-,(?P<magnetic_variation_degrees>\d*.\d*)
-,(?P<mag_var_east_west>[EW])
+rawstr = r"""^[$!](?P<prefix>[A-Z][A-Z])(?P<msg_type>RMC),
+(?P<hour>\d\d)(?P<minute>\d\d)(?P<second>\d\d\.\d\d),
+(?P<status>[A-Z]),
+(?P<latitude>(?P<lat_deg>\d\d)(?P<lat_min>\d\d*.\d*)),
+(?P<north_south>[NS]),
+(?P<longitude>(?P<lon_deg>\d\d\d)(?P<lon_min>\d\d.\d*)),
+(?P<east_west>[EW]),
+(?P<speed_knots>\d*.\d*),
+(?P<course_degrees>\d*.\d*),
+(?P<day>\d\d)(?P<month>\d\d)(?P<year>\d\d),
+(?P<magnetic_variation_degrees>\d*.\d*),
+(?P<mag_var_east_west>[EW])
 (,(?P<mode>[ADEN]))?
-(?P<checksum>[*][0-9A-F][0-9A-F])'''
-#
-#matchstr = '$GPRMC,121437.60,A,4212.0258,N,07040.9543,W,18.08,94.6,011008,15.1,W,A*34,rrvauk-sr162g,1222863277.98'
-#
+(?P<checksum>[*][0-9A-F][0-9A-F])"""
 matchstr = '$GPRMC,173011.82,V,4222.8770,N,07103.0096,W,0.00,0.0,151008,14.9,W,N*27'
-
-# FIX: what is the N mode?
 
 compile_obj = re.compile(rawstr,  re.VERBOSE)
 match_obj = compile_obj.search(matchstr)
@@ -98,9 +86,8 @@ def lonlat(match):
     if 'S' == match_obj.group('north_south'):
         lat = -lat
 
-
     return lon,lat
 
 
-    
-print lonlat(match_obj)    
+
+print lonlat(match_obj)

@@ -44,7 +44,6 @@ def zdaDecode(nmeaStr):
     @rtype: dict
     @return: name value pairs for the GMT time of the message
     """
-    # FIX: strip off new line here?
     assert(len(nmeaStr)>20)
     assert(nmeaStr[0] in ('$','!'))
     assert(nmeaStr[3:6]=='ZDA')
@@ -67,48 +66,50 @@ def zdaDecode(nmeaStr):
 
     return val
 
+
 def ggaDecode(nmeaStr,validate=False):
-    """
-    Decode NMEA GPS FIX data
+  """
+  Decode NMEA GPS FIX data
 
-    $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
+  $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 
-    @param nmeaStr: nmea string to decode
-    """
-    if validate:
-        assert(len(nmeaStr)>=71)
-        assert(len(nmeaStr)<=78)
-        assert(nmeaStr[0] in ('$','!'))
-        assert(nmeaStr[3:6]=='GGA')
-        #assert(nmea.isChecksumValid(nmeaStr))
-    fields = nmeaStr.split(',')
-    r={} # Results dict to be returned
-    r['hour']=fields[1][0:2]
-    r['min']=fields[1][2:4]
-    r['sec']=fields[1][4:6]
-    r['hsec']=fields[1][7:9] # hundreths of seconds
-    r['lat']=float(fields[2][0:2]) + float(fields[2][2:])/60.
-    if fields[3]=='S': r['lat']=-r['lat']
+  @param nmeaStr: nmea string to decode
+  """
+  if validate:
+      assert(len(nmeaStr)>=71)
+      assert(len(nmeaStr)<=78)
+      assert(nmeaStr[0] in ('$','!'))
+      assert(nmeaStr[3:6]=='GGA')
+      #assert(nmea.isChecksumValid(nmeaStr))
+  fields = nmeaStr.split(',')
+  r = {}  # Results dict to be returned.
+  r['hour'] = fields[1][0:2]
+  r['min'] = fields[1][2:4]
+  r['sec'] = fields[1][4:6]
+  r['hsec'] = fields[1][7:9]  # Hundreths of seconds.
+  r['lat'] = float(fields[2][0:2]) + float(fields[2][2:])/60.
+  if fields[3] == 'S':
+    r['lat']=-r['lat']
 
-    # FIX: lon probably will fail for
-    lon = fields[4][:3]
-    if lon[0]=='0': lon = lon[1:]
-    r['lon']=float(lon) + float(fields[4][3:])/60.
-    if fields[5]=='W': r['lon']=-r['lon']
-    r['qual']=int(fields[6])
-    r['sats']=int(fields[7])
-    r['horz_dilution']=float(fields[8]) # meters
-    r['alt']=float(fields[9]) # altitude in meters above the geoid, meters
-    r['alt_units']=fields[10]
-    r['geoidal_sep']=float(fields[11])
-    r['geoidal_sep_units']=fields[12]
-    try:
-        r['age']=float(fields[13])
-    except:
-        r['age']=None
-    r['diff_ref_station']=fields[14]
-    return r
-
+  # FIX: lon probably will fail for
+  lon = fields[4][:3]
+  if lon[0]=='0': lon = lon[1:]
+  r['lon']=float(lon) + float(fields[4][3:])/60.
+  if fields[5] == 'W':
+    r['lon'] =- r['lon']
+  r['qual'] = int(fields[6])
+  r['sats'] = int(fields[7])
+  r['horz_dilution'] = float(fields[8])  # Meters.
+  r['alt'] = float(fields[9])  # Altitude in meters above the geoid, meters.
+  r['alt_units'] = fields[10]
+  r['geoidal_sep'] = float(fields[11])
+  r['geoidal_sep_units'] = fields[12]
+  try:
+    r['age'] = float(fields[13])
+  except:
+    r['age'] = None
+  r['diff_ref_station'] = fields[14]
+  return r
 """
 GGA - Global Positioning System Fix Data
 Time, Position and fix related data for a GPS receiver.
