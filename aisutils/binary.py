@@ -63,7 +63,7 @@ def float2bitvec(floatval):
     # FIX: make this go in one step now that bitvector 1.3 is out.
     bvList = []
     for i in range(4):
-         bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
+        bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
         #bv2 = BitVector(intVal=ord(s[i]),size=8)
         bvList.append(bv1)
     return joinBV(bvList)

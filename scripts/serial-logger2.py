@@ -23,6 +23,7 @@ import os,socket,serial
 import logging
 from lockfile import LockFailed
 from logger_handlers import MidnightRotatingFileHandler, PassThroughServerHandler
+import socket
 
 class SerialLoggerFormatter:
     def __init__(self, uscgFormat=True, mark=True, stationId=None):
@@ -80,6 +81,16 @@ def run(options):
         ptsh.setFormatter(formatter)
         logger.addHandler(ptsh)
 
+    if options.udpTarget is not None and ':' in options.udpTarget:
+        uaddr,uport = options.udpTarget.split(':',1)
+        uport = int(uport)
+        uaddr = (uaddr,uport)
+        udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        udpSocket.connect(uaddr)
+    else:
+        udpSocket = None
+        
+        
     if not options.daemonMode:
         ch = logging.StreamHandler()
         ch.setFormatter(formatter)
@@ -91,6 +102,12 @@ def run(options):
         # logger.info("hello")
         line = ser.readline().strip()
         logger.info(line)
+        if udpSocket is not None:
+            try:
+                udpSocket.send(line+'\r\n')
+            except:
+                pass
+            
 
 def parseOptions():
     from optparse import OptionParser
@@ -140,6 +157,9 @@ def parseOptions():
                       default=os.path.abspath(os.path.curdir),
                       help='daemon working directory [default: %default]')
 
+    #################### UDP
+    parser.add_option('--udp', dest='udpTarget', type='string', default=None, help='Send to address:port via UDP.')
+                      
     #################### pts
     parser.add_option('--enable-tcp-out', dest='tcpOutput', default=False, action='store_true',
                       help='Create a server that clients can connect to and receive data')

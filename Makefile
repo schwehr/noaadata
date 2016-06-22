@@ -16,6 +16,28 @@ default:
 	@echo
 	@echo " WARNING: this Makefile is for the maintainer.  See INSTALL"
 
+#	@echo "  wikipedia -  Open the wikipedia entry on ${PKG}"
+
+#PYFILES_ALL := ${shell ls *.py}
+#PYFILES := ${shell ls *.py | grep -v version}
+
+.PHONY: variables
+variables:
+	@echo ${PKG}-py version: ${VERSION}
+	@echo PYTHONPATH $$PYTHONPATH
+	@echo SHELL ${SHELL}
+#	@echo PYFILES_ALL ${PYFILES_ALL}
+#	@echo PYFILES ${PYFILES}
+
+.PHONY: wikipedia
+wikipedia:
+	open http://en.wikipedia.org/wiki/Automatic_Identification_System
+
+.PHONY: help
+help:
+	@echo This only works on Mac OSX
+	open html/index.html
+
 .PHONY: clean
 clean:
 	rm -f ${PKG}-py.info MANIFEST
@@ -48,6 +70,25 @@ check:
 	@echo
 	pychecker ${PKG}
 	find . -name \*.py | xargs egrep '@(todo|bug)'
+#	pylint
+#	pychecker ${PKG} scripts
+
+build: test
+	@echo
+	@echo Building locally...
+	@echo
+	(cd ais;make)
+	(cd ais/sls;make)
+	(cd ais/ris;make)
+	-find . -name \*.pyc | xargs rm
+	rm -f MANIFEST
+	./setup.py build
+
+install-home: build
+	@echo
+	@echo Installing in home area...
+	@echo
+	./setup.py install --prefix ${HOME}
 
 sdist: test 
 	@echo

@@ -192,7 +192,10 @@ class UscgNmea:
                         pass
                     continue
                 if c == 'S':
-                    self.slotNumber = int(f[1:])
+                    try:
+                        self.slotNumber = int(f[1:])
+                    except:
+                        self.slotNumber = None
                     continue
                 if c == 'x':
                     # I don't know what x is
