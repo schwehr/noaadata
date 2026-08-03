@@ -65,13 +65,13 @@ ______________________________________________________________________
   - [x] Add `hypofuzz` configuration for continuous fuzzing.
   - [x] Verification command: `uv run pytest tests/test_properties/ -v`
 
-- [ ] **2.4 Establish Performance Benchmarks (`pytest-benchmark`)**
+- [x] **2.4 Establish Performance Benchmarks (`pytest-benchmark`)**
 
-  - [ ] Create regression benchmark suites in `tests/benchmarks/`:
+  - [x] Create regression benchmark suites in `tests/benchmarks/`:
     - Benchmark `BitVector` slice extraction and concatenation.
     - Benchmark Class A AIS position report decoding (\[`ais_msg_1.py`\](noaadata/ais/ais_msg_1.py), \[`ais_msg_2.py`\](noaadata/ais/ais_msg_2.py), \[`ais_msg_3.py`\](noaadata/ais/ais_msg_3.py)).
     - Benchmark NMEA sentence checksum verification.
-  - [ ] Save initial baseline: `uv run pytest tests/benchmarks/ --benchmark-only --benchmark-save=baseline`
+  - [x] Save initial baseline: `uv run pytest tests/benchmarks/ --benchmark-only --benchmark-save=baseline`
 
 ______________________________________________________________________
 
