@@ -31,28 +31,33 @@ ______________________________________________________________________
 
 ## 2. Repository Layout (Current State)
 
-- [`src/`](src): Pure-Python source package directory containing PEP 561 `py.typed` markers:
-  - [`src/noaadata/`](src/noaadata): NOAA CO-OPS water level SOAP and DAP client/parsing
-    ([`stations.py`](src/noaadata/stations.py),
+- [`src/`](src): Pure-Python source package directory containing PEP 561
+  `py.typed` markers:
+  - [`src/noaadata/`](src/noaadata): NOAA CO-OPS water level SOAP and DAP
+    client/parsing ([`stations.py`](src/noaadata/stations.py),
     [`waterlevel_dap.py`](src/noaadata/waterlevel_dap.py),
     [`waterlevelraw.py`](src/noaadata/waterlevelraw.py),
     [`dumpallwl.py`](src/noaadata/dumpallwl.py)), and CLI entry points in
     [`cli/`](src/noaadata/cli).
-  - [`src/ais/`](src/ais): Marine AIS binary message definitions (messages 1–24, IMO
-    messages, binary waterlevel messages, whale notices, compilers/translators).
-  - [`src/aisutils/`](src/aisutils): Core [`BitVector.py`](src/aisutils/BitVector.py), 6-bit
-    ASCII strings ([`aisstring.py`](src/aisutils/aisstring.py)), binary bit unpacking
+  - [`src/ais/`](src/ais): Marine AIS binary message definitions (messages 1–24,
+    IMO messages, binary waterlevel messages, whale notices,
+    compilers/translators).
+  - [`src/aisutils/`](src/aisutils): Core
+    [`BitVector.py`](src/aisutils/BitVector.py), 6-bit ASCII strings
+    ([`aisstring.py`](src/aisutils/aisstring.py)), binary bit unpacking
     ([`binary.py`](src/aisutils/binary.py)), database bridges
-    ([`database.py`](src/aisutils/database.py), [`sqlhelp.py`](src/aisutils/sqlhelp.py)),
-    USCG extensions ([`uscg.py`](src/aisutils/uscg.py)), and grid calculations
+    ([`database.py`](src/aisutils/database.py),
+    [`sqlhelp.py`](src/aisutils/sqlhelp.py)), USCG extensions
+    ([`uscg.py`](src/aisutils/uscg.py)), and grid calculations
     ([`grid.py`](src/aisutils/grid.py)).
-  - [`src/nmea/`](src/nmea): Standard NMEA-0183 sentences ([`gga.py`](src/nmea/gga.py),
-    [`rmc.py`](src/nmea/rmc.py), [`zda.py`](src/nmea/zda.py), [`znt.py`](src/nmea/znt.py), and
-    checksum validation [`checksum.py`](src/nmea/checksum.py)).
+  - [`src/nmea/`](src/nmea): Standard NMEA-0183 sentences
+    ([`gga.py`](src/nmea/gga.py), [`rmc.py`](src/nmea/rmc.py),
+    [`zda.py`](src/nmea/zda.py), [`znt.py`](src/nmea/znt.py), and checksum
+    validation [`checksum.py`](src/nmea/checksum.py)).
 - [`scripts/`](scripts): Remaining non-Python shell utilities and Makefile;
-  Python CLI scripts have been migrated into [`src/noaadata/cli/`](src/noaadata/cli) and
-  registered as `[project.scripts]` entry points in
-  [`pyproject.toml`](pyproject.toml).
+  Python CLI scripts have been migrated into
+  [`src/noaadata/cli/`](src/noaadata/cli) and registered as `[project.scripts]`
+  entry points in [`pyproject.toml`](pyproject.toml).
 - [`tests/`](tests): Dedicated directory for `pytest` test suites.
 - [`docs/`](docs): Dedicated directory for `mkdocs` documentation.
 - [`examples/`](examples): Dedicated directory for executable example scripts.
@@ -82,9 +87,9 @@ uv run python -c "import noaadata, ais, aisutils, nmea; print('Import OK')"
 uv run pytest
 ```
 
-> **Note**: Packaging has transitioned from legacy `setup.py` to `pyproject.toml`
-> and `uv` (Phase 1 complete), and `pytest` discovery is active (Task 2.0
-> complete).
+> **Note**: Packaging has transitioned from legacy `setup.py` to
+> `pyproject.toml` and `uv` (Phase 1 complete), and `pytest` discovery is active
+> (Task 2.0 complete).
 
 ______________________________________________________________________
 
