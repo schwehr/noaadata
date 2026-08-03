@@ -217,13 +217,13 @@ ______________________________________________________________________
   - [x] Define protocols for database bridges and GIS exporters in
     `src/aisutils/protocols.py`.
 
-- [ ] **5.4 Add PEP 561 Package Markers & Multi-Checker Verification**
+- [x] **5.4 Add PEP 561 Package Markers & Multi-Checker Verification**
 
-  - [ ] Add `py.typed` empty marker files to `src/noaadata/`, `src/ais/`,
+  - [x] Add `py.typed` empty marker files to `src/noaadata/`, `src/ais/`,
     `src/aisutils/`, and `src/nmea/`.
-  - [ ] Enforce strict cross-checker compatibility across `mypy --strict`,
+  - [x] Enforce strict cross-checker compatibility across `mypy --strict`,
     `pyright`, and `pyrefly`.
-  - [ ] Verification command: `uv run mypy src/ tests/ && uv run ty check`
+  - [x] Verification command: `uv run mypy src/ tests/ && uv run ty check`
 
 ______________________________________________________________________
 
