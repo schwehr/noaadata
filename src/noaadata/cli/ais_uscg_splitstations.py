@@ -53,10 +53,11 @@ def splitstations(
     stationSubdirs=False,
 ):
     """
-    @param logfile: file like object to read from
-    @param subdir: put the files in a subdirectory
-    @param withR: keep the r in front of the station name
-    @param verbose: be loud
+    Args:
+        logfile: file like object to read from
+        subdir: put the files in a subdirectory
+        withR: keep the r in front of the station name
+        verbose: be loud
     """
     if subdir is not None and not os.access(subdir, os.X_OK):  # F_OK):
         os.mkdir(subdir)

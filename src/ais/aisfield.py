@@ -86,10 +86,11 @@ Subset of typeChoices that only has the numeric types
 def tag(outfile, tagName, value, indent=""):
     """
     Write out one complete tag
-    @param outfile: open file to write to
-    @param tagName: string containing the xml tag
-    @param value: what to put between the begin and end tag.  Converts to a string
-    @param indent: how much to indent the tag
+    Args:
+        outfile: open file to write to
+        tagName: string containing the xml tag
+        value: what to put between the begin and end tag.  Converts to a string
+        indent: how much to indent the tag
     """
     outfile.write(indent + "<" + tagName + ">" + str(value) + "</" + tagName + ">\n")
 
@@ -98,7 +99,8 @@ def tag(outfile, tagName, value, indent=""):
 def getStubFieldDict():
     """
     Convenience for thos that just want to tweak one or two things
-    @return: example dictionary that can then be added to.
+    Returns:
+        example dictionary that can then be added to.
     """
 
     return {
@@ -128,7 +130,8 @@ def makeField(options, out=sys.stdout):
 
     {'maxRange': None, 'outputFile': None, 'lut': None, 'description': None, 'notes': None, 'required': None, 'minRange': None, 'numberOfBits': 1, 'units': None, 'scale': None, 'arrayLength': None, 'completeXml': False, 'decimalPlaces': None, 'unavailable': None, 'type': 'bool', 'name': None}
 
-    @param options: dict of all the required fields
+    Args:
+        options: dict of all the required fields
 
     """
     o = options
@@ -206,9 +209,11 @@ def makeField(options, out=sys.stdout):
 def validate(options, notify=True):
     """
     Check all of the options to make sure they work
-    @param options: dict with all option fields
-    @param notify: if true, emit error messages to stdout
-    @return: True if options all ok
+    Args:
+        options: dict with all option fields
+        notify: if true, emit error messages to stdout
+    Returns:
+        True if options all ok
     """
     o = options
     ok = True

@@ -89,10 +89,11 @@ class Uptime:
         self, min_gap_sec=2, min_gap_neg_sec=-1, dt_raw_filename=None, verbose=True
     ):
         """
-        WARNING/FIX: assumes times are integer seconds
+            WARNING/FIX: assumes times are integer seconds
 
-        @param min_gap_sec: minimum number of seconds to consider offline
-        @param dt_raw_file: filename to write dt or None for no file."""
+        Args:
+            min_gap_sec: minimum number of seconds to consider offline
+            dt_raw_file: filename to write dt or None for no file."""
         self.min_gap_sec = min_gap_sec
         print("Uptime min_gap_sec:", min_gap_sec)
         self.min_gap_neg_sec = min_gap_neg_sec
@@ -358,7 +359,9 @@ class BoundingBox:
         self,
     ):
         """@param station_location: the lon, lat of the receiver
-        @param max_dist_km: threshold beyond with to just drop points as bad"""
+
+        Args:
+            max_dist_km: threshold beyond with to just drop points as bad"""
         self.x_min = None
         self.x_max = None
         self.y_min = None

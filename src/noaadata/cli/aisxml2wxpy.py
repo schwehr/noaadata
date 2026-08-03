@@ -33,23 +33,28 @@ from lxml import etree
 
 def hasSubTag(et, subtag):
     """
-    @return: true if the tag a sub tag with name subtag
+    Returns:
+        true if the tag a sub tag with name subtag
     """
     return len(et.xpath(subtag)) > 0
 
 
 def hasBoolField(et):
     """
-    @return: true there exists a bool type field
-    @param et: message element tree
+    Returns:
+        true there exists a bool type field
+    Args:
+        et: message element tree
     """
     return len(et.xpath('field[@type="bool"]')) > 0
 
 
 def useChoice(field):
     """
-    @return: true if should use a wxChoice for this field
-    @param field: Field element tree
+    Returns:
+        true if should use a wxChoice for this field
+    Args:
+        field: Field element tree
     """
     fieldType = field.attrib["type"]
     if fieldType not in ["int", "uint", "bool"]:
@@ -89,8 +94,9 @@ def createChoiceList(o, fieldET):
 
 def generateWxPython(infile, outfile, prefixName=False, verbose=False):
     """
-    @param infile: xml ais binary message definition file
-    @param outfile: where to dump the python code
+    Args:
+        infile: xml ais binary message definition file
+        outfile: where to dump the python code
     """
 
     aisMsgsET = etree.parse(infile).getroot()
@@ -148,8 +154,9 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
     """
     Write a class for the wx python.
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
 
      TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
      TODO(schwehr):use a different name for message and field
@@ -184,7 +191,8 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
     o.write("""
         def __init__(self,parent,title,msgDict):
                 \'\'\'
-                @param msgDict: Default values to use.
+                Args:
+                    msgDict: Default values to use.
                         Overwritten with the return values.
                         Values that are required will be ignored.
                 @type msgDict: dict

@@ -49,14 +49,15 @@ class DatabaseHandler:
         cleanTime=30,
     ):
         """
-        @param connection: database connection
-        @param dbUpdateInterval: how many seconds between database updates
-        @param threshold: How many messages in the queue before they go to the db?
-        @param skipDB: Do not actually talk to the database.  For debugging.
-        @param limitPoints: max number of points in a ship track.  None for no limit
+        Args:
+            connection: database connection
+            dbUpdateInterval: how many seconds between database updates
+            threshold: How many messages in the queue before they go to the db?
+            skipDB: Do not actually talk to the database.  For debugging.
+            limitPoints: max number of points in a ship track.  None for no limit
         @param : a string limiting the length of ship tracks wrt time.  For example: "6 hours ago".  None for no limit
         @param : a string limiting the length of ship tracks wrt time.  For example: "6 hours ago".  None for no limit
-        @param cleanTime: seconds between running the database cleanup for the track lines
+            cleanTime: seconds between running the database cleanup for the track lines
         """
         if not skipDB:
             self.cx = connection
@@ -229,7 +230,8 @@ class HandleAisConnection:
 
     def __init__(self, dataSocket, dbQueue, options, dbType="postgres"):
         """
-        @param dbQueue: Queue object to push SQL messages onto
+        Args:
+            dbQueue: Queue object to push SQL messages onto
         """
         self.options = options
         logging.info("hack options in __init__: %s", self.options)
@@ -342,7 +344,8 @@ class PassThroughServer:
 
     def __init__(self, options, dbHandler):
         """
-        @param options: understands timeout (float in seconds)
+        Args:
+            options: understands timeout (float in seconds)
         """
         self.clients = []
         self.options = options

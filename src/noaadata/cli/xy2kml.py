@@ -57,8 +57,9 @@ def getCircle(cx, cy, radius, stepsize=15):
     UTM and give a radius in meters, then you have to do the inverse
     projection.
 
-    @param cx: center x coord in native units
-    @param stepsize: how many degrees between vertex
+    Args:
+        cx: center x coord in native units
+        stepsize: how many degrees between vertex
 
     """
     pts = []
@@ -82,7 +83,8 @@ def addStyle(
     styleName="style",
 ):
     """
-    @param polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
+    Args:
+        polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
     """
     o = out
     lo = hex(int(lineOpacity * 255))

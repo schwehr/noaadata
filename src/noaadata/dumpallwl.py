@@ -88,15 +88,17 @@ def noaawaterlevel2aisMsg8Nmea(stationID, mmsi, datum, wl, verbose=False, debug=
 def noaawaterlevel2aisBits(stationID, mmsi, datum, wl, verbose=False, debug=False):
     """
     Return an AIS string of the latest waterlevel.
-    @param stationID: which station to query (e.g. '8639348')
+    Args:
+        stationID: which station to query (e.g. '8639348')
     @type stationID: str
-    @param wl: one entry from a soap query
-    @param verbose: Set to true for print messages
-    @param debug: Do not actually fetch any real data (fast for debugging)
-    @param datum: MSL,MLLW
+        wl: one entry from a soap query
+        verbose: Set to true for print messages
+        debug: Do not actually fetch any real data (fast for debugging)
+        datum: MSL,MLLW
 
-    @return: bits for the message payload
-    @rtype: BitVector
+    Returns:
+        bits for the message payload
+        BitVector
     """
     # wl = None
     # wl = wl_dap.getWaterLevelNow(stationID,verbose,datum)

@@ -28,7 +28,8 @@ def addStyle(
     styleName="style",
 ):
     """
-    @param polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
+    Args:
+        polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
     """
     o = out
     lo = (int(lineOpacity * 255)).__hex__()

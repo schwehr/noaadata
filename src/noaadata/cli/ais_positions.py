@@ -49,9 +49,10 @@ def dist(lon1, lat1, lon2, lat2):
 def getPosition(logfile, outfile, minDist=None):
     """
     Pull the positions from the log file
-    @param logfile: file like object
-    @param outfile: file like object destination
-    @param minDist: how far apart points must be apart to be considered unique
+    Args:
+        logfile: file like object
+        outfile: file like object destination
+        minDist: how far apart points must be apart to be considered unique
     """
     # FIX: use the right utm zone.  14 is the central US so it will kind of work
     params = {"proj": "utm", "zone": 14}  # int(options.zone)}

@@ -75,9 +75,10 @@ uscg_ais_nmea_regex = re.compile(uscg_ais_nmea_regex_str, re.VERBOSE)
 def write_uscg_nmea_fields(nmea_str, out=sys.stdout, indent="\t"):
     """Write out the fields of a USCG nmea string.
 
-    @param nmea_str: USCG style nmea string
-    @param out: stream object to write to
-    @param indent: how to indent each field
+    Args:
+        nmea_str: USCG style nmea string
+        out: stream object to write to
+        indent: how to indent each field
     """
     match_obj = uscg_ais_nmea_regex.search(nmea_str)
     if not match_obj:
@@ -214,8 +215,9 @@ class UscgNmea:
 
     def getBitVector(self):
         """
-        @return: bits for the payload (even if this is a multipart)
-        @rtype: BitVector
+        Returns:
+            bits for the payload (even if this is a multipart)
+            BitVector
         """
         return binary.ais6tobitvec(self.contents)
 
@@ -387,12 +389,13 @@ def create_nmea(
     'AIVDM,1,1,,A,852HH<iKgk:iKG_j<k1lI0000qp0,0*13,runknown,1202235568'
 
     @type bits: BitVector
-    @param cg_sec: seconds since the epoch in UTC or if None, the current time will be used
-    @param totalSentences: defaults to 1.  Eventually will calculated for multi-line
+    Args:
+        cg_sec: seconds since the epoch in UTC or if None, the current time will be used
+        totalSentences: defaults to 1.  Eventually will calculated for multi-line
     @type totalSentences: positive int
-    @param sentences: defaults to 1.  Eventually will calculated for multi-line
+        sentences: defaults to 1.  Eventually will calculated for multi-line
     @type sentenceNum: positive int
-    @param sequentialMsgId: the number 1..9 for this group of messages.  Defaults to blank
+        sequentialMsgId: the number 1..9 for this group of messages.  Defaults to blank
     @type sequentialMsgId: positive int
 
     @todo: handle the rest of the uscg fields

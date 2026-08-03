@@ -189,11 +189,13 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
 
     Not yet well tested.
 
-    @param cx: database connection
-    @param verbose: pring out more if true
-    @param uscg: Process uscg tail information to get timestamp and receive station
-    @rtype: None
-    @return: Nothing
+    Args:
+        cx: database connection
+        verbose: pring out more if true
+        uscg: Process uscg tail information to get timestamp and receive station
+    Returns:
+        None
+        Nothing
 
     @note: can not handle multiline AIS messages.  They must be normalized first.
     """

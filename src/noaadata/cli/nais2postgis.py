@@ -366,7 +366,8 @@ class Nais2Postgis:
 
     def do_one_loop(self):
         """
-        @return: true on success, false if disconnected or other error.
+        Returns:
+            true on success, false if disconnected or other error.
         """
 
         connection_attempts = 0

@@ -66,10 +66,12 @@ def decode(bv, validate=False):
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @type bv: BitVector
-    @param bv: Bits defining a message
-    @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-    @rtype: dict
-    @return: params
+    Args:
+        bv: Bits defining a message
+        validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+    Returns:
+        dict
+        params
     """
 
     r = {}
@@ -195,10 +197,12 @@ def printFields(
       - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
-    @param params: Dictionary of field names/values.
-    @param out: File like object to write to
-    @rtype: stdout
-    @return: text to out
+    Args:
+        params: Dictionary of field names/values.
+        out: File like object to write to
+    Returns:
+        stdout
+        text to out
     """
 
     if format == "std":

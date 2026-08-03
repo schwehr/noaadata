@@ -62,8 +62,9 @@ def waterlevelEncode(*aDict, **params):
     >>> print waterlevelEncode()
     1011011101100
 
-    @param aDict: for passing in a dictionary of keyword and values.
-    @param params: keyword dictionary or if a dict is passed, it will use that dict
+    Args:
+        aDict: for passing in a dictionary of keyword and values.
+        params: keyword dictionary or if a dict is passed, it will use that dict
     @note: only use one of aDict or params
     """
 

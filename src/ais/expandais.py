@@ -61,8 +61,10 @@ def expandAis(inET, verbose=False):
     include-struct description is also added to before the fields
     description.
 
-    @param inET: lxml element tree to expand
-    @return: lxml element tree with expanded structures
+    Args:
+        inET: lxml element tree to expand
+    Returns:
+        lxml element tree with expanded structures
     """
     inET.xinclude()
     import copy
@@ -155,8 +157,10 @@ def nukeStructs(inET, verbose=False):
     include-struct description is also added to before the fields
     description.
 
-    @param inET: lxml element tree to expand
-    @return: lxml element tree with expanded structures
+    Args:
+        inET: lxml element tree to expand
+    Returns:
+        lxml element tree with expanded structures
     """
     import copy
 

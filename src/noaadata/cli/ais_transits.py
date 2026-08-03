@@ -79,9 +79,10 @@ def lon_to_utm_zone(lon):
 
 def detectTransits(inFile, basename, options):
     """
-    @param inFile: open file like object containing data
-    @param basename: prepend this str to filenames written
-    @param options: FIX... list options
+    Args:
+        inFile: open file like object containing data
+        basename: prepend this str to filenames written
+        options: FIX... list options
 
      TODO(schwehr):detect if the input is AIS VDM or XYMT messages
     """

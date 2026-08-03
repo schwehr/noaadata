@@ -216,10 +216,12 @@ def encode(params, validate=False):
       - salinity(decimal): Salinity
       - ice(uint): Yes or no for the presence of ice
       - Spare2(uint): Must be zero (field automatically set to "0")
-    @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
-    @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-    @rtype: BitVector
-    @return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
+    Args:
+        params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
+        validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+    Returns:
+        BitVector
+        encoded binary message (for binary messages, this needs to be wrapped in a msg 8
     @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
     """
 
@@ -501,10 +503,12 @@ def decode(bv, validate=False):
       - ice(uint): Yes or no for the presence of ice
       - Spare2(uint): Must be zero (field automatically set to "0")
     @type bv: BitVector
-    @param bv: Bits defining a message
-    @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-    @rtype: dict
-    @return: params
+    Args:
+        bv: Bits defining a message
+        validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+    Returns:
+        dict
+        params
     """
 
     # Would be nice to check the bit count here..
@@ -1226,10 +1230,12 @@ def printFields(
       - salinity(decimal): Salinity
       - ice(uint): Yes or no for the presence of ice
       - Spare2(uint): Must be zero (field automatically set to "0")
-    @param params: Dictionary of field names/values.
-    @param out: File like object to write to
-    @rtype: stdout
-    @return: text to out
+    Args:
+        params: Dictionary of field names/values.
+        out: File like object to write to
+    Returns:
+        stdout
+        text to out
     """
 
     if format == "std":
@@ -1474,14 +1480,16 @@ def sqlCreateStr(
 ):
     """
     Return the SQL CREATE command for this message type
-    @param outfile: file like object to print to.
-    @param fields: which fields to put in the create.  Defaults to all.
-    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    Args:
+        outfile: file like object to print to.
+        fields: which fields to put in the create.  Defaults to all.
+        extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+        dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
     @type addCoastGuardFields: bool
-    @return: sql create string
-    @rtype: str
+    Returns:
+        sql create string
+        str
 
     @see: sqlCreate
     """
@@ -1497,13 +1505,15 @@ def sqlCreate(
     """
     Return the sqlhelp object to create the table.
 
-    @param fields: which fields to put in the create.  Defaults to all.
-    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+    Args:
+        fields: which fields to put in the create.  Defaults to all.
+        extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
     @type addCoastGuardFields: bool
-    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-    @return: An object that can be used to generate a return
-    @rtype: sqlhelp.create
+        dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    Returns:
+        An object that can be used to generate a return
+        sqlhelp.create
     """
     if fields is None:
         fields = fieldList
@@ -1623,11 +1633,13 @@ def sqlCreate(
 def sqlInsertStr(params, outfile=sys.stdout, extraParams=None, dbType="postgres"):
     """
     Return the SQL INSERT command for this message type
-    @param params: dictionary of values keyed by field name
-    @param outfile: file like object to print to.
-    @param extraParams: A sequence of tuples containing (name,sql type) for additional fields
-    @return: sql create string
-    @rtype: str
+    Args:
+        params: dictionary of values keyed by field name
+        outfile: file like object to print to.
+        extraParams: A sequence of tuples containing (name,sql type) for additional fields
+    Returns:
+        sql create string
+        str
 
     @see: sqlCreate
     """
@@ -1637,10 +1649,12 @@ def sqlInsertStr(params, outfile=sys.stdout, extraParams=None, dbType="postgres"
 def sqlInsert(params, extraParams=None, dbType="postgres"):
     """
     Give the SQL INSERT statement
-    @param params: dict keyed by field name of values
-    @param extraParams: any extra fields that you have created beyond the normal ais message fields
-    @rtype: sqlhelp.insert
-    @return: insert class instance
+    Args:
+        params: dict keyed by field name of values
+        extraParams: any extra fields that you have created beyond the normal ais message fields
+    Returns:
+        sqlhelp.insert
+        insert class instance
     @todo: allow optional type checking of params?
     @warning: this will take invalid keys happily and do what???
     """
@@ -1696,10 +1710,12 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
 def latexDefinitionTable(outfile=sys.stdout):
     """
     Return the LaTeX definition table for this message type
-    @param outfile: file like object to print to.
+    Args:
+        outfile: file like object to print to.
     @type outfile: file obj
-    @return: LaTeX table string via the outfile
-    @rtype: str
+    Returns:
+        LaTeX table string via the outfile
+        str
 
     """
     o = outfile
@@ -1770,10 +1786,12 @@ Total bits & 352 & Appears to take 2 slots with 72 pad bits to fill the last slo
 def textDefinitionTable(outfile=sys.stdout, delim="\t"):
     """
     Return the text definition table for this message type
-    @param outfile: file like object to print to.
+    Args:
+        outfile: file like object to print to.
     @type outfile: file obj
-    @return: text table string via the outfile
-    @rtype: str
+    Returns:
+        text table string via the outfile
+        str
 
     """
     o = outfile
@@ -2013,8 +2031,9 @@ import unittest
 
 def testParams():
     """Return a params file base on the testvalue tags.
-    @rtype: dict
-    @return: params based on testvalue tags
+    Returns:
+        dict
+        params based on testvalue tags
     """
     params = {}
     params["MessageID"] = 8

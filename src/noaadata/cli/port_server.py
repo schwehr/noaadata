@@ -101,8 +101,9 @@ def add_verbosity_options(parser):
 def date_str():
     """
     String representing the day so that it sorts correctly
-    @return: yyyy-mm-dd
-    @rtype: str
+    Returns:
+        yyyy-mm-dd
+        str
     """
     t = time.gmtime()
     d = "%04d-%02d-%02d" % t[:3]

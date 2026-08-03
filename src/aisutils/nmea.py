@@ -56,10 +56,12 @@ def checksumStr(data, verbose=False):
     >>> checksumStr('$xxCAB,1,1,1,1*5D')
     '40'
 
-    @param data: NMEA message.  Leading ?/! and training checksum are optional
+    Args:
+        data: NMEA message.  Leading ?/! and training checksum are optional
     @type data: str
-    @return: hexadecimal value
-    @rtype: str
+    Returns:
+        hexadecimal value
+        str
 
     """
 
@@ -107,11 +109,13 @@ def isChecksumValid(nmeaStr, allowTailData=True, verbose=False):
     >>> isChecksumValid('$AIACA,0,,,,,,,,,5,2087,0,2088,0,0,0,I,1,000000*15')
     True
 
-    @param allowTailData: Permit handing of Coast Guard format with data after the checksum
-    @param nmeaStr: NMEA message.  Leading ?/! are optional
+    Args:
+        allowTailData: Permit handing of Coast Guard format with data after the checksum
+        nmeaStr: NMEA message.  Leading ?/! are optional
     @type nmeaStr: str
-    @return: True if the checksum matches
-    @rtype: bool
+    Returns:
+        True if the checksum matches
+        bool
     """
 
     if allowTailData:
@@ -139,13 +143,14 @@ def buildNmea(
 ):
     """
     Create one long oversized nmea string for the bits
-    @param aisBits: message payload
+    Args:
+        aisBits: message payload
     @type aisBits: BitVector
-    @param prefix: '!' or '$'  what is the difference?
-    @param serviceType: 'can this be anything other than AI?
-    @param msgType: VDM.  Should not be VDO (own ship)
-    @param channelSeq: 1-9 or None
-    @param channel: AIS channel A or B
+        prefix: '!' or '$'  what is the difference?
+        serviceType: 'can this be anything other than AI?
+        msgType: VDM.  Should not be VDO (own ship)
+        channelSeq: 1-9 or None
+        channel: AIS channel A or B
     @todo: sync names of prefix and serviceType to NMEA spec.
     @see: reference the appropriate spec documents for all this stuff.
     """
@@ -190,18 +195,20 @@ def cabEncode(
     >>> cabEncode(True,True,prefix='L3')
     '$L3CAB,1,1,,*3F'
 
-    @param TransA: Transmissions enabled on channel A
+    Args:
+        TransA: Transmissions enabled on channel A
     @type TransA: bool
-    @param TransB: Transmissions enabled on channel B
+        TransB: Transmissions enabled on channel B
     @type TransB: bool
-    @param Restart: If true, command AIS Base station to restart operations in last known configuration
+        Restart: If true, command AIS Base station to restart operations in last known configuration
     @type Restart: bool
-    @param Reset:
+        Reset:
     @type Reset: bool
-    @param prefix: string to put between the $ and CAB
+        prefix: string to put between the $ and CAB
     @type prefix: str
-    @return: A CAB NMEA string
-    @rtype: str
+    Returns:
+        A CAB NMEA string
+        str
     """
     r = ["$" + prefix + "CAB"]
     if TransA:
@@ -235,12 +242,14 @@ def cabDecode(msg, validate=True):
     >>> cabDecode('$ZZCAB,1,1,1,1*40')
     {'Reset': False, 'nmeaPrefix': 'ZZ', 'nmeaCmd': 'CAB', 'TransB': True, 'TransA': True, 'Restart': True}
 
-    @param msg: NMEA string of a CAB message
+    Args:
+        msg: NMEA string of a CAB message
     @type msg: str
-    @param validate: Set to False to turn off validation for speed.
+        validate: Set to False to turn off validation for speed.
     @type validate: bool
-    @return: lookup table of key/values
-    @rtype: dict
+    Returns:
+        lookup table of key/values
+        dict
 
     @todo: How do I make stable doctests with dictionary returns
     @todo FIX: throw an exception if not valid
@@ -413,39 +422,40 @@ def acaEncode(
     '$xxACA,,,,,,,2087,0,2088,0,,1,,*7D'
 
     @see: 61993-2 Page 87.
-    @param seqnum:
+    Args:
+        seqnum:
     @type seqnum: int
-    @param north: llll.ll northern boundary
+        north: llll.ll northern boundary
     @type north: float string
-    @param east: yyyyy.yy (perhaps y was a bad choice)
+        east: yyyyy.yy (perhaps y was a bad choice)
     @type east: float string
-    @param south:
+        south:
     @type south:float string
-    @param west:yyyyy.yy (perhaps y was a bad choice)
+        west: yyyyy.yy (perhaps y was a bad choice)
     @type west:float string
-    @param transitionSize: (nautical miles)
+        transitionSize: (nautical miles)
     @type transitionSize: int
-    @param chanA: Channel A number
+        chanA: Channel A number
     @type chanA: int
-    @param chanAbandwidth: 0 is the default, 1 is 12.5 kHz
+        chanAbandwidth: 0 is the default, 1 is 12.5 kHz
     @type chanAbandwidth: int
-    @param chanB: Channel B number
+        chanB: Channel B number
     @type chanB: int
-    @param chanBbandwidth: 0 is the default, 1 is 12.5 kHz
+        chanBbandwidth: 0 is the default, 1 is 12.5 kHz
     @type chanBbandwidth: int
-    @param txrxMode: See txrxLUT for the numbers
+        txrxMode: See txrxLUT for the numbers
     @type txrxMode: int
-    @param power: 0 for high, 1 for low
+        power: 0 for high, 1 for low
     @type power: int
-    @param infosrc: should be empty for sending to an AIS device.  See acaInfoSrcLUT
+        infosrc: should be empty for sending to an AIS device.  See acaInfoSrcLUT
     @type infosrc: letter
-    @param timeinuse: should be empty for sending to an AIS device.  Time in UTC that the device changed to this state
+        timeinuse: should be empty for sending to an AIS device.  Time in UTC that the device changed to this state
     @type timeinuse: hhmmss.ss
-    @param prefix: Vendor specific prefix.  FIX: what should be used here?
+        prefix: Vendor specific prefix.  FIX: what should be used here?
     @type prefix: Two letters
-    @param appendEOL: Do you want a DOS end of line appended?
+        appendEOL: Do you want a DOS end of line appended?
     @type appendEOL: bool
-    @param validate: Set to true to validate the message
+        validate: Set to true to validate the message
     @type validate: bool
     """
     if validate:
@@ -764,26 +774,28 @@ def bbmEncode(
 
     @todo: put in some doc tests with know messages and what would be received as the VDM message(s)
     @see: IEC-PAS 61162-100 80/330/PAS, Page 19
-    @param totSent: Total number of sentences needed for the message (1-9)
+    Args:
+        totSent: Total number of sentences needed for the message (1-9)
     @type totSent: int
-    @param sentNum: Which sentence is this in the series (1-9)
+        sentNum: Which sentence is this in the series (1-9)
     @type sentNum: int
-    @param seqId: need to increment this for each message??!?!?  (0-9)  Linked to ABK
+        seqId: need to increment this for each message??!?!?  (0-9)  Linked to ABK
     @type seqId: int
-    @param aisChan: AIS channel to use to send the message
+        aisChan: AIS channel to use to send the message
       0. No channel preference
       1. AIS Channel A
       2. AIS Channel B
       3. Broadcast on both A and B
     @type aisChan: str
-    @param msgId: AIS message 8 (binary broadcast message) or 14 (safety related broadcast)
+        msgId: AIS message 8 (binary broadcast message) or 14 (safety related broadcast)
     @type msgId: int
-    @param data: Content of the binary data.  First sentence must be 58 characters or less.
+        data: Content of the binary data.  First sentence must be 58 characters or less.
     The rest can be up to 60 characters.
-    @param numFillBits: Number of bits of padding in the last character of the data (0-5)
+        numFillBits: Number of bits of padding in the last character of the data (0-5)
     @type numFillBits: int
-    @return: nmea string
-    @rtype: str
+    Returns:
+        nmea string
+        str
     """
     if validate:
         # obsesive error checking follows
@@ -831,12 +843,14 @@ def bbmDecode(msg, validate=True):
 
     @todo: make the doctest stable
     @todo: doctests with known messages
-    @param msg: NMEA string of a CAB message
+    Args:
+        msg: NMEA string of a CAB message
     @type msg: str
-    @param validate: Set to False to turn off validation for speed.
+        validate: Set to False to turn off validation for speed.
     @type validate: bool
-    @return: lookup table of key/values
-    @rtype: dict
+    Returns:
+        lookup table of key/values
+        dict
     @see: IEC-PAS 61162-100 80/330/PAS, Page 19
     """
     if validate and not isChecksumValid(msg, verbose=True):
@@ -883,12 +897,14 @@ def bcfDecode(msg, validate=True):
     {'posAccuracy': '1', 'nmeaPrefix': 'AI', 'TxChanB': '2088', 'mmsi': '12345', 'RepeatIndicator': '0', 'lon': -5249.0, 'PowerB': '1', 'posSrc': '7', 'nmeaCmd': 'BCF', 'PowerA': '1', 'BaseStationTalkerID': 'AI', 'RxChanB': '2088', 'lat': 4731.0, 'RxChanA': '2087', 'TxChanA': '2087', 'VDLretries': '3'}
 
     @see: 62320-1/CDV 80/427/CDV, Page 76, A.1.6
-    @param msg: NMEA string of a CAB message
+    Args:
+        msg: NMEA string of a CAB message
     @type msg: str
-    @param validate: Set to False to turn off validation for speed.
+        validate: Set to False to turn off validation for speed.
     @type validate: bool
-    @return: lookup table of key/values
-    @rtype: dict
+    Returns:
+        lookup table of key/values
+        dict
     """
 
     if validate and not isChecksumValid(msg, verbose=True):
@@ -1025,47 +1041,48 @@ def bcfEncode(
 
 
     @see: 62320-1/CDV 80/427/CDV, Page 76, A.1.6
-    @param mmsi: UserID for the base station
+    Args:
+        mmsi: UserID for the base station
     @type  mmsi: int
-    @param posSrc: See posSrcLUT. 0..6
+        posSrc: See posSrcLUT. 0..6
     @type  posSrc: int
-    @param lat: Surveyed latitude position.  FIX: how is this encoded!!?!?!
+        lat: Surveyed latitude position.  FIX: how is this encoded!!?!?!
     @type  lat: float
-    @param latNS: N or S
+        latNS: N or S
     @type  latNS: str(1)
-    @param lon: Suveyed longitude position.  FIX: how is this encoded!!?!?!
+        lon: Suveyed longitude position.  FIX: how is this encoded!!?!?!
     @type  lon: float
-    @param lonEW: E or W
+        lonEW: E or W
     @type  lonEW: str(1)
-    @param posAccuracy: 0 for low, 1 for hight
+        posAccuracy: 0 for low, 1 for hight
     @type  posAccuracy: int
-    @param RxChanA: Receive channel to use (default is 2087)
+        RxChanA: Receive channel to use (default is 2087)
     @type  RxChanA: int
-    @param RxChanB: Receive channel to use (default is 2088)
+        RxChanB: Receive channel to use (default is 2088)
     @type  RxChanB: int
-    @param TxChanA: Transmit channel to use (default is 2087)
+        TxChanA: Transmit channel to use (default is 2087)
     @type  TxChanA: int
-    @param TxChanB: Transmit channel to use (default is 2089)
+        TxChanB: Transmit channel to use (default is 2089)
     @type  TxChanB: int
-    @param PowerA: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
+        PowerA: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
                    2 or 5 watts for low?  2..9 reserved
     @type  PowerA: int
-    @param PowerB:Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
+        PowerB: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
                    2 or 5 watts for low?  2..9 reserved
     @type  PowerB: int
-    @param VDLretries: FIX: what does this mean?
+        VDLretries: FIX: what does this mean?
     @type  VDLretries: int
-    @param RepeatIndicator: ?
+        RepeatIndicator: ?
     @type  RepeatIndicator: int
-    @param BaseStationTalkerID: Usually AI.  The prefix that does before NMEA string identifiers
+        BaseStationTalkerID: Usually AI.  The prefix that does before NMEA string identifiers
     @type  BaseStationTalkerID: str(2)
-    @param prefix: Vendor specific prefix.  FIX: what should be used here?
+        prefix: Vendor specific prefix.  FIX: what should be used here?
     @type  prefix: Two letters
-    @param appendEOL: Do you want a DOS end of line appended?
+        appendEOL: Do you want a DOS end of line appended?
     @type  appendEOL: bool
-    @param validate: Set to true to validate the message
+        validate: Set to true to validate the message
     @type  validate: bool
     """
 

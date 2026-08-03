@@ -9,10 +9,12 @@ nmeaChecksumRE = re.compile(r"[\!\?][^\*]+\*[0-9A-Fa-f]{2}")
 def checksumStr(data):
     """
     Take a NMEA 0183 string and compute the checksum.
-    @param data: NMEA message.  Leading ?/! and training checksum are optional
+    Args:
+        data: NMEA message.  Leading ?/! and training checksum are optional
     @type data: str
-    @return: hexadecimal value
-    @rtype: str
+    Returns:
+        hexadecimal value
+        str
 
     Checksum is calculated by xor'ing everything between ? or ! and the *
 
@@ -42,11 +44,13 @@ def checksumStr(data):
 def isChecksumValid(nmeaStr, allowTailData=True):
     """Return True if the string checks out with the checksum
 
-    @param allowTailData: Permit handing of Coast Guard format with data after the checksum
-    @param data: NMEA message.  Leading ?/! are optional
+    Args:
+        allowTailData: Permit handing of Coast Guard format with data after the checksum
+        data: NMEA message.  Leading ?/! are optional
     @type data: str
-    @return: True if the checksum matches
-    @rtype: bool
+    Returns:
+        True if the checksum matches
+        bool
 
     >>> isChecksumValid("!AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
     True

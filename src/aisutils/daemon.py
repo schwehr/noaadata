@@ -31,7 +31,8 @@ import os
 def stdCmdlineOptions(parser, skip_short=False):
     """
     Standard command line options
-    @param parser: OptionParser parser that will get the additional options
+    Args:
+        parser: OptionParser parser that will get the additional options
     """
 
     if skip_short:
@@ -67,7 +68,8 @@ def stdCmdlineOptions(parser, skip_short=False):
 def start(pid_file=None):
     """
     Jump to daemon mode.  Must set either
-    @param options: must have pid_file key
+    Args:
+        options: must have pid_file key
     """
     create()
     if pid_file is not None:

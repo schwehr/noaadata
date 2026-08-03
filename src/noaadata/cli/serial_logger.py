@@ -76,8 +76,9 @@ def date_str():
 
     datetime.datetime.utcnow().strftime('%Y-%m-%d')
 
-    @return: yyyy-mm-dd
-    @rtype: str
+    Returns:
+        yyyy-mm-dd
+        str
     """
     curtime = time.gmtime()
     return "%04d-%02d-%02d" % curtime[:3]
@@ -166,7 +167,8 @@ class PassThroughServer:
 def start(options, pts):
     """
     Do the logging
-    @param pts: PassThroughServer or None
+    Args:
+        pts: PassThroughServer or None
     """
     verbose = options.verbose
 

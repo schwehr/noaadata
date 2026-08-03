@@ -35,7 +35,8 @@ from lxml import etree
 def suggestType(name, curType, printout=True):
     """Try to suggest a type name if one did not work.
 
-    @param printout: if true, write a suggestion to stdout.
+    Args:
+        printout: if true, write a suggestion to stdout.
 
     >>> suggestType('myFieldName', 'unsigned int')
     Recommend switching "unsigned int" to "uint" for field "myFieldName"
@@ -74,7 +75,8 @@ def suggestType(name, curType, printout=True):
 
 def hasSubTag(et, subtag):
     """
-    @return: true if the tag a sub tag with name subtag
+    Returns:
+        true if the tag a sub tag with name subtag
     """
     return len(et.xpath(subtag)) > 0
 
@@ -82,7 +84,8 @@ def hasSubTag(et, subtag):
 def writeBeginning(o):
     """Write the doc string header for the message file.
 
-    @param o: Open output file to write code to.
+    Args:
+        o: Open output file to write code to.
     Must be pre-expanded with the expandais.py command.
     """
 
@@ -141,8 +144,9 @@ FalseBV = BitVector(bitstring="0")
 
 def generatePython(infile, outfile, prefixName=False, verbose=False):
     """
-    @param infile: xml ais binary message definition file
-    @param outfile: where to dump the python code
+    Args:
+        infile: xml ais binary message definition file
+        outfile: where to dump the python code
     """
 
     aisMsgsET = etree.parse(infile).getroot()
@@ -201,8 +205,9 @@ def buildHelpers(o, msgET, verbose=False, prefixName=False):
     """
     emit the fieldList and other things???
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
 
      TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
      TODO(schwehr):use a different name for message and field
@@ -332,7 +337,8 @@ def padStrRight(aStr, strlen):
 
 def haveLocatableMessage(msgET):
     """Make sure this message has both long/x and lat/y fields.
-    @rtype: bool
+    Returns:
+        bool
     """
     # if getLongitudeFieldName(msgET) and getLatitudeFieldName(msgET): return True
 
@@ -361,8 +367,9 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
     """
     Write a simple in order print for the resulting dictionary.
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
 
      TODO(schwehr):for lookuptable/entry values, make it also print the decoded value.
      TODO(schwehr):use a different name for message and field
@@ -686,10 +693,11 @@ def buildTextDef(o, msgET, verbose=False, prefixName=False):
     """
     Write functions for text definition output
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
-    @param verbose: talk lots in the process
-    @param prefixName: set to a string to have the commands prefixed by that character.
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
+        verbose: talk lots in the process
+        prefixName: set to a string to have the commands prefixed by that character.
 
      TODO(schwehr):should this be a style sheet thing instead?
     """
@@ -714,10 +722,12 @@ def buildTextDef(o, msgET, verbose=False, prefixName=False):
         + """(outfile=sys.stdout ,delim='    '):
     \"\"\"Return the text definition table for this message type
 
-    @param outfile: file like object to print to.
+    Args:
+        outfile: file like object to print to.
     @type outfile: file obj
-    @return: text table string via the outfile
-    @rtype: str
+    Returns:
+        text table string via the outfile
+        str
 
     \"\"\"
     o = outfile
@@ -776,10 +786,11 @@ def buildLaTeX(o, msgET, verbose=False, prefixName=False):
     """
     Write functions for LaTeX output
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
-    @param verbose: talk lots in the process
-    @param prefixName: set to a string to have the commands prefixed by that character.
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
+        verbose: talk lots in the process
+        prefixName: set to a string to have the commands prefixed by that character.
 
      TODO(schwehr):should this be a style sheet thing instead?
     """
@@ -805,10 +816,12 @@ def buildLaTeX(o, msgET, verbose=False, prefixName=False):
                 ):
         \"\"\"
         Return the LaTeX definition table for this message type
-        @param outfile: file like object to print to.
+        Args:
+            outfile: file like object to print to.
         @type outfile: file obj
-        @return: LaTeX table string via the outfile
-        @rtype: str
+        Returns:
+            LaTeX table string via the outfile
+            str
 
         \"\"\"
         o = outfile
@@ -899,10 +912,11 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
     """
     Write SQL code
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
-    @param verbose: talk lots in the process
-    @param prefixName: set to a string to have the commands prefixed by that character.
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
+        verbose: talk lots in the process
+        prefixName: set to a string to have the commands prefixed by that character.
     """
     assert msgET.tag == "message"
     msgName = msgET.attrib["name"]
@@ -934,14 +948,16 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
                 ):
         \"\"\"
         Return the SQL CREATE command for this message type
-        @param outfile: file like object to print to.
-        @param fields: which fields to put in the create.  Defaults to all.
-        @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-        @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-        @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+        Args:
+            outfile: file like object to print to.
+            fields: which fields to put in the create.  Defaults to all.
+            extraFields: A sequence of tuples containing (name,sql type) for additional fields
+            addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+            dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
         @type addCoastGuardFields: bool
-        @return: sql create string
-        @rtype: str
+        Returns:
+            sql create string
+            str
 
         @see: sqlCreate
         \"\"\"
@@ -957,13 +973,15 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
         + """(fields=None, extraFields=None, addCoastGuardFields=True, dbType='postgres'):
     \"\"\"Return the sqlhelp object to create the table.
 
-    @param fields: which fields to put in the create.  Defaults to all.
-    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+    Args:
+        fields: which fields to put in the create.  Defaults to all.
+        extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
     @type addCoastGuardFields: bool
-    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-    @return: An object that can be used to generate a return
-    @rtype: sqlhelp.create
+        dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    Returns:
+        An object that can be used to generate a return
+        sqlhelp.create
     \"\"\"
     if fields is None:
         fields = fieldList
@@ -1094,11 +1112,13 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
         + """Str(params, outfile=sys.stdout, extraParams=None, dbType='postgres'):
         \"\"\"
         Return the SQL INSERT command for this message type
-        @param params: dictionary of values keyed by field name
-        @param outfile: file like object to print to.
-        @param extraParams: A sequence of tuples containing (name,sql type) for additional fields
-        @return: sql create string
-        @rtype: str
+        Args:
+            params: dictionary of values keyed by field name
+            outfile: file like object to print to.
+            extraParams: A sequence of tuples containing (name,sql type) for additional fields
+        Returns:
+            sql create string
+            str
 
         @see: sqlCreate
         \"\"\"
@@ -1115,10 +1135,12 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
         + """(params,extraParams=None,dbType='postgres'):
         \"\"\"
         Give the SQL INSERT statement
-        @param params: dict keyed by field name of values
-        @param extraParams: any extra fields that you have created beyond the normal ais message fields
-        @rtype: sqlhelp.insert
-        @return: insert class instance
+        Args:
+            params: dict keyed by field name of values
+            extraParams: any extra fields that you have created beyond the normal ais message fields
+        Returns:
+            sqlhelp.insert
+            insert class instance
          TODO(schwehr):allow optional type checking of params?
         @warning: this will take invalid keys happily and do what???
         \"\"\"
@@ -1179,8 +1201,9 @@ def buildLUT(o, msgET, verbose=False, prefixName=False):
      TODO(schwehr):FIX: what to do about multiple entries with the same text?  Need to ban that kind of thing
      TODO(schwehr):Make doc strings for each LUT.
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
     """
     assert msgET.tag == "message"
     msgname = msgET.attrib["name"]
@@ -1223,20 +1246,22 @@ def encodeBool(
     """
     Build the encoder for boolean variables
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: bool, etc.
+        type: bool, etc.
     @type numbits: int = 1
-    @param numbits: How many bits per unit datum (must be 1 for bools)
+        numbits: How many bits per unit datum (must be 1 for bools)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many bools will there be?  FIX: handle variable
+        arraylen: many bools will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
 
     if verbose:
@@ -1281,20 +1306,22 @@ def encodeUInt(
     """Build the encoder for unsigned integer variables.
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, bool, etc.
+        type: uint, bool, etc.
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many unsigned ints will there be?  FIX: handle variable
+        arraylen: many unsigned ints will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print("  encodeUInt:", name, type, numbits, "Req:", required, end=" ")
@@ -1369,20 +1396,22 @@ def encodeFloat(
     Build the encoder for IEEE float variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type fieldType: str
-    @param fieldType: uint, bool, etc.
+        fieldType: uint, bool, etc.
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many unsigned ints will there be?  FIX: handle variable
+        arraylen: many unsigned ints will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1444,20 +1473,22 @@ def encodeAisstr6(
     @bug: do we need to optionally check for a valid string?
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type fieldType: str
-    @param fieldType: uint, bool, etc.
+        fieldType: uint, bool, etc.
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many unsigned ints will there be?  FIX: handle variable
+        arraylen: many unsigned ints will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1528,20 +1559,22 @@ def encodeInt(
     Build the encoder for signed integer variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, bool, etc.
+        type: uint, bool, etc.
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many signed ints will there be?  FIX: handle variable
+        arraylen: many signed ints will there be?  FIX: handle variable
     @type unavailable: number or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1628,20 +1661,22 @@ def encodeDecimal(
     Build the encoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: decimal
+        type: decimal
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many decimals will there be?  FIX: handle variable
+        arraylen: many decimals will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1745,20 +1780,22 @@ def encodeUDecimal(
     Build the encoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: decimal
+        type: decimal
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many decimals will there be?  FIX: handle variable
+        arraylen: many decimals will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1864,20 +1901,22 @@ def encodeBinary(
     not use it within binary messages.
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: binary
+        type: binary
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..1024 or so)
+        numbits: How many bits per unit datum (must be 1..1024 or so)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many decimals will there be?  FIX: handle variable
+        arraylen: many decimals will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -1930,29 +1969,31 @@ def decodeBool(
     Build the decoder for boolean variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, bool, etc.
+        type: uint, bool, etc.
     @type startindex: int
-    @param startindex: bit that begins the bool(s)
+        startindex: bit that begins the bool(s)
     @type numbits: int = 1
-    @param numbits: How many bits per unit datum (must be 1 for bools)
+        numbits: How many bits per unit datum (must be 1 for bools)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many bools will there be?  FIX: handle variable
+        arraylen: many bools will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "bool"
     if verbose:
@@ -2018,29 +2059,31 @@ def decodeUInt(
     Build the decoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, etc.
+        type: uint, etc.
     @type startindex: int
-    @param startindex: bit that begins the uint(s)
+        startindex: bit that begins the uint(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: int or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: int or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     if verbose:
         print(
@@ -2107,29 +2150,31 @@ def decodeInt(
     Build the decoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: int
+        type: int
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: int or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: int or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "int"
     if verbose:
@@ -2181,29 +2226,31 @@ def decodeFloat(
     Build the decoder for IEEE float variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: int
+        type: int
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: float or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: float or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "float"
     if verbose:
@@ -2262,29 +2309,31 @@ def decodeAisstr6(
     Build the decoder for aisstr6 variables.  Generally arrays.
     @bug: FIX: validate strings??
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: 'aisstr6'
+        type: 'aisstr6'
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: restricted str or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: restricted str or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "aisstr6"
     if verbose:
@@ -2343,29 +2392,31 @@ def decodeDecimal(
     Build the decoder for signed decimal variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: 'decimal'
+        type: 'decimal'
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: Decimal or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "decimal"
     if verbose:
@@ -2444,29 +2495,31 @@ def decodeUDecimal(
     Build the decoder for unsigned decimal variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: 'udecimal'
+        type: 'udecimal'
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: Decimal or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "udecimal"
     if verbose:
@@ -2546,29 +2599,31 @@ def decodeBinary(
     Build the decoder for unsigned decimal variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: 'udecimal'
+        type: 'udecimal'
     @type startindex: int
-    @param startindex: bit that begins the int(s)
+        startindex: bit that begins the int(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum.  If -1, then read to the end of the message
+        numbits: How many bits per unit datum.  If -1, then read to the end of the message
     @type required: Decimal or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: Decimal or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "binary"
     if verbose:
@@ -2674,8 +2729,9 @@ def buildUnitTest(o, msgET, verbose=False, prefixName=False):
     """
     Write the unittests for a message
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
     """
     assert msgET.tag == "message"
     name = msgET.attrib["name"]
@@ -2733,8 +2789,9 @@ def buildEncode(o, msgET, verbose=False, prefixName=False):
 
     http://jaynes.colorado.edu/PythonIdioms.html
 
-    @param o: open file where resulting code will be written
-    @param msgET: Element Tree starting at a message node
+    Args:
+        o: open file where resulting code will be written
+        msgET: Element Tree starting at a message node
      TODO(schwehr):handle ais message 20 optional.  very troublesome
     """
     assert msgET.tag == "message"
@@ -2903,11 +2960,13 @@ def buildDecodeParts(o, msgET, verbose=False, prefixName=False):
     """
     Write the decoder for a message
 
-    @param o: open file where resulting code will be written
+    Args:
+        o: open file where resulting code will be written
     @type msgET: elementtree
-    @param prefixName: if True, put the name of the message on the functions.
-    @param msgET: Element Tree starting at a message node
-    @return: None
+        prefixName: if True, put the name of the message on the functions.
+        msgET: Element Tree starting at a message node
+    Returns:
+        None
 
      TODO(schwehr):FIX: doc strings for each decode!
      TODO(schwehr):FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
@@ -3096,10 +3155,12 @@ def buildDecode(o, msgET, verbose=False, prefixName=False):
     """
     Write the decoder for a message
 
-    @param o: open file where resulting code will be written
+    Args:
+        o: open file where resulting code will be written
     @type msgET: elementtree
-    @param msgET: Element Tree starting at a message node
-    @return: None
+        msgET: Element Tree starting at a message node
+    Returns:
+        None
 
      TODO(schwehr):FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
     """

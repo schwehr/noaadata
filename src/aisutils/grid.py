@@ -107,7 +107,8 @@ def writeMultisegline2Gnuplot(outfile, multisegLine, name=None):
 def writeMultiseglineWithCrossings2Gnuplot(outfile, multisegLine, name=None, field=3):
     """
     lens [((0, 0), 0.0, 0.24874371859296396, 0.99001249960545123), ((0, 1), 0.24874371859296396, 0.5, 1.0000126258640831), ((1, 2), 0.5, 0.75125628140703049, 1.0000126258640547), ((1, 3), 0.75125628140703049, 1.0, 0.99001249960547977)]
-    @param field: 1..3 where 3 is the distance, 1 and 2 are the fractions
+    Args:
+        field: 1..3 where 3 is the distance, 1 and 2 are the fractions
     """
 
     o = outfile
@@ -247,7 +248,8 @@ class Grid:
 
         A line inside a cell returns the cell, 0., 1., and the distance
 
-        @return: a list of (cell(an i,j), startFrac, endFrac, distance) for a line
+        Returns:
+            a list of (cell(an i,j), startFrac, endFrac, distance) for a line
         @todo: make this actually be fast
         @todo: switch to delta Y for N-S lines
         """
@@ -449,7 +451,8 @@ class Grid:
     def getLineCells(self, x0, y0, x1, y1, verbose=False):
         """
         Scan convert a single line segment with two vertices.
-        @return: a list of cells for a line
+        Returns:
+            a list of cells for a line
         @todo: make this actually be fast
         """
         if verbose:
@@ -633,7 +636,8 @@ class Grid:
     def getMultiSegLineCells(self, multiSegLine, verbose=False):
         """
         Return the cells for a multi vertex line.  Handles the doubling that will happen at each endpoint
-        @param multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
+        Args:
+            multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
         """
         assert len(multiSegLine) > 1
 
@@ -659,8 +663,10 @@ class Grid:
         Return the cells for a multi vertex line.  Returns distances
         within cells, so that doubling is not an issue
 
-        @param multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
-        @return: list of (cell, startFrac, endFrac, distance)
+        Args:
+            multiSegLine: ((x1,y1),(x2,y2),(x3,y3),(x4,y4)...)
+        Returns:
+            list of (cell, startFrac, endFrac, distance)
         """
         assert len(multiSegLine) > 1
 
@@ -733,7 +739,8 @@ class Grid:
 
     def writeCellsGnuplot(self, filename, useSquares=False):
         """
-        @param useSquares: if true then write out the height of each cell as a square.  False then it writes a point
+        Args:
+            useSquares: if true then write out the height of each cell as a square.  False then it writes a point
         """
         assert not useSquares  # FIX: implement this feature
         grid = self.grid

@@ -36,10 +36,12 @@ def zdaDecode(nmeaStr):
     >>> zdaDecode('$ZQZDA,110003.00,27,03,2006,-5,00*47')
     {'timekeeper': 'ZQ', 'localzonehour': -5, 'localzonemin': 0, 'hour': 11, 'min': 0, 'hsec': 0, 'sec': 3, 'mon': 3, 'year': 2006, 'day': 27}
 
-    @param nmeaStr: ZDA message to decode
+    Args:
+        nmeaStr: ZDA message to decode
     @type nmeaStr: str
-    @rtype: dict
-    @return: name value pairs for the GMT time of the message
+    Returns:
+        dict
+        name value pairs for the GMT time of the message
     """
     # FIX: strip off new line here?
     assert len(nmeaStr) > 20
@@ -70,7 +72,8 @@ def ggaDecode(nmeaStr, validate=False):
 
     $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 
-    @param nmeaStr: nmea string to decode
+    Args:
+        nmeaStr: nmea string to decode
     """
     if validate:
         assert len(nmeaStr) >= 71
@@ -159,10 +162,12 @@ def zdaDict2TIMESTAMP(zdaDict):
     >>> zdaDict2TIMESTAMP({'hour': 11, 'min': 0, 'hsec': 0, 'sec': 3, 'mon': 3, 'year': 2006, 'day': 27})
     '2006-03-27 11:00:03'
 
-    @param zdaDict: output from zdaDecode
+    Args:
+        zdaDict: output from zdaDecode
     @type zdaDict: dict
-    @return: TIMESTAMP
-    @rtype: str
+    Returns:
+        TIMESTAMP
+        str
     """
     s = ""
     s += str(zdaDict["year"])

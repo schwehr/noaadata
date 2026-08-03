@@ -46,9 +46,11 @@ import sys
 def utmZoneToEpsg(cx, zone):
     """
     Fetch the EPSG number from the PostGIS by UTM zone.
-    @param cx: database connection
-    @param zone: UTM zone number
-    @return: EPSG number for use with PostGIS
+    Args:
+        cx: database connection
+        zone: UTM zone number
+    Returns:
+        EPSG number for use with PostGIS
     """
     zone = int(zone)  # make sure the zone is a valid in.
     # FIX: what is the right number of UTM zones?

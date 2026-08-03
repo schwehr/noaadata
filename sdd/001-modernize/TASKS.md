@@ -171,9 +171,9 @@ ______________________________________________________________________
     decoders to f-strings (`f"MMSI: {mmsi}"`).
   - [x] Verification command: `uv run pytest`
 
-- [ ] **4.3 Standardize Docstrings to Google Python Docstring Style**
+- [x] **4.3 Standardize Docstrings to Google Python Docstring Style**
 
-  - [ ] Audit and rewrite docstrings across all modules, classes, and methods in
+  - [x] Audit and rewrite docstrings across all modules, classes, and methods in
     \[`noaadata`\](noaadata/noaadata), \[`ais`\](noaadata/ais),
     \[`aisutils`\](noaadata/aisutils), and \[`nmea`\](noaadata/nmea) to follow
     structured **Google Python Docstring Style** (`Args:`, `Returns:`,

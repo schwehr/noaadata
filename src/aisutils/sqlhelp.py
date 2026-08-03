@@ -189,8 +189,9 @@ class create:
         create.add('username','VARCHAR(40)')
         create.add('id','INTEGER PRIMARY KEY')
 
-        @param field: name of the field
-        @param typeStr: the type of field
+        Args:
+            field: name of the field
+            typeStr: the type of field
 
         @todo: Allow setting of primary key in a simple way
         """
@@ -218,7 +219,8 @@ class create:
     def addInt(self, field):
         """
         SQL integer field
-        @param field: name of the field
+        Args:
+            field: name of the field
         """
         self.fields.append(field)
         self.types.append("INTEGER")
@@ -226,7 +228,8 @@ class create:
     def addReal(self, field):
         """
         SQL floating point field
-        @param field: name of the field
+        Args:
+            field: name of the field
         """
 
         self.fields.append(field)
@@ -235,8 +238,9 @@ class create:
     def addVarChar(self, field, length):
         """
         SQL VARCHAR field... variable length up to a max size
-        @param field: name of the field
-        @param length: max length of the field
+        Args:
+            field: name of the field
+            length: max length of the field
         """
         self.fields.append(field)
         self.types.append("VARCHAR(" + str(length) + ")")
@@ -244,7 +248,8 @@ class create:
     def addBool(self, field):
         """
         SQL Boolean field
-        @param field: name of the field
+        Args:
+            field: name of the field
         """
         self.fields.append(field)
         self.types.append("BOOL")
@@ -252,8 +257,9 @@ class create:
     def addBitVarying(self, field, length):
         """
         SQL Boolean field
-        @param field: name of the field
-        @param length: largest possible size
+        Args:
+            field: name of the field
+            length: largest possible size
         """
         assert length > 0
         self.fields.append(field)
@@ -261,15 +267,17 @@ class create:
 
     def addDecimal(self, field, precision=5, scale=0):
         """
-        @param precision: overall digits including to right of decimal
-        @param scale: number of digits to the right of decimal
+        Args:
+            precision: overall digits including to right of decimal
+            scale: number of digits to the right of decimal
         """
         self.fields.append(field)
         self.types.append("DECIMAL(" + str(precision) + "," + str(scale) + ")")
 
     def addTimestamp(self, field):
         """SQL TIMESTAMP field
-        @param field: name of the field
+        Args:
+            field: name of the field
         """
         self.fields.append(field)
         self.types.append("TIMESTAMP")
@@ -281,13 +289,14 @@ class create:
 
         AddGeometryColumn(<table_name>,<column_name>, <srid>, <type>, <dimension>)
 
-        @param field: Name of the field in the db table
+        Args:
+            field: Name of the field in the db table
         @type field: str
-        @param typeName: OpenGIS geometry type (e.g. POINT)
+            typeName: OpenGIS geometry type (e.g. POINT)
         @type typeName: str
-        @param dimension: x,y would be 2
+            dimension: x,y would be 2
         @type dimension: int
-        @param SRID: spatial referencing system identifier (FIX: give some more info!)
+            SRID: spatial referencing system identifier (FIX: give some more info!)
         @type SRID: int
         """
 
@@ -296,7 +305,8 @@ class create:
 
     def __str__(self):
         """Return the SQL string for the table creation
-        @rtype: str"""
+        Returns:
+            str"""
         assert len(self.fields) > 0
         assert len(self.types) > 0
         assert len(self.fields) == len(self.types)
@@ -343,8 +353,9 @@ class insert:
     def __init__(self, table, dbType="postgres"):
         """Create an insert with no values
 
-        @param table: which table are we going to insert into
-        @param dbType: sqlite can not handle True/False keyworks (at version 3.2.8)
+        Args:
+            table: which table are we going to insert into
+            dbType: sqlite can not handle True/False keyworks (at version 3.2.8)
         """
         self.table = table
         self.dbType = dbType
@@ -440,8 +451,9 @@ class insert:
         """Add a field value pair to the insert
 
         @note: Integers and floats should NOT be converted to strings.
-        @param field: name of the field
-        @param value: value to be assigned to that field.
+        Args:
+            field: name of the field
+            value: value to be assigned to that field.
         """
 
         if type(value) == str:
@@ -462,12 +474,14 @@ def sqlInsertStrFromList(table, aList, dbType="postgres"):
     >>> sqlInsertStrFromList('myTable',aList)
     "insert into mytable (one,2,threepoint) values (1,'two',3.0);"
 
-    @param table: Which table to insert into
+    Args:
+        table: Which table to insert into
     @type table: str
-    @param aList: list of tubles pairs to insert - (name, value)
+        aList: list of tubles pairs to insert - (name, value)
     @type aList(list)
-    @return: complete SQL insert command
-    @rtype: str
+    Returns:
+        complete SQL insert command
+        str
     """
 
     if dbType == "postgres":

@@ -5,20 +5,22 @@ def encode(
     Build the encoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, bool, etc.
+        type: uint, bool, etc.
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum (must be 1..32)
+        numbits: How many bits per unit datum (must be 1..32)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many unsigned ints will there be?  FIX: handle variable
+        arraylen: many unsigned ints will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
     if verbose:
         print(
@@ -107,29 +109,31 @@ def decode(
     Build the decoder for unsigned integer variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, etc.
+        type: uint, etc.
     @type startindex: int
-    @param startindex: bit that begins the uint(s)
+        startindex: bit that begins the uint(s)
     @type numbits: int >= 1
-    @param numbits: How many bits per unit datum
+        numbits: How many bits per unit datum
     @type required: int or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many ints will there be?  FIX: handle variable
+        arraylen: many ints will there be?  FIX: handle variable
     @type unavailable: int or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     if verbose:
         print(

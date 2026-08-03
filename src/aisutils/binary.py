@@ -65,9 +65,11 @@ def float2bitvec(floatval):
 
     @bug: May have bite order backwards
     @type floatval: number
-    @param floatval: number to convert to bits
-    @rtype: BitVector
-    @return: 32 bits
+    Args:
+        floatval: number to convert to bits
+    Returns:
+        BitVector
+        32 bits
     @todo: Is there a faster way to do this?
     @see: U{struct module<http://www.python.org/doc/current/lib/module-struct.html>}
     """
@@ -93,9 +95,11 @@ def bitvec2float(bv):
     Convert a 32 bit bitvector representing an IEEE float into a python float
     @bug: May have bite order backwards
     @type bv: BitVector
-    @param bv: 32 bits representing an IEEE float
-    @rtype: float
-    @return: the corresponding number
+    Args:
+        bv: 32 bits representing an IEEE float
+    Returns:
+        float
+        the corresponding number
     @see: U{struct module<http://www.python.org/doc/current/lib/module-struct.html>}
     """
     return struct.unpack(
@@ -106,8 +110,10 @@ def bitvec2float(bv):
 def joinBV(bvSeq):
     """
     Combined a sequence of bit vectors into one large BitVector
-    @param bvSeq: sequence of bitvectors
-    @return: aggregated BitVector
+    Args:
+        bvSeq: sequence of bitvectors
+    Returns:
+        aggregated BitVector
     @bug: replace with a faster algorithm!
     """
     bvTotal = BitVector(size=0)
@@ -120,12 +126,14 @@ def joinBV(bvSeq):
 def setBitVectorSize(bv, size=8):
     """Pad a BitVector with 0's on the left until it is at least the size specified
 
-    @param bv: BitVector that needs to meet a minimum size
+    Args:
+        bv: BitVector that needs to meet a minimum size
     @type bv: BitVector
-    @param size: Minimum number of bits to make the new BitVector
+        size: Minimum number of bits to make the new BitVector
     @type size: int
-    @return: BitVector that is size bits or larger
-    @rtype: BitVector
+    Returns:
+        BitVector that is size bits or larger
+        BitVector
 
     @todo: What to do if the vector is larger than size?
     """
@@ -139,10 +147,12 @@ def addone(bv):
     """
     Add one bit to a bit vector.  Overflows are silently dropped.
 
-    @param bv: Add one to these bits
+    Args:
+        bv: Add one to these bits
     @type bv: BitVector
-    @return: Bits with one added
-    @rtype: BitVector
+    Returns:
+        Bits with one added
+        BitVector
     """
     new = bv
     r = list(range(1, len(bv) + 1))
@@ -159,9 +169,11 @@ def subone(bv):
     """
     Subtract one bit from a bit vector
 
-    @param bv: Bits to add one bit to the right side
+    Args:
+        bv: Bits to add one bit to the right side
     @type bv: BitVector
-    @rtype: BitVector
+    Returns:
+        BitVector
     """
     new = bv
     r = list(range(1, len(bv) + 1))
@@ -182,12 +194,14 @@ def bvFromSignedInt(intVal, bitSize=None):
 
     Negative numbers must have a '1' in the left hand position.
 
-    @param intVal: integer value to turn into a bit vector
+    Args:
+        intVal: integer value to turn into a bit vector
     @type intVal: int
-    @param bitSize: optional size to flush out the number of bits
+        bitSize: optional size to flush out the number of bits
     @type bitSize: int
-    @return: A Bit Vector flushed out to the right size
-    @rtype: BitVector
+    Returns:
+        A Bit Vector flushed out to the right size
+        BitVector
     """
     bv = None
     if bitSize is None:
@@ -221,10 +235,12 @@ def signedIntFromBV(bv):
 
     Here are some negative integer examples:
 
-    @param bv: Bits to treat as an signed int
+    Args:
+        bv: Bits to treat as an signed int
     @type bv: BitVector
-    @return: Signed integer
-    @rtype: int
+    Returns:
+        Signed integer
+        int
 
     @note: Does not know the difference between byte orders.
     """
@@ -247,10 +263,12 @@ def ais6chartobitvec(char6):
 
     x, y, and z will not appear.
 
-    @param char6: character of an AIS message where each character represents 6 bits
+    Args:
+        char6: character of an AIS message where each character represents 6 bits
     @type char6: str(1)
-    @return: Decoded bits for one character (does not know about padding)
-    @rtype: BitVector(6)
+    Returns:
+        Decoded bits for one character (does not know about padding)
+        BitVector(6)
     @bug: need to cut down the doctest here and copy all of the current one to tests/test_binary.py
     """
     c = ord(char6)
@@ -273,12 +291,14 @@ def ais6tobitvecSLOW(str6):
 
     @bug: Need to add pad bit handling
 
-    @param str6: ASCII that as it appears in the NMEA string
+    Args:
+        str6: ASCII that as it appears in the NMEA string
     @type str6: string
-    @return: decoded bits (not unstuffed... what do I mean by
+    Returns:
+        decoded bits (not unstuffed... what do I mean by
     unstuffed?).  There may be pad bits at the tail to make this 6 bit
     aligned.
-    @rtype: BitVector
+        BitVector
     """
     bvtotal = BitVector(size=0)
 
@@ -379,12 +399,14 @@ def ais6tobitvec(str6):
 
     @bug: Need to add pad bit handling
 
-    @param str6: ASCII that as it appears in the NMEA string
+    Args:
+        str6: ASCII that as it appears in the NMEA string
     @type str6: string
-    @return: decoded bits (not unstuffed... what do I mean by
+    Returns:
+        decoded bits (not unstuffed... what do I mean by
     unstuffed?).  There may be pad bits at the tail to make this 6 bit
     aligned.
-    @rtype: BitVector
+        BitVector
     """
     bvtotal = BitVector(size=6 * len(str6))
 
@@ -400,8 +422,9 @@ def getPadding(bv):
     """
     Return the number of bits that need to be padded for a bit vector
 
-    @rtype: int
-    @return: number of pad bits required for this bitvector to make it bit aligned to the ais nmea string
+    Returns:
+        int
+        number of pad bits required for this bitvector to make it bit aligned to the ais nmea string
     """
     pad = 6 - (len(bv) % 6)
     if pad == 6:
@@ -412,10 +435,12 @@ def getPadding(bv):
 def bitvectoais6(bv, doPadding=True):
     """Convert bit vector int an ITU AIS 6 bit string.  Each character represents 6 bits
 
-    @param bv: message bits (must be already stuffed)
+    Args:
+        bv: message bits (must be already stuffed)
     @type bv: BitVector
-    @return: str6 ASCII that as it appears in the NMEA string
-    @rtype: str, pad
+    Returns:
+        str6 ASCII that as it appears in the NMEA string
+        str, pad
 
     @todo: make a test base for needing padding
     @bug: handle case when padding needed
@@ -453,10 +478,12 @@ def bitvectoais6(bv, doPadding=True):
 def stuffBits(bv):
     """Apply bit stuffing - add extra bytes to long sequences
 
-    @param bv: bits that may need padding
+    Args:
+        bv: bits that may need padding
     @type bv: BitVector
-    @return: new bits, possibly longer
-    @rtype: BitVector
+    Returns:
+        new bits, possibly longer
+        BitVector
 
     @see: unstuffBits
 
@@ -469,10 +496,12 @@ def stuffBits(bv):
 def unstuffBits(bv):
     """Undo bit stuffing - remove extra bytes to long sequences
 
-    @param bv: bits that may have padding
+    Args:
+        bv: bits that may have padding
     @type bv: BitVector
-    @return: new bits, possibly longer
-    @rtype: BitVector
+    Returns:
+        new bits, possibly longer
+        BitVector
 
     @todo: Actually write the code
     @see: stuffBits

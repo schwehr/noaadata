@@ -228,10 +228,11 @@ class ZntLogger:
         verbose=False,
     ):
         """Log NTP status to a file like stream.
-        @param max_sec: The maximum amount of allowable time before a write
-        @param max_count: The maximum number of times called before a write
-        @param always: Set to true to always write a message
-        @param station: if station is included, use the USCG NMEA station and UNIX UTC time stamp format
+        Args:
+            max_sec: The maximum amount of allowable time before a write
+            max_count: The maximum number of times called before a write
+            always: Set to true to always write a message
+            station: if station is included, use the USCG NMEA station and UNIX UTC time stamp format
         """
         self.out_file = out_file
         self.max_sec = max_sec

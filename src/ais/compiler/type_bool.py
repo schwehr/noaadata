@@ -4,20 +4,22 @@ def encode(
     """
     Build the encoder for boolean variables
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: bool, etc.
+        type: bool, etc.
     @type numbits: int = 1
-    @param numbits: How many bits per unit datum (must be 1 for bools)
+        numbits: How many bits per unit datum (must be 1 for bools)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many bools will there be?  FIX: handle variable
+        arraylen: many bools will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
-    @return: None
+        unavailable: the default value to use if none given (if not None)
+    Returns:
+        None
     """
 
     if verbose:
@@ -74,29 +76,31 @@ def decode(
     Build the decoder for boolean variables
 
     @type o: file like obj
-    @param o: where write the code
+    Args:
+        o: where write the code
     @type name: str
-    @param name: field name
+        name: field name
     @type type: str
-    @param type: uint, bool, etc.
+        type: uint, bool, etc.
     @type startindex: int
-    @param startindex: bit that begins the bool(s)
+        startindex: bit that begins the bool(s)
     @type numbits: int = 1
-    @param numbits: How many bits per unit datum (must be 1 for bools)
+        numbits: How many bits per unit datum (must be 1 for bools)
     @type required: bool or None
-    @param required: If not None, then the value must be set to this.
+        required: If not None, then the value must be set to this.
     @type arraylen: int >= 1
-    @param arraylen: many bools will there be?  FIX: handle variable
+        arraylen: many bools will there be?  FIX: handle variable
     @type unavailable: bool or None
-    @param unavailable: the default value to use if none given (if not None)
+        unavailable: the default value to use if none given (if not None)
     @type bv: str
-    @param bv: BitVector containing the incoming data
+        bv: BitVector containing the incoming data
     @type dataDict: str
-    @param dataDict: dictionary in which to place the results
+        dataDict: dictionary in which to place the results
     @type decodeOnly: bool
-    @param decodeOnly: Set to true to only get the code for decoding
-    @rtype: int
-    @return: index one past the end of where this read
+        decodeOnly: Set to true to only get the code for decoding
+    Returns:
+        int
+        index one past the end of where this read
     """
     assert type == "bool"
     if verbose:

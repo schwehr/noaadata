@@ -34,9 +34,10 @@ def assembleAisNmeaMessages(
 ):
     """
     Put together messages
-    @param infile: file stream like object to read from
-    @param outfile: some object that can take write messages for output
-    @param window: number of seconds to allow the later parts of a multiline message to span
+    Args:
+        infile: file stream like object to read from
+        outfile: some object that can take write messages for output
+        window: number of seconds to allow the later parts of a multiline message to span
     @type window: int
     """
     o = outfile

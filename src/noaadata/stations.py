@@ -73,8 +73,10 @@ def getActiveStationsSoappy(debug=False):
     >>> str(response.station[1].metadata.location.state)
     'HI'
 
-    @param debug: set to true to see more information about the transaction
-    @return: a large typestring
+    Args:
+        debug: set to true to see more information about the transaction
+    Returns:
+        a large typestring
     """
     from SOAPpy import SOAPProxy
 
@@ -131,7 +133,8 @@ class Station:
     def __init__(self, et):
         """
         Create a station object from an element tree
-        @param et: Element Tree for one station
+        Args:
+            et: Element Tree for one station
         """
 
         station = et
@@ -230,7 +233,8 @@ class ActiveStations:
         """
         Fetch the stations from the NOAA web services or a cache.
 
-        @param allowCache: if true, the class will fallback on a
+        Args:
+            allowCache: if true, the class will fallback on a
         precaptured list of stations.
         """
         xml = None

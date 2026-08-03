@@ -77,13 +77,15 @@ def sqlCreate(
 ):
     """Return the sqlhelp object to create the table.
 
-    @param fields: which fields to put in the create.  Defaults to all.
-    @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-    @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+    Args:
+        fields: which fields to put in the create.  Defaults to all.
+        extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
     @type addCoastGuardFields: bool
-    @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-    @return: An object that can be used to generate a return
-    @rtype: sqlhelp.create
+        dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+    Returns:
+        An object that can be used to generate a return
+        sqlhelp.create
     """
     if not fields:
         fields = fieldList

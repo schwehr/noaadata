@@ -264,7 +264,8 @@ def buildDict():
     """
     Helper to build the build the carachterBits and Dict tables
 
-    @rtype: test to stdout
+    Returns:
+        test to stdout
     """
     count = 0
     print("characterDict={")
@@ -297,10 +298,12 @@ def decode(bits, dropAfterFirstAt=False):
     """
     Decode bits as a string.  Does not remove the end space or @@@@.  Must be an multiple of 6 bits.
 
-    @param bits: n*6 bits that represent a string.
+    Args:
+        bits: n*6 bits that represent a string.
     @type bits: BitVector
-    @return: string with pad spaces or @@@@
-    @rtype: str
+    Returns:
+        string with pad spaces or @@@@
+        str
     """
     # assert(len(bits) % 6 == 0)
     numchar = len(bits) // 6
@@ -319,12 +322,14 @@ def decode(bits, dropAfterFirstAt=False):
 
 def encode(string, bitSize=None):
     """
-    @param string: python ascii string to encode.
+    Args:
+        string: python ascii string to encode.
     @type string: str
-    @param bitSize: how many bits should this take.  must be a multiple of 6
+        bitSize: how many bits should this take.  must be a multiple of 6
     @type bitSize: int
-    @return: encoded bits for the string
-    @rtype: BitVector
+    Returns:
+        encoded bits for the string
+        BitVector
     @bug: force to upper case
     @bug: building this in reverse may be faster
     @bug: check that bitSize is a multiple of 6
@@ -377,12 +382,14 @@ def unpad(string, removeBlanks=True):
     'MY SHIP NAME    '
 
     @bug: use a faster algorithm for truncating the string
-    @param string: string to cleanup
+    Args:
+        string: string to cleanup
     @type string: str
-    @param removeBlanks: set to true to strip spaces on the right
+        removeBlanks: set to true to strip spaces on the right
     @type removeBlanks: bool
-    @return: cleaned up string
-    @rtype: str
+    Returns:
+        cleaned up string
+        str
     """
     while len(string) > 0 and string[-1] == "@":
         string = string[:-1]
@@ -407,12 +414,14 @@ def pad(string, length):
     >>> pad('MY SHIP NAME',20)
     'MY SHIP NAME@@@@@@@@'
 
-    @param string: string to pad out
+    Args:
+        string: string to pad out
     @type string: str
-    @param length: number of characters that the string must be
+        length: number of characters that the string must be
     @type length: int
-    @return: str of len length
-    @rtype: str
+    Returns:
+        str of len length
+        str
 
     @bug: Use a list and join to make the string building faster
     """

@@ -31,9 +31,11 @@ import sys
 def getStation(msg, withR=True):
     """
     Return the station/tower portion of the message
-    @param withR: True keeps the leading r
-    @rtype: str or None
-    @return: Station name
+    Args:
+        withR: True keeps the leading r
+    Returns:
+        str or None
+        Station name
     """
     fields = msg.split(",")
     numFields = len(fields)

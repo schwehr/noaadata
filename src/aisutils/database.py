@@ -60,8 +60,9 @@ The choices of databases that are supported.
 def stdCmdlineOptions(parser, dbType="postgres", verbose=False):
     """
     Standard command line options
-    @param parser: OptionParser parser that will get the additional options
-    @param dbType: 'postgres' or 'sqlite'
+    Args:
+        parser: OptionParser parser that will get the additional options
+        dbType: 'postgres' or 'sqlite'
     """
     if dbType != "all" and dbType not in dbTypes:
         # FIX: throw a database type exception
@@ -127,13 +128,14 @@ def createTables(
     cx, dbType="sqlite", includeList=None, excludeList=None, verbose=False
 ):
     """
-    @param cx: database connection
+    Args:
+        cx: database connection
     @type cx: db API 2.0 object
-    @param dbType: postgres or sqlite
+        dbType: postgres or sqlite
     @type dbType: str
-    @param includeList: If a list of message numbers is passed, only these are created
+        includeList: If a list of message numbers is passed, only these are created
     @type includeList: list of integers
-    @param excludeList: If a list of message numbers is passed, all but these are created
+        excludeList: If a list of message numbers is passed, all but these are created
     @type excludeList: list of integers
     """
     cu = cx.cursor()
@@ -168,13 +170,14 @@ def dropTables(cx, includeList=None, excludeList=None, verbose=False):
     """
     Kiss your data goodbye
 
-    @param cx: database connection
+    Args:
+        cx: database connection
     @type cx: db API 2.0 object
-    @param dbType: postgres or sqlite
+        dbType: postgres or sqlite
     @type dbType: str
-    @param includeList: If a list of message numbers is passed, only these are created
+        includeList: If a list of message numbers is passed, only these are created
     @type includeList: list of integers
-    @param excludeList: If a list of message numbers is passed, all but these are created
+        excludeList: If a list of message numbers is passed, all but these are created
     @type excludeList: list of integers
     """
     cu = cx.cursor()
@@ -254,10 +257,11 @@ def rebuild_track_lines(
     verbose=False,
 ):
     """
-    @param vessels: if None, do all vessels in the tables, otherwise a set of MMSI values
-    @param trackTable: the database table where to put the lines
-    @param limitPoints: max number of points in a track line
-    @param startTime: oldest timestamp to allow in the track lines
+    Args:
+        vessels: if None, do all vessels in the tables, otherwise a set of MMSI values
+        trackTable: the database table where to put the lines
+        limitPoints: max number of points in a track line
+        startTime: oldest timestamp to allow in the track lines
     @type startTime: datetime
     """
     v = verbose
@@ -458,9 +462,10 @@ def rebuild_last_position(
     """
     This is to speed up the redrawing of the most recent position drawing in mapserver
 
-    @param vessels: if None, do all vessels in the tables, otherwise a set of MMSI values
-    @param trackTable: the database table where to put the lines
-    @param startTime: oldest timestamp to allow in the last_position table
+    Args:
+        vessels: if None, do all vessels in the tables, otherwise a set of MMSI values
+        trackTable: the database table where to put the lines
+        startTime: oldest timestamp to allow in the last_position table
     @type startTime: datetime
     """
     v = verbose
