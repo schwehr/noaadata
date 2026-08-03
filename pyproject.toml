@@ -136,3 +136,7 @@ addopts = "--cov=noaadata --cov=ais --cov=aisutils --cov=nmea --cov-report=term-
 testpaths = ["test", "tests", "src"]
 python_files = ["test*.py", "*_test.py", "*_tests.py"]
 
+[tool.hypofuzz]
+tasks_directory = "tests/test_properties"
+
+

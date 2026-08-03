@@ -56,14 +56,14 @@ ______________________________________________________________________
   - [x] Add unit tests for untested branches across all four core packages to achieve 100% on refactored modules.
   - [x] Verification command: `uv run pytest --cov`
 
-- [ ] **2.3 Implement Property-Based & Fuzz Testing (`hypothesis` & `hypofuzz`)**
+- [x] **2.3 Implement Property-Based & Fuzz Testing (`hypothesis` & `hypofuzz`)**
 
-  - [ ] Implement invariant property test suites in `tests/test_properties/`:
+  - [x] Implement invariant property test suites in `tests/test_properties/`:
     - Test `BitVector` slicing, padding, and binary unpacking invariants.
     - Test bidirectional 6-bit ASCII encoding/decoding in \[`aisstring.py`\](noaadata/aisutils/aisstring.py).
     - Test NMEA-0183 XOR checksum calculation invariance in \[`checksum.py`\](noaadata/nmea/checksum.py).
-  - [ ] Add `hypofuzz` configuration for continuous fuzzing.
-  - [ ] Verification command: `uv run pytest tests/test_properties/ -v`
+  - [x] Add `hypofuzz` configuration for continuous fuzzing.
+  - [x] Verification command: `uv run pytest tests/test_properties/ -v`
 
 - [ ] **2.4 Establish Performance Benchmarks (`pytest-benchmark`)**
 
