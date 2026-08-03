@@ -47,7 +47,7 @@ def sec2timestamp(utcsec):
     >>> sec2timestamp(int(1169703371))
     '2007-01-25 05:36:11'
     """
-    d = datetime.datetime.utcfromtimestamp(utcsec)
+    d = datetime.datetime.fromtimestamp(utcsec, datetime.timezone.utc)
     s = '%d-%02d-%02d %02d:%02d:%02d' % (d.year,d.month,d.day,d.hour,d.minute,d.second)
     return s
 
@@ -59,7 +59,8 @@ class select:
     logic in there.
     """
 
-    def __init__(self,dbType='postgres'):
+    def __init__(self, dbType='postgres'):
+        self.dbType = dbType
         self.fields = []
         self.where = []
         self.limit = None
@@ -107,7 +108,7 @@ class select:
         if len(self.fields) < 1: print("ERROR: Must specify at least one from!\n  FIX: throw some exception?")
         s = 'SELECT '
         #for i in range (len(self.fields)-1): s += self.fields[i]+','
-        if dbType == 'postgres':
+        if self.dbType == 'postgres':
             s+=','.join([f.lower() for f in self.fields])
         else:
             s+=','.join(self.fields)

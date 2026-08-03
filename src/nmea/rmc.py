@@ -31,63 +31,48 @@ rawstr = r"""^[$!](?P<prefix>[A-Z][A-Z])(?P<msg_type>RMC),
 matchstr = '$GPRMC,173011.82,V,4222.8770,N,07103.0096,W,0.00,0.0,151008,14.9,W,N*27'
 
 compile_obj = re.compile(rawstr,  re.VERBOSE)
-match_obj = compile_obj.search(matchstr)
+compile_obj = re.compile(rawstr, re.VERBOSE)
 
-print('prefix     ', match_obj.group('prefix'))
-print('msg_type   ', match_obj.group('msg_type'))
-print('hour       ', match_obj.group('hour'))
-print('minute     ', match_obj.group('minute'))
-print('second     ', match_obj.group('second'))
-print('status     ', match_obj.group('status'))
-print('latitude   ', match_obj.group('latitude'))
-print('lat_deg    ', match_obj.group('lat_deg'))
-print('lat_min    ', match_obj.group('lat_min'))
-print('north_south', match_obj.group('north_south'))
-print('longitude  ', match_obj.group('longitude'))
-print('lon_deg    ', match_obj.group('lon_deg'))
-print('lon_min    ', match_obj.group('lon_min'))
-print('east_west  ', match_obj.group('east_west'))
-print('speed_knots', match_obj.group('speed_knots'))
-print('course_degrees', match_obj.group('course_degrees'))
-print('day        ', match_obj.group('day'))
-print('month      ', match_obj.group('month'))
-print('year       ', match_obj.group('year'))
-print('magnetic_variation_degrees', match_obj.group('magnetic_variation_degrees'))
-print('mag_var_east_west', match_obj.group('mag_var_east_west'))
-print('mode       ', match_obj.group('mode'))
-print('checksum   ', match_obj.group('checksum'))
 
 def lonlat(match):
+    lon_deg = match.group('lon_deg').lstrip('0')
+    if len(lon_deg) == 0:
+        lon_deg = 0
+    else:
+        lon_deg = int(lon_deg)
 
-    lon_deg = match_obj.group('lon_deg').lstrip('0')
-    if len(lon_deg)==0: lon_deg = 0
-    else: lon_deg = int(lon_deg)
+    lon_min = match.group('lon_min').lstrip('0')
+    if len(lon_min) == 0:
+        lon_min = 0
+    else:
+        lon_min = float(lon_min)
 
-    lon_min = match_obj.group('lon_min').lstrip('0')
-    if len(lon_min)==0: lon_min = 0
-    else: lon_min = float(lon_min)
+    lon = lon_deg + lon_min / 60.
 
-    lon = lon_deg + lon_min/60.
-
-    if 'W' == match_obj.group('east_west'):
+    if 'W' == match.group('east_west'):
         lon = -lon
 
+    lat_deg = match.group('lat_deg').lstrip('0')
+    if len(lat_deg) == 0:
+        lat_deg = 0
+    else:
+        lat_deg = int(lat_deg)
 
-    lat_deg = match_obj.group('lat_deg').lstrip('0')
-    if len(lat_deg)==0: lat_deg = 0
-    else: lat_deg = int(lat_deg)
+    lat_min = match.group('lat_min').lstrip('0')
+    if len(lat_min) == 0:
+        lat_min = 0
+    else:
+        lat_min = float(lat_min)
 
-    lat_min = match_obj.group('lat_min').lstrip('0')
-    if len(lat_min)==0: lat_min = 0
-    else: lat_min = float(lat_min)
+    lat = lat_deg + lat_min / 60.
 
-    lat = lat_deg + lat_min/60.
-
-    if 'S' == match_obj.group('north_south'):
+    if 'S' == match.group('north_south'):
         lat = -lat
 
-    return lon,lat
+    return lon, lat
 
 
-
-print(lonlat(match_obj))
+if __name__ == '__main__':
+    matchstr = '$GPRMC,173011.82,V,4222.8770,N,07103.0096,W,0.00,0.0,151008,14.9,W,N*27'
+    match_obj = compile_obj.search(matchstr)
+    print(lonlat(match_obj))

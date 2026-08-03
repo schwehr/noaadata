@@ -6,3 +6,5 @@ TASKS.md
 __pycache__/
 *.dat
 *.asc
+.coverage
+.pytest_cache/

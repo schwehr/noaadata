@@ -132,5 +132,6 @@ xy2kmlline = "noaadata.cli.xy2kmlline:main"
 xymt2kml = "noaadata.cli.xymt2kml:main"
 
 [tool.pytest.ini_options]
+addopts = "--cov=noaadata --cov=ais --cov=aisutils --cov=nmea --cov-report=term-missing"
 testpaths = ["test", "tests", "src"]
 python_files = ["test*.py", "*_test.py", "*_tests.py"]

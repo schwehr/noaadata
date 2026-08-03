@@ -10,8 +10,10 @@ Returns "#" when ntp not ready.
   ntplib.ref_id_to_text(response.ref_id, response.stratum)
 """
 
-import datetime
-import ntplib
+try:
+    import ntplib
+except ImportError:
+    ntplib = None
 
 import optparse
 import re
@@ -276,7 +278,7 @@ def main():
       print(znt2.pretty())
 
   znt_logger = ZntLogger(
-      file(options.out_file,'w'),
+      open(options.out_file,'w'),
       enabled = True,  # Just force on in the case of the test program.
       max_sec=options.znt_max_sec,
       max_cnt=options.znt_max_cnt,
