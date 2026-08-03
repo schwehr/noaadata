@@ -154,7 +154,7 @@ def main():
                 ships[m].append((x, y, m, int(float(t))))
 
     if v:
-        sys.stderr.write("num_ships = %d\n" % len(ships))
+        sys.stderr.write(f"num_ships = {len(ships)}\n")
         sys.stderr.write("num_positions = %d\n" % position_count)
 
     ship_list = sorted(ships.keys())

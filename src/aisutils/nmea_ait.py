@@ -86,7 +86,7 @@ def msg_1_to_ait(nmea_str):
         print("no match!", nmea_str)
         return None
     grp = match_obj.group
-    r = "$AIAIT,pos_a,{},{},".format(grp("seqId"), grp("chan"))
+    r = f"$AIAIT,pos_a,{grp('seqId')},{grp('chan')},"
     bv = ais.binary.ais6tobitvec(grp("body"))
     body = ais.ais_msg_1.decode(bv)
 

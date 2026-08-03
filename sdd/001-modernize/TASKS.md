@@ -163,13 +163,13 @@ ______________________________________________________________________
     zero-argument `super()`.
   - [x] Verification command: `uv run ruff check`
 
-- [ ] **4.2 String Formatting Modernization**
+- [x] **4.2 String Formatting Modernization**
 
-  - [ ] Convert all `%`-formatting and `.format()` calls in
+  - [x] Convert all `%`-formatting and `.format()` calls in
     \[`aisstring.py`\](noaadata/aisutils/aisstring.py),
     \[`sqlhelp.py`\](noaadata/aisutils/sqlhelp.py), and AIS/NMEA message
     decoders to f-strings (`f"MMSI: {mmsi}"`).
-  - [ ] Verification command: `uv run pytest`
+  - [x] Verification command: `uv run pytest`
 
 - [ ] **4.3 Standardize Docstrings to Google Python Docstring Style**
 

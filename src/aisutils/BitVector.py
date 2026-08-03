@@ -1403,7 +1403,7 @@ if __name__ == "__main__":
     bv = BitVector(intVal=x)
     print("\nHere is a bit vector constructed from a very large integer:")
     print(bv)
-    print("The integer value of the above bit vector is:%d" % int(bv))
+    print(f"The integer value of the above bit vector is:{int(bv)}")
 
     # Construct a bit vector directly from a file-like object:
     import io

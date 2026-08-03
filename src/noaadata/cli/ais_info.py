@@ -317,7 +317,7 @@ class Uptime:
                         key,
                         100,
                         carry_over,
-                        "%.2f" % (carry_over / day_sec),
+                        f"{carry_over / day_sec:.2f}",
                     )
                 continue
 
@@ -626,14 +626,14 @@ def main():
             "total_gap_time: (dt=%d)" % options.min_gap_sec,
             tot_gap_sec,
             "(s) or ",
-            "%.2f" % (tot_gap_sec / day_sec),
+            f"{tot_gap_sec / day_sec:.2f}",
             "(d)",
         )
         print(
             "total_gap_neg_time: (dt=%d)" % options.min_gap_sec,
             tot_gap_neg_sec,
             "(s) or ",
-            "%.2f" % (tot_gap_neg_sec / day_sec),
+            f"{tot_gap_neg_sec / day_sec:.2f}",
             "(d)",
         )
 

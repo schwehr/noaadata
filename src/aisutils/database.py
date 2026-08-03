@@ -286,7 +286,7 @@ def rebuild_track_lines(
     if v:
         sys.stderr.write("\nrebuild_track_lines\n")
         # sys.stderr.write('  vessels %s\n' % str(vessels))
-        sys.stderr.write("  Number of vessels %d\n" % len(vessels))
+        sys.stderr.write(f"  Number of vessels {len(vessels)}\n")
         sys.stderr.write(
             f"  startTime: {startTime!s}   now: {datetime.datetime.utcnow()!s} \n"
         )

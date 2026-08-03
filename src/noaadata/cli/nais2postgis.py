@@ -415,7 +415,7 @@ class Nais2Postgis:
                 logging.warn("DISCONNECT from NAIS\n")
                 sys.stderr.write("DISCONNECT from NAIS\n")
             if self.v:
-                sys.stderr.write("recved %d bytes: %s\n" % (len(msgs), msgs.strip()))
+                sys.stderr.write(f"recved {len(msgs)} bytes: {msgs.strip()}\n")
 
         if not self.nais_connected:
             return False

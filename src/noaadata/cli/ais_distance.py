@@ -137,9 +137,7 @@ def build_dist_database(database_filename, log_files, verbose=False):
                 continue
 
             if len(match["body"]) != 28:  # 6 bits per character
-                raise AisErrorBadNumBits(
-                    "expected 168, got %d" % len(match["body"]) / 6
-                )
+                raise AisErrorBadNumBits(f"expected 168, got {len(match['body'])}" / 6)
 
             bits = binary.ais6tobitvec(
                 match["body"][:20]
@@ -297,7 +295,7 @@ def main():
             if val == 0:
                 o.write("0 ")
             else:
-                o.write("%d " % int(255 * math.log(val) / max_bin_val))
+                o.write(f"{int(255 * math.log(val) / max_bin_val)} ")
 
         o.write("\n")
 

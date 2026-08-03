@@ -706,9 +706,9 @@ def printFields(
                 "    PositionAccuracy:    " + str(params["PositionAccuracy"]) + "\n"
             )
         if "longitude" in params:
-            out.write("    longitude:           {:.7f}\n".format(params["longitude"]))
+            out.write(f"    longitude:           {params['longitude']:.7f}\n")
         if "latitude" in params:
-            out.write("    latitude:            {:.7f}\n".format(params["latitude"]))
+            out.write(f"    latitude:            {params['latitude']:.7f}\n")
         if "dimA" in params:
             out.write("    dimA:                " + str(params["dimA"]) + "\n")
         if "dimB" in params:

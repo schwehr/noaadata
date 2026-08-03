@@ -57,9 +57,7 @@ def get_stations_bboxes(filename, current_stations=None, verbose=False):
 
         if len(contents) != 28:
             if v:
-                sys.stderr.write(
-                    "bad msg len of %d for %s\n" % (len(contents), line[:-1])
-                )
+                sys.stderr.write(f"bad msg len of {len(contents)} for {line[:-1]}\n")
             continue
         # FIX: slice out the characters for just lon/lat
         bv = ais.binary.ais6tobitvec(contents[:20])
