@@ -1,10 +1,8 @@
 *.pyc
-PRD.md
-SPEC.md
-TASKS.md
 .venv/
 __pycache__/
 *.dat
 *.asc
 .coverage
 .pytest_cache/
+*~
