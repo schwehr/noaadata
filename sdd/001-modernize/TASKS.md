@@ -193,13 +193,13 @@ ______________________________________________________________________
 
 ## Phase 5: Strict Static Typing & Protocols
 
-- [ ] **5.1 Remediation of Baseline Type Errors (`ty`)**
+- [x] **5.1 Remediation of Baseline Type Errors (`ty`)**
 
-  - [ ] Enable `ty` (`astral-sh/ty`) as a fast initial static type checker.
-  - [ ] Identify and resolve baseline type errors across
+  - [x] Enable `ty` (`astral-sh/ty`) as a fast initial static type checker.
+  - [x] Identify and resolve baseline type errors across
     \[`noaadata`\](noaadata/noaadata), \[`ais`\](noaadata/ais),
     \[`aisutils`\](noaadata/aisutils), and \[`nmea`\](noaadata/nmea).
-  - [ ] Verification command: `uv run ty check`
+  - [x] Verification command: `uv run ty check`
 
 - [ ] **5.2 Complete Function & Attribute Type Annotations (PEP 585 / PEP 604)**
 

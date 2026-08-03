@@ -51,7 +51,7 @@ def getWaterLevelSoappyNow(stationId, debug=False):
     Use OLD SOAPpy interface to get the waterlevel for a station
     """
 
-    d = datetime.datetime.utcnow()
+    d = datetime.datetime.now(datetime.UTC)
 
     print("FIX: do this in seconds space!!!!  This is crap!")
 
@@ -134,7 +134,7 @@ if __name__ == "__main__":
 
         print(os.path.basename(sys.argv[0]), "doctests ...", end=" ")
         sys.argv = [sys.argv[0]]
-        if options.verbosity >= VERBOSE:
+        if options.verbosity >= 2:
             sys.argv.append("-v")
         import doctest
 

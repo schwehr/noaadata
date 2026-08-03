@@ -326,7 +326,7 @@ class ActiveStations:
             '''<SOAP-ENV:Envelope
   xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
   xmlns:s="'''
-            + NS
+            + self.NS
             + """"
   xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
   xmlns:xsd="http://www.w3.org/1999/XMLSchema"
@@ -340,12 +340,12 @@ class ActiveStations:
 
         body = BODY_TEMPLATE
         blen = len(body)
-        requester = http.client.HTTP(SERVER_ADDR, SERVER_PORT)
+        requester = http.client.HTTPConnection(self.SERVER_ADDR, self.SERVER_PORT)
         requester.putrequest("POST", "/axis/services/ActiveStations")
-        requester.putheader("Host", SERVER_ADDR)
+        requester.putheader("Host", self.SERVER_ADDR)
         requester.putheader("Content-Type", 'text/plain; charset="utf-8"')
         requester.putheader("Content-Length", str(blen))
-        requester.putheader("SOAPAction", NS)
+        requester.putheader("SOAPAction", self.NS)
         requester.endheaders()
         requester.send(body)
         (_status_code, _message, _reply_headers) = requester.getreply()

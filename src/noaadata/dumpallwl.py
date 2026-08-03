@@ -17,6 +17,9 @@ from SOAPpy import SOAPProxy
 
 import noaadata.stations as Stations
 
+__version__ = "0.1.0"
+__date__ = "2026-08-03"
+
 stations = Stations.ActiveStations(forceCache=True)
 
 url = "http://opendap.co-ops.nos.noaa.gov/axis/services/WaterLevelRawSixMin"

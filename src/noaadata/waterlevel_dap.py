@@ -90,7 +90,7 @@ def getWaterLevelNow(stationId, verbose=False, returnDict=True, datum="MSL"):
 
     """
 
-    d = datetime.datetime.utcnow()
+    d = datetime.datetime.now(datetime.UTC)
 
     # print 'FIX: do this in seconds space!!!!  This is crap!'
 
