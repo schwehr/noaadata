@@ -122,15 +122,15 @@ class Grid:
         self.verbose = verbose
         stepSize=float(stepSize)
 
-        print >> sys.stderr, 'gridtype:',gridType
+        print('gridtype:',gridType, file=sys.stderr)
         assert gridType in gridTypes
         self.gridType = gridType
 
         if verbose:
-            print '     == IN Params =='
-            print '     x:',minx,maxx
-            print '     y:',miny,maxy
-            print '  step:',stepSize
+            print('     == IN Params ==')
+            print('     x:',minx,maxx)
+            print('     y:',miny,maxy)
+            print('  step:',stepSize)
 
         assert(minx<maxx)
         assert(miny<maxy)
@@ -145,17 +145,17 @@ class Grid:
         #self.maxy=maxy
 
         if verbose:
-            print ' Range changes:'
-            print '   maxx:',maxx,'->',self.maxx
-            print '   maxy:',maxy,'->',self.maxy
+            print(' Range changes:')
+            print('   maxx:',maxx,'->',self.maxx)
+            print('   maxy:',maxy,'->',self.maxy)
 
         self.xNumCells = int(ceil((self.maxx-self.minx)/self.stepSize))
         self.yNumCells = int(ceil((self.maxy-self.miny)/self.stepSize))
 
         if verbose:
-            print '       step size   num cells     deltaMeters'
-            print '   x: ',self.stepSize,'    ->',self.xNumCells, '       ', self.maxx - self.minx
-            print '   y: ',self.stepSize,'    ->',self.yNumCells, '       ', self.maxy - self.miny
+            print('       step size   num cells     deltaMeters')
+            print('   x: ',self.stepSize,'    ->',self.xNumCells, '       ', self.maxx - self.minx)
+            print('   y: ',self.stepSize,'    ->',self.yNumCells, '       ', self.maxy - self.miny)
 
         # FIX: why should I have to do add +1?  Rounding/edge error?
         # Will this cause errors down the road in other functions?
@@ -166,17 +166,17 @@ class Grid:
             self.grid=numpy.zeros((self.xNumCells+1,self.yNumCells+1),dtype=float)
 
     def describe(self):
-        print ' === GRID === '
-        print '   Bounds   ... (%.2f,%.2f) -> (%.2f,%.2f)'%(self.minx,self.miny,self.maxx,self.maxy)
-        print '   Width    ...',self.xNumCells
-        print '   Height   ...',self.yNumCells
-        print '   CellSize ...',self.stepSize
+        print(' === GRID === ')
+        print('   Bounds   ... (%.2f,%.2f) -> (%.2f,%.2f)'%(self.minx,self.miny,self.maxx,self.maxy))
+        print('   Width    ...',self.xNumCells)
+        print('   Height   ...',self.yNumCells)
+        print('   CellSize ...',self.stepSize)
 
     def getCell(self,x,y,verbose=False):
         '@return: the i,j of the cell containing this coordinate'
         i = int(floor( (x-self.minx)/self.stepSize ))
         j = int(floor( (y-self.miny)/self.stepSize ))
-        if verbose: print x,y,'->',i,j, (x-self.miny), self.stepSize
+        if verbose: print(x,y,'->',i,j, (x-self.miny), self.stepSize)
         return i,j
 
     def getCellCenter(self,i,j):
@@ -207,7 +207,7 @@ class Grid:
         @todo: make this actually be fast
         @todo: switch to delta Y for N-S lines
         '''
-        if verbose: print '\n\n===============\n   getLineCells',x0,y0, x1,y1
+        if verbose: print('\n\n===============\n   getLineCells',x0,y0, x1,y1)
         #from IPython.Shell import IPShellEmbed
         #ipshell = IPShellEmbed(argv=[])
         #ipshell()
@@ -215,13 +215,13 @@ class Grid:
         # only scan left to right direction
         flippedX = False
         if x0>x1:
-            if verbose: print 'flipping X'
+            if verbose: print('flipping X')
             x0,y0,x1,y1=x1,y1,x0,y0
             flippedX = True
 
         startCell = self.getCell(x0,y0,verbose)
         endCell   = self.getCell(x1,y1,verbose)
-        if verbose: print 'cellrange',startCell,endCell,x0,y0,'->',x1,y1
+        if verbose: print('cellrange',startCell,endCell,x0,y0,'->',x1,y1)
 
         # just one cell
         if startCell==endCell:
@@ -240,7 +240,7 @@ class Grid:
 
         flippedY = False
         if y0>y1:
-            if verbose: print 'flipping Y'
+            if verbose: print('flipping Y')
             flippedY = True
             y0,y1=y1,y0
         y_first_ycrossing = miny + ceil ((y0 - miny)/stepSize) * stepSize
@@ -248,7 +248,7 @@ class Grid:
         steps = int( ceil((y_last_ycrossing - y_first_ycrossing)/stepSize + 1))
 
         if verbose:
-            print 'steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps
+            print('steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps)
 
         x_ycrossings = [   ]
         for step in range(steps):
@@ -258,32 +258,32 @@ class Grid:
         del y_first_ycrossing
         del y_last_ycrossing
 
-        if verbose: print 'x_ycrossings',x_ycrossings
+        if verbose: print('x_ycrossings',x_ycrossings)
 
         x_first_xcrossing = minx + ceil((x0 - minx)/stepSize) * stepSize
         if verbose:
-            print '  x_xcross params:', x0,minx, stepSize, ceil((x0 - minx)/stepSize),
-            print '--->', x_first_xcrossing
+            print('  x_xcross params:', x0,minx, stepSize, ceil((x0 - minx)/stepSize), end=' ')
+            print('--->', x_first_xcrossing)
         x_last_xcrossing  = minx + floor((x1 - minx)/stepSize) * stepSize
 
         steps = int( ceil((x_last_xcrossing - x_first_xcrossing)/float(stepSize) +1)  )
         if verbose:
-            print 'steps2',x_first_xcrossing,x_last_xcrossing ,'->',steps
-            print 'steps2',x_last_xcrossing - x_first_xcrossing, (x_last_xcrossing - x_first_xcrossing)/stepSize
+            print('steps2',x_first_xcrossing,x_last_xcrossing ,'->',steps)
+            print('steps2',x_last_xcrossing - x_first_xcrossing, (x_last_xcrossing - x_first_xcrossing)/stepSize)
         x_xcrossings = [   ]
         for step in range(steps):
             x = step*stepSize + x_first_xcrossing
-            if verbose: print '  X:', step,stepSize,x_first_xcrossing
+            if verbose: print('  X:', step,stepSize,x_first_xcrossing)
             x_xcrossings.append(x)
-        if verbose: print 'x_xcrossings',x_xcrossings
+        if verbose: print('x_xcrossings',x_xcrossings)
 
         crossings = x_ycrossings+x_xcrossings
         if flippedX:
-            if verbose: print 'reverse sort crossings'
+            if verbose: print('reverse sort crossings')
             crossings.sort(reverse=True)
         else:
             crossings.sort()
-        if verbose: print '\ncrossings',crossings
+        if verbose: print('\ncrossings',crossings)
 
         # remove duplicates
         cnew=[crossings[0],]
@@ -293,8 +293,8 @@ class Grid:
             cnew.append(crossings[i])
         #print crossings,'->',cnew
         if verbose:
-            print 'orig crossings:',crossings
-            print ' new crossings:',cnew
+            print('orig crossings:',crossings)
+            print(' new crossings:',cnew)
         crossings=cnew
 
         # Be careful which side to add that start cell
@@ -305,7 +305,7 @@ class Grid:
         fractions = [0.,]
 
         totXRange = x1 - x0
-        print 'xrange',totXRange , x1,x0
+        print('xrange',totXRange , x1,x0)
         for x in crossings:
             fractions.append( (x-x0) / totXRange )
             x = x+0.0001
@@ -315,7 +315,7 @@ class Grid:
             cells.append(startCell)
 
         fractions.append(1.)
-        print 'fractions',fractions
+        print('fractions',fractions)
         distances = []
         for i in range(0,len(fractions)-1):
             x = x0 + totXRange * fractions[i]
@@ -326,7 +326,7 @@ class Grid:
             p2 = (x,y)
 
             distances.append(distancePt(p1,p2))
-        print 'dists',distances
+        print('dists',distances)
 
 
         assert(len(cells)>1)
@@ -336,18 +336,18 @@ class Grid:
         minCellY = min(startCell[1],endCell[1])
         maxCellY = max(startCell[1],endCell[1])
 
-        print 'minmaxX',minCellX,maxCellX
-        print 'minmaxY',minCellY,maxCellY
+        print('minmaxX',minCellX,maxCellX)
+        print('minmaxY',minCellY,maxCellY)
 
 
         # if rounding errors happen to push us out, then toss a cell
 
         if not inBoundingBox(cells[0][0],cells[0][1],minCellX,minCellY,maxCellX,maxCellY):
-            if verbose: print 'chomp front'
+            if verbose: print('chomp front')
             assert False # need to also remove from the fractions
             cells=cells[1:]
         if not inBoundingBox(cells[-1][0],cells[-1][1],minCellX,minCellY,maxCellX,maxCellY):
-            if verbose: print 'chomp tail'
+            if verbose: print('chomp tail')
             assert False # need to also remove from the fractions
             cells=cells[:-1]
 
@@ -361,10 +361,10 @@ class Grid:
         #    cells=cells[:-1]
 
         assert(len(cells)>1)
-        if verbose: print cells
+        if verbose: print(cells)
         #return cells
         r = []
-        print 'lens',
+        print('lens', end=' ')
         assert len(fractions)==len(cells)+1
         assert len(cells)==len(distances)
         for i in range(len(cells)):
@@ -378,7 +378,7 @@ class Grid:
         @return: a list of cells for a line
         @todo: make this actually be fast
         '''
-        if verbose: print '\n\n===============\n   getLineCells',x0,y0, x1,y1
+        if verbose: print('\n\n===============\n   getLineCells',x0,y0, x1,y1)
         #from IPython.Shell import IPShellEmbed
         #ipshell = IPShellEmbed(argv=[])
         #ipshell()
@@ -386,13 +386,13 @@ class Grid:
         # only scan left to right direction
         flippedX = False
         if x0>x1:
-            if verbose: print 'flipping X'
+            if verbose: print('flipping X')
             x0,y0,x1,y1=x1,y1,x0,y0
             flippedX = True
 
         startCell = self.getCell(x0,y0,verbose)
         endCell   = self.getCell(x1,y1,verbose)
-        if verbose: print 'cellrange',startCell,endCell,x0,y0,'->',x1,y1
+        if verbose: print('cellrange',startCell,endCell,x0,y0,'->',x1,y1)
 
         # Vertical Line or just one cell?
         if startCell[0]==endCell[0]:
@@ -401,7 +401,7 @@ class Grid:
                 startCell,endCell=endCell,startCell
                 yFlipped=True
             if verbose:
-                print 'CASE vert or single cell', startCell[1],endCell[1]+1
+                print('CASE vert or single cell', startCell[1],endCell[1]+1)
             i = startCell[0]
             cells = [ (i,j) for j in range(startCell[1],endCell[1]+1) ]
             if yFlipped:
@@ -410,18 +410,18 @@ class Grid:
 
         # Horizontal Line?  Do this fast
         if startCell[1]==endCell[1]:
-            if verbose: print 'CASE horiz'
+            if verbose: print('CASE horiz')
             j = startCell[1]
             #print range(startCell[0],endCell[0]+1)
             cells = [ (i,j) for i in range(startCell[0],endCell[0]+1) ]
             if flippedX:
                 # Line goes from right to left
-                if verbose: print 'reversing based on x (horiz line)'
+                if verbose: print('reversing based on x (horiz line)')
                 cells.reverse()
             #print 'going to return',cells
             return cells
 
-        if verbose: print 'CASE not easy... must calculate'
+        if verbose: print('CASE not easy... must calculate')
 
         dx = x1-x0
         dy = y1-y0
@@ -435,7 +435,7 @@ class Grid:
 
         flippedY = False
         if y0>y1:
-            if verbose: print 'flipping Y'
+            if verbose: print('flipping Y')
             flippedY = True
             y0,y1=y1,y0
         y_first_ycrossing = miny + ceil ((y0 - miny)/stepSize) * stepSize
@@ -443,7 +443,7 @@ class Grid:
         steps = int( ceil((y_last_ycrossing - y_first_ycrossing)/stepSize + 1))
 
         if verbose:
-            print 'steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps
+            print('steps y',y_first_ycrossing,y_last_ycrossing ,'->',steps)
 
         x_ycrossings = [   ]
         for step in range(steps):
@@ -453,32 +453,32 @@ class Grid:
         del y_first_ycrossing
         del y_last_ycrossing
 
-        if verbose: print 'x_ycrossings',x_ycrossings
+        if verbose: print('x_ycrossings',x_ycrossings)
 
         x_first_xcrossing = minx + ceil((x0 - minx)/stepSize) * stepSize
         if verbose:
-            print '  x_xcross params:', x0,minx, stepSize, ceil((x0 - minx)/stepSize),
-            print '--->', x_first_xcrossing
+            print('  x_xcross params:', x0,minx, stepSize, ceil((x0 - minx)/stepSize), end=' ')
+            print('--->', x_first_xcrossing)
         x_last_xcrossing  = minx + floor((x1 - minx)/stepSize) * stepSize
 
         steps = int( ceil((x_last_xcrossing - x_first_xcrossing)/float(stepSize) +1)  )
         if verbose:
-            print 'steps2',x_first_xcrossing,x_last_xcrossing ,'->',steps
-            print 'steps2',x_last_xcrossing - x_first_xcrossing, (x_last_xcrossing - x_first_xcrossing)/stepSize
+            print('steps2',x_first_xcrossing,x_last_xcrossing ,'->',steps)
+            print('steps2',x_last_xcrossing - x_first_xcrossing, (x_last_xcrossing - x_first_xcrossing)/stepSize)
         x_xcrossings = [   ]
         for step in range(steps):
             x = step*stepSize + x_first_xcrossing
-            if verbose: print '  X:', step,stepSize,x_first_xcrossing
+            if verbose: print('  X:', step,stepSize,x_first_xcrossing)
             x_xcrossings.append(x)
-        if verbose: print 'x_xcrossings',x_xcrossings
+        if verbose: print('x_xcrossings',x_xcrossings)
 
         crossings = x_ycrossings+x_xcrossings
         if flippedX:
-            if verbose: print 'reverse sort crossings'
+            if verbose: print('reverse sort crossings')
             crossings.sort(reverse=True)
         else:
             crossings.sort()
-        if verbose: print '\ncrossings',crossings
+        if verbose: print('\ncrossings',crossings)
 
         # remove duplicates
         cnew=[crossings[0],]
@@ -488,8 +488,8 @@ class Grid:
             cnew.append(crossings[i])
         #print crossings,'->',cnew
         if verbose:
-            print 'orig crossings:',crossings
-            print ' new crossings:',cnew
+            print('orig crossings:',crossings)
+            print(' new crossings:',cnew)
         crossings=cnew
 
         # Be careful which side to add that start cell
@@ -512,15 +512,15 @@ class Grid:
 
         c = cells[0]
         if not inRange(c[0],minCellX,maxCellX) or not inRange(c[1],minCellY,maxCellY):
-            if verbose: print 'chomp front'
+            if verbose: print('chomp front')
             cells=cells[1:]
         c = cells[-1]
         if not inRange(c[0],minCellX,maxCellX) or not inRange(c[1],minCellY,maxCellY):
-            if verbose: print 'chomp tail'
+            if verbose: print('chomp tail')
             cells=cells[:-1]
 
         assert(len(cells)>1)
-        if verbose: print cells
+        if verbose: print(cells)
         return cells
 
     def getMultiSegLineCells(self,multiSegLine,verbose=False):
@@ -537,9 +537,9 @@ class Grid:
             # Make sure to skip the first cell on each additional segment
             newCells = self.getLineCells2pt(multiSegLine[i],multiSegLine[i+1])
             if len(newCells)<1:
-                print 'ACK... must have at least one cell!!! ERROR fail death'
-                print '     ',i,multiSegLine[i],multiSegLine[i+1]
-                print '     ',newCells
+                print('ACK... must have at least one cell!!! ERROR fail death')
+                print('     ',i,multiSegLine[i],multiSegLine[i+1])
+                print('     ',newCells)
                 assert False
             if newCells[0] == cells[-1]:
                 cells+=newCells[1:]
@@ -596,15 +596,15 @@ class Grid:
                 try:
                     grid[cell[0],cell[1]]+=1
                     if verbose:
-                        print '  ',cell[0],cell[1],grid[cell[0],cell[1]]
-                except Exception, e:
+                        print('  ',cell[0],cell[1],grid[cell[0],cell[1]])
+                except Exception as e:
                     sys.stderr.write('    Exception:' + str(type(Exception))+'\n')
                     sys.stderr.write('    Exception args:'+ str(e)+'\n')
                     traceback.print_exc(file=sys.stderr)
 
-                    print 'error on grid cell inc:',str(multiSegLine)[:40],'...'
-                    print 'CRAP... grid failure'
-                    print '  ',cell, self.xNumCells, self.yNumCells
+                    print('error on grid cell inc:',str(multiSegLine)[:40],'...')
+                    print('CRAP... grid failure')
+                    print('  ',cell, self.xNumCells, self.yNumCells)
                     assert False
         elif 'distance' == self.gridType:
             result = self.getMultiSegLineCellsWithCrossings(multiSegLine)
@@ -613,9 +613,9 @@ class Grid:
                 # (0, 0), 0.0, 0.24874371859296465, 0.99124918032832443)
                 cell = seg[0]
                 dist = seg[3]
-                print 'adding:', cell, dist
+                print('adding:', cell, dist)
                 grid[cell[0],cell[1]] += dist
-            print grid
+            print(grid)
         elif 'distanceWeightedSpeed' == self.gridType:
             assert False
         else:
@@ -665,14 +665,14 @@ if __name__=='__main__':
 
     success=True
     if options.doctest:
-        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
         sys.argv= [sys.argv[0]]
         if options.verbose: sys.argv.append('-v')
         import doctest
         numfail,numtests=doctest.testmod()
-        if numfail==0: print 'ok'
+        if numfail==0: print('ok')
         else:
-            print 'FAILED'
+            print('FAILED')
             success=False
     if not success: sys.exit('Something Failed')
     del success # Hide success from epydoc

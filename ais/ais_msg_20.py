@@ -582,7 +582,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -870,27 +870,27 @@ class Testdatalinkmng(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessEqual(r['offset1'],params['offset1'])
-        self.failUnlessEqual(r['numslots1'],params['numslots1'])
-        self.failUnlessEqual(r['timeout1'],params['timeout1'])
-        self.failUnlessEqual(r['increment1'],params['increment1'])
-        self.failUnlessEqual(r['offset2'],params['offset2'])
-        self.failUnlessEqual(r['numslots2'],params['numslots2'])
-        self.failUnlessEqual(r['timeout2'],params['timeout2'])
-        self.failUnlessEqual(r['increment2'],params['increment2'])
-        self.failUnlessEqual(r['offset3'],params['offset3'])
-        self.failUnlessEqual(r['numslots3'],params['numslots3'])
-        self.failUnlessEqual(r['timeout3'],params['timeout3'])
-        self.failUnlessEqual(r['increment3'],params['increment3'])
-        self.failUnlessEqual(r['offset4'],params['offset4'])
-        self.failUnlessEqual(r['numslots4'],params['numslots4'])
-        self.failUnlessEqual(r['timeout4'],params['timeout4'])
-        self.failUnlessEqual(r['increment4'],params['increment4'])
-        self.failUnlessEqual(r['variablespare'],params['variablespare'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertEqual(r['offset1'],params['offset1'])
+        self.assertEqual(r['numslots1'],params['numslots1'])
+        self.assertEqual(r['timeout1'],params['timeout1'])
+        self.assertEqual(r['increment1'],params['increment1'])
+        self.assertEqual(r['offset2'],params['offset2'])
+        self.assertEqual(r['numslots2'],params['numslots2'])
+        self.assertEqual(r['timeout2'],params['timeout2'])
+        self.assertEqual(r['increment2'],params['increment2'])
+        self.assertEqual(r['offset3'],params['offset3'])
+        self.assertEqual(r['numslots3'],params['numslots3'])
+        self.assertEqual(r['timeout3'],params['timeout3'])
+        self.assertEqual(r['increment3'],params['increment3'])
+        self.assertEqual(r['offset4'],params['offset4'])
+        self.assertEqual(r['numslots4'],params['numslots4'])
+        self.assertEqual(r['timeout4'],params['timeout4'])
+        self.assertEqual(r['increment4'],params['increment4'])
+        self.assertEqual(r['variablespare'],params['variablespare'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1052,18 +1052,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1081,13 +1081,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

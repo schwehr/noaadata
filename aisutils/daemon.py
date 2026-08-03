@@ -64,25 +64,25 @@ def create():
 
     try:
         pid = os.fork()
-    except OSError, except_params:
-        raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+    except OSError as except_params:
+        raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
 
     if (pid == 0):
         # The first child.
         os.setsid()
 
         try:
-            pid = os.fork()	# Fork a second child.
-        except OSError, except_params:
-            raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+            pid = os.fork()     # Fork a second child.
+        except OSError as except_params:
+            raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
 
         if (pid != 0):
-            os._exit(0)	# Exit parent (the first child) of the second child.
+            os._exit(0) # Exit parent (the first child) of the second child.
 
     else:
-        os._exit(0)	# Exit parent of the first child.
+        os._exit(0)     # Exit parent of the first child.
 
-    import resource		# Resource usage information.
+    import resource             # Resource usage information.
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
         maxfd = 1024
@@ -92,7 +92,7 @@ def create():
         for fd in range(0, maxfd):
             try:
                 os.close(fd)
-            except OSError:	# ERROR, fd wasn't open to begin with (ignored)
+            except OSError:     # ERROR, fd wasn't open to begin with (ignored)
                 pass
 
     # Send all output to /dev/null - FIX: send it to a log file

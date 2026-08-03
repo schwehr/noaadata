@@ -8,15 +8,15 @@ from decimal import Decimal
 from optparse import OptionParser
 import os
 import sys
-import StringIO
+import io
 import unittest
 
 from aisutils import uscg
-from BitVector import BitVector
+from aisutils.BitVector import BitVector
 
 from aisutils import aisstring
 from aisutils import binary
-import commstate
+from . import commstate
 from aisutils import sqlhelp
 
 # TODO(schwehr): from ais_msg_4 import *.
@@ -42,7 +42,7 @@ fieldList = (
 
 def decode_aivdm(msg):
     bv = binary.ais6tobitvec(msg.split(',')[5])
-    print decode(bv)
+    print(decode(bv))
 
 def decode(bv, validate=False):
     """Unpack a bsreport message.
@@ -217,7 +217,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -321,18 +321,18 @@ def main():
         }
 
         bits = encode(msgDict)
-        if 'binary'==options.ioType: print str(bits)
+        if 'binary'==options.ioType: print(str(bits))
         elif 'nmeapayload'==options.ioType:
             bitLen=len(bits)
             if bitLen%6!=0:
               bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-            print binary.bitvectoais6(bits)[0]
+            print(binary.bitvectoais6(bits)[0])
 
 
         # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
         elif 'nmea'==options.ioType:
             nmea = uscg.create_nmea(bits)
-            print nmea
+            print(nmea)
         else: sys.exit('ERROR: unknown ioType.  Help!')
 
 
@@ -349,12 +349,12 @@ def main():
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
         if None == options.fieldList: options.fieldList = fieldList
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         for field in options.fieldList:
             buf.write(field+',')
         result = buf.getvalue()
-        if result[-1] == ',': print result[:-1]
-        else: print result
+        if result[-1] == ',': print(result[:-1])
+        else: print(result)
 
     if options.doDecode:
         if len(args)==0: args = sys.stdin

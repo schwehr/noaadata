@@ -326,7 +326,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -560,16 +560,16 @@ class Testalltypesmsg(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessAlmostEqual(r['reqDecimal'],params['reqDecimal'],0)
-        self.failUnlessEqual(r['unavail_uint'],params['unavail_uint'])
-        self.failUnlessEqual(r['anUInt'],params['anUInt'])
-        self.failUnlessEqual(r['anInt'],params['anInt'])
-        self.failUnlessEqual(r['aBool'],params['aBool'])
-        self.failUnlessEqual(r['aStr'],params['aStr'])
-        self.failUnlessAlmostEqual(r['anUDecimal'],params['anUDecimal'],1)
-        self.failUnlessAlmostEqual(r['aDecimal'],params['aDecimal'],0)
-        self.failUnlessAlmostEqual(r['aFloat'],params['aFloat'],3)
+        self.assertEqual(r['dac'],params['dac'])
+        self.assertAlmostEqual(r['reqDecimal'],params['reqDecimal'],0)
+        self.assertEqual(r['unavail_uint'],params['unavail_uint'])
+        self.assertEqual(r['anUInt'],params['anUInt'])
+        self.assertEqual(r['anInt'],params['anInt'])
+        self.assertEqual(r['aBool'],params['aBool'])
+        self.assertEqual(r['aStr'],params['aStr'])
+        self.assertAlmostEqual(r['anUDecimal'],params['anUDecimal'],1)
+        self.assertAlmostEqual(r['aDecimal'],params['aDecimal'],0)
+        self.assertAlmostEqual(r['aFloat'],params['aFloat'],3)
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -690,18 +690,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -719,13 +719,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

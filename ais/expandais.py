@@ -32,7 +32,7 @@ def getPos(parent,child):
     I overlooked it.
     '''
     for i in range(len(parent)):
-	if parent[i]==child: return i
+        if parent[i]==child: return i
     return None
 
 
@@ -56,26 +56,26 @@ def expandAis(inET,verbose=False):
     includeStructs = root.xpath('message/include-struct')
     for inc in includeStructs:
 
-	if verbose: print 'inc:',inc.attrib['name'], 'parent:',inc.getparent().tag
-	parent = inc.getparent()
-	nodePosition = getPos(parent,inc)
-	#if verbose: print 'pos:',nodePosition
+        if verbose: print('inc:',inc.attrib['name'], 'parent:',inc.getparent().tag)
+        parent = inc.getparent()
+        nodePosition = getPos(parent,inc)
+        #if verbose: print 'pos:',nodePosition
 
-	structName = inc.attrib['struct']
-	baseName = inc.attrib['name']+'_'
+        structName = inc.attrib['struct']
+        baseName = inc.attrib['name']+'_'
 
         if len(inc.xpath('do_not_mangle_name'))>0:
-            if verbose: print 'Not mangling',structName,baseName[:-1]
+            if verbose: print('Not mangling',structName,baseName[:-1])
             baseName = ''
-	#if verbose: print 'baseName:',baseName, 'structName=',structName
+        #if verbose: print 'baseName:',baseName, 'structName=',structName
 
         # // means find all struct tags at all levels
-	structDef = root.xpath("//struct[@name='"+structName+"']")
+        structDef = root.xpath("//struct[@name='"+structName+"']")
 
-	# Put in a comment where the include-struct was.
-	inc.getparent().replace(inc,etree.Comment('Struct include of '+inc.attrib['name']+' was here'))
+        # Put in a comment where the include-struct was.
+        inc.getparent().replace(inc,etree.Comment('Struct include of '+inc.attrib['name']+' was here'))
 
-	replacement=copy.deepcopy(structDef[0])
+        replacement=copy.deepcopy(structDef[0])
 
         postgis=False # Does this structure have an associated postgis data structure?
         postgisName=None
@@ -84,36 +84,36 @@ def expandAis(inET,verbose=False):
             postgis=True
             postgisType=replacement.attrib['postgis_type']
             postgisName=inc.attrib['name'] #baseName
-            if verbose: print 'Found PostGIS datatype for structure:',postgisName,postgisType
+            if verbose: print('Found PostGIS datatype for structure:',postgisName,postgisType)
 
-	# FIX: what happens when the include is at the beginning or end of the list?
+        # FIX: what happens when the include is at the beginning or end of the list?
 
-	for subfield in replacement.xpath('field'):
-	    subfield.attrib['name']=baseName+subfield.attrib['name']
+        for subfield in replacement.xpath('field'):
+            subfield.attrib['name']=baseName+subfield.attrib['name']
             desc = subfield.xpath('description')
 
             if postgis:
-                if verbose: print 'Annotating',subfield.attrib['name'], 'with postgis info'
+                if verbose: print('Annotating',subfield.attrib['name'], 'with postgis info')
                 subfield.attrib['postgisType']=postgisType
                 subfield.attrib['postgisName']=postgisName
 
-	    if len(desc)==1:
+            if len(desc)==1:
                 txt = inc.xpath('description')[0].text
                 if None == txt:
                     if verbose: 'WARNING: are you sure you want no text in this description?'
                     txt = ''
                 else: txt +='  '  # FIX: was \n\t which cause trouble with word export
-		desc[0].text=  txt+desc[0].text
-	    else:
-		print 'WARNING: no description for subfield!!!!  Must have exactly one description field'
-	    # Now that the node is ready, jam it in there after the replaced comment
+                desc[0].text=  txt+desc[0].text
+            else:
+                print('WARNING: no description for subfield!!!!  Must have exactly one description field')
+            # Now that the node is ready, jam it in there after the replaced comment
 
-	    #print "FIX: make sure these end up in the right place!!!!"
+            #print "FIX: make sure these end up in the right place!!!!"
 
-	    newPos = nodePosition+getPos(replacement,subfield) #+1
-	    nodePosition+=1
-	    parent.insert(newPos,subfield)
-	#if verbose: print 'New parent:',etree.tostring(parent)
+            newPos = nodePosition+getPos(replacement,subfield) #+1
+            nodePosition+=1
+            parent.insert(newPos,subfield)
+        #if verbose: print 'New parent:',etree.tostring(parent)
 
     return outET
 
@@ -134,15 +134,15 @@ def nukeStructs(inET,verbose=False):
     root = outET.getroot()
     structs = root.xpath('struct')
     for struct in structs:
-	if verbose: print 'nuking struct:',struct.attrib['name']
-	struct.getparent().replace(struct,etree.Comment('Struct '+struct.attrib['name']+' was here'))
+        if verbose: print('nuking struct:',struct.attrib['name'])
+        struct.getparent().replace(struct,etree.Comment('Struct '+struct.attrib['name']+' was here'))
 
     return outET
 
 if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
     parser.add_option('-i','--input-file',dest='inFilename',default=None,
                         help='AIS to read from')
     parser.add_option('-o','--output-file',dest='outFilename',default='out-ais.xml',
@@ -158,7 +158,7 @@ if __name__ == '__main__':
     #tree.xinclude()
     newET = expandAis(tree,options.verbose)
     if not options.keepStructs:
-	newET = nukeStructs(newET,options.verbose)
+        newET = nukeStructs(newET,options.verbose)
     newET.write(options.outFilename)
 
     #if options.verbose: print etree.tostring(newET)

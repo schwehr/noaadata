@@ -24,8 +24,8 @@ Rewrite from the command line only ais_normalize
 '''
 
 import sys
-import Queue
-import uscg
+import queue
+from . import uscg
 import ais.nmea
 #from decimal import Decimal
 #from BitVector import BitVector
@@ -35,7 +35,7 @@ import ais.nmea
 #from ais.nmea import isChecksumValid,checksumStr # Needed for checksums
 #import ais.nmea
 
-class Normalize(Queue.Queue):
+class Normalize(queue.Queue):
     '''
     Provide a channel that normalizes messages.  Try to model it like a Queue.
     '''
@@ -43,7 +43,7 @@ class Normalize(Queue.Queue):
         '''
         param ttl: number of seconds that a message fragment can live
         '''
-        Queue.Queue.__init__(self,maxsize)
+        queue.Queue.__init__(self,maxsize)
         self.mostRecentTime=0 # Seconds from UTC epoch
         self.ttl=ttl
         self.stations={}  # Buffer by station
@@ -64,7 +64,7 @@ class Normalize(Queue.Queue):
 
         # single line message needs no help
         if 1 == cgMsg.totalSentences:
-            Queue.Queue.put(self,uscgNmeaStr,block,timeout)
+            queue.Queue.put(self,uscgNmeaStr,block,timeout)
             return
 
         if cgMsg.sentenceNum!=cgMsg.totalSentences:
@@ -128,4 +128,4 @@ class Normalize(Queue.Queue):
         cgMsgFinal.checksumStr = ais.nmea.checksumStr(payload)
         newNmeaStr = cgMsgFinal.buildNmea()
         #print 'queuing',newNmeaStr
-        Queue.Queue.put(self,newNmeaStr,block,timeout)
+        queue.Queue.put(self,newNmeaStr,block,timeout)

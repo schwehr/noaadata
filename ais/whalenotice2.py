@@ -755,8 +755,8 @@ def printKml(params, out=sys.stdout):
     out.write("    <Placemark>\n")
     out.write("        <name>"+str(params['stationsid'])+"</name>\n")
     out.write("        <description>\n")
-    import StringIO
-    buf = StringIO.StringIO()
+    import io
+    buf = io.StringIO()
     printHtml(params,buf)
     import cgi
     out.write(cgi.escape(buf.getvalue()))
@@ -875,7 +875,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -1252,39 +1252,39 @@ class Testwhalenotice(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessEqual(r['fid'],params['fid'])
-        self.failUnlessEqual(r['efid'],params['efid'])
-        self.failUnlessEqual(r['numreports'],params['numreports'])
-        self.failUnlessEqual(r['stationid1'],params['stationid1'])
-        self.failUnlessEqual(r['time1_day'],params['time1_day'])
-        self.failUnlessEqual(r['time1_hour'],params['time1_hour'])
-        self.failUnlessEqual(r['time1_min'],params['time1_min'])
-        self.failUnlessAlmostEqual(r['center1_longitude'],params['center1_longitude'],5)
-        self.failUnlessAlmostEqual(r['center1_latitude'],params['center1_latitude'],5)
-        self.failUnlessEqual(r['timetoexpire1'],params['timetoexpire1'])
-        self.failUnlessEqual(r['radius1'],params['radius1'])
-        self.failUnlessEqual(r['stationid2'],params['stationid2'])
-        self.failUnlessEqual(r['time2_day'],params['time2_day'])
-        self.failUnlessEqual(r['time2_hour'],params['time2_hour'])
-        self.failUnlessEqual(r['time2_min'],params['time2_min'])
-        self.failUnlessAlmostEqual(r['center2_longitude'],params['center2_longitude'],5)
-        self.failUnlessAlmostEqual(r['center2_latitude'],params['center2_latitude'],5)
-        self.failUnlessEqual(r['timetoexpire2'],params['timetoexpire2'])
-        self.failUnlessEqual(r['radius2'],params['radius2'])
-        self.failUnlessEqual(r['stationid3'],params['stationid3'])
-        self.failUnlessEqual(r['time3_day'],params['time3_day'])
-        self.failUnlessEqual(r['time3_hour'],params['time3_hour'])
-        self.failUnlessEqual(r['time3_min'],params['time3_min'])
-        self.failUnlessAlmostEqual(r['center3_longitude'],params['center3_longitude'],5)
-        self.failUnlessAlmostEqual(r['center3_latitude'],params['center3_latitude'],5)
-        self.failUnlessEqual(r['timetoexpire3'],params['timetoexpire3'])
-        self.failUnlessEqual(r['radius3'],params['radius3'])
-        self.failUnlessEqual(r['Spare2'],params['Spare2'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertEqual(r['dac'],params['dac'])
+        self.assertEqual(r['fid'],params['fid'])
+        self.assertEqual(r['efid'],params['efid'])
+        self.assertEqual(r['numreports'],params['numreports'])
+        self.assertEqual(r['stationid1'],params['stationid1'])
+        self.assertEqual(r['time1_day'],params['time1_day'])
+        self.assertEqual(r['time1_hour'],params['time1_hour'])
+        self.assertEqual(r['time1_min'],params['time1_min'])
+        self.assertAlmostEqual(r['center1_longitude'],params['center1_longitude'],5)
+        self.assertAlmostEqual(r['center1_latitude'],params['center1_latitude'],5)
+        self.assertEqual(r['timetoexpire1'],params['timetoexpire1'])
+        self.assertEqual(r['radius1'],params['radius1'])
+        self.assertEqual(r['stationid2'],params['stationid2'])
+        self.assertEqual(r['time2_day'],params['time2_day'])
+        self.assertEqual(r['time2_hour'],params['time2_hour'])
+        self.assertEqual(r['time2_min'],params['time2_min'])
+        self.assertAlmostEqual(r['center2_longitude'],params['center2_longitude'],5)
+        self.assertAlmostEqual(r['center2_latitude'],params['center2_latitude'],5)
+        self.assertEqual(r['timetoexpire2'],params['timetoexpire2'])
+        self.assertEqual(r['radius2'],params['radius2'])
+        self.assertEqual(r['stationid3'],params['stationid3'])
+        self.assertEqual(r['time3_day'],params['time3_day'])
+        self.assertEqual(r['time3_hour'],params['time3_hour'])
+        self.assertEqual(r['time3_min'],params['time3_min'])
+        self.assertAlmostEqual(r['center3_longitude'],params['center3_longitude'],5)
+        self.assertAlmostEqual(r['center3_latitude'],params['center3_latitude'],5)
+        self.assertEqual(r['timetoexpire3'],params['timetoexpire3'])
+        self.assertEqual(r['radius3'],params['radius3'])
+        self.assertEqual(r['Spare2'],params['Spare2'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1485,18 +1485,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1514,13 +1514,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

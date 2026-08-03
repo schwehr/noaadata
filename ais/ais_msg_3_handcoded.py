@@ -5,13 +5,13 @@
 import sys
 from decimal import Decimal
 from optparse import OptionParser
-import StringIO
+import io
 
-from BitVector import BitVector
+from aisutils.BitVector import BitVector
 
 from aisutils import aisstring
 from aisutils import binary
-import commstate
+from . import commstate
 from aisutils import sqlhelp
 
 
@@ -37,7 +37,7 @@ fieldList = (
 
 def decode_aivdm(msg):
     bv = binary.ais6tobitvec(msg.split(',')[5])
-    print decode(bv)
+    print(decode(bv))
 
 def decode(bv, validate=False):
     r = {}
@@ -121,23 +121,23 @@ def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True,
 
 def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='postgres'):
 
-	if 'std'==format:
-		out.write("position:\n")
-		if 'MessageID' in params: out.write("	MessageID:          "+str(params['MessageID'])+"\n")
-		if 'RepeatIndicator' in params: out.write("	RepeatIndicator:    "+str(params['RepeatIndicator'])+"\n")
-		if 'UserID' in params: out.write("	UserID:             "+str(params['UserID'])+"\n")
-		if 'NavigationStatus' in params: out.write("	NavigationStatus:   "+str(params['NavigationStatus'])+"\n")
-		if 'ROT' in params: out.write("	ROT:                "+str(params['ROT'])+"\n")
-		if 'SOG' in params: out.write("	SOG:                "+str(params['SOG'])+"\n")
-		if 'PositionAccuracy' in params: out.write("	PositionAccuracy:   "+str(params['PositionAccuracy'])+"\n")
-		if 'longitude' in params: out.write("	longitude:          "+str(params['longitude'])+"\n")
-		if 'latitude' in params: out.write("	latitude:           "+str(params['latitude'])+"\n")
-		if 'COG' in params: out.write("	COG:                "+str(params['COG'])+"\n")
-		if 'TrueHeading' in params: out.write("	TrueHeading:        "+str(params['TrueHeading'])+"\n")
-		if 'TimeStamp' in params: out.write("	TimeStamp:          "+str(params['TimeStamp'])+"\n")
-		if 'RegionalReserved' in params: out.write("	RegionalReserved:   "+str(params['RegionalReserved'])+"\n")
-		if 'Spare' in params: out.write("	Spare:              "+str(params['Spare'])+"\n")
-		if 'RAIM' in params: out.write("	RAIM:               "+str(params['RAIM'])+"\n")
+        if 'std'==format:
+                out.write("position:\n")
+                if 'MessageID' in params: out.write("   MessageID:          "+str(params['MessageID'])+"\n")
+                if 'RepeatIndicator' in params: out.write("     RepeatIndicator:    "+str(params['RepeatIndicator'])+"\n")
+                if 'UserID' in params: out.write("      UserID:             "+str(params['UserID'])+"\n")
+                if 'NavigationStatus' in params: out.write("    NavigationStatus:   "+str(params['NavigationStatus'])+"\n")
+                if 'ROT' in params: out.write(" ROT:                "+str(params['ROT'])+"\n")
+                if 'SOG' in params: out.write(" SOG:                "+str(params['SOG'])+"\n")
+                if 'PositionAccuracy' in params: out.write("    PositionAccuracy:   "+str(params['PositionAccuracy'])+"\n")
+                if 'longitude' in params: out.write("   longitude:          "+str(params['longitude'])+"\n")
+                if 'latitude' in params: out.write("    latitude:           "+str(params['latitude'])+"\n")
+                if 'COG' in params: out.write(" COG:                "+str(params['COG'])+"\n")
+                if 'TrueHeading' in params: out.write(" TrueHeading:        "+str(params['TrueHeading'])+"\n")
+                if 'TimeStamp' in params: out.write("   TimeStamp:          "+str(params['TimeStamp'])+"\n")
+                if 'RegionalReserved' in params: out.write("    RegionalReserved:   "+str(params['RegionalReserved'])+"\n")
+                if 'Spare' in params: out.write("       Spare:              "+str(params['Spare'])+"\n")
+                if 'RAIM' in params: out.write("        RAIM:               "+str(params['RAIM'])+"\n")
 
                 for field in commstate.itdma_fields:
                     fieldname = '\t'+(field+':').ljust(30)
@@ -146,140 +146,140 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
                     else:
                         out.write(fieldname + 'n/a\n')
 
-	elif 'csv'==format:
-		if None == options.fieldList:
-			options.fieldList = fieldList
-		needComma = False;
-		for field in fieldList:
-			if needComma: out.write(',')
-			needComma = True
-			if field in params:
-				out.write(str(params[field]))
-			# else: leave it empty
-		out.write("\n")
-	elif 'html'==format:
-		printHtml(params,out)
-	elif 'sql'==format:
-		sqlInsertStr(params,out,dbType=dbType)
-	elif 'kml'==format:
-		printKml(params,out)
-	elif 'kml-full'==format:
-		out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-		out.write("<kml xmlns=\"http://earth.google.com/kml/2.1\">\n")
-		out.write("<Document>\n")
-		out.write("    <name>position</name>\n")
-		printKml(params,out)
-		out.write("</Document>\n")
-		out.write("</kml>\n")
-	else:
-		print "ERROR: unknown format:",format
-		assert False
+        elif 'csv'==format:
+                if None == options.fieldList:
+                        options.fieldList = fieldList
+                needComma = False;
+                for field in fieldList:
+                        if needComma: out.write(',')
+                        needComma = True
+                        if field in params:
+                                out.write(str(params[field]))
+                        # else: leave it empty
+                out.write("\n")
+        elif 'html'==format:
+                printHtml(params,out)
+        elif 'sql'==format:
+                sqlInsertStr(params,out,dbType=dbType)
+        elif 'kml'==format:
+                printKml(params,out)
+        elif 'kml-full'==format:
+                out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+                out.write("<kml xmlns=\"http://earth.google.com/kml/2.1\">\n")
+                out.write("<Document>\n")
+                out.write("    <name>position</name>\n")
+                printKml(params,out)
+                out.write("</Document>\n")
+                out.write("</kml>\n")
+        else:
+                print("ERROR: unknown format:",format)
+                assert False
 
-	return # Nothing to return
+        return # Nothing to return
 
 def main():
 
-	parser = OptionParser(usage="%prog [options]")
+        parser = OptionParser(usage="%prog [options]")
 
-	parser.add_option('-v','--verbose',dest='verbose',default=False,
+        parser.add_option('-v','--verbose',dest='verbose',default=False,
         action='store_true', help='Make the test output verbose')
 
-	# FIX: remove nmea from binary messages.  No way to build the whole packet?
-	# FIX: or build the surrounding msg 8 for a broadcast?
-	typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
-	parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
-		,default='nmeapayload'
-		,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
+        # FIX: remove nmea from binary messages.  No way to build the whole packet?
+        # FIX: or build the surrounding msg 8 for a broadcast?
+        typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
+        parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
+                ,default='nmeapayload'
+                ,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
 
 
-	outputChoices = ('std','html','csv','sql' , 'kml','kml-full')
-	parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
-		,default='std'
-		,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
+        outputChoices = ('std','html','csv','sql' , 'kml','kml-full')
+        parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
+                ,default='std'
+                ,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
 
-	parser.add_option('-o','--output',dest='outputFileName',default=None,
-			  help='Name of the python file to write [default: stdout]')
+        parser.add_option('-o','--output',dest='outputFileName',default=None,
+                          help='Name of the python file to write [default: stdout]')
 
-	parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
-			  choices=fieldList,
-			  help='Which fields to include in the output.  Currently only for csv output [default: all]')
+        parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
+                          choices=fieldList,
+                          help='Which fields to include in the output.  Currently only for csv output [default: all]')
 
-	parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
-			  help='Print the field name for csv')
+        parser.add_option('-p','--print-csv-field-list',dest='printCsvfieldList',default=False,action='store_true',
+                          help='Print the field name for csv')
 
-	parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
-			  help='Print out an sql create command for the table.')
+        parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
+                          help='Print out an sql create command for the table.')
 
-	parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
-			  help='Print a LaTeX table of the type')
+        parser.add_option('--latex-table',dest='latexDefinitionTable',default=False,action='store_true',
+                          help='Print a LaTeX table of the type')
 
-	parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
-			  help='Print delimited table of the type (for Word table importing)')
-	parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
-			  ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
+        parser.add_option('--text-table',dest='textDefinitionTable',default=False,action='store_true',
+                          help='Print delimited table of the type (for Word table importing)')
+        parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
+                          ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
 
 
-	dbChoices = ('sqlite','postgres')
-	parser.add_option('-D','--db-type',dest='dbType',default='postgres'
-			  ,choices=dbChoices,type='choice'
-			  ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
+        dbChoices = ('sqlite','postgres')
+        parser.add_option('-D','--db-type',dest='dbType',default='postgres'
+                          ,choices=dbChoices,type='choice'
+                          ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
 
-	addMsgOptions(parser)
+        addMsgOptions(parser)
 
-	(options,args) = parser.parse_args()
+        (options,args) = parser.parse_args()
 
-	outfile = sys.stdout
-	if None!=options.outputFileName:
-		outfile = file(options.outputFileName,'w')
+        outfile = sys.stdout
+        if None!=options.outputFileName:
+                outfile = file(options.outputFileName,'w')
 
-	if options.sqlCreate:
-		sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
+        if options.sqlCreate:
+                sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
 
-	if options.latexDefinitionTable:
-		latexDefinitionTable(outfile)
+        if options.latexDefinitionTable:
+                latexDefinitionTable(outfile)
 
-	# For conversion to word tables
-	if options.textDefinitionTable:
-		textDefinitionTable(outfile,options.delimTextDefinitionTable)
+        # For conversion to word tables
+        if options.textDefinitionTable:
+                textDefinitionTable(outfile,options.delimTextDefinitionTable)
 
-	if options.printCsvfieldList:
-		# Make a csv separated list of fields that will be displayed for csv
-		if None == options.fieldList: options.fieldList = fieldList
-		
-		buf = StringIO.StringIO()
-		for field in options.fieldList:
-			buf.write(field+',')
-		result = buf.getvalue()
-		if result[-1] == ',': print result[:-1]
-		else: print result
+        if options.printCsvfieldList:
+                # Make a csv separated list of fields that will be displayed for csv
+                if None == options.fieldList: options.fieldList = fieldList
+                
+                buf = io.StringIO()
+                for field in options.fieldList:
+                        buf.write(field+',')
+                result = buf.getvalue()
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
-	if options.doDecode:
-		if len(args)==0: args = sys.stdin
-		for msg in args:
-			bv = None
+        if options.doDecode:
+                if len(args)==0: args = sys.stdin
+                for msg in args:
+                        bv = None
 
-			if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
-				# Found nmea
-				# FIX: do checksum
-				bv = binary.ais6tobitvec(msg.split(',')[5])
-			else: # either binary or nmeapayload... expect mostly nmeapayloads
-				# assumes that an all 0 and 1 string can not be a nmeapayload
-				binaryMsg=True
-				for c in msg:
-					if c not in ('0','1'):
-						binaryMsg=False
-						break
-				if binaryMsg:
-					bv = BitVector(bitstring=msg)
-				else: # nmeapayload
-					bv = binary.ais6tobitvec(msg)
+                        if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
+                                # Found nmea
+                                # FIX: do checksum
+                                bv = binary.ais6tobitvec(msg.split(',')[5])
+                        else: # either binary or nmeapayload... expect mostly nmeapayloads
+                                # assumes that an all 0 and 1 string can not be a nmeapayload
+                                binaryMsg=True
+                                for c in msg:
+                                        if c not in ('0','1'):
+                                                binaryMsg=False
+                                                break
+                                if binaryMsg:
+                                        bv = BitVector(bitstring=msg)
+                                else: # nmeapayload
+                                        bv = binary.ais6tobitvec(msg)
 
-			printFields(decode(bv)
-				    ,out=outfile
-				    ,format=options.outputType
-				    ,fieldList=options.fieldList
-				    ,dbType=options.dbType
-				    )
+                        printFields(decode(bv)
+                                    ,out=outfile
+                                    ,format=options.outputType
+                                    ,fieldList=options.fieldList
+                                    ,dbType=options.dbType
+                                    )
 
 
 if __name__=='__main__':

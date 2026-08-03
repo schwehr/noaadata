@@ -1000,8 +1000,8 @@ def printKml(params, out=sys.stdout):
     out.write("    <Placemark>\n")
     out.write("        <name>"+str(params['UserID'])+"</name>\n")
     out.write("        <description>\n")
-    import StringIO
-    buf = StringIO.StringIO()
+    import io
+    buf = io.StringIO()
     printHtml(params,buf)
     import cgi
     out.write(cgi.escape(buf.getvalue()))
@@ -1140,7 +1140,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -1609,49 +1609,49 @@ class Testimo_met_hydro(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessEqual(r['fid'],params['fid'])
-        self.failUnlessAlmostEqual(r['latitude'],params['latitude'],4)
-        self.failUnlessAlmostEqual(r['longitude'],params['longitude'],4)
-        self.failUnlessEqual(r['day'],params['day'])
-        self.failUnlessEqual(r['hour'],params['hour'])
-        self.failUnlessEqual(r['min'],params['min'])
-        self.failUnlessEqual(r['avewind'],params['avewind'])
-        self.failUnlessEqual(r['windgust'],params['windgust'])
-        self.failUnlessEqual(r['winddir'],params['winddir'])
-        self.failUnlessEqual(r['windgustdir'],params['windgustdir'])
-        self.failUnlessAlmostEqual(r['airtemp'],params['airtemp'],1)
-        self.failUnlessEqual(r['relhumid'],params['relhumid'])
-        self.failUnlessAlmostEqual(r['dewpoint'],params['dewpoint'],1)
-        self.failUnlessAlmostEqual(r['airpressure'],params['airpressure'],0)
-        self.failUnlessEqual(r['airpressuretrend'],params['airpressuretrend'])
-        self.failUnlessAlmostEqual(r['horizvis'],params['horizvis'],1)
-        self.failUnlessAlmostEqual(r['waterlevel'],params['waterlevel'],1)
-        self.failUnlessEqual(r['waterleveltrend'],params['waterleveltrend'])
-        self.failUnlessAlmostEqual(r['surfcurspeed'],params['surfcurspeed'],1)
-        self.failUnlessEqual(r['surfcurdir'],params['surfcurdir'])
-        self.failUnlessAlmostEqual(r['curspeed2'],params['curspeed2'],1)
-        self.failUnlessEqual(r['curdir2'],params['curdir2'])
-        self.failUnlessEqual(r['curlevel2'],params['curlevel2'])
-        self.failUnlessAlmostEqual(r['curspeed3'],params['curspeed3'],1)
-        self.failUnlessEqual(r['curdir3'],params['curdir3'])
-        self.failUnlessEqual(r['curlevel3'],params['curlevel3'])
-        self.failUnlessAlmostEqual(r['sigwaveheight'],params['sigwaveheight'],1)
-        self.failUnlessEqual(r['waveperiod'],params['waveperiod'])
-        self.failUnlessEqual(r['wavedir'],params['wavedir'])
-        self.failUnlessAlmostEqual(r['swellheight'],params['swellheight'],1)
-        self.failUnlessEqual(r['swellperiod'],params['swellperiod'])
-        self.failUnlessEqual(r['swelldir'],params['swelldir'])
-        self.failUnlessEqual(r['seastate'],params['seastate'])
-        self.failUnlessAlmostEqual(r['watertemp'],params['watertemp'],1)
-        self.failUnlessEqual(r['preciptype'],params['preciptype'])
-        self.failUnlessAlmostEqual(r['salinity'],params['salinity'],1)
-        self.failUnlessEqual(r['ice'],params['ice'])
-        self.failUnlessEqual(r['Spare2'],params['Spare2'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertEqual(r['dac'],params['dac'])
+        self.assertEqual(r['fid'],params['fid'])
+        self.assertAlmostEqual(r['latitude'],params['latitude'],4)
+        self.assertAlmostEqual(r['longitude'],params['longitude'],4)
+        self.assertEqual(r['day'],params['day'])
+        self.assertEqual(r['hour'],params['hour'])
+        self.assertEqual(r['min'],params['min'])
+        self.assertEqual(r['avewind'],params['avewind'])
+        self.assertEqual(r['windgust'],params['windgust'])
+        self.assertEqual(r['winddir'],params['winddir'])
+        self.assertEqual(r['windgustdir'],params['windgustdir'])
+        self.assertAlmostEqual(r['airtemp'],params['airtemp'],1)
+        self.assertEqual(r['relhumid'],params['relhumid'])
+        self.assertAlmostEqual(r['dewpoint'],params['dewpoint'],1)
+        self.assertAlmostEqual(r['airpressure'],params['airpressure'],0)
+        self.assertEqual(r['airpressuretrend'],params['airpressuretrend'])
+        self.assertAlmostEqual(r['horizvis'],params['horizvis'],1)
+        self.assertAlmostEqual(r['waterlevel'],params['waterlevel'],1)
+        self.assertEqual(r['waterleveltrend'],params['waterleveltrend'])
+        self.assertAlmostEqual(r['surfcurspeed'],params['surfcurspeed'],1)
+        self.assertEqual(r['surfcurdir'],params['surfcurdir'])
+        self.assertAlmostEqual(r['curspeed2'],params['curspeed2'],1)
+        self.assertEqual(r['curdir2'],params['curdir2'])
+        self.assertEqual(r['curlevel2'],params['curlevel2'])
+        self.assertAlmostEqual(r['curspeed3'],params['curspeed3'],1)
+        self.assertEqual(r['curdir3'],params['curdir3'])
+        self.assertEqual(r['curlevel3'],params['curlevel3'])
+        self.assertAlmostEqual(r['sigwaveheight'],params['sigwaveheight'],1)
+        self.assertEqual(r['waveperiod'],params['waveperiod'])
+        self.assertEqual(r['wavedir'],params['wavedir'])
+        self.assertAlmostEqual(r['swellheight'],params['swellheight'],1)
+        self.assertEqual(r['swellperiod'],params['swellperiod'])
+        self.assertEqual(r['swelldir'],params['swelldir'])
+        self.assertEqual(r['seastate'],params['seastate'])
+        self.assertAlmostEqual(r['watertemp'],params['watertemp'],1)
+        self.assertEqual(r['preciptype'],params['preciptype'])
+        self.assertAlmostEqual(r['salinity'],params['salinity'],1)
+        self.assertEqual(r['ice'],params['ice'])
+        self.assertEqual(r['Spare2'],params['Spare2'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1895,18 +1895,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1924,13 +1924,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

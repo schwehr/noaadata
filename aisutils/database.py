@@ -32,7 +32,7 @@ import ais
 def checkpoint():
     import inspect
     f = inspect.currentframe().f_back
-    print '%s:%d: Function %s CHECKPOINT' % (__file__,f.f_lineno,f.f_code.co_name)
+    print('%s:%d: Function %s CHECKPOINT' % (__file__,f.f_lineno,f.f_code.co_name))
 
 
 
@@ -71,7 +71,7 @@ def stdCmdlineOptions(parser,dbType='postgres',verbose=False):
     if dbType in ('all','sqlite'):
         if verbose: sys.stderr.write('Adding sqlite options\n')
         parser.add_option('-f','--database-file',dest='databaseFilename',default='ais.db3'
-			  ,help='Name of the sqlite3 database file to write [default: %default]')
+                          ,help='Name of the sqlite3 database file to write [default: %default]')
 
 payload_table_sql = '''
 CREATE TABLE payload (
@@ -107,7 +107,7 @@ def createTables(cx,dbType='sqlite',includeList=None, excludeList=None,verbose=F
             if verbose: sys.stderr.write(str(msgNum)+' ... skipping - already in the db -'+str(aisMod.dbTableName)+'\n')
         else:
             if verbose:
-                print msgNum,' ... adding '+aisMod.dbTableName+' table to db'
+                print(msgNum,' ... adding '+aisMod.dbTableName+' table to db')
             cu.execute(str(aisMod.sqlCreate(dbType=dbType)))
             tables.append(aisMod.dbTableName)
 
@@ -137,10 +137,10 @@ def dropTables(cx,includeList=None, excludeList=None,verbose=False):
 
         if aisMod.dbTableName in tables:
             if verbose:
-                print msgNum,' ... skipping - already dropped from the db -',aisMod.dbTableName
+                print(msgNum,' ... skipping - already dropped from the db -',aisMod.dbTableName)
         else:
             if verbose:
-                print msgNum,' ... dropping '+aisMod.dbTableName+' table to db'
+                print(msgNum,' ... dropping '+aisMod.dbTableName+' table to db')
             cu.execute('DROP TABLE '+aisMod.dbTableName+';')
             tables.append(aisMod.dbTableName)
 
@@ -169,7 +169,7 @@ def connect(options,dbType=None):
         connectStr = "dbname='"+options.databaseName+"' user='"+options.databaseUser+"' host='"+options.databaseHost+"'"
 
         if options.verbose:
-            print 'Connect string:',connectStr
+            print('Connect string:',connectStr)
         cx = psycopg.connect(connectStr)
 
     else:
@@ -205,7 +205,7 @@ def rebuild_track_lines(cx,vessels=None
     if vessels is None:
         if startTime:
             sql = 'SELECT distinct(userid) FROM position WHERE cg_timestamp > %s;'
-            print 'FIX remove sql == ',sql
+            print('FIX remove sql == ',sql)
             sys.stderr.write('FIX: remove  startTime: %s   now: %s \n' % (str(startTime),str(datetime.datetime.utcnow())))
             cu.execute(sql,(startTime,))
         else:
@@ -287,7 +287,7 @@ def rebuild_track_lines(cx,vessels=None
             query = 'INSERT INTO track_lines (userid,name,track,update_timestamp) VALUES (%s,%s,GeomFromText(%s,4326),%s);'
             try:
                 cu.execute(query,(vessel,name,lineWKT,now))
-            except psycopg.ProgrammingError,inst:
+            except psycopg.ProgrammingError as inst:
                 sys.stderr.write('psycopg2 execute flailed: '+str(inst)+'\n')
                 traceback.print_exc(file=sys.stderr)
             else:
@@ -298,7 +298,7 @@ def rebuild_track_lines(cx,vessels=None
             key = track_keys[0][0]
             try:
                 cu.execute(query,(name,lineWKT,now,key))
-            except psycopg.ProgrammingError,inst:
+            except psycopg.ProgrammingError as inst:
                 sys.stderr.write('psycopg2 execute flailed: '+str(inst)+'\n')
                 traceback.print_exc(file=sys.stderr)
             else:
@@ -317,13 +317,13 @@ def rebuild_track_lines(cx,vessels=None
 
     if startTime is not None:
         #cu2 = cx.cursor()
-        print '*** Removing track_lines older than', startTime
+        print('*** Removing track_lines older than', startTime)
         #checkpoint()
         cu.execute('SELECT COUNT(userid) FROM track_lines;')
         #checkpoint()
         count = cu.fetchone()
         #checkpoint()
-        print 'COUNT track_lines "%s"' % count
+        print('COUNT track_lines "%s"' % count)
 
         #checkpoint()
 
@@ -344,9 +344,9 @@ def rebuild_track_lines(cx,vessels=None
 
         cu.execute('SELECT COUNT(userid) FROM track_lines;')
         #checkpoint()
-        print 'AFTER COUNT track_lines',cu.fetchone()[0]
+        print('AFTER COUNT track_lines',cu.fetchone()[0])
 
-        print 'done cleaning track_lines based on startTime'
+        print('done cleaning track_lines based on startTime')
 
 
     if v:
@@ -381,7 +381,7 @@ def rebuild_last_position(cx
     if vesselsClassA is None:
         if startTime:
             sql = 'SELECT distinct(userid) FROM position WHERE cg_timestamp > %s;'
-            print 'FIX: sql last pos - ',sql
+            print('FIX: sql last pos - ',sql)
             cu.execute(sql,(startTime,))
         else:
             cu.execute('SELECT distinct(userid) FROM position;')
@@ -450,14 +450,14 @@ def rebuild_last_position(cx
         if len(lastpos_keys)==0:
             # Does not exist in the database, so insert a new line
             if v:
-                print 'inserting...',vessel,name,cog,cg_timestamp,position
+                print('inserting...',vessel,name,cog,cg_timestamp,position)
             query = 'INSERT INTO '+lastPosTable+' (userid,name,cog,sog,cg_timestamp,position) VALUES (%s,%s,%s,%s,%s,%s);'
             try:
                 #print query
                 #if v:
                 #    sys.stderr.write('SQL insert to last pos %s\n' % query)
                 cu.execute(query,(vessel,name,cog,sog,cg_timestamp,position))
-            except psycopg.ProgrammingError,inst:
+            except psycopg.ProgrammingError as inst:
                 sys.stderr.write('psycopg2 execute flailed: '+str(inst)+' for\n  ')
                 sys.stderr.write(query+'\n')
                 traceback.print_exc(file=sys.stderr)
@@ -470,7 +470,7 @@ def rebuild_last_position(cx
             key = lastpos_keys[0][0]
             try:
                 cu.execute(query,(name,cog,sog,cg_timestamp,position,key))
-            except psycopg.ProgrammingError,inst:
+            except psycopg.ProgrammingError as inst:
                 sys.stderr.write('psycopg2 execute flailed: '+str(inst)+' for\n  ')
                 sys.stderr.write(query+'\n')
                 traceback.print_exc(file=sys.stderr)
@@ -486,16 +486,16 @@ def rebuild_last_position(cx
         if v: sys.stderr.write('Updated tracks ... '+str(vesselsUpdated)+' tracks updated\n')
 
     if vesselsClassB is not None:
-        print 'FIX: class B not yet implemented'
+        print('FIX: class B not yet implemented')
 
     if startTime is not None:
-        print '*** Removing positions older than', startTime
+        print('*** Removing positions older than', startTime)
 
         cu.execute('SELECT COUNT(key) FROM position;')
-        print 'COUNT position',cu.fetchone()
+        print('COUNT position',cu.fetchone())
 
         cu.execute('SELECT COUNT(key) FROM last_position;')
-        print 'COUNT last_position',cu.fetchone()
+        print('COUNT last_position',cu.fetchone())
 
         # Remove old points to keep the database lean... go back a few days
         sql = 'DELETE FROM position WHERE key IN (SELECT key FROM position WHERE cg_timestamp < %s);'
@@ -508,12 +508,12 @@ def rebuild_last_position(cx
         cx.commit()
 
         cu.execute('SELECT COUNT(key) FROM position;')
-        print 'AFTER COUNT position',cu.fetchone()
+        print('AFTER COUNT position',cu.fetchone())
 
         cu.execute('SELECT COUNT(key) FROM last_position;')
-        print 'AFTER COUNT last_position',cu.fetchone()
+        print('AFTER COUNT last_position',cu.fetchone())
 
-        print 'done cleaning position and last_position based on startTime'
+        print('done cleaning position and last_position based on startTime')
 
 
 # FIX: unittests here?

@@ -17,8 +17,8 @@ import optparse
 import re
 import time
 
-from nmea_error import NmeaError
-from nmea_error import NmeaChecksumError
+from .nmea_error import NmeaError
+from .nmea_error import NmeaChecksumError
 
 
 class NmeaNotZnt(Exception):
@@ -62,24 +62,24 @@ znt_regex = re.compile(znt_regex_str,  re.VERBOSE)
 
 
 def print_response(response):
-    print('Version number : %d' % response.version)
-    print('Offset : %f' % response.offset)
-    print('Stratum : %s (%d)' % (ntplib.stratum_to_text(response.stratum),
-        response.stratum))
-    print('Precision : %d' % response.precision)
-    print('Root delay : %f ' % response.root_delay)
-    print('Root dispersion : %f' % response.root_dispersion)
-    print('Delay : %f' % response.delay)
-    print('Leap indicator : %s (%d)' % (ntplib.leap_to_text(response.leap), response.leap))
-    print('Poll : %d' % response.poll)
-    print('Mode : %s (%d)' % (ntplib.mode_to_text(response.mode), response.mode))
-    print('Python time: %f, %s' % (time.time(), str(datetime.datetime.utcnow())))
-    print('Transmit timestamp : ' + time.ctime(response.tx_time))
-    print('Reference timestamp : ' + time.ctime(response.ref_time))
-    print('Original timestamp : ' + time.ctime(response.orig_time))
-    print('Receive timestamp : ' + time.ctime(response.recv_time))
-    print('Destination timestamp : ' + time.ctime(response.dest_time))
-    print('Reference clock identifier : ' + ntplib.ref_id_to_text(response.ref_id, response.stratum))
+    print(('Version number : %d' % response.version))
+    print(('Offset : %f' % response.offset))
+    print(('Stratum : %s (%d)' % (ntplib.stratum_to_text(response.stratum),
+        response.stratum)))
+    print(('Precision : %d' % response.precision))
+    print(('Root delay : %f ' % response.root_delay))
+    print(('Root dispersion : %f' % response.root_dispersion))
+    print(('Delay : %f' % response.delay))
+    print(('Leap indicator : %s (%d)' % (ntplib.leap_to_text(response.leap), response.leap)))
+    print(('Poll : %d' % response.poll))
+    print(('Mode : %s (%d)' % (ntplib.mode_to_text(response.mode), response.mode)))
+    print(('Python time: %f, %s' % (time.time(), str(datetime.datetime.utcnow()))))
+    print(('Transmit timestamp : ' + time.ctime(response.tx_time)))
+    print(('Reference timestamp : ' + time.ctime(response.ref_time)))
+    print(('Original timestamp : ' + time.ctime(response.orig_time)))
+    print(('Receive timestamp : ' + time.ctime(response.recv_time)))
+    print(('Destination timestamp : ' + time.ctime(response.dest_time)))
+    print(('Reference clock identifier : ' + ntplib.ref_id_to_text(response.ref_id, response.stratum)))
 
 class Znt():
   """NMEA proprietary NTP status report.
@@ -144,7 +144,7 @@ class Znt():
     try:
       match = znt_regex.search(nmea_str).groupdict()
     except:
-      print 'Results are wrong?'
+      print('Results are wrong?')
       print_response(response)
 
     return nmea_str
@@ -240,7 +240,7 @@ class ZntLogger():
     self.out_file.write(znt_str + '\n')
 
     if self.verbose:
-      print znt_str
+      print(znt_str)
 
 
 def znt_logger_opts(parser):
@@ -268,12 +268,12 @@ def main():
 
   if options.one_shot:
     znt = Znt(hostname = options.hostname)
-    print znt.nmea_str
+    print(znt.nmea_str)
 
     znt2 = Znt(znt.nmea_str)
     if options.verbose:
-      print
-      print znt2.pretty()
+      print()
+      print(znt2.pretty())
 
   znt_logger = ZntLogger(
       file(options.out_file,'w'),

@@ -273,7 +273,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -505,13 +505,13 @@ class Testsls_lockschedule(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['vessel'],params['vessel'])
-        self.failUnlessEqual(r['direction'],params['direction'])
-        self.failUnlessEqual(r['ETA_month'],params['ETA_month'])
-        self.failUnlessEqual(r['ETA_day'],params['ETA_day'])
-        self.failUnlessEqual(r['ETA_hour'],params['ETA_hour'])
-        self.failUnlessEqual(r['ETA_min'],params['ETA_min'])
-        self.failUnlessEqual(r['reserved'],params['reserved'])
+        self.assertEqual(r['vessel'],params['vessel'])
+        self.assertEqual(r['direction'],params['direction'])
+        self.assertEqual(r['ETA_month'],params['ETA_month'])
+        self.assertEqual(r['ETA_day'],params['ETA_day'])
+        self.assertEqual(r['ETA_hour'],params['ETA_hour'])
+        self.assertEqual(r['ETA_min'],params['ETA_min'])
+        self.assertEqual(r['reserved'],params['reserved'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -597,16 +597,16 @@ def main():
     success = True
 
     if options.doctest:
-            import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+            import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
             sys.argv = [sys.argv[0]]
             if options.verbose:
               sys.argv.append('-v')
 
             numfail, numtests = doctest.testmod()
             if not numfail:
-                print 'ok'
+                print('ok')
             else:
-                print 'FAILED'
+                print('FAILED')
                 success = False
 
     if not success: sys.exit('Something Failed')
@@ -642,18 +642,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -671,13 +671,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

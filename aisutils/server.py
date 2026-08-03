@@ -39,25 +39,25 @@ def create_daemon():
 
     try:
         pid = os.fork()
-    except OSError, except_params:
-        raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+    except OSError as except_params:
+        raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
 
     if (pid == 0):
         # The first child.
         os.setsid()
 
         try:
-            pid = os.fork()	# Fork a second child.
-        except OSError, except_params:
-            raise Exception, "%s [%d]" % (except_params.strerror, except_params.errno)
+            pid = os.fork()     # Fork a second child.
+        except OSError as except_params:
+            raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
 
         if (pid != 0):
-            os._exit(0)	# Exit parent (the first child) of the second child.
+            os._exit(0) # Exit parent (the first child) of the second child.
 
     else:
-        os._exit(0)	# Exit parent of the first child.
+        os._exit(0)     # Exit parent of the first child.
 
-    import resource		# Resource usage information.
+    import resource             # Resource usage information.
     maxfd = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
     if (maxfd == resource.RLIM_INFINITY):
         maxfd = 1024
@@ -67,7 +67,7 @@ def create_daemon():
         for fd in range(0, maxfd):
             try:
                 os.close(fd)
-            except OSError:	# ERROR, fd wasn't open to begin with (ignored)
+            except OSError:     # ERROR, fd wasn't open to begin with (ignored)
                 pass
 
     # Send all output to /dev/null - FIX: send it to a log file
@@ -91,12 +91,12 @@ class LogFileWithRotate():
     def open(self):
         '''Open a log file.  Close old one if it exists'''
         if self.log_file is not None:
-            if self.v: print 'closing logfile'
+            if self.v: print('closing logfile')
             self.write_tail()
             self.log_file.close()
         now = self.current_date = datetime.datetime.utcnow()
         self.log_filename = self.prefix+now.strftime('%Y-%m-%d')
-        if self.v: print 'opening log file: %s' % self.log_filename
+        if self.v: print('opening log file: %s' % self.log_filename)
         self.log_file = file(self.log_filename,'a')
         self.write_header()
 
@@ -115,7 +115,7 @@ class LogFileWithRotate():
     def rotate(self,force=False):
         if not force and not self.needs_rotate():
             return
-        if self.v: print 'rotate log file'
+        if self.v: print('rotate log file')
         self.open()
 
     def write(self,data,verbose=False,rotate=True):
@@ -132,11 +132,11 @@ class LogFileWithRotate():
             if data!='\n': log_str+='\n'
 
         if verbose:
-            print log_str,
+            print(log_str, end=' ')
 
         self.log_file.write(log_str)
 
     def __del__(self):
-        print 'shutting down'
+        print('shutting down')
         self.write_tail()
         self.log_file.close()

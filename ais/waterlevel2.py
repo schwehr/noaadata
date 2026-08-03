@@ -446,7 +446,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -764,21 +764,21 @@ class Testwaterlevel(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessEqual(r['fid'],params['fid'])
-        self.failUnlessEqual(r['month'],params['month'])
-        self.failUnlessEqual(r['day'],params['day'])
-        self.failUnlessEqual(r['hour'],params['hour'])
-        self.failUnlessEqual(r['min'],params['min'])
-        self.failUnlessEqual(r['stationid'],params['stationid'])
-        self.failUnlessEqual(r['waterlevel'],params['waterlevel'])
-        self.failUnlessEqual(r['datum'],params['datum'])
-        self.failUnlessEqual(r['sigma'],params['sigma'])
-        self.failUnlessEqual(r['source'],params['source'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertEqual(r['dac'],params['dac'])
+        self.assertEqual(r['fid'],params['fid'])
+        self.assertEqual(r['month'],params['month'])
+        self.assertEqual(r['day'],params['day'])
+        self.assertEqual(r['hour'],params['hour'])
+        self.assertEqual(r['min'],params['min'])
+        self.assertEqual(r['stationid'],params['stationid'])
+        self.assertEqual(r['waterlevel'],params['waterlevel'])
+        self.assertEqual(r['datum'],params['datum'])
+        self.assertEqual(r['sigma'],params['sigma'])
+        self.assertEqual(r['source'],params['source'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -913,18 +913,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -942,13 +942,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

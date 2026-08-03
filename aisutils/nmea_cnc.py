@@ -24,7 +24,7 @@ Convert AIS messages from AIVDM binary to IVS C&C NMEA strings
 '''
 
 import nmea.checksum
-import uscg
+from . import uscg
 import ais
 from math import *
 import datetime
@@ -33,7 +33,7 @@ def msg_1_to_cnc(nmea_str):
     match_obj = uscg.uscg_ais_nmea_regex.search(nmea_str.strip())
     if match_obj is None:
         # throw exception
-        print 'no match!',nmea_str
+        print('no match!',nmea_str)
         return None
     grp = match_obj.group
 
@@ -59,9 +59,9 @@ def msg_1_to_cnc(nmea_str):
 def test():
     lines='''!AIVDM,1,1,,B,15Mwq1WP01rB2crBh5G:6?v200Rj,0*59,s28057,d-095,T49.46179499,x91028,rRDSULI1,1224516422
 '''
-    import StringIO
-    str_file = StringIO.StringIO(lines)
+    import io
+    str_file = io.StringIO(lines)
     for line in str_file.readlines():
-        print 'LINE:',line
+        print('LINE:',line)
         cnc_str = msg_1_to_cnc(line)
-        print 'cnc:   ',cnc_str
+        print('cnc:   ',cnc_str)

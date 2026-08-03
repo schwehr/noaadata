@@ -23,7 +23,7 @@ query/response from the NOAA Axis server.
 @copyright: (C) 2006 Kurt Schwehr
 '''
 
-import sys, httplib
+import sys, http.client
 
 # FIX: document the datums
 datumList = ['MLLW','MSL','MHW','STND','IGLD','NGVD','NAVD']
@@ -38,13 +38,13 @@ def getWaterLevelSoappyNow(stationId,debug=False):
 
     d = datetime.datetime.utcnow()
 
-    print 'FIX: do this in seconds space!!!!  This is crap!'
+    print('FIX: do this in seconds space!!!!  This is crap!')
 
     startD = d + datetime.timedelta(minutes=-20)
     endD = d + datetime.timedelta(minutes=10)
     #startMin = int(d.minute) - 6
     #endMin = int(d.minute) + 1
-    print startD,endD,d
+    print(startD,endD,d)
 
     beginDate = str(startD.year)+('%02d' % startD.month)+('%02d' % startD.day)+' '+ ('%02d' % (startD.hour))+':'+('%02d' % (startD.minute))
     endDate = str(endD.year)+('%02d' % endD.month)+('%02d' % endD.day)+' '+ ('%02d' % (endD.hour))+':'+('%02d' % (endD.minute))
@@ -71,25 +71,25 @@ if __name__ == '__main__':
     parser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
                         help='run the documentation tests')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		      help='Make the test output verbose')
+                      help='Make the test output verbose')
 
     (options,args) = parser.parse_args()
 
     success=True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-	if options.verbosity>=VERBOSE: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else: 
-	    print 'FAILED'
-	    success=False
+        import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
+        sys.argv= [sys.argv[0]]
+        if options.verbosity>=VERBOSE: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print('ok')
+        else: 
+            print('FAILED')
+            success=False
 
-    print getWaterLevelSoappyNow(8639348)
+    print(getWaterLevelSoappyNow(8639348))
 
     if not success:
-	sys.exit('Something Failed')
+        sys.exit('Something Failed')
 

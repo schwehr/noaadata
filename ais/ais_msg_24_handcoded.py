@@ -24,11 +24,11 @@ from decimal import Decimal
 import logging
 import sys
 
-import ais_msg_5
+from . import ais_msg_5
 from aisutils import aisstring
 from aisutils import binary
 from aisutils import sqlhelp
-from BitVector import BitVector
+from aisutils.BitVector import BitVector
 
 fieldList = (
   'MessageID',
@@ -102,7 +102,7 @@ def decode(bv, validate=False):
   '''
 
   if len(bv) not in (160,162,168): # 162 is 160 with 2 bits padding
-    print 'warning... len is not 160 or 168.  Found',len(bv)
+    print('warning... len is not 160 or 168.  Found',len(bv))
 
   r = {}
   r['MessageID']=24
@@ -194,8 +194,8 @@ RepeatIndicatorEncodeLut = {
 }
 
 RepeatIndicatorDecodeLut = {
-	'0':'default',
-	'3':'do not repeat any more',
+        '0':'default',
+        '3':'do not repeat any more',
 }
 
 
@@ -203,7 +203,7 @@ shipandcargoEncodeLut = ais_msg_5.shipandcargoEncodeLut
 shipandcargoDecodeLut = ais_msg_5.shipandcargoDecodeLut
 
 dimCEncodeLut = {
-	'63 m or greater':'63',
+        '63 m or greater':'63',
 }
 
 dimCDecodeLut = {
@@ -227,105 +227,105 @@ dbTableName='b_staticdata'
 'Database table name'
 
 def sqlCreateStr(outfile=sys.stdout, fields=None, extraFields=None
-		,addCoastGuardFields=True
-		,dbType='postgres'
-		):
-	'''
-	Return the SQL CREATE command for this message type
-	@param outfile: file like object to print to.
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@type addCoastGuardFields: bool
-	@return: sql create string
-	@rtype: str
+                ,addCoastGuardFields=True
+                ,dbType='postgres'
+                ):
+        '''
+        Return the SQL CREATE command for this message type
+        @param outfile: file like object to print to.
+        @param fields: which fields to put in the create.  Defaults to all.
+        @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+        @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+        @type addCoastGuardFields: bool
+        @return: sql create string
+        @rtype: str
 
-	@see: sqlCreate
-	'''
-	# FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
-	outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
+        @see: sqlCreate
+        '''
+        # FIX: should this sqlCreate be the same as in LaTeX (createFuncName) rather than hard coded?
+        outfile.write(str(sqlCreate(fields,extraFields,addCoastGuardFields,dbType=dbType)))
 
 def sqlCreate(fields=None, extraFields=None, addCoastGuardFields=True, dbType='postgres'):
-	'''
-	Return the sqlhelp object to create the table.
+        '''
+        Return the sqlhelp object to create the table.
 
-	@param fields: which fields to put in the create.  Defaults to all.
-	@param extraFields: A sequence of tuples containing (name,sql type) for additional fields
-	@param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
-	@type addCoastGuardFields: bool
-	@param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
-	@return: An object that can be used to generate a return
-	@rtype: sqlhelp.create
-	'''
-	if None == fields: fields = fieldList
+        @param fields: which fields to put in the create.  Defaults to all.
+        @param extraFields: A sequence of tuples containing (name,sql type) for additional fields
+        @param addCoastGuardFields: Add the extra fields that come after the NMEA check some from the USCG N-AIS format
+        @type addCoastGuardFields: bool
+        @param dbType: Which flavor of database we are using so that the create is tailored ('sqlite' or 'postgres')
+        @return: An object that can be used to generate a return
+        @rtype: sqlhelp.create
+        '''
+        if None == fields: fields = fieldList
 
-	c = sqlhelp.create(dbTableName,dbType=dbType)
-	c.addPrimaryKey()
-	if 'MessageID' in fields: c.addInt ('MessageID')
-	if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
-	if 'UserID' in fields: c.addInt ('UserID')
-	if 'partnum' in fields: c.addInt ('partnum')
-	if 'name' in fields: c.addVarChar('name',20)
-	if 'shipandcargo' in fields: c.addInt ('shipandcargo')
-	if 'callsign' in fields: c.addVarChar('callsign',7)
-	if 'vendorid' in fields: c.addVarChar('vendorid',7)
-	if 'dimA' in fields: c.addInt ('dimA')
-	if 'dimB' in fields: c.addInt ('dimB')
-	if 'dimC' in fields: c.addInt ('dimC')
-	if 'dimD' in fields: c.addInt ('dimD')
-	if 'mothership' in fields: c.addInt ('mothership')
-	if 'spare' in fields: c.addInt ('Spare')
+        c = sqlhelp.create(dbTableName,dbType=dbType)
+        c.addPrimaryKey()
+        if 'MessageID' in fields: c.addInt ('MessageID')
+        if 'RepeatIndicator' in fields: c.addInt ('RepeatIndicator')
+        if 'UserID' in fields: c.addInt ('UserID')
+        if 'partnum' in fields: c.addInt ('partnum')
+        if 'name' in fields: c.addVarChar('name',20)
+        if 'shipandcargo' in fields: c.addInt ('shipandcargo')
+        if 'callsign' in fields: c.addVarChar('callsign',7)
+        if 'vendorid' in fields: c.addVarChar('vendorid',7)
+        if 'dimA' in fields: c.addInt ('dimA')
+        if 'dimB' in fields: c.addInt ('dimB')
+        if 'dimC' in fields: c.addInt ('dimC')
+        if 'dimD' in fields: c.addInt ('dimD')
+        if 'mothership' in fields: c.addInt ('mothership')
+        if 'spare' in fields: c.addInt ('Spare')
 
-	if addCoastGuardFields:
-		# c.addInt('cg_rssi')     # Relative signal strength indicator
-		# c.addInt('cg_d')        # dBm receive strength
-		# c.addInt('cg_T')        # Receive timestamp from the AIS equipment
-		# c.addInt('cg_S')        # Slot received in
-		# c.addVarChar('cg_x',10) # Idonno
-		c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
-		c.addInt('cg_sec')        # UTC seconds since the epoch
+        if addCoastGuardFields:
+                # c.addInt('cg_rssi')     # Relative signal strength indicator
+                # c.addInt('cg_d')        # dBm receive strength
+                # c.addInt('cg_T')        # Receive timestamp from the AIS equipment
+                # c.addInt('cg_S')        # Slot received in
+                # c.addVarChar('cg_x',10) # Idonno
+                c.addVarChar('cg_r',15)   # Receiver station ID  -  should usually be an MMSI, but sometimes is a string
+                c.addInt('cg_sec')        # UTC seconds since the epoch
 
-		c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
+                c.addTimestamp('cg_timestamp') # UTC decoded cg_sec - not actually in the data stream
 
-	return c
+        return c
 
 def sqlInsertStr(params, outfile=sys.stdout, extraParams=None, dbType='postgres'):
-	'''
-	Return the SQL INSERT command for this message type
-	@param params: dictionary of values keyed by field name
-	@param outfile: file like object to print to.
-	@param extraParams: A sequence of tuples containing (name,sql type) for additional fields
-	@return: sql create string
-	@rtype: str
+        '''
+        Return the SQL INSERT command for this message type
+        @param params: dictionary of values keyed by field name
+        @param outfile: file like object to print to.
+        @param extraParams: A sequence of tuples containing (name,sql type) for additional fields
+        @return: sql create string
+        @rtype: str
 
-	@see: sqlCreate
-	'''
-	outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
+        @see: sqlCreate
+        '''
+        outfile.write(str(sqlInsert(params,extraParams,dbType=dbType)))
 
 
 def sqlInsert(params,extraParams=None,dbType='postgres'):
-	'''
-	Give the SQL INSERT statement
-	@param params: dict keyed by field name of values
-	@param extraParams: any extra fields that you have created beyond the normal ais message fields
-	@rtype: sqlhelp.insert
-	@return: insert class instance
-	@todo: allow optional type checking of params?
-	@warning: this will take invalid keys happily and do what???
-	'''
+        '''
+        Give the SQL INSERT statement
+        @param params: dict keyed by field name of values
+        @param extraParams: any extra fields that you have created beyond the normal ais message fields
+        @rtype: sqlhelp.insert
+        @return: insert class instance
+        @todo: allow optional type checking of params?
+        @warning: this will take invalid keys happily and do what???
+        '''
 
-	i = sqlhelp.insert('b_staticdata',dbType=dbType)
+        i = sqlhelp.insert('b_staticdata',dbType=dbType)
 
-	for key in params:
-		if type(params[key])==Decimal: i.add(key,float(params[key]))
-		else: i.add(key,params[key])
+        for key in params:
+                if type(params[key])==Decimal: i.add(key,float(params[key]))
+                else: i.add(key,params[key])
 
-	if None != extraParams:
-		for key in extraParams:
-			i.add(key,extraParams[key])
+        if None != extraParams:
+                for key in extraParams:
+                        i.add(key,extraParams[key])
 
-	return i
+        return i
 
 
 
@@ -335,107 +335,107 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
 ######################################################################
 import unittest
 def testParams():
-	'''Return a params file base on the testvalue tags.
-	@rtype: dict
-	@return: params based on testvalue tags
-	'''
-	params = {}
+        '''Return a params file base on the testvalue tags.
+        @rtype: dict
+        @return: params based on testvalue tags
+        '''
+        params = {}
 
-	return params
+        return params
 
 class Testb_staticdata(unittest.TestCase):
-	'''Use testvalue tag text from each type to build test case the b_staticdata message'''
-	def testEncodeDecode(self):
+        '''Use testvalue tag text from each type to build test case the b_staticdata message'''
+        def testEncodeDecode(self):
 
-		pass
+                pass
 
 def addMsgOptions(parser):
-	parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
-		help='decode a "b_staticdata" AIS message')
+        parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
+                help='decode a "b_staticdata" AIS message')
 
 ############################################################
 if __name__=='__main__':
 
-	from optparse import OptionParser
-	parser = OptionParser(usage="%prog [options]",
-		version="%prog "+__version__)
+        from optparse import OptionParser
+        parser = OptionParser(usage="%prog [options]",
+                version="%prog "+__version__)
 
-	parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
-		help='run the unit tests')
-	parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		help='Make the test output verbose')
+        parser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
+                help='run the unit tests')
+        parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
+                help='Make the test output verbose')
 
-	typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
-	parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
-		,default='nmeapayload'
-		,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
-
-
-	outputChoices = ('std', 'sql')
-	parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
-		,default='std'
-		,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
-
-	parser.add_option('-o','--output',dest='outputFileName',default=None,
-			  help='Name of the python file to write [default: stdout]')
-
-	parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
-			  choices=fieldList,
-			  help='Which fields to include in the output.  Currently only for csv output [default: all]')
-
-	parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
-			  help='Print out an sql create command for the table.')
-
-	parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
-			  ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
+        typeChoices = ('binary','nmeapayload','nmea') # FIX: what about a USCG type message?
+        parser.add_option('-t','--type',choices=typeChoices,type='choice',dest='ioType'
+                ,default='nmeapayload'
+                ,help='What kind of string to write for encoding ('+', '.join(typeChoices)+') [default: %default]')
 
 
-	dbChoices = ('sqlite','postgres')
-	parser.add_option('-D','--db-type',dest='dbType',default='postgres'
-			  ,choices=dbChoices,type='choice'
-			  ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
+        outputChoices = ('std', 'sql')
+        parser.add_option('-T','--output-type',choices=outputChoices,type='choice',dest='outputType'
+                ,default='std'
+                ,help='What kind of string to output ('+', '.join(outputChoices)+') [default: %default]')
 
-	addMsgOptions(parser)
+        parser.add_option('-o','--output',dest='outputFileName',default=None,
+                          help='Name of the python file to write [default: stdout]')
 
-	options, args = parser.parse_args()
+        parser.add_option('-f','--fields',dest='fieldList',default=None, action='append',
+                          choices=fieldList,
+                          help='Which fields to include in the output.  Currently only for csv output [default: all]')
 
-	if options.unittest:
-		sys.argv = [sys.argv[0]]
-		if options.verbose: sys.argv.append('-v')
-		unittest.main()
+        parser.add_option('-c','--sql-create',dest='sqlCreate',default=False,action='store_true',
+                          help='Print out an sql create command for the table.')
 
-	outfile = sys.stdout
-	if None!=options.outputFileName:
-		outfile = file(options.outputFileName,'w')
+        parser.add_option('--delimt-text-table',dest='delimTextDefinitionTable',default='\t'
+                          ,help='Delimiter for text table [default: \'%default\'](for Word table importing)')
 
 
-	if options.sqlCreate:
-		sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
+        dbChoices = ('sqlite','postgres')
+        parser.add_option('-D','--db-type',dest='dbType',default='postgres'
+                          ,choices=dbChoices,type='choice'
+                          ,help='What kind of database ('+', '.join(dbChoices)+') [default: %default]')
 
-	if options.doDecode:
-		if len(args)==0: args = sys.stdin
-		for msg in args:
-			bv = None
+        addMsgOptions(parser)
 
-			if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
-				# Found nmea
-				# FIX: do checksum
-				bv = binary.ais6tobitvec(msg.split(',')[5])
-			else: # either binary or nmeapayload... expect mostly nmeapayloads
-				# assumes that an all 0 and 1 string can not be a nmeapayload
-				binaryMsg=True
-				for c in msg:
-					if c not in ('0','1'):
-						binaryMsg=False
-						break
-				if binaryMsg:
-					bv = BitVector(bitstring=msg)
-				else: # nmeapayload
-					bv = binary.ais6tobitvec(msg)
+        options, args = parser.parse_args()
 
-			printFields(decode(bv)
-				    ,out=outfile
-				    ,format=options.outputType
-				    ,fieldList=options.fieldList
-				    ,dbType=options.dbType
-				    )
+        if options.unittest:
+                sys.argv = [sys.argv[0]]
+                if options.verbose: sys.argv.append('-v')
+                unittest.main()
+
+        outfile = sys.stdout
+        if None!=options.outputFileName:
+                outfile = file(options.outputFileName,'w')
+
+
+        if options.sqlCreate:
+                sqlCreateStr(outfile,options.fieldList,dbType=options.dbType)
+
+        if options.doDecode:
+                if len(args)==0: args = sys.stdin
+                for msg in args:
+                        bv = None
+
+                        if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):
+                                # Found nmea
+                                # FIX: do checksum
+                                bv = binary.ais6tobitvec(msg.split(',')[5])
+                        else: # either binary or nmeapayload... expect mostly nmeapayloads
+                                # assumes that an all 0 and 1 string can not be a nmeapayload
+                                binaryMsg=True
+                                for c in msg:
+                                        if c not in ('0','1'):
+                                                binaryMsg=False
+                                                break
+                                if binaryMsg:
+                                        bv = BitVector(bitstring=msg)
+                                else: # nmeapayload
+                                        bv = binary.ais6tobitvec(msg)
+
+                        printFields(decode(bv)
+                                    ,out=outfile
+                                    ,format=options.outputType
+                                    ,fieldList=options.fieldList
+                                    ,dbType=options.dbType
+                                    )

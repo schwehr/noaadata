@@ -13,11 +13,11 @@ import sys
 import time
 import unittest
 
-from BitVector import BitVector
+from .BitVector import BitVector
 
-import sqlhelp
-import binary
-import nmea
+from . import sqlhelp
+from . import binary
+from . import nmea
 
 
 ######################################################################
@@ -173,11 +173,11 @@ class UscgNmea:
                     continue # maybe it should throw a parse exception instead?
                 f = fields[i]
                 c = f[0] # first charater determines what the field is
-		if c in ('b','r','B','R'):
-		    self.station = f # FIX: think we want to keep the code in the first char
+                if c in ('b','r','B','R'):
+                    self.station = f # FIX: think we want to keep the code in the first char
                     self.stationTypeCode = self.station[0]
                     continue
-		    #break # Found it so ditch the for loop
+                    #break # Found it so ditch the for loop
                 if c == 's':
                     self.rssi=int(f[1:])
                     continue
@@ -258,23 +258,23 @@ class TestUscgNmea(unittest.TestCase):
     def testUscgNmea(self):
         un = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
 
-        self.failUnlessEqual(un.nmeaType,'AIVDM')
-        self.failUnlessEqual(un.totalSentences,1)
-        self.failUnlessEqual(un.sentenceNum,1)
-        self.failUnlessEqual(un.sequentialMsgId,None)
-        self.failUnlessEqual(un.aisChannel,'B')
-        self.failUnlessEqual(un.fillbits,0)
-        self.failUnlessEqual(un.checksumStr,'63')
+        self.assertEqual(un.nmeaType,'AIVDM')
+        self.assertEqual(un.totalSentences,1)
+        self.assertEqual(un.sentenceNum,1)
+        self.assertEqual(un.sequentialMsgId,None)
+        self.assertEqual(un.aisChannel,'B')
+        self.assertEqual(un.fillbits,0)
+        self.assertEqual(un.checksumStr,'63')
 
-        self.failUnlessEqual(un.rssi,1234)
-        self.failUnlessEqual(un.signalStrength,-119)
-        self.failUnlessEqual(un.timeOfArrival,12.34567123)
-        self.failUnlessEqual(un.slotNumber,4321)
-        self.failUnlessEqual(un.station,'r003669958')
-        self.failUnlessEqual(un.stationTypeCode,'r')
-        self.failUnlessEqual(un.cg_sec,float(1085889680))
-        print un.timestamp
-        print un.sqlTimestampStr  # Hmmm... they look the same
+        self.assertEqual(un.rssi,1234)
+        self.assertEqual(un.signalStrength,-119)
+        self.assertEqual(un.timeOfArrival,12.34567123)
+        self.assertEqual(un.slotNumber,4321)
+        self.assertEqual(un.station,'r003669958')
+        self.assertEqual(un.stationTypeCode,'r')
+        self.assertEqual(un.cg_sec,float(1085889680))
+        print(un.timestamp)
+        print(un.sqlTimestampStr)  # Hmmm... they look the same
 
 
     def testEquality(self):
@@ -294,21 +294,21 @@ class TestUscgNmea(unittest.TestCase):
         m12 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669959,S4321,1085889680')
         #m13 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S432,1085889680')
         m14 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889681')
-        self.failUnless(m1==m1)
-        self.failUnless(m1==m1same)
-        self.failUnless(m1!=m2)
-        self.failUnless(m1!=m3)
-        self.failUnless(m1!=m4)
-        self.failUnless(m1!=m5)
-        self.failUnless(m1!=m6)
-        self.failUnless(m1!=m7)
-        self.failUnless(m1!=m8)
+        self.assertTrue(m1==m1)
+        self.assertTrue(m1==m1same)
+        self.assertTrue(m1!=m2)
+        self.assertTrue(m1!=m3)
+        self.assertTrue(m1!=m4)
+        self.assertTrue(m1!=m5)
+        self.assertTrue(m1!=m6)
+        self.assertTrue(m1!=m7)
+        self.assertTrue(m1!=m8)
         #self.failUnless(m1!=m9)
         #self.failUnless(m1!=m10)
         #self.failUnless(m1!=m11)
-        self.failUnless(m1!=m12)
+        self.assertTrue(m1!=m12)
         #self.failUnless(m1!=m13)
-        self.failUnless(m1!=m14)
+        self.assertTrue(m1!=m14)
 
 
 
@@ -393,12 +393,12 @@ def create_nmea(bits,
 
 
 def test():
-    print 'doctests ...'
+    print('doctests ...')
     numfail, _ = doctest.testmod()
     if not numfail:
-        print 'ok'
+        print('ok')
     else:
-        print 'FAILED'
+        print('FAILED')
 
 
 if __name__ == '__main__':

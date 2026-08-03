@@ -15,8 +15,8 @@ Retrieve 6 minute raw water level data from NOAA CO-OPS server.
 @copyright: (C) 2006 Kurt Schwehr
 '''
 
-import sys, httplib, dap.client
-import urllib # FIX: remove this when pydap protects the seqReq
+import sys, http.client, dap.client
+import urllib.request, urllib.parse, urllib.error # FIX: remove this when pydap protects the seqReq
 
 # FIX: document the datums
 datumList = ['MLLW','MSL','MHW','STND','IGLD','NGVD','NAVD']
@@ -85,30 +85,30 @@ def getWaterLevelNow(stationId,verbose=False, returnDict=True,datum='MSL'):
     endDate = str(endD.year)+('%02d' % endD.month)+('%02d' % endD.day)+' '+ ('%02d' % (endD.hour))+':'+('%02d' % (endD.minute))
 
     if verbose:
-        print 'range: %s -> %s' % (str(beginDate),str(endDate))
+        print('range: %s -> %s' % (str(beginDate),str(endDate)))
 
     reqStr = '_STATION_ID="'+str(stationId)+'"&_BEGIN_DATE="'+beginDate+'"&_END_DATE="'+endDate+'"&_DATUM="'+datum+'"'
     if verbose: 
-        print 'plain text, then quoted'
-        print 'getWaterLevelNow reqStr:\n  ',reqStr
-    reqStr = urllib.quote(reqStr) # FIX: remove this step when pydap updated
+        print('plain text, then quoted')
+        print('getWaterLevelNow reqStr:\n  ',reqStr)
+    reqStr = urllib.parse.quote(reqStr) # FIX: remove this step when pydap updated
     if verbose: 
-        print 'getWaterLevelNow reqStr:\n  ',reqStr
+        print('getWaterLevelNow reqStr:\n  ',reqStr)
     filt_seq=waterlevelSeq.filter(reqStr)
-    if verbose: print 'sending data request...'
+    if verbose: print('sending data request...')
     data = filt_seq._get_data()
     #if len(data) != 1: print 'WARNING: retrieved more than one point!'
     if not returnDict: return data[-1][:]
 
     data = data[-1][:] # get just the row and drop the surrounding "[]"
-    keys = filt_seq.keys()
+    keys = list(filt_seq.keys())
     #print len(keys),':     ',keys
     #print len(data),':     ',data
     #print 
     assert len(keys) == len(data)
     r = {} # Results
     for i in range(len(keys)):
-	r[keys[i]] = data[i]
+        r[keys[i]] = data[i]
     return r
 
 
@@ -124,26 +124,26 @@ def get_waterlevel(stationId,start_date,end_date,verbose=False, returnDict=True,
 
     reqStr = '_STATION_ID="'+str(stationId)+'"&_BEGIN_DATE="'+beginDate+'"&_END_DATE="'+endDate+'"&_DATUM="'+datum+'"'
     if verbose: 
-        print 'plain text, then quoted'
-        print 'getWaterLevelNow reqStr:\n  ',reqStr
-    reqStr = urllib.quote(reqStr) # FIX: remove this step when pydap updated
+        print('plain text, then quoted')
+        print('getWaterLevelNow reqStr:\n  ',reqStr)
+    reqStr = urllib.parse.quote(reqStr) # FIX: remove this step when pydap updated
     if verbose: 
-        print 'getWaterLevelNow reqStr:\n  ',reqStr
+        print('getWaterLevelNow reqStr:\n  ',reqStr)
     filt_seq=waterlevelSeq.filter(reqStr)
-    if verbose: print 'sending data request...'
+    if verbose: print('sending data request...')
     data = filt_seq._get_data()
     #if len(data) != 1: print 'WARNING: retrieved more than one point!'
     if not returnDict: return data[-1][:]
 
     data = data[-1][:] # get just the row and drop the surrounding "[]"
-    keys = filt_seq.keys()
+    keys = list(filt_seq.keys())
     #print len(keys),':     ',keys
     #print len(data),':     ',data
     #print 
     assert len(keys) == len(data)
     r = {} # Results
     for i in range(len(keys)):
-	r[keys[i]] = data[i]
+        r[keys[i]] = data[i]
     return r
 
 
@@ -159,31 +159,31 @@ if __name__ == '__main__':
     parser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
                         help='run the documentation tests')
     parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true',
-		      help='Make the test output verbose')
+                      help='Make the test output verbose')
 
     (options,args) = parser.parse_args()
 
     success=True
 
     if options.doctest:
-	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-	sys.argv= [sys.argv[0]]
-	if options.verbose: sys.argv.append('-v')
-	import doctest
-	numfail,numtests=doctest.testmod()
-	if numfail==0: print 'ok'
-	else: 
-	    print 'FAILED'
-	    success=False
+        import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
+        sys.argv= [sys.argv[0]]
+        if options.verbose: sys.argv.append('-v')
+        import doctest
+        numfail,numtests=doctest.testmod()
+        if numfail==0: print('ok')
+        else: 
+            print('FAILED')
+            success=False
 
     if options.allStations:
-	for station in stationsWaterLevel:
-	    # FIX: probably better to pull all the stations together somehow
-	    print station,':',getWaterLevelNow(station,options.verbose)
-	    sys.stdout.flush() # Get the data out as soon as possible.  This get is SLOW!
+        for station in stationsWaterLevel:
+            # FIX: probably better to pull all the stations together somehow
+            print(station,':',getWaterLevelNow(station,options.verbose))
+            sys.stdout.flush() # Get the data out as soon as possible.  This get is SLOW!
     else:
-	print getWaterLevelNow(options.station,options.verbose)
+        print(getWaterLevelNow(options.station,options.verbose))
 
     if not success:
-	sys.exit('Something Failed')
+        sys.exit('Something Failed')
 

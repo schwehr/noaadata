@@ -452,7 +452,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -984,21 +984,21 @@ class TestChanMngmt(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessAlmostEqual(r['corner1_lon'],params['corner1_lon'],2)
-        self.failUnlessAlmostEqual(r['corner1_lat'],params['corner1_lat'],2)
-        self.failUnlessAlmostEqual(r['corner2_lon'],params['corner2_lon'],2)
-        self.failUnlessAlmostEqual(r['corner2_lat'],params['corner2_lat'],2)
-        self.failUnlessEqual(r['StationType'],params['StationType'])
-        self.failUnlessEqual(r['shipandcargo'],params['shipandcargo'])
-        self.failUnlessEqual(r['Spare2'],params['Spare2'])
-        self.failUnlessEqual(r['TxRxMode'],params['TxRxMode'])
-        self.failUnlessEqual(r['ReportingInterval'],params['ReportingInterval'])
-        self.failUnlessEqual(r['QuietTime'],params['QuietTime'])
-        self.failUnlessEqual(r['Spare3'],params['Spare3'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertAlmostEqual(r['corner1_lon'],params['corner1_lon'],2)
+        self.assertAlmostEqual(r['corner1_lat'],params['corner1_lat'],2)
+        self.assertAlmostEqual(r['corner2_lon'],params['corner2_lon'],2)
+        self.assertAlmostEqual(r['corner2_lat'],params['corner2_lat'],2)
+        self.assertEqual(r['StationType'],params['StationType'])
+        self.assertEqual(r['shipandcargo'],params['shipandcargo'])
+        self.assertEqual(r['Spare2'],params['Spare2'])
+        self.assertEqual(r['TxRxMode'],params['TxRxMode'])
+        self.assertEqual(r['ReportingInterval'],params['ReportingInterval'])
+        self.assertEqual(r['QuietTime'],params['QuietTime'])
+        self.assertEqual(r['Spare3'],params['Spare3'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1133,18 +1133,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1162,13 +1162,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

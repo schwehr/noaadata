@@ -37,7 +37,7 @@ if __name__=='__main__':
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')
     parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+                          help='Host name of the computer serving the dbx [default: %default]')
     defaultUser = os.getlogin()
     parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
                       help='Host name of the to access the database with [default: %default]')

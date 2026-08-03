@@ -37,7 +37,7 @@ import sys
 from decimal import Decimal
 import math
 
-from BitVector import BitVector
+from aisutils.BitVector import BitVector
 from aisutils import aisstring
 from aisutils import binary
 from aisutils import uscg
@@ -120,95 +120,95 @@ Lookup table for each postgis field name to get its type.
 '''
 
 def encode(params, validate=False):
-	'''Create a AidsToNavReport binary message payload to pack into an AIS Msg AidsToNavReport.
+        '''Create a AidsToNavReport binary message payload to pack into an AIS Msg AidsToNavReport.
 
-	Fields in params:
-	  - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
-	  - RepeatIndicator(uint): Indicated how many times a message has been repeated
-	  - UserID(uint): Unique ship identification number (MMSI)
-	  - type(uint): IALA type of aid-to-navigation
-	  - name(aisstr6): Name of the aid-to-navigation
-	  - PositionAccuracy(uint): Accuracy of positioning fixes
-	  - longitude(decimal): Location of the AtoN  East West location
-	  - latitude(decimal): Location of the AtoN  North South location
-	  - dimA(uint): Distance from bow to reference position
-	  - dimB(uint): Distance from reference position to stern
-	  - dimC(uint): Distance from port side to reference position
-	  - dimD(uint): Distance from reference position to starboard side
-	  - FixType(uint): Type of electronic position fixing device
-	  - timestamp(uint): UTC second when report was generated
-	  - OffPosition(bool): True when the AtoN is off station
-	  - status(uint): Unknown
-	  - RAIM(bool): Receiver autonomous integrity monitoring flag
-	  - virtual_aton_flag(bool): Does the unit physically exist?
-	  - assigned_mode_flag(bool): autonomous or controlled
-	  - spare(uint): Not Used (field automatically set to "0")
-	  - spare2(uint): Not Used (field automatically set to "0")
-	@param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
-	@param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
-	@rtype: BitVector
-	@return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
-	@note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
-	'''
+        Fields in params:
+          - MessageID(uint): AIS message number.  Must be 21 aka 'F' (field automatically set to "21")
+          - RepeatIndicator(uint): Indicated how many times a message has been repeated
+          - UserID(uint): Unique ship identification number (MMSI)
+          - type(uint): IALA type of aid-to-navigation
+          - name(aisstr6): Name of the aid-to-navigation
+          - PositionAccuracy(uint): Accuracy of positioning fixes
+          - longitude(decimal): Location of the AtoN  East West location
+          - latitude(decimal): Location of the AtoN  North South location
+          - dimA(uint): Distance from bow to reference position
+          - dimB(uint): Distance from reference position to stern
+          - dimC(uint): Distance from port side to reference position
+          - dimD(uint): Distance from reference position to starboard side
+          - FixType(uint): Type of electronic position fixing device
+          - timestamp(uint): UTC second when report was generated
+          - OffPosition(bool): True when the AtoN is off station
+          - status(uint): Unknown
+          - RAIM(bool): Receiver autonomous integrity monitoring flag
+          - virtual_aton_flag(bool): Does the unit physically exist?
+          - assigned_mode_flag(bool): autonomous or controlled
+          - spare(uint): Not Used (field automatically set to "0")
+          - spare2(uint): Not Used (field automatically set to "0")
+        @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
+        @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
+        @rtype: BitVector
+        @return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
+        @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
+        '''
         assert False # FIX: need to handle the extended name case
 
-	bvList = []
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=21),6))
-	if 'RepeatIndicator' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
-	if 'type' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['type']),5))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),5))
-	if 'name' in params:
-		bvList.append(aisstring.encode(params['name'],120))
-	else:
-		bvList.append(aisstring.encode('@@@@@@@@@@@@@@@@@@@@',120))
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=params['PositionAccuracy']),1))
-	if 'longitude' in params:
-		bvList.append(binary.bvFromSignedInt(int(Decimal(params['longitude'])*Decimal('600000')),28))
-	else:
-		bvList.append(binary.bvFromSignedInt(108600000,28))
-	if 'latitude' in params:
-		bvList.append(binary.bvFromSignedInt(int(Decimal(params['latitude'])*Decimal('600000')),27))
-	else:
-		bvList.append(binary.bvFromSignedInt(54600000,27))
-	if 'dimA' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimA']),9))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),9))
-	if 'dimB' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimB']),9))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),9))
-	if 'dimC' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimC']),6))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),6))
-	if 'dimD' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimD']),6))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),6))
-	if 'FixType' in params:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=params['FixType']),4))
-	else:
-		bvList.append(binary.setBitVectorSize(BitVector(intVal=0),4))
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=params['timestamp']),6))
-	if params["OffPosition"]: bvList.append(TrueBV)
-	else: bvList.append(FalseBV)
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=params['status']),8))
-	if params["RAIM"]: bvList.append(TrueBV)
-	else: bvList.append(FalseBV)
-	if params["virtual_aton_flag"]: bvList.append(TrueBV)
-	else: bvList.append(FalseBV)
-	if params["assigned_mode_flag"]: bvList.append(TrueBV)
-	else: bvList.append(FalseBV)
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=0),1))
+        bvList = []
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=21),6))
+        if 'RepeatIndicator' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['RepeatIndicator']),2))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),2))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['UserID']),30))
+        if 'type' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['type']),5))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),5))
+        if 'name' in params:
+                bvList.append(aisstring.encode(params['name'],120))
+        else:
+                bvList.append(aisstring.encode('@@@@@@@@@@@@@@@@@@@@',120))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['PositionAccuracy']),1))
+        if 'longitude' in params:
+                bvList.append(binary.bvFromSignedInt(int(Decimal(params['longitude'])*Decimal('600000')),28))
+        else:
+                bvList.append(binary.bvFromSignedInt(108600000,28))
+        if 'latitude' in params:
+                bvList.append(binary.bvFromSignedInt(int(Decimal(params['latitude'])*Decimal('600000')),27))
+        else:
+                bvList.append(binary.bvFromSignedInt(54600000,27))
+        if 'dimA' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimA']),9))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),9))
+        if 'dimB' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimB']),9))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),9))
+        if 'dimC' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimC']),6))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),6))
+        if 'dimD' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['dimD']),6))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),6))
+        if 'FixType' in params:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=params['FixType']),4))
+        else:
+                bvList.append(binary.setBitVectorSize(BitVector(intVal=0),4))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['timestamp']),6))
+        if params["OffPosition"]: bvList.append(TrueBV)
+        else: bvList.append(FalseBV)
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['status']),8))
+        if params["RAIM"]: bvList.append(TrueBV)
+        else: bvList.append(FalseBV)
+        if params["virtual_aton_flag"]: bvList.append(TrueBV)
+        else: bvList.append(FalseBV)
+        if params["assigned_mode_flag"]: bvList.append(TrueBV)
+        else: bvList.append(FalseBV)
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=0),1))
 
-	return binary.joinBV(bvList)
+        return binary.joinBV(bvList)
 
 def decode(bv, validate=False):
     """Unpack a AidsToNavReport message
@@ -261,7 +261,7 @@ def decode(bv, validate=False):
     r['RAIM']=bool(int(bv[268:269]))
     r['virtual_aton_flag']=bool(int(bv[269:270]))
     if len(bv) == 270:
-        print 'Short 270 msg'
+        print('Short 270 msg')
         return r
     r['assigned_mode_flag']=bool(int(bv[270:271]))
     r['spare']=int(bv[271])
@@ -270,7 +270,7 @@ def decode(bv, validate=False):
     if len(bv) > 276:
         # Have an extended name
         ext_len = int(math.floor((len(bv) - 272) / 6.))
-        print 'ext:',len(bv),ext_len,len(bv[272:])
+        print('ext:',len(bv),ext_len,len(bv[272:]))
         text = aisstring.decode(bv[272:272 + 6 * ext_len])
         r['name'] += text
         if len(bv) > 272 + 6*ext_len:
@@ -293,7 +293,7 @@ def decodetype(bv, validate=False):
     return int(bv[38:43])
 
 def decodename(bv, validate=False):
-    print 'FIX: handle extended name if it is there'
+    print('FIX: handle extended name if it is there')
     return aisstring.decode(bv[43:163])
 
 def decodePositionAccuracy(bv, validate=False):
@@ -569,8 +569,8 @@ def printKml(params, out=sys.stdout):
     out.write("\    <Placemark>\n")
     out.write("\t    <name>"+str(params['UserID'])+"</name>\n")
     out.write("\t\t<description>\n")
-    import StringIO
-    buf = StringIO.StringIO()
+    import io
+    buf = io.StringIO()
     printHtml(params,buf)
     import cgi
     out.write(cgi.escape(buf.getvalue()))
@@ -667,7 +667,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -978,39 +978,39 @@ def sqlInsert(params,extraParams=None,dbType='postgres'):
     i = sqlhelp.insert('AidsToNavReport',dbType=dbType)
 
     if dbType=='postgres':
-    	finished = []
-    	for key in params:
-    		if key in finished:
-    			continue
+        finished = []
+        for key in params:
+                if key in finished:
+                        continue
 
-    		if key not in toPgFields and key not in fromPgFields:
-    			if type(params[key])==Decimal: i.add(key,float(params[key]))
-    			else: i.add(key,params[key])
-    		else:
-    			if key in fromPgFields:
-    				val = params[key]
-    			        # Had better be a WKT type like POINT(-88.1 30.321)
-    				i.addPostGIS(key,val)
-    				finished.append(key)
-    			else:
-    				# Need to construct the type.
-    				pgName = toPgFields[key]
-    				#valStr='GeomFromText(\''+pgTypes[pgName]+'('
-    				valStr=pgTypes[pgName]+'('
-    				vals = []
-    				for nonPgKey in fromPgFields[pgName]:
-    					vals.append(str(params[nonPgKey]))
-    					finished.append(nonPgKey)
-    				valStr+=' '.join(vals)+')'
-    				i.addPostGIS(pgName,valStr)
+                if key not in toPgFields and key not in fromPgFields:
+                        if type(params[key])==Decimal: i.add(key,float(params[key]))
+                        else: i.add(key,params[key])
+                else:
+                        if key in fromPgFields:
+                                val = params[key]
+                                # Had better be a WKT type like POINT(-88.1 30.321)
+                                i.addPostGIS(key,val)
+                                finished.append(key)
+                        else:
+                                # Need to construct the type.
+                                pgName = toPgFields[key]
+                                #valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                                valStr=pgTypes[pgName]+'('
+                                vals = []
+                                for nonPgKey in fromPgFields[pgName]:
+                                        vals.append(str(params[nonPgKey]))
+                                        finished.append(nonPgKey)
+                                valStr+=' '.join(vals)+')'
+                                i.addPostGIS(pgName,valStr)
     else:
-    	for key in params:
-    		if type(params[key])==Decimal: i.add(key,float(params[key]))
-    		else: i.add(key,params[key])
+        for key in params:
+                if type(params[key])==Decimal: i.add(key,float(params[key]))
+                else: i.add(key,params[key])
 
     if None != extraParams:
-    	for key in extraParams:
-    		i.add(key,extraParams[key])
+        for key in extraParams:
+                i.add(key,extraParams[key])
 
     return i
 
@@ -1067,18 +1067,18 @@ Total bits & 272 & Appears to take 2 slots with 152 pad bits to fill the last sl
 ######################################################################
 
 def textDefinitionTable(outfile=sys.stdout
-		,delim='\t'
-		):
-	'''
-	Return the text definition table for this message type
-	@param outfile: file like object to print to.
-	@type outfile: file obj
-	@return: text table string via the outfile
-	@rtype: str
+                ,delim='\t'
+                ):
+        '''
+        Return the text definition table for this message type
+        @param outfile: file like object to print to.
+        @type outfile: file obj
+        @return: text table string via the outfile
+        @rtype: str
 
-	'''
-	o = outfile
-	o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description
+        '''
+        o = outfile
+        o.write('''Parameter'''+delim+'Number of bits'''+delim+'''Description
 MessageID'''+delim+'''6'''+delim+'''AIS message number.  Must be 21 aka 'F'
 RepeatIndicator'''+delim+'''2'''+delim+'''Indicated how many times a message has been repeated
 UserID'''+delim+'''30'''+delim+'''Unique ship identification number (MMSI)
@@ -1107,107 +1107,107 @@ Total bits'''+delim+'''272'''+delim+'''Appears to take 2 slots with 152 pad bits
 ######################################################################
 import unittest
 def testParams():
-	'''Return a params file base on the testvalue tags.
-	@rtype: dict
-	@return: params based on testvalue tags
-	'''
-	params = {}
-	params['MessageID'] = 21
-	params['RepeatIndicator'] = 1
-	params['UserID'] = 1193046
-	params['type'] = 28
-	params['name'] = 'BUNCH OF ROCKS ATON@'
-	params['PositionAccuracy'] = 1
-	params['longitude'] = Decimal('-122.16328055555556')
-	params['latitude'] = Decimal('37.424458333333334')
-	params['dimA'] = 10
-	params['dimB'] = 11
-	params['dimC'] = 12
-	params['dimD'] = 13
-	params['FixType'] = 2
-	params['timestamp'] = 62
-	params['OffPosition'] = False
-	params['status'] = 0
-	params['RAIM'] = False
-	params['virtual_aton_flag'] = False
-	params['assigned_mode_flag'] = False
-	params['spare'] = 0
-	params['spare2'] = 0
+        '''Return a params file base on the testvalue tags.
+        @rtype: dict
+        @return: params based on testvalue tags
+        '''
+        params = {}
+        params['MessageID'] = 21
+        params['RepeatIndicator'] = 1
+        params['UserID'] = 1193046
+        params['type'] = 28
+        params['name'] = 'BUNCH OF ROCKS ATON@'
+        params['PositionAccuracy'] = 1
+        params['longitude'] = Decimal('-122.16328055555556')
+        params['latitude'] = Decimal('37.424458333333334')
+        params['dimA'] = 10
+        params['dimB'] = 11
+        params['dimC'] = 12
+        params['dimD'] = 13
+        params['FixType'] = 2
+        params['timestamp'] = 62
+        params['OffPosition'] = False
+        params['status'] = 0
+        params['RAIM'] = False
+        params['virtual_aton_flag'] = False
+        params['assigned_mode_flag'] = False
+        params['spare'] = 0
+        params['spare2'] = 0
 
-	return params
+        return params
 
 class TestAidsToNavReport(unittest.TestCase):
-	'''Use testvalue tag text from each type to build test case the AidsToNavReport message'''
-	def testEncodeDecode(self):
+        '''Use testvalue tag text from each type to build test case the AidsToNavReport message'''
+        def testEncodeDecode(self):
 
-		params = testParams()
-		bits   = encode(params)
-		r      = decode(bits)
+                params = testParams()
+                bits   = encode(params)
+                r      = decode(bits)
 
-		# Check that each parameter came through ok.
-		self.failUnlessEqual(r['MessageID'],params['MessageID'])
-		self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-		self.failUnlessEqual(r['UserID'],params['UserID'])
-		self.failUnlessEqual(r['type'],params['type'])
-		self.failUnlessEqual(r['name'],params['name'])
-		self.failUnlessEqual(r['PositionAccuracy'],params['PositionAccuracy'])
-		self.failUnlessAlmostEqual(r['longitude'],params['longitude'],5)
-		self.failUnlessAlmostEqual(r['latitude'],params['latitude'],5)
-		self.failUnlessEqual(r['dimA'],params['dimA'])
-		self.failUnlessEqual(r['dimB'],params['dimB'])
-		self.failUnlessEqual(r['dimC'],params['dimC'])
-		self.failUnlessEqual(r['dimD'],params['dimD'])
-		self.failUnlessEqual(r['FixType'],params['FixType'])
-		self.failUnlessEqual(r['timestamp'],params['timestamp'])
-		self.failUnlessEqual(r['OffPosition'],params['OffPosition'])
-		self.failUnlessEqual(r['status'],params['status'])
-		self.failUnlessEqual(r['RAIM'],params['RAIM'])
-		self.failUnlessEqual(r['virtual_aton_flag'],params['virtual_aton_flag'])
-		self.failUnlessEqual(r['assigned_mode_flag'],params['assigned_mode_flag'])
-		self.failUnlessEqual(r['spare'],params['spare'])
-		self.failUnlessEqual(r['spare2'],params['spare2'])
+                # Check that each parameter came through ok.
+                self.assertEqual(r['MessageID'],params['MessageID'])
+                self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+                self.assertEqual(r['UserID'],params['UserID'])
+                self.assertEqual(r['type'],params['type'])
+                self.assertEqual(r['name'],params['name'])
+                self.assertEqual(r['PositionAccuracy'],params['PositionAccuracy'])
+                self.assertAlmostEqual(r['longitude'],params['longitude'],5)
+                self.assertAlmostEqual(r['latitude'],params['latitude'],5)
+                self.assertEqual(r['dimA'],params['dimA'])
+                self.assertEqual(r['dimB'],params['dimB'])
+                self.assertEqual(r['dimC'],params['dimC'])
+                self.assertEqual(r['dimD'],params['dimD'])
+                self.assertEqual(r['FixType'],params['FixType'])
+                self.assertEqual(r['timestamp'],params['timestamp'])
+                self.assertEqual(r['OffPosition'],params['OffPosition'])
+                self.assertEqual(r['status'],params['status'])
+                self.assertEqual(r['RAIM'],params['RAIM'])
+                self.assertEqual(r['virtual_aton_flag'],params['virtual_aton_flag'])
+                self.assertEqual(r['assigned_mode_flag'],params['assigned_mode_flag'])
+                self.assertEqual(r['spare'],params['spare'])
+                self.assertEqual(r['spare2'],params['spare2'])
 
 def addMsgOptions(parser):
-	parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
-		help='decode a "AidsToNavReport" AIS message')
-	parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
-		help='encode a "AidsToNavReport" AIS message')
-	parser.add_option('--RepeatIndicator-field', dest='RepeatIndicatorField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--UserID-field', dest='UserIDField',metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--type-field', dest='typeField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--name-field', dest='nameField',default='@@@@@@@@@@@@@@@@@@@@',metavar='aisstr6',type='string'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--PositionAccuracy-field', dest='PositionAccuracyField',metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--longitude-field', dest='longitudeField',default=Decimal('181'),metavar='decimal',type='string'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--latitude-field', dest='latitudeField',default=Decimal('91'),metavar='decimal',type='string'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--dimA-field', dest='dimAField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--dimB-field', dest='dimBField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--dimC-field', dest='dimCField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--dimD-field', dest='dimDField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--FixType-field', dest='FixTypeField',default=0,metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--timestamp-field', dest='timestampField',metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--OffPosition-field', dest='OffPositionField',metavar='bool',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--status-field', dest='statusField',metavar='uint',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--RAIM-field', dest='RAIMField',metavar='bool',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--virtual_aton_flag-field', dest='virtual_aton_flagField',metavar='bool',type='int'
-		,help='Field parameter value [default: %default]')
-	parser.add_option('--assigned_mode_flag-field', dest='assigned_mode_flagField',metavar='bool',type='int'
-		,help='Field parameter value [default: %default]')
+        parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
+                help='decode a "AidsToNavReport" AIS message')
+        parser.add_option('-e','--encode',dest='doEncode',default=False,action='store_true',
+                help='encode a "AidsToNavReport" AIS message')
+        parser.add_option('--RepeatIndicator-field', dest='RepeatIndicatorField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--UserID-field', dest='UserIDField',metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--type-field', dest='typeField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--name-field', dest='nameField',default='@@@@@@@@@@@@@@@@@@@@',metavar='aisstr6',type='string'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--PositionAccuracy-field', dest='PositionAccuracyField',metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--longitude-field', dest='longitudeField',default=Decimal('181'),metavar='decimal',type='string'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--latitude-field', dest='latitudeField',default=Decimal('91'),metavar='decimal',type='string'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--dimA-field', dest='dimAField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--dimB-field', dest='dimBField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--dimC-field', dest='dimCField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--dimD-field', dest='dimDField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--FixType-field', dest='FixTypeField',default=0,metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--timestamp-field', dest='timestampField',metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--OffPosition-field', dest='OffPositionField',metavar='bool',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--status-field', dest='statusField',metavar='uint',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--RAIM-field', dest='RAIMField',metavar='bool',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--virtual_aton_flag-field', dest='virtual_aton_flagField',metavar='bool',type='int'
+                ,help='Field parameter value [default: %default]')
+        parser.add_option('--assigned_mode_flag-field', dest='assigned_mode_flagField',metavar='bool',type='int'
+                ,help='Field parameter value [default: %default]')
 
 def main():
     from optparse import OptionParser
@@ -1318,7 +1318,7 @@ def main():
         }
 
         bits = encode(msgDict)
-        if 'binary'==options.ioType: print str(bits)
+        if 'binary'==options.ioType: print(str(bits))
         elif 'nmeapayload'==options.ioType:
             # FIX: figure out if this might be necessary at compile time
             #print "bitLen",len(bits)
@@ -1326,10 +1326,10 @@ def main():
             if bitLen%6!=0:
                 bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
             #print "result:",binary.bitvectoais6(bits)[0]
-                print binary.bitvectoais6(bits)[0]
+                print(binary.bitvectoais6(bits)[0])
         elif 'nmea'==options.ioType:
             nmea = uscg.create_nmea(bits)
-            print nmea
+            print(nmea)
         else:
             sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1347,18 +1347,18 @@ def main():
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
         if None == options.fieldList: options.fieldList = fieldList
-        import StringIO
-        buf = StringIO.StringIO()
+        import io
+        buf = io.StringIO()
         for field in options.fieldList:
             buf.write(field+',')
         result = buf.getvalue()
-        if result[-1] == ',': print result[:-1]
-        else: print result
+        if result[-1] == ',': print(result[:-1])
+        else: print(result)
 
     if options.doDecode:
         if len(args)==0: args = sys.stdin
         for msg in args:
-            print msg
+            print(msg)
             bv = None
 
             if msg[0] in ('$','!') and msg[3:6] in ('VDM','VDO'):

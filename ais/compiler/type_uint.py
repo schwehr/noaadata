@@ -18,7 +18,7 @@ def encode(o,name,type,numbits,required=None,arraylen=1,unavailable=None, verbos
     @param unavailable: the default value to use if none given (if not None)
     @return: None
     '''
-    if verbose: print '  encodeUInt:',name,type,numbits,'Req:',required,'alen:',arraylen,unavailable
+    if verbose: print('  encodeUInt:',name,type,numbits,'Req:',required,'alen:',arraylen,unavailable)
 
     assert type=='uint'
     assert numbits>=1 and numbits<=32
@@ -26,21 +26,21 @@ def encode(o,name,type,numbits,required=None,arraylen=1,unavailable=None, verbos
     if verbose: o.write('\t### FIELD: '+name+' (type='+type+')\n')
 
     if None != required:
-	if verbose: print '  required:',required
-	required=int(required)
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(required)+'),'+str(numbits)+'))\n')
-	if verbose: o.write('\n')
-	return
+        if verbose: print('  required:',required)
+        required=int(required)
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(required)+'),'+str(numbits)+'))\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']),'+str(numbits)+'))\n')
+        o.write('\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']),'+str(numbits)+'))\n')
     else: # Have a default value that can be filled in
-	#assert type(unavailable)==
-	int(unavailable) # Make sure unavailable is a number object
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']'+'),'+str(numbits)+'))\n')
-	o.write('\telse:\n')
-	o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(unavailable)+'),'+str(numbits)+'))\n')
+        #assert type(unavailable)==
+        int(unavailable) # Make sure unavailable is a number object
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params[\''+name+'\']'+'),'+str(numbits)+'))\n')
+        o.write('\telse:\n')
+        o.write('\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal='+str(unavailable)+'),'+str(numbits)+'))\n')
 
     if verbose: o.write('\n')
 
@@ -75,18 +75,18 @@ def decode(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=N
     @rtype: int
     @return: index one past the end of where this read
     '''
-    if verbose: print type,'decode',name,': unvail=',unavailable,'  numbits:',numbits, '  startindex=',startindex
+    if verbose: print(type,'decode',name,': unvail=',unavailable,'  numbits:',numbits, '  startindex=',startindex)
     if None==arraylen: arraylen=1
     assert arraylen == 1 # FIX... handle arrays
     assert numbits>=1
     if not decodeOnly: verbose=False
 
     if None != required:
-	int(required) # Make sure required is a number
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	o.write(str(required))
-	if not decodeOnly: o.write('\n')
-	return startindex+numbits
+        int(required) # Make sure required is a number
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        o.write(str(required))
+        if not decodeOnly: o.write('\n')
+        return startindex+numbits
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('int('+bv+'['+str(startindex)+':'+str(startindex+int(numbits)*int(arraylen))+'])')

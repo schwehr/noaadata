@@ -31,7 +31,7 @@ standard.  I refuse to do multi-line output.
 
 '''
 import nmea.checksum
-import uscg
+from . import uscg
 import ais
 from math import *
 
@@ -71,7 +71,7 @@ def msg_1_to_ait(nmea_str):
     match_obj = uscg.uscg_ais_nmea_regex.search(nmea_str.strip())
     if match_obj is None:
         # throw exception
-        print 'no match!',nmea_str
+        print('no match!',nmea_str)
         return None
     grp = match_obj.group
     r = '$AIAIT,pos_a,%s,%s,' % (grp('seqId'),grp('chan'))
@@ -85,22 +85,22 @@ def msg_1_to_ait(nmea_str):
     body_list = [
         str(body['MessageID']),
         str(body['RepeatIndicator']),
-	str(body['UserID']),
-	str(body['NavigationStatus']),
-	str(pow(body['ROT']/4.733,2)), # FIX: take this out when ROT is done in the main code
-	str(body['SOG']),
-	str(body['PositionAccuracy']),
-	str(float(body['longitude'])),
-	str(float(body['latitude'])),
-	str(float(body['COG'])),
-	str(body['TrueHeading']),
-	str(body['TimeStamp']),
-	str(body['RegionalReserved']), # FIX: special manoevre indicator
-	str(body['Spare']),
-	str(body['RAIM']),
-	str(body['state_syncstate']),
-	str(body['state_slottimeout']),
-	#str(body['state_slotoffset'])
+        str(body['UserID']),
+        str(body['NavigationStatus']),
+        str(pow(body['ROT']/4.733,2)), # FIX: take this out when ROT is done in the main code
+        str(body['SOG']),
+        str(body['PositionAccuracy']),
+        str(float(body['longitude'])),
+        str(float(body['latitude'])),
+        str(float(body['COG'])),
+        str(body['TrueHeading']),
+        str(body['TimeStamp']),
+        str(body['RegionalReserved']), # FIX: special manoevre indicator
+        str(body['Spare']),
+        str(body['RAIM']),
+        str(body['state_syncstate']),
+        str(body['state_slottimeout']),
+        #str(body['state_slotoffset'])
         # 3.3.7.2.3 sub messages
         '', # receive_stations
         '', # slot_num
@@ -145,12 +145,12 @@ def test():
 !AIVDM,1,1,,B,1000000P01Jt;pDHaP>78gvt0<02,0*57,rnhcml,1213228823.96
 '''
 
-    import StringIO
-    str_file = StringIO.StringIO(lines)
+    import io
+    str_file = io.StringIO(lines)
     for line in str_file.readlines():
-        print 'LINE:',line
+        print('LINE:',line)
         aiait_str = msg_1_to_ait(line)
-        print 'aiait_str:   ',aiait_str
+        print('aiait_str:   ',aiait_str)
         d = ait_1_to_dict(aiait_str)
         for key in d:
-            print key,'\t',d[key]
+            print(key,'\t',d[key])

@@ -592,7 +592,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
     elif 'sql'==format:
                 sqlInsertStr(params,out,dbType=dbType)
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -928,29 +928,29 @@ class Testris_waterlevel(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['Spare'],params['Spare'])
-        self.failUnlessEqual(r['dac'],params['dac'])
-        self.failUnlessEqual(r['fid'],params['fid'])
-        self.failUnlessEqual(r['country'],params['country'])
-        self.failUnlessEqual(r['id1_id'],params['id1_id'])
-        self.failUnlessEqual(r['id1_sign'],params['id1_sign'])
-        self.failUnlessAlmostEqual(r['id1_waterlevel'],params['id1_waterlevel'],2)
-        self.failUnlessEqual(r['id1_i_have_no_idea'],params['id1_i_have_no_idea'])
-        self.failUnlessEqual(r['id2_id'],params['id2_id'])
-        self.failUnlessEqual(r['id2_sign'],params['id2_sign'])
-        self.failUnlessAlmostEqual(r['id2_waterlevel'],params['id2_waterlevel'],2)
-        self.failUnlessEqual(r['id2_i_have_no_idea'],params['id2_i_have_no_idea'])
-        self.failUnlessEqual(r['id3_id'],params['id3_id'])
-        self.failUnlessEqual(r['id3_sign'],params['id3_sign'])
-        self.failUnlessAlmostEqual(r['id3_waterlevel'],params['id3_waterlevel'],2)
-        self.failUnlessEqual(r['id3_i_have_no_idea'],params['id3_i_have_no_idea'])
-        self.failUnlessEqual(r['id4_id'],params['id4_id'])
-        self.failUnlessEqual(r['id4_sign'],params['id4_sign'])
-        self.failUnlessAlmostEqual(r['id4_waterlevel'],params['id4_waterlevel'],2)
-        self.failUnlessEqual(r['id4_i_have_no_idea'],params['id4_i_have_no_idea'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['Spare'],params['Spare'])
+        self.assertEqual(r['dac'],params['dac'])
+        self.assertEqual(r['fid'],params['fid'])
+        self.assertEqual(r['country'],params['country'])
+        self.assertEqual(r['id1_id'],params['id1_id'])
+        self.assertEqual(r['id1_sign'],params['id1_sign'])
+        self.assertAlmostEqual(r['id1_waterlevel'],params['id1_waterlevel'],2)
+        self.assertEqual(r['id1_i_have_no_idea'],params['id1_i_have_no_idea'])
+        self.assertEqual(r['id2_id'],params['id2_id'])
+        self.assertEqual(r['id2_sign'],params['id2_sign'])
+        self.assertAlmostEqual(r['id2_waterlevel'],params['id2_waterlevel'],2)
+        self.assertEqual(r['id2_i_have_no_idea'],params['id2_i_have_no_idea'])
+        self.assertEqual(r['id3_id'],params['id3_id'])
+        self.assertEqual(r['id3_sign'],params['id3_sign'])
+        self.assertAlmostEqual(r['id3_waterlevel'],params['id3_waterlevel'],2)
+        self.assertEqual(r['id3_i_have_no_idea'],params['id3_i_have_no_idea'])
+        self.assertEqual(r['id4_id'],params['id4_id'])
+        self.assertEqual(r['id4_sign'],params['id4_sign'])
+        self.assertAlmostEqual(r['id4_waterlevel'],params['id4_waterlevel'],2)
+        self.assertEqual(r['id4_i_have_no_idea'],params['id4_i_have_no_idea'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1054,16 +1054,16 @@ def main():
     success = True
 
     if options.doctest:
-            import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+            import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
             sys.argv = [sys.argv[0]]
             if options.verbose:
               sys.argv.append('-v')
 
             numfail, numtests = doctest.testmod()
             if not numfail:
-                print 'ok'
+                print('ok')
             else:
-                print 'FAILED'
+                print('FAILED')
                 success = False
 
     if not success: sys.exit('Something Failed')
@@ -1124,18 +1124,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1153,13 +1153,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

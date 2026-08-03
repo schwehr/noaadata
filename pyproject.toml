@@ -1,0 +1,130 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "noaadata"
+version = "0.46"
+description = "Encode/decode NOAA co-ops marine data and marine AIS"
+readme = { file = "README", content-type = "text/plain" }
+requires-python = ">=3.13"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "Kurt Schwehr", email = "schwehr@gmail.com" }
+]
+keywords = ["AIS", "binary messages", "NMEA"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Communications",
+    "Topic :: Database",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: System :: Networking",
+]
+
+[project.optional-dependencies]
+db = [
+    "psycopg2-binary>=2.9",
+    "sqlalchemy>=2.0",
+]
+gis = [
+    "lxml>=5.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "pytest-benchmark",
+    "hypothesis",
+    "hypofuzz",
+    "ruff",
+    "mdformat",
+    "codespell",
+    "ty",
+    "mypy",
+    "pyright",
+    "pyrefly",
+    "semgrep",
+    "bandit",
+    "mkdocs-material",
+    "mkdocstrings[python]",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = [
+    "noaadata",
+    "ais",
+    "aisutils",
+    "nmea",
+]
+
+[project.scripts]
+ais-5report = "noaadata.cli.ais_5report:main"
+ais-bin-msgs = "noaadata.cli.ais_bin_msgs:main"
+ais-build-postgis = "noaadata.cli.ais_build_postgis:main"
+ais-build-sqlite = "noaadata.cli.ais_build_sqlite:main"
+ais-build-sqlite3 = "noaadata.cli.ais_build_sqlite3:main"
+ais-db = "noaadata.cli.ais_db:main"
+ais-db-rebuild-cache-tables = "noaadata.cli.ais_db_rebuild_cache_tables:main"
+ais-decimate-traffic = "noaadata.cli.ais_decimate_traffic:main"
+ais-distance = "noaadata.cli.ais_distance:main"
+ais-dump-mmsi = "noaadata.cli.ais_dump_mmsi:main"
+ais-dumpnames = "noaadata.cli.ais_dumpnames:main"
+ais-filter = "noaadata.cli.ais_filter:main"
+ais-info = "noaadata.cli.ais_info:main"
+ais-liststations = "noaadata.cli.ais_liststations:main"
+ais-names = "noaadata.cli.ais_names:main"
+ais-net-to-postgis = "noaadata.cli.ais_net_to_postgis:main"
+ais-nmea-find-matches = "noaadata.cli.ais_nmea_find_matches:main"
+ais-nmea-info = "noaadata.cli.ais_nmea_info:main"
+ais-nmea-remove-dups = "noaadata.cli.ais_nmea_remove_dups:main"
+ais-nmea-uptime = "noaadata.cli.ais_nmea_uptime:main"
+ais-nmea-uptime2 = "noaadata.cli.ais_nmea_uptime2:main"
+ais-nmea-uscg-timeshift = "noaadata.cli.ais_nmea_uscg_timeshift:main"
+ais-normalize = "noaadata.cli.ais_normalize:main"
+ais-oldlog2newlog = "noaadata.cli.ais_oldlog2newlog:main"
+ais-pg-create-transit-table = "noaadata.cli.ais_pg_create_transit_table:main"
+ais-pg-grid = "noaadata.cli.ais_pg_grid:main"
+ais-pg-grid-transits = "noaadata.cli.ais_pg_grid_transits:main"
+ais-pg-transitlines = "noaadata.cli.ais_pg_transitlines:main"
+ais-pg-transitlines-noMakeLine = "noaadata.cli.ais_pg_transitlines_noMakeLine:main"
+ais-port-forward = "noaadata.cli.ais_port_forward:main"
+ais-position-in-polygon = "noaadata.cli.ais_position_in_polygon:main"
+ais-positions = "noaadata.cli.ais_positions:main"
+ais-receive-bbox = "noaadata.cli.ais_receive_bbox:main"
+ais-sqlite-bsreport-analysis = "noaadata.cli.ais_sqlite_bsreport_analysis:main"
+ais-towersplit = "noaadata.cli.ais_towersplit:main"
+ais-traffic-analysis = "noaadata.cli.ais_traffic_analysis:main"
+ais-transits = "noaadata.cli.ais_transits:main"
+ais-uniq = "noaadata.cli.ais_uniq:main"
+ais-uscg-splitstations = "noaadata.cli.ais_uscg_splitstations:main"
+aisuser-monitor = "noaadata.cli.aisuser_monitor:main"
+aisxml2wxpy = "noaadata.cli.aisxml2wxpy:main"
+aisxmlbinmsg2py = "noaadata.cli.aisxmlbinmsg2py:main"
+bbox-to-kml = "noaadata.cli.bbox_to_kml:main"
+decimate = "noaadata.cli.decimate:main"
+dump-wl = "noaadata.cli.dump_wl:main"
+find-missing-logs = "noaadata.cli.find_missing_logs:main"
+jpegexif2kml = "noaadata.cli.jpegexif2kml:main"
+log-udp = "noaadata.cli.log_udp:main"
+logger-handlers = "noaadata.cli.logger_handlers:main"
+nais-pg-realtime-reaper = "noaadata.cli.nais_pg_realtime_reaper:main"
+nais2postgis = "noaadata.cli.nais2postgis:main"
+port-server = "noaadata.cli.port_server:main"
+serial-logger = "noaadata.cli.serial_logger:main"
+serial-logger2 = "noaadata.cli.serial_logger2:main"
+serial-send = "noaadata.cli.serial_send:main"
+serial-send2 = "noaadata.cli.serial_send2:main"
+socket-logger = "noaadata.cli.socket_logger:main"
+socket-send = "noaadata.cli.socket_send:main"
+test-ais-server = "noaadata.cli.test_ais_server:main"
+tide4-process-logs = "noaadata.cli.tide4_process_logs:main"
+xy-pos-filter = "noaadata.cli.xy_pos_filter:main"
+xy2kml = "noaadata.cli.xy2kml:main"
+xy2kmlline = "noaadata.cli.xy2kmlline:main"
+xymt2kml = "noaadata.cli.xymt2kml:main"

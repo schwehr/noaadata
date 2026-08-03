@@ -41,7 +41,7 @@ if __name__=='__main__':
     parser.add_option('-d','--database-name',dest='databaseName',default='ais',
                       help='Name of database within the postgres server [default: %default]')
     parser.add_option('-D','--database-host',dest='databaseHost',default='localhost',
-			  help='Host name of the computer serving the dbx [default: %default]')
+                          help='Host name of the computer serving the dbx [default: %default]')
     defaultUser = os.getlogin()
     parser.add_option('-u','--database-user',dest='databaseUser',default=defaultUser,
                       help='Host name of the to access the database with [default: %default]')
@@ -73,31 +73,31 @@ if __name__=='__main__':
 CREATE TABLE summary2006
 (
   id serial NOT NULL,
-  userid integer NOT NULL, 	-- primary mmsi
-  userid2 integer, 		-- mmsi in the case where the ship had 2 mmsi values.  Mostly null
-  imo_no integer, 		-- null if not available.
+  userid integer NOT NULL,      -- primary mmsi
+  userid2 integer,              -- mmsi in the case where the ship had 2 mmsi values.  Mostly null
+  imo_no integer,               -- null if not available.
   numTransits integer NOT NULL,
-  jan integer,			-- Number of transits within this month
-  feb integer,			-- Number of transits within this month
-  mar integer,			-- Number of transits within this month
-  apr integer,			-- Number of transits within this month
-  may integer,			-- Number of transits within this month
-  jun integer,			-- Number of transits within this month
-  jul integer,			-- Number of transits within this month
-  aug integer,			-- Number of transits within this month
-  sep integer,			-- Number of transits within this month
-  oct integer,			-- Number of transits within this month
-  nov integer,			-- Number of transits within this month
-  dec integer,			-- Number of transits within this month
-  timeInRegion REAL,		-- Hours
-  posCountAIS integer,		-- Number of 1,2,3 AIS packages received
-  name varchar(40),		-- Vessel Name
-  shiptype varchar(50),		-- From msg 5
-  cargotype varchar(50),	-- From msg 5
+  jan integer,                  -- Number of transits within this month
+  feb integer,                  -- Number of transits within this month
+  mar integer,                  -- Number of transits within this month
+  apr integer,                  -- Number of transits within this month
+  may integer,                  -- Number of transits within this month
+  jun integer,                  -- Number of transits within this month
+  jul integer,                  -- Number of transits within this month
+  aug integer,                  -- Number of transits within this month
+  sep integer,                  -- Number of transits within this month
+  oct integer,                  -- Number of transits within this month
+  nov integer,                  -- Number of transits within this month
+  dec integer,                  -- Number of transits within this month
+  timeInRegion REAL,            -- Hours
+  posCountAIS integer,          -- Number of 1,2,3 AIS packages received
+  name varchar(40),             -- Vessel Name
+  shiptype varchar(50),         -- From msg 5
+  cargotype varchar(50),        -- From msg 5
   catagory varchar(40) NOT NULL,-- Vessel Catagory... **V** 6 possible (pass, fishing, cargo_contr, serv_rese, tanker, tug)
-  vesseltype varchar(50),	-- vessel type (w)
-  vcargo varchar(50),		-- X
-  length REAL,			-- m??
+  vesseltype varchar(50),       -- vessel type (w)
+  vcargo varchar(50),           -- X
+  length REAL,                  -- m??
   beam REAL,
   firstDraft REAL,
   lastDraft REAL,

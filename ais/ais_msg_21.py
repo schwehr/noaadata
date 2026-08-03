@@ -520,8 +520,8 @@ def printKml(params, out=sys.stdout):
     out.write("    <Placemark>\n")
     out.write("        <name>"+str(params['UserID'])+"</name>\n")
     out.write("        <description>\n")
-    import StringIO
-    buf = StringIO.StringIO()
+    import io
+    buf = io.StringIO()
     printHtml(params,buf)
     import cgi
     out.write(cgi.escape(buf.getvalue()))
@@ -614,7 +614,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -1091,26 +1091,26 @@ class TestAidsToNavReport(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['MessageID'],params['MessageID'])
-        self.failUnlessEqual(r['RepeatIndicator'],params['RepeatIndicator'])
-        self.failUnlessEqual(r['UserID'],params['UserID'])
-        self.failUnlessEqual(r['type'],params['type'])
-        self.failUnlessEqual(r['name'],params['name'])
-        self.failUnlessEqual(r['PositionAccuracy'],params['PositionAccuracy'])
-        self.failUnlessAlmostEqual(r['longitude'],params['longitude'],5)
-        self.failUnlessAlmostEqual(r['latitude'],params['latitude'],5)
-        self.failUnlessEqual(r['dimA'],params['dimA'])
-        self.failUnlessEqual(r['dimB'],params['dimB'])
-        self.failUnlessEqual(r['dimC'],params['dimC'])
-        self.failUnlessEqual(r['dimD'],params['dimD'])
-        self.failUnlessEqual(r['FixType'],params['FixType'])
-        self.failUnlessEqual(r['timestamp'],params['timestamp'])
-        self.failUnlessEqual(r['OffPosition'],params['OffPosition'])
-        self.failUnlessEqual(r['status'],params['status'])
-        self.failUnlessEqual(r['RAIM'],params['RAIM'])
-        self.failUnlessEqual(r['virtual_aton_flag'],params['virtual_aton_flag'])
-        self.failUnlessEqual(r['assigned_mode_flag'],params['assigned_mode_flag'])
-        self.failUnlessEqual(r['spare'],params['spare'])
+        self.assertEqual(r['MessageID'],params['MessageID'])
+        self.assertEqual(r['RepeatIndicator'],params['RepeatIndicator'])
+        self.assertEqual(r['UserID'],params['UserID'])
+        self.assertEqual(r['type'],params['type'])
+        self.assertEqual(r['name'],params['name'])
+        self.assertEqual(r['PositionAccuracy'],params['PositionAccuracy'])
+        self.assertAlmostEqual(r['longitude'],params['longitude'],5)
+        self.assertAlmostEqual(r['latitude'],params['latitude'],5)
+        self.assertEqual(r['dimA'],params['dimA'])
+        self.assertEqual(r['dimB'],params['dimB'])
+        self.assertEqual(r['dimC'],params['dimC'])
+        self.assertEqual(r['dimD'],params['dimD'])
+        self.assertEqual(r['FixType'],params['FixType'])
+        self.assertEqual(r['timestamp'],params['timestamp'])
+        self.assertEqual(r['OffPosition'],params['OffPosition'])
+        self.assertEqual(r['status'],params['status'])
+        self.assertEqual(r['RAIM'],params['RAIM'])
+        self.assertEqual(r['virtual_aton_flag'],params['virtual_aton_flag'])
+        self.assertEqual(r['assigned_mode_flag'],params['assigned_mode_flag'])
+        self.assertEqual(r['spare'],params['spare'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -1271,18 +1271,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -1300,13 +1300,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

@@ -94,7 +94,7 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
     #wl = None
     #wl = wl_dap.getWaterLevelNow(stationID,verbose,datum)
     if verbose:
-        print 'water level dict:', wl
+        print('water level dict:', wl)
 
     # TODO(schwehr): Check for link down state and return a link down packet.
 
@@ -120,13 +120,13 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
     params['latitude']  = Decimal(str(station.getLat()))
     params['waterlevel'] = int(float(wl.WL)*100) # Convert to CM
     if verbose:
-        print params['waterlevel'], wl.WL
+        print(params['waterlevel'], wl.WL)
     params['datum']      = int(wl_ais.datumEncodeLut[datum])
     params['sigma']      = float(wl.sigma)
     params['o']          = int(wl.O)
 
     if params['o']<0:
-        print 'wl.O',wl.O, params['o'],'FIX: what does this mean?  Forcing O to be positive'
+        print('wl.O',wl.O, params['o'],'FIX: what does this mean?  Forcing O to be positive')
         params['o'] = -params['o']
 
 
@@ -142,9 +142,9 @@ def noaawaterlevel2aisBits(stationID,mmsi,datum,wl,verbose=False,debug=False):
 
     if verbose:
         wl_ais.printFields(params)
-        print 'params dump:'
-        for item in params.keys():
-            print '  ',item,params[item]
+        print('params dump:')
+        for item in list(params.keys()):
+            print('  ',item,params[item])
 
     return wl_ais.encode(params)
 
@@ -195,7 +195,7 @@ if __name__=='__main__':
     for mon in range(options.monthStart,options.monthEnd+1):
         beginDate=str(options.year)+('%02d' % mon )+'01'
         endDate=str(options.year)+('%02d' % mon )+str(daysPerMon[mon])
-        print beginDate,'...', endDate
+        print(beginDate,'...', endDate)
         response = server.getWaterLevelRawSixMin(stationId=str(stationId)
                                                  ,beginDate=beginDate,endDate=endDate,
                                                  datum=options.datum
@@ -207,8 +207,8 @@ if __name__=='__main__':
             try:
                 wlStr = noaawaterlevel2aisMsg8Nmea(stationId,mmsi,datum=options.datum,wl=wl)
             except:
-                print 'ERROR: something with this line'
-                print wl
+                print('ERROR: something with this line')
+                print(wl)
                 continue
             o.write( wlStr + '\n' )
 
@@ -224,6 +224,6 @@ if __name__=='__main__':
             #print wl
             wlStr = noaawaterlevel2aisMsg8Nmea(stationId,mmsi,datum=options.datum,wl=wl)
             if verbose:
-                print wlStr
+                print(wlStr)
             o.write( wlStr + '\n' )
 

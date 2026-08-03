@@ -44,54 +44,54 @@ from aisutils import binary
 
 
 def waterlevelEncode(*aDict, **params):
-	'''Serializer for the waterlevel binary message
-	
-	Keywords and types:
+        '''Serializer for the waterlevel binary message
+        
+        Keywords and types:
 
-	  - dac:  uint
-	  - unavail_uint:  uint
-	  - uint:  uint
+          - dac:  uint
+          - unavail_uint:  uint
+          - uint:  uint
 
-	The default message:
+        The default message:
 
-	>>> print waterlevelEncode()
-	1011011101100
+        >>> print waterlevelEncode()
+        1011011101100
 
-	@param aDict: for passing in a dictionary of keyword and values.
-	@param params: keyword dictionary or if a dict is passed, it will use that dict
-	@note: only use one of aDict or params
-	'''
+        @param aDict: for passing in a dictionary of keyword and values.
+        @param params: keyword dictionary or if a dict is passed, it will use that dict
+        @note: only use one of aDict or params
+        '''
 
-	if len(aDict) > 1:
-		assert(False and 'Illegal call to with more than one param')
-	if len(aDict) == 1:
-		if not isinstance(dict,aDict):
-			assert(False and 'a single parameter must be a dictionary of key values')
-		if len(params)>0:
-			assert(False and 'Must not specify both a lookup table and keyvalues')
-		params=aDict
+        if len(aDict) > 1:
+                assert(False and 'Illegal call to with more than one param')
+        if len(aDict) == 1:
+                if not isinstance(dict,aDict):
+                        assert(False and 'a single parameter must be a dictionary of key values')
+                if len(params)>0:
+                        assert(False and 'Must not specify both a lookup table and keyvalues')
+                params=aDict
 
-	bvList = []
-	
+        bvList = []
+        
 
-	### FIELD: dac (type=uint)   REQUIRED CONSTANT FIELD
-	bvList.append(binary.setBitVectorSize(BitVector(intVal=366)))
+        ### FIELD: dac (type=uint)   REQUIRED CONSTANT FIELD
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=366)))
 
-	### FIELD: unavail_uint (type=uint)
-	if 'unavail_uint' in params: 		bvList.append(binary.setBitVectorSize(BitVector(intVal=param[unavail_uint]),2))
-	else: bvList.append(binary.setBitVectorSize(BitVector(intVal=3),2))
+        ### FIELD: unavail_uint (type=uint)
+        if 'unavail_uint' in params:            bvList.append(binary.setBitVectorSize(BitVector(intVal=param[unavail_uint]),2))
+        else: bvList.append(binary.setBitVectorSize(BitVector(intVal=3),2))
 
-	### FIELD: uint (type=uint)
-	if 'uint' in params: 		bvList.append(binary.setBitVectorSize(BitVector(intVal=param[uint]),2))
-	else: bvList.append(BitVector(size=2))
-	return binary.joinBV(bvList)
+        ### FIELD: uint (type=uint)
+        if 'uint' in params:            bvList.append(binary.setBitVectorSize(BitVector(intVal=param[uint]),2))
+        else: bvList.append(BitVector(size=2))
+        return binary.joinBV(bvList)
 
 ############################################################
 if __name__=='__main__':
-    print waterlevelEncode()
+    print(waterlevelEncode())
     from optparse import OptionParser
     myparser = OptionParser(usage="%prog [options]",
-			    version="%prog "+__version__)
+                            version="%prog "+__version__)
 
     myparser.add_option('--unit-test',dest='unittest',default=False,action='store_true',
                         help='run the unit tests')
@@ -101,6 +101,6 @@ if __name__=='__main__':
     options, args = myparser.parse_args()
 
     if options.unittest:
-	sys.argv = [sys.argv[0]]
-	if options.verbose: sys.argv+='-v'
-        print 'Currently no unit tests'
+        sys.argv = [sys.argv[0]]
+        if options.verbose: sys.argv+='-v'
+        print('Currently no unit tests')

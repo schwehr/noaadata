@@ -325,8 +325,8 @@ def printKml(params, out=sys.stdout):
     out.write("    <Placemark>\n")
     out.write("        <name>"+str(params['stationid'])+"</name>\n")
     out.write("        <description>\n")
-    import StringIO
-    buf = StringIO.StringIO()
+    import io
+    buf = io.StringIO()
     printHtml(params,buf)
     import cgi
     out.write(cgi.escape(buf.getvalue()))
@@ -401,7 +401,7 @@ def printFields(params, out=sys.stdout, format='std', fieldList=None, dbType='po
         out.write("</Document>\n")
         out.write("</kml>\n")
     else:
-        print "ERROR: unknown format:",format
+        print("ERROR: unknown format:",format)
         assert False
 
     return # Nothing to return
@@ -670,17 +670,17 @@ class Testsls_waterlevel(unittest.TestCase):
         r      = decode(bits)
 
         # Check that each parameter came through ok.
-        self.failUnlessEqual(r['time_month'],params['time_month'])
-        self.failUnlessEqual(r['time_day'],params['time_day'])
-        self.failUnlessEqual(r['time_hour'],params['time_hour'])
-        self.failUnlessEqual(r['time_min'],params['time_min'])
-        self.failUnlessEqual(r['stationid'],params['stationid'])
-        self.failUnlessAlmostEqual(r['pos_longitude'],params['pos_longitude'],4)
-        self.failUnlessAlmostEqual(r['pos_latitude'],params['pos_latitude'],4)
-        self.failUnlessEqual(r['type'],params['type'])
-        self.failUnlessEqual(r['waterlevel'],params['waterlevel'])
-        self.failUnlessEqual(r['datum'],params['datum'])
-        self.failUnlessEqual(r['reserved'],params['reserved'])
+        self.assertEqual(r['time_month'],params['time_month'])
+        self.assertEqual(r['time_day'],params['time_day'])
+        self.assertEqual(r['time_hour'],params['time_hour'])
+        self.assertEqual(r['time_min'],params['time_min'])
+        self.assertEqual(r['stationid'],params['stationid'])
+        self.assertAlmostEqual(r['pos_longitude'],params['pos_longitude'],4)
+        self.assertAlmostEqual(r['pos_latitude'],params['pos_latitude'],4)
+        self.assertEqual(r['type'],params['type'])
+        self.assertEqual(r['waterlevel'],params['waterlevel'])
+        self.assertEqual(r['datum'],params['datum'])
+        self.assertEqual(r['reserved'],params['reserved'])
 
 def addMsgOptions(parser):
     parser.add_option('-d','--decode',dest='doDecode',default=False,action='store_true',
@@ -774,16 +774,16 @@ def main():
     success = True
 
     if options.doctest:
-            import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+            import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
             sys.argv = [sys.argv[0]]
             if options.verbose:
               sys.argv.append('-v')
 
             numfail, numtests = doctest.testmod()
             if not numfail:
-                print 'ok'
+                print('ok')
             else:
-                print 'FAILED'
+                print('FAILED')
                 success = False
 
     if not success: sys.exit('Something Failed')
@@ -827,18 +827,18 @@ def main():
 
     bits = encode(msgDict)
     if 'binary' == options.ioType:
-        print str(bits)
+        print(str(bits))
     elif 'nmeapayload'==options.ioType:
         # FIX: figure out if this might be necessary at compile time
         bitLen=len(bits)
         if bitLen % 6 != 0:
             bits = bits + BitVector(size=(6 - (bitLen%6)))  # Pad out to multiple of 6
-        print binary.bitvectoais6(bits)[0]
+        print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
     elif 'nmea' == options.ioType:
         nmea = uscg.create_nmea(bits)
-        print nmea
+        print(nmea)
     else:
         sys.exit('ERROR: unknown ioType.  Help!')
 
@@ -856,13 +856,13 @@ def main():
         if options.printCsvfieldList:
                 # Make a csv separated list of fields that will be displayed for csv
                 if None == options.fieldList: options.fieldList = fieldList
-                import StringIO
-                buf = StringIO.StringIO()
+                import io
+                buf = io.StringIO()
                 for field in options.fieldList:
                         buf.write(field+',')
                 result = buf.getvalue()
-                if result[-1] == ',': print result[:-1]
-                else: print result
+                if result[-1] == ',': print(result[:-1])
+                else: print(result)
 
         if options.doDecode:
                 if len(args)==0: args = sys.stdin

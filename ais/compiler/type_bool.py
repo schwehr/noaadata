@@ -18,34 +18,34 @@ def encode(o,name,type,numbits,required=None,arraylen=1,unavailable=None, verbos
     @return: None
     '''
     
-    if verbose: print 'bool encode',name,': unvail=',unavailable
+    if verbose: print('bool encode',name,': unvail=',unavailable)
 
     assert type.lower()=='bool'
     assert numbits==1
     if arraylen != 1: assert False # FIX... handle arrays
     if verbose: o.write('\t### FIELD: '+name+' (type=bool)\n')
     if None != required:
-	assert type(required)==bool
-	if required: o.write('\t\tbvList.append(TrueBV)\n')
-	else: o.write('\t\tbvList.append(FalseBV)\n')
-	if verbose: o.write('\n')
-	return
+        assert type(required)==bool
+        if required: o.write('\t\tbvList.append(TrueBV)\n')
+        else: o.write('\t\tbvList.append(FalseBV)\n')
+        if verbose: o.write('\n')
+        return
 
     if None==unavailable:
-	o.write('\tif params["'+name+'"]: bvList.append(TrueBV)\n')
-	o.write('\telse: bvList.append(FalseBV)\n')
+        o.write('\tif params["'+name+'"]: bvList.append(TrueBV)\n')
+        o.write('\telse: bvList.append(FalseBV)\n')
     else: # Have a default value that can be filled in
-	assert type(unavailable)==bool
-	o.write("\tif '"+name+"' in params:\n")
-	o.write('\t\tif params["'+name+'"]: bvList.append(TrueBV)\n')
-	o.write('\t\telse: bvList.append(FalseBV)\n')
-	o.write('\telse:\n')
-	if unavailable: o.write('\t\tbvList.append(TrueBV)\n')
-	else: o.write('\t\tbvList.append(FalseBV)\n')
+        assert type(unavailable)==bool
+        o.write("\tif '"+name+"' in params:\n")
+        o.write('\t\tif params["'+name+'"]: bvList.append(TrueBV)\n')
+        o.write('\t\telse: bvList.append(FalseBV)\n')
+        o.write('\telse:\n')
+        if unavailable: o.write('\t\tbvList.append(TrueBV)\n')
+        else: o.write('\t\tbvList.append(FalseBV)\n')
     if verbose: o.write('\n')
 
 def decode(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=None,
-	       bv='bv',dataDict='r',verbose=False, decodeOnly=False):
+               bv='bv',dataDict='r',verbose=False, decodeOnly=False):
     '''
     Build the decoder for boolean variables
 
@@ -75,18 +75,18 @@ def decode(o,name,type,startindex,numbits,required=None,arraylen=1,unavailable=N
     @return: index one past the end of where this read
     '''
     assert(type=='bool')
-    if verbose: print type,'decode',name,': unvail=',unavailable,'  numbits:',numbits, '  startindex=',startindex
+    if verbose: print(type,'decode',name,': unvail=',unavailable,'  numbits:',numbits, '  startindex=',startindex)
     #int(startindex); int(numbits)  # Make sure it is a number
     assert numbits==1
     assert arraylen == 1 # FIX... handle arrays
 
     if None != required:
-	assert type(required)==bool
-	if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
-	if required: o.write('True\n')
-	else: o.write('False\n')
-	if not decodeOnly: o.write('\n')
-	return int(startindex)+int(numbits)
+        assert type(required)==bool
+        if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
+        if required: o.write('True\n')
+        else: o.write('False\n')
+        if not decodeOnly: o.write('\n')
+        return int(startindex)+int(numbits)
 
     if not decodeOnly: o.write('\t'+dataDict+'[\''+name+'\']=')
     o.write('bool(int('+bv+'['+str(startindex)+':'+str(startindex+int(numbits)*int(arraylen))+']))')

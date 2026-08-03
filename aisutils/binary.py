@@ -39,7 +39,7 @@ They are usually encoded an ASCII 6-bit packing within NMEA
 import sys
 
 # Outside modules
-from BitVector import BitVector
+from .BitVector import BitVector
 import struct
 
 def float2bitvec(floatval):
@@ -63,7 +63,7 @@ def float2bitvec(floatval):
     # FIX: make this go in one step now that bitvector 1.3 is out.
     bvList = []
     for i in range(4):
-         bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
+        bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])),8)
         #bv2 = BitVector(intVal=ord(s[i]),size=8)
         bvList.append(bv1)
     return joinBV(bvList)
@@ -121,7 +121,7 @@ def addone(bv):
     @rtype: BitVector
     '''
     new = bv
-    r = range(1,len(bv)+1)
+    r = list(range(1,len(bv)+1))
     for i in r:
         index = len(bv)-i
         if 0==bv[index]:
@@ -139,7 +139,7 @@ def subone(bv):
     @rtype: BitVector
     '''
     new = bv
-    r = range(1,len(bv)+1)
+    r = list(range(1,len(bv)+1))
     for i in r:
         index = len(bv)-i
         if 1==bv[index]:
@@ -170,8 +170,8 @@ def bvFromSignedInt(intVal,bitSize=None):
     else:
         bv = setBitVectorSize(BitVector(intVal=abs(intVal)),bitSize-1)
         if (bitSize-1!=len(bv) and bv[0] != 1 and bv[-1] != 0):
-            print 'ERROR: bitsize not right'
-            print '  ',bitSize-1,len(bv)
+            print('ERROR: bitsize not right')
+            print('  ',bitSize-1,len(bv))
             assert(False)
         if len(bv) == bitSize and bv[0] == 1: return bv
     if intVal>=0:
@@ -378,11 +378,11 @@ def bitvectoais6(bv,doPadding=True):
 
     if pad!=0:
         if doPadding:
-            print 'pad befaore',len(bv)
+            print('pad befaore',len(bv))
             bv = bv + BitVector(size=pad)
-            print 'pad after',len(bv)
+            print('pad after',len(bv))
         else:
-            print 'ERROR: What are you doing with a non-align entity?  Let me pad it!'
+            print('ERROR: What are you doing with a non-align entity?  Let me pad it!')
             assert False
 
     #else: # No pad needed
@@ -438,14 +438,14 @@ if __name__ == '__main__':
     success=True
 
     if options.doctest:
-        import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+        import os; print(os.path.basename(sys.argv[0]), 'doctests ...', end=' ')
         sys.argv= [sys.argv[0]]
         if options.verbose: sys.argv.append('-v')
         import doctest
         numfail,numtests=doctest.testmod()
-        if numfail==0: print 'ok'
+        if numfail==0: print('ok')
         else:
-            print 'FAILED'
+            print('FAILED')
             success=False
 
     if not success:

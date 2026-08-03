@@ -192,7 +192,7 @@ def zdaDict2TIMESTAMP(zdaDict):
 # if __name__=='__main__':
 #     from optparse import OptionParser
 #     myparser = OptionParser(usage="%prog [options]",
-# 			    version="%prog "+__version__)
+#                           version="%prog "+__version__)
 #     myparser.add_option('--test','--doc-test',dest='doctest',default=False,action='store_true',
 #                         help='run the documentation tests')
 #     verbosity.addVerbosityOptions(myparser)
@@ -201,15 +201,15 @@ def zdaDict2TIMESTAMP(zdaDict):
 #     success=True
 
 #     if options.doctest:
-# 	import os; print os.path.basename(sys.argv[0]), 'doctests ...',
-# 	sys.argv= [sys.argv[0]]
-# 	if options.verbosity>=VERBOSE: sys.argv.append('-v')
-# 	import doctest
-# 	numfail,numtests=doctest.testmod()
-# 	if numfail==0: print 'ok'
-# 	else: 
-# 	    print 'FAILED'
-# 	    success=False
+#       import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+#       sys.argv= [sys.argv[0]]
+#       if options.verbosity>=VERBOSE: sys.argv.append('-v')
+#       import doctest
+#       numfail,numtests=doctest.testmod()
+#       if numfail==0: print 'ok'
+#       else: 
+#           print 'FAILED'
+#           success=False
 
 #     if not success:
-# 	sys.exit('Something Failed')
+#       sys.exit('Something Failed')
