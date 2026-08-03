@@ -57,10 +57,10 @@ dev = [
 
 [tool.hatch.build.targets.wheel]
 packages = [
-    "noaadata",
-    "ais",
-    "aisutils",
-    "nmea",
+    "src/noaadata",
+    "src/ais",
+    "src/aisutils",
+    "src/nmea",
 ]
 
 [project.scripts]

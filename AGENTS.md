@@ -31,27 +31,31 @@ ______________________________________________________________________
 
 ## 2. Repository Layout (Current State)
 
-- [`noaadata/`](noaadata): NOAA CO-OPS water level SOAP and DAP client/parsing
-  ([`stations.py`](noaadata/stations.py),
-  [`waterlevel_dap.py`](noaadata/waterlevel_dap.py),
-  [`waterlevelraw.py`](noaadata/waterlevelraw.py),
-  [`dumpallwl.py`](noaadata/dumpallwl.py)), and CLI entry points in
-  [`cli/`](noaadata/cli).
-- [`ais/`](ais): Marine AIS binary message definitions (messages 1–24, IMO
-  messages, binary waterlevel messages, whale notices, compilers/translators).
-- [`aisutils/`](aisutils): Core [`BitVector.py`](aisutils/BitVector.py), 6-bit
-  ASCII strings ([`aisstring.py`](aisutils/aisstring.py)), binary bit unpacking
-  ([`binary.py`](aisutils/binary.py)), database bridges
-  ([`database.py`](aisutils/database.py), [`sqlhelp.py`](aisutils/sqlhelp.py)),
-  USCG extensions ([`uscg.py`](aisutils/uscg.py)), and grid calculations
-  ([`grid.py`](aisutils/grid.py)).
-- [`nmea/`](nmea): Standard NMEA-0183 sentences ([`gga.py`](nmea/gga.py),
-  [`rmc.py`](nmea/rmc.py), [`zda.py`](nmea/zda.py), [`znt.py`](nmea/znt.py), and
-  checksum validation [`checksum.py`](nmea/checksum.py)).
+- [`src/`](src): Pure-Python source package directory containing PEP 561 `py.typed` markers:
+  - [`src/noaadata/`](src/noaadata): NOAA CO-OPS water level SOAP and DAP client/parsing
+    ([`stations.py`](src/noaadata/stations.py),
+    [`waterlevel_dap.py`](src/noaadata/waterlevel_dap.py),
+    [`waterlevelraw.py`](src/noaadata/waterlevelraw.py),
+    [`dumpallwl.py`](src/noaadata/dumpallwl.py)), and CLI entry points in
+    [`cli/`](src/noaadata/cli).
+  - [`src/ais/`](src/ais): Marine AIS binary message definitions (messages 1–24, IMO
+    messages, binary waterlevel messages, whale notices, compilers/translators).
+  - [`src/aisutils/`](src/aisutils): Core [`BitVector.py`](src/aisutils/BitVector.py), 6-bit
+    ASCII strings ([`aisstring.py`](src/aisutils/aisstring.py)), binary bit unpacking
+    ([`binary.py`](src/aisutils/binary.py)), database bridges
+    ([`database.py`](src/aisutils/database.py), [`sqlhelp.py`](src/aisutils/sqlhelp.py)),
+    USCG extensions ([`uscg.py`](src/aisutils/uscg.py)), and grid calculations
+    ([`grid.py`](src/aisutils/grid.py)).
+  - [`src/nmea/`](src/nmea): Standard NMEA-0183 sentences ([`gga.py`](src/nmea/gga.py),
+    [`rmc.py`](src/nmea/rmc.py), [`zda.py`](src/nmea/zda.py), [`znt.py`](src/nmea/znt.py), and
+    checksum validation [`checksum.py`](src/nmea/checksum.py)).
 - [`scripts/`](scripts): Remaining non-Python shell utilities and Makefile;
-  Python CLI scripts have been migrated into [`noaadata/cli/`](noaadata/cli) and
+  Python CLI scripts have been migrated into [`src/noaadata/cli/`](src/noaadata/cli) and
   registered as `[project.scripts]` entry points in
   [`pyproject.toml`](pyproject.toml).
+- [`tests/`](tests): Dedicated directory for `pytest` test suites.
+- [`docs/`](docs): Dedicated directory for `mkdocs` documentation.
+- [`examples/`](examples): Dedicated directory for executable example scripts.
 - [`test/`](test): Legacy test scripts ([`grid_tests.py`](test/grid_tests.py),
   [`test.ais`](test/test.ais)).
 - [`pyproject.toml`](pyproject.toml): Modern PEP 621 declarative packaging

@@ -13,7 +13,7 @@ Unit tests for the grid class
 @todo: allow for non-square grid cells
 """
 
-from grid import Grid
+from aisutils.grid import Grid
 
 import unittest
 #import unittest as bogus_unittest
@@ -1031,20 +1031,20 @@ class TestWhyDidThisFail(bogus_unittest.TestCase):
                                415182.051535215,   4671547.4328312902
                               ,verbose=True
                               )
-        print cells
+        print(cells)
         self.failUnless(len(cells)>0)
 
 class TestArcAsciiGrid(bogus_unittest.TestCase):
     def test001(self):
         g = Grid(0,0, 4,4, 1)
         g.writeArcAsciiGrid('tmp_4x4.asc')
-        print 'FIX: how do I validate writing to a file with unittest?'
+        print('FIX: how do I validate writing to a file with unittest?')
 
     def test010(self):
         g = Grid(0,0, 4,4, 1)
         g.grid[0,0]=1 # LL corner
         g.writeArcAsciiGrid('tmp_4x4_ll.asc')
-        print 'FIX: how do I validate writing to a file with unittest?'
+        print('FIX: how do I validate writing to a file with unittest?')
 
     def test020(self):
         g = Grid(0,0, 4,4, 1)
@@ -1114,7 +1114,7 @@ class TestGridLength(unittest.TestCase):
         self.failUnlessAlmostEqual(0.5,dist)
 
         r = g.getLineCellsWithCrossings(0.5,1.5, 4.5,1.5) #,verbose=True)
-        print r
+        print(r)
         self.failUnlessEqual(len(r),5)
 
         cell,frac1,frac2,dist = r[0]
@@ -1132,7 +1132,7 @@ class TestGridLength(unittest.TestCase):
 
         
 
-        print 'r', r
+        print('r', r)
 
 ############################################################
 if __name__=='__main__':
