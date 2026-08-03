@@ -5,6 +5,8 @@ import re
 import sys
 import time
 
+nmeaChecksumRE = re.compile(r"[\!\?][^\*]+\*[0-9A-Fa-f]{2}")
+
 
 def checksumStr(data):
     """

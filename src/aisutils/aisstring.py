@@ -165,7 +165,7 @@ def decode(bits,dropAfterFirstAt=False):
     @rtype: str
     '''
     #assert(len(bits) % 6 == 0)
-    numchar=len(bits)/6
+    numchar = len(bits) // 6
     s = []
     for i in range(numchar): # FIX: off by one?
         start = 6 * i

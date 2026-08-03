@@ -1170,7 +1170,7 @@ class BitVectorIterator:
             return self.items[ self.index ]
         else:
             raise StopIteration
-    __next__ = next
+    next = __next__
 
 #------------------------  End of Class Definition -----------------------
 

@@ -372,7 +372,7 @@ def bitvectoais6(bv,doPadding=True):
     """
     pad = 6-(len(bv)%6)
     if 6==pad: pad = 0
-    strLen = len(bv)/6
+    strLen = len(bv) // 6
     if pad>0: strLen+=1
     aisStrLst = []
 
