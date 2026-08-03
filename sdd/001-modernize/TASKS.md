@@ -201,13 +201,13 @@ ______________________________________________________________________
     \[`aisutils`\](noaadata/aisutils), and \[`nmea`\](noaadata/nmea).
   - [x] Verification command: `uv run ty check`
 
-- [ ] **5.2 Complete Function & Attribute Type Annotations (PEP 585 / PEP 604)**
+- [x] **5.2 Complete Function & Attribute Type Annotations (PEP 585 / PEP 604)**
 
-  - [ ] Add explicit type annotations for all function parameters, return types,
+  - [x] Add explicit type annotations for all function parameters, return types,
     and class attributes.
-  - [ ] Eliminate ambiguous `Any` types; prefer precise typing (`Sequence[int]`,
+  - [x] Eliminate ambiguous `Any` types; prefer precise typing (`Sequence[int]`,
     `Buffer`, `Literal`, `Mapping`).
-  - [ ] Adopt modern PEP 585/604 syntax: `list[int]`, `dict[str, Any]`, union
+  - [x] Adopt modern PEP 585/604 syntax: `list[int]`, `dict[str, Any]`, union
     `|` operator (`int | None`), and `typing.Self` for constructors/builders.
 
 - [ ] **5.3 Define Structural Protocols (`typing.Protocol`)**

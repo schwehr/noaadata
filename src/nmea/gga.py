@@ -16,7 +16,7 @@ import calendar
 # }
 
 
-def zdaEpochSeconds(nmeaStr):
+def zdaEpochSeconds(nmeaStr: str) -> int:
     """
     Return the seconds since the Epoch
 
@@ -29,7 +29,7 @@ def zdaEpochSeconds(nmeaStr):
     )
 
 
-def zdaDecode(nmeaStr):
+def zdaDecode(nmeaStr: str) -> dict[str, str | int]:
     """
     Decode quartz time nmea messages.
 

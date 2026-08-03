@@ -6,7 +6,7 @@ import re
 nmeaChecksumRE = re.compile(r"[\!\?][^\*]+\*[0-9A-Fa-f]{2}")
 
 
-def checksumStr(data):
+def checksumStr(data: str) -> str:
     """
     Take a NMEA 0183 string and compute the checksum.
     Args:
@@ -41,7 +41,7 @@ def checksumStr(data):
     return sumHex.upper()
 
 
-def isChecksumValid(nmeaStr, allowTailData=True):
+def isChecksumValid(nmeaStr: str, allowTailData: bool = True) -> bool:
     """Return True if the string checks out with the checksum
 
     Args:

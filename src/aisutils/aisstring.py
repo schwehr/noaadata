@@ -294,7 +294,7 @@ def buildDict():
         )
 
 
-def decode(bits, dropAfterFirstAt=False):
+def decode(bits: BitVector, dropAfterFirstAt: bool = False) -> str:
     """
     Decode bits as a string.  Does not remove the end space or @@@@.  Must be an multiple of 6 bits.
 
@@ -320,7 +320,7 @@ def decode(bits, dropAfterFirstAt=False):
     return "".join(s)
 
 
-def encode(string, bitSize=None):
+def encode(string: str, bitSize: int | None = None) -> BitVector:
     """
     Args:
         string: python ascii string to encode.
