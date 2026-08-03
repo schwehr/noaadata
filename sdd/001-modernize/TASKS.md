@@ -210,11 +210,11 @@ ______________________________________________________________________
   - [x] Adopt modern PEP 585/604 syntax: `list[int]`, `dict[str, Any]`, union
     `|` operator (`int | None`), and `typing.Self` for constructors/builders.
 
-- [ ] **5.3 Define Structural Protocols (`typing.Protocol`)**
+- [x] **5.3 Define Structural Protocols (`typing.Protocol`)**
 
-  - [ ] Define `AISMessageHandler` and `NMEASentenceHandler` protocols in
+  - [x] Define `AISMessageHandler` and `NMEASentenceHandler` protocols in
     `src/ais/protocols.py` and `src/nmea/protocols.py`.
-  - [ ] Define protocols for database bridges and GIS exporters in
+  - [x] Define protocols for database bridges and GIS exporters in
     `src/aisutils/protocols.py`.
 
 - [ ] **5.4 Add PEP 561 Package Markers & Multi-Checker Verification**
