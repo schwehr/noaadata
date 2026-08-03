@@ -416,14 +416,18 @@ class Grid:
         ):
             if verbose:
                 print("chomp front")
-            raise AssertionError()  # need to also remove from the fractions
+            raise ValueError(
+                "Invalid payload or state"
+            )  # need to also remove from the fractions
             cells = cells[1:]
         if not inBoundingBox(
             cells[-1][0], cells[-1][1], minCellX, minCellY, maxCellX, maxCellY
         ):
             if verbose:
                 print("chomp tail")
-            raise AssertionError()  # need to also remove from the fractions
+            raise ValueError(
+                "Invalid payload or state"
+            )  # need to also remove from the fractions
             cells = cells[:-1]
 
         # c = cells[0]
@@ -651,7 +655,7 @@ class Grid:
                 print("ACK... must have at least one cell!!! ERROR fail death")
                 print("     ", i, multiSegLine[i], multiSegLine[i + 1])
                 print("     ", newCells)
-                raise AssertionError()
+                raise ValueError("Invalid payload or state")
             if newCells[0] == cells[-1]:
                 cells += newCells[1:]
             else:
@@ -720,7 +724,7 @@ class Grid:
                     print("error on grid cell inc:", str(multiSegLine)[:40], "...")
                     print("CRAP... grid failure")
                     print("  ", cell, self.xNumCells, self.yNumCells)
-                    raise AssertionError()
+                    raise ValueError("Invalid payload or state")
         elif self.gridType == "distance":
             result = self.getMultiSegLineCellsWithCrossings(multiSegLine)
             if verbose:
@@ -733,9 +737,9 @@ class Grid:
                 grid[cell[0], cell[1]] += dist
             print(grid)
         elif self.gridType == "distanceWeightedSpeed":
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
         else:
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
 
     def writeCellsGnuplot(self, filename, useSquares=False):
         """

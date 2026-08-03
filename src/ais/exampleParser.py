@@ -44,8 +44,9 @@ which should be packaged with the resulting files.
 
 import sys
 
-from aisutils import binary
 from BitVector import BitVector
+
+from aisutils import binary
 
 
 def waterlevelEncode(*aDict, **params):
@@ -87,7 +88,9 @@ def waterlevelEncode(*aDict, **params):
 
     ### FIELD: unavail_uint (type=uint)
     if "unavail_uint" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(param[unavail_uint]), 2))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(param[unavail_uint]), 2)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 2))
 

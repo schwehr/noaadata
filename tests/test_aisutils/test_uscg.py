@@ -4,8 +4,8 @@ import io
 import time
 
 import pytest
-
 from BitVector import BitVector
+
 from aisutils.uscg import (
     UscgNmea,
     create_nmea,

@@ -14,8 +14,9 @@ import sys
 import time
 import unittest
 
-from . import binary, nmea, sqlhelp
 from BitVector import BitVector
+
+from . import binary, nmea, sqlhelp
 
 ######################################################################
 # NEW Regular Expression Parsing Style

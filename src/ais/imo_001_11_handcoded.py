@@ -42,8 +42,9 @@ which should be packaged with the resulting files.
 import sys
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector.from_bitstring("1")
@@ -269,7 +270,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "windgust" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["windgust"]), 7))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["windgust"]), 7)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "winddir" in params:
@@ -289,7 +292,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(1023, 11))
     if "relhumid" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["relhumid"]), 7))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["relhumid"]), 7)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "dewpoint" in params:
@@ -335,7 +340,9 @@ def encode(params, validate=False):
     if "surfcurspeed" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector.from_int(int(Decimal(params["surfcurspeed"]) * Decimal("10"))),
+                BitVector.from_int(
+                    int(Decimal(params["surfcurspeed"]) * Decimal("10"))
+                ),
                 8,
             )
         )
@@ -360,7 +367,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "curlevel2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curlevel2"]), 5))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["curlevel2"]), 5)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 5))
     if "curspeed3" in params:
@@ -376,13 +385,17 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "curlevel3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curlevel3"]), 5))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["curlevel3"]), 5)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 5))
     if "sigwaveheight" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector.from_int(int(Decimal(params["sigwaveheight"]) * Decimal("10"))),
+                BitVector.from_int(
+                    int(Decimal(params["sigwaveheight"]) * Decimal("10"))
+                ),
                 8,
             )
         )
@@ -414,11 +427,15 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(63), 6))
     if "swelldir" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["swelldir"]), 9))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["swelldir"]), 9)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "seastate" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["seastate"]), 4))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["seastate"]), 4)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(15), 4))
     if "watertemp" in params:

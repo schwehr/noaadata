@@ -22,8 +22,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector.from_bitstring("1")
@@ -238,7 +239,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius1"]), 16))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["radius1"]), 16)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
     if "stationid2" in params:
@@ -273,7 +276,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius2"]), 16))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["radius2"]), 16)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
     if "stationid3" in params:
@@ -308,7 +313,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius3"]), 16))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["radius3"]), 16)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 21))

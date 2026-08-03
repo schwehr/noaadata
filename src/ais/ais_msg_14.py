@@ -22,8 +22,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 fieldList = (
     "MessageID",

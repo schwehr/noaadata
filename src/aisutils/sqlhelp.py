@@ -214,7 +214,7 @@ class create:
                 "Do not know how to construct a primary key for database type of",
                 self.dbType,
             )
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
 
     def addInt(self, field):
         """

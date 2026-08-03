@@ -19,8 +19,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 fieldList = (
     "MessageID",
@@ -169,14 +170,18 @@ def encode(params, validate=False):
         )
     else:
         bvList.append(binary.bvFromSignedInt(108600, 17))
-    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["IndicatorType"]), 1))
+    bvList.append(
+        binary.setBitVectorSize(BitVector.from_int(params["IndicatorType"]), 1)
+    )
     bvList.append(
         binary.setBitVectorSize(BitVector.from_int(params["ChanABandwidth"]), 1)
     )
     bvList.append(
         binary.setBitVectorSize(BitVector.from_int(params["ChanBBandwidth"]), 1)
     )
-    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["TransZoneSize"]), 3))
+    bvList.append(
+        binary.setBitVectorSize(BitVector.from_int(params["TransZoneSize"]), 3)
+    )
     bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 23))
 
     return binary.joinBV(bvList)

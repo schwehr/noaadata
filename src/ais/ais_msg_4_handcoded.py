@@ -10,8 +10,9 @@ import sys
 from decimal import Decimal
 from optparse import OptionParser
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 from . import commstate
 

@@ -22,8 +22,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 fieldList = (
     "MessageID",
@@ -116,7 +117,9 @@ def encode(params, validate=False):
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["SlotOffset"]), 6))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["MessageID12"]), 6))
-    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["SlotOffset12"]), 6))
+    bvList.append(
+        binary.setBitVectorSize(BitVector.from_int(params["SlotOffset12"]), 6)
+    )
     bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["DestID2"]), 30))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["MessageID2"]), 6))

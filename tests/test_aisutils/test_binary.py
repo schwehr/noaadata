@@ -1,7 +1,8 @@
 """Unit tests for binary AIS bitvector conversions and bit manipulations."""
 
-from aisutils import binary
 from BitVector import BitVector
+
+from aisutils import binary
 
 
 def test_ais6tobitvec() -> None:

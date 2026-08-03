@@ -22,8 +22,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import aisstring, binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import aisstring, binary, sqlhelp, uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector.from_bitstring("1")
@@ -157,7 +158,9 @@ def encode(params, validate=False):
         bvList.append(binary.setBitVectorSize(BitVector.from_int(1001), 10))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["unit"]), 2))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["closingday"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["closingmonth"]), 4))
+    bvList.append(
+        binary.setBitVectorSize(BitVector.from_int(params["closingmonth"]), 4)
+    )
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour"]), 5))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin"]), 6))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(params["today"]), 5))

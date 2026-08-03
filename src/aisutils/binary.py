@@ -210,7 +210,7 @@ def bvFromSignedInt(intVal, bitSize=None):
         if bitSize - 1 != len(bv) and bv[0] != 1 and bv[-1] != 0:
             print("ERROR: bitsize not right")
             print("  ", bitSize - 1, len(bv))
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
         if len(bv) == bitSize and bv[0] == 1:
             return bv
     if intVal >= 0:
@@ -459,7 +459,7 @@ def bitvectoais6(bv, doPadding=True):
             print("pad after", len(bv))
         else:
             print("ERROR: What are you doing with a non-align entity?  Let me pad it!")
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
 
     # else: # No pad needed
     for i in range(strLen):
@@ -489,7 +489,7 @@ def stuffBits(bv):
     @todo: Add a nice description of how bit stuffing works
     @todo: Actually write the code
     """
-    raise AssertionError()
+    raise ValueError("Invalid payload or state")
 
 
 def unstuffBits(bv):
@@ -505,7 +505,7 @@ def unstuffBits(bv):
     @todo: Actually write the code
     @see: stuffBits
     """
-    raise AssertionError()
+    raise ValueError("Invalid payload or state")
 
 
 if __name__ == "__main__":

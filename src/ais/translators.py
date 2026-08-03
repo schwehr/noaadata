@@ -4,8 +4,9 @@
 from decimal import Decimal
 from optparse import OptionParser
 
-from aisutils import aisstring, binary
 from BitVector import BitVector
+
+from aisutils import aisstring, binary
 
 encode = {}
 """use this table to get the functions to go from usable values in python to bitvectors"""

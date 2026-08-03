@@ -30,8 +30,9 @@ import logging
 import sys
 from decimal import Decimal
 
-from aisutils import aisstring, binary, sqlhelp
 from BitVector import BitVector
+
+from aisutils import aisstring, binary, sqlhelp
 
 from . import ais_msg_5
 

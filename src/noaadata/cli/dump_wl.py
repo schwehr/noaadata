@@ -8,8 +8,9 @@ to handle themselves.
 import sys
 from optparse import OptionParser
 
-from aisutils import binary
 from BitVector import BitVector
+
+from aisutils import binary
 
 
 def main():

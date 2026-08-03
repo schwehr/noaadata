@@ -4,8 +4,9 @@
 @todo: turn this into a real test runner for everything in the test subdir.
 """
 
-from aisutils import binary
 from BitVector import BitVector
+
+from aisutils import binary
 
 from . import ais_msg_1, ais_msg_8
 

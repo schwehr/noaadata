@@ -21,8 +21,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 TrueBV = BitVector.from_bitstring("1")
 FalseBV = BitVector.from_bitstring("0")
@@ -187,7 +188,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "TimeStamp" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["TimeStamp"]), 6))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["TimeStamp"]), 6)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))

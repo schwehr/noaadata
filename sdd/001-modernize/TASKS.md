@@ -249,17 +249,17 @@ ______________________________________________________________________
   - [x] Require explicit keyword arguments for complex message class
     initialization.
 
-- [ ] **6.3 Decouple Orthogonal Concerns & Make State Explicit**
+- [x] **6.3 Decouple Orthogonal Concerns & Make State Explicit**
 
-  - [ ] Decouple AIS/NMEA/waterlevel parsing structures from file paths and
+  - [x] Decouple AIS/NMEA/waterlevel parsing structures from file paths and
     database connection handles; core codecs operate strictly on memory buffers,
     sequences, or streams.
-  - [ ] Prefix internal implementation attributes with an underscore (`_bits`,
+  - [x] Prefix internal implementation attributes with an underscore (`_bits`,
     `_size`, `_vector`, `_payload`) to clarify public API boundaries.
-  - [ ] Standardize exception handling: replace bare `assert` statements with
+  - [x] Standardize exception handling: replace bare `assert` statements with
     `ValueError`, `TypeError`, `KeyError`, `IndexError`, or custom domain
     exception classes.
-  - [ ] Verification command: `uv run pytest -v && uv run mypy src/`
+  - [x] Verification command: `uv run pytest -v && uv run mypy src/`
 
 ______________________________________________________________________
 

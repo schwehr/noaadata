@@ -1,10 +1,10 @@
 """Property-based tests for BitVector slicing, padding, and binary unpacking invariants."""
 
+from BitVector import BitVector
 from hypothesis import given
 from hypothesis import strategies as st
 
 from aisutils import binary
-from BitVector import BitVector
 
 
 # Custom strategy to generate random BitVectors (min_size >= 1 for legacy BitVector compatibility)

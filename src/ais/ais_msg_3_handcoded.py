@@ -7,8 +7,9 @@ import sys
 from decimal import Decimal
 from optparse import OptionParser
 
-from aisutils import binary, sqlhelp
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp
 
 from . import commstate
 

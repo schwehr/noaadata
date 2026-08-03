@@ -22,8 +22,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import binary, sqlhelp, uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector.from_bitstring("1")
@@ -238,11 +239,15 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour1"]), 5))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["fromhour1"]), 5)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin1"]), 6))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["frommin1"]), 6)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour1" in params:
@@ -282,11 +287,15 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour2"]), 5))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["fromhour2"]), 5)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin2"]), 6))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["frommin2"]), 6)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour2" in params:
@@ -326,11 +335,15 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour3"]), 5))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["fromhour3"]), 5)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin3"]), 6))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["frommin3"]), 6)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour3" in params:

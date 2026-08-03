@@ -19,8 +19,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import aisstring, binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import aisstring, binary, sqlhelp, uscg
 
 fieldList = (
     "MessageID",
@@ -176,7 +177,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "ETAmonth" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAmonth"]), 4))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["ETAmonth"]), 4)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "ETAday" in params:
@@ -188,7 +191,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "ETAminute" in params:
-        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAminute"]), 6))
+        bvList.append(
+            binary.setBitVectorSize(BitVector.from_int(params["ETAminute"]), 6)
+        )
     else:
         bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "draught" in params:

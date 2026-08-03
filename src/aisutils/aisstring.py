@@ -47,11 +47,11 @@ Handle encoding and decoding AIS strings.
 # python standard library
 import sys
 
-# Local
-from . import binary
-
 # External libs
 from BitVector import BitVector
+
+# Local
+from . import binary
 
 # import verbosity
 # from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
@@ -347,7 +347,7 @@ def encode(string: str, bitSize: int | None = None) -> BitVector:
                 bitSize,
                 len(bv),
             )
-            raise AssertionError()
+            raise ValueError("Invalid payload or state")
         extra = bitSize - len(bv)
         bv = bv + BitVector(size=extra)
     return bv

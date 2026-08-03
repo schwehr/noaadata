@@ -19,8 +19,9 @@ import sys
 import unittest
 from decimal import Decimal
 
-from aisutils import aisstring, binary, sqlhelp, uscg
 from BitVector import BitVector
+
+from aisutils import aisstring, binary, sqlhelp, uscg
 
 TrueBV = BitVector.from_bitstring("1")
 FalseBV = BitVector.from_bitstring("0")
