@@ -85,14 +85,14 @@ def encode(params, validate=False):
       - DestID(uint): MMSI number of interrogated station
       - MessageID1(uint): requested message type from interrogated station
       - SlotOffset(uint): requested message type from interrogated station
-      - Spare(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - MessageID12(uint): requested message type from interrogated station
       - SlotOffset12(uint): requested message type from interrogated station
-      - Spare2(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare2(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - DestID2(uint): MMSI number of interrogated station
       - MessageID2(uint): requested message type from interrogated station
       - SlotOffset2(uint): requested message type from interrogated station
-      - Spare3(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare3(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
     @rtype: BitVector
@@ -134,14 +134,14 @@ def decode(bv, validate=False):
       - DestID(uint): MMSI number of interrogated station
       - MessageID1(uint): requested message type from interrogated station
       - SlotOffset(uint): requested message type from interrogated station
-      - Spare(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - MessageID12(uint): requested message type from interrogated station
       - SlotOffset12(uint): requested message type from interrogated station
-      - Spare2(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare2(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - DestID2(uint): MMSI number of interrogated station
       - MessageID2(uint): requested message type from interrogated station
       - SlotOffset2(uint): requested message type from interrogated station
-      - Spare3(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare3(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
     @type bv: BitVector
     @param bv: Bits defining a message
     @param validate: Set to true to cause checking to occur.  Runs slower.  FIX: not implemented.
@@ -370,14 +370,14 @@ def printFields(
       - DestID(uint): MMSI number of interrogated station
       - MessageID1(uint): requested message type from interrogated station
       - SlotOffset(uint): requested message type from interrogated station
-      - Spare(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - MessageID12(uint): requested message type from interrogated station
       - SlotOffset12(uint): requested message type from interrogated station
-      - Spare2(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare2(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
       - DestID2(uint): MMSI number of interrogated station
       - MessageID2(uint): requested message type from interrogated station
       - SlotOffset2(uint): requested message type from interrogated station
-      - Spare3(uint): Not used.  Should be set to zero. Researved for future use. (field automatically set to "0")
+      - Spare3(uint): Not used.  Should be set to zero. Reserved for future use. (field automatically set to "0")
     @param params: Dictionary of field names/values.
     @param out: File like object to write to.
     @rtype: stdout
@@ -640,14 +640,14 @@ UserID & 30 & MMSI number of interrogating station \\\\ \\hline
 DestID & 30 & MMSI number of interrogated station \\\\ \\hline
 MessageID1 & 6 & requested message type from interrogated station \\\\ \\hline
 SlotOffset & 6 & requested message type from interrogated station \\\\ \\hline
-Spare & 2 & Not used.  Should be set to zero. Researved for future use. \\\\ \\hline
+Spare & 2 & Not used.  Should be set to zero. Reserved for future use. \\\\ \\hline
 MessageID12 & 6 & requested message type from interrogated station \\\\ \\hline
 SlotOffset12 & 6 & requested message type from interrogated station \\\\ \\hline
-Spare2 & 2 & Not used.  Should be set to zero. Researved for future use. \\\\ \\hline
+Spare2 & 2 & Not used.  Should be set to zero. Reserved for future use. \\\\ \\hline
 DestID2 & 30 & MMSI number of interrogated station \\\\ \\hline
 MessageID2 & 6 & requested message type from interrogated station \\\\ \\hline
 SlotOffset2 & 6 & requested message type from interrogated station \\\\ \\hline
-Spare3 & 2 & Not used.  Should be set to zero. Researved for future use.\\\\ \\hline \\hline
+Spare3 & 2 & Not used.  Should be set to zero. Reserved for future use.\\\\ \\hline \\hline
 Total bits & 140 & Appears to take 1 slot with 28 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
 \\caption{AIS message number 15: FIX: need a description}
@@ -711,7 +711,7 @@ Spare"""
         + delim
         + "2"
         + delim
-        + """Not used.  Should be set to zero. Researved for future use.
+        + """Not used.  Should be set to zero. Reserved for future use.
 MessageID12"""
         + delim
         + "6"
@@ -726,7 +726,7 @@ Spare2"""
         + delim
         + "2"
         + delim
-        + """Not used.  Should be set to zero. Researved for future use.
+        + """Not used.  Should be set to zero. Reserved for future use.
 DestID2"""
         + delim
         + "30"
@@ -746,7 +746,7 @@ Spare3"""
         + delim
         + "2"
         + delim
-        + """Not used.  Should be set to zero. Researved for future use.
+        + """Not used.  Should be set to zero. Reserved for future use.
 Total bits"""
         + delim
         + """140"""

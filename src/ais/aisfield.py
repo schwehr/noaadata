@@ -411,7 +411,7 @@ if __name__ == "__main__":
         default=None,
         type="float",
         help="TRY NOT TO USE THIS ONE accept for dac, fid, and efid.  "
-        + "Specify manditory value if the field can not change.  [default: none]",
+        + "Specify mandatory value if the field can not change.  [default: none]",
     )
 
     myparser.add_option(

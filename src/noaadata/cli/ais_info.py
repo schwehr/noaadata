@@ -444,7 +444,7 @@ class AisStreamInfo:
         min_gap_sec=2,
         verbose=False,
     ):
-        # intialize all counts to 0 for major numbers
+        # initialize all counts to 0 for major numbers
         self.msgs_counts = dict.fromkeys(binary.encode, 0)
         self.up = Uptime(
             dt_raw_filename=dt_raw_filename, min_gap_sec=min_gap_sec, verbose=verbose

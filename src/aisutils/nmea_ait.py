@@ -18,12 +18,12 @@ __license__ = "Apache 2.0"
 
 __doc__ = """
 Convert AIS messages from AIVDM binary to AI AIT: Automatic
-Indentification system - Automatic Indentification system Text.  These
+Identification system - Automatic Identification system Text.  These
 packages break out AIS messages in an easier to parse format.
 
 Note: I think this was for work with IVS / Fledermaus
 
-This violates the number of charcters per line rule in the NMEA
+This violates the number of characters per line rule in the NMEA
 standard.  I refuse to do multi-line output.
 
 !AIVDM,1,1,,B,15MvrUPP1DG?wfBE`;;IB?vT0<0o,0*03,x144329,b003669712,1224508882

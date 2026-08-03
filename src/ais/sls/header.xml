@@ -28,7 +28,7 @@
     </field>
 
     <field name="MessageID" numberofbits="6" type="uint">
-      <description>Binary message indentifier</description>
+      <description>Binary message identifier</description>
       <testvalue>3</testvalue>
     </field>
 

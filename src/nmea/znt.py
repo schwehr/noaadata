@@ -100,7 +100,7 @@ class Znt:
     Fields:
     timestamp - UNIX UTC timestamp
     host - IP address of the host that this report is about
-    ref_clock - remote host that this host is syncronized to
+    ref_clock - remote host that this host is synchronized to
     stratum - how far from the time source
     last_update - how long since this host has heard from its ref clock
     offset -
@@ -176,7 +176,7 @@ class Znt:
 
         if checksum_str(nmea_str) != match["checksum"]:
             raise NmeaChecksumError(
-                'checksums missmatch.  Got "{}", expected "{}"'.format(
+                'checksums mismatch.  Got "{}", expected "{}"'.format(
                     match["checksum"], checksum_str(nmea_str)
                 )
             )

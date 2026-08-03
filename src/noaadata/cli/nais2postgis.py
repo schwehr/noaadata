@@ -457,7 +457,7 @@ class Nais2Postgis:
 
             # print 'MSG CHAR',uscg_msg.msgTypeChar,'     ',ais_msgs_supported
             if uscg_msg.msgTypeChar not in ais_msgs_supported:
-                # logging.warn('msg not supportd "%s"' % (msg[7],))
+                # logging.warn('msg not supported "%s"' % (msg[7],))
                 continue
             # else:
             # print 'allowing',uscg_msg.msgTypeChar

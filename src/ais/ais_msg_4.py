@@ -113,7 +113,7 @@ def encode(params, validate=False):
       - fixtype(uint): Method used for positioning
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
@@ -220,7 +220,7 @@ def decode(bv, validate=False):
       - fixtype(uint): Method used for positioning
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @type bv: BitVector
@@ -570,7 +570,7 @@ def printFields(
       - fixtype(uint): Method used for positioning
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.
@@ -969,7 +969,7 @@ Position\\_latitude & 27 & Location of base station  North South location \\\\ \
 fixtype & 4 & Method used for positioning \\\\ \\hline
 Spare & 10 & Not used.  Should be set to zero. \\\\ \\hline
 RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \\hline
-state\\_syncstate & 2 & Communications State - SOTDMA  Sycronization state \\\\ \\hline
+state\\_syncstate & 2 & Communications State - SOTDMA  Synchronization state \\\\ \\hline
 state\\_slottimeout & 3 & Communications State - SOTDMA  Frames remaining until a new slot is selected \\\\ \\hline
 state\\_slotoffset & 14 & Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
@@ -1080,7 +1080,7 @@ state_syncstate"""
         + delim
         + "2"
         + delim
-        + """Communications State - SOTDMA  Sycronization state
+        + """Communications State - SOTDMA  Synchronization state
 state_slottimeout"""
         + delim
         + "3"

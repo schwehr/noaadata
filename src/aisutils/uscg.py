@@ -183,7 +183,7 @@ class UscgNmea:
                 if len(fields[i]) == 0:
                     continue  # maybe it should throw a parse exception instead?
                 f = fields[i]
-                c = f[0]  # first charater determines what the field is
+                c = f[0]  # first character determines what the field is
                 if c in ("b", "r", "B", "R"):
                     self.station = (
                         f  # FIX: think we want to keep the code in the first char
@@ -240,7 +240,7 @@ class UscgNmea:
         if self.contents != other.contents:
             return False
 
-        # FIX: probably should check for the existance of rssi, signalStrength, etc
+        # FIX: probably should check for the existence of rssi, signalStrength, etc
         return True
 
     def __ne__(self, other):

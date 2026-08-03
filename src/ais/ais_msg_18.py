@@ -109,7 +109,7 @@ def encode(params, validate=False):
       - MessageID(uint): AIS message number.  Must be 18 (field automatically set to "18")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Reserved1(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Reserved1(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -233,7 +233,7 @@ def decode(bv, validate=False):
       - MessageID(uint): AIS message number.  Must be 18 (field automatically set to "18")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Reserved1(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Reserved1(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -640,7 +640,7 @@ def printFields(
       - MessageID(uint): AIS message number.  Must be 18 (field automatically set to "18")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Reserved1(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Reserved1(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -1078,7 +1078,7 @@ Parameter & Number of bits & Description
 MessageID & 6 & AIS message number.  Must be 18 \\\\ \\hline
 RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
 UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
-Reserved1 & 8 & Reseverd for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \\hline
+Reserved1 & 8 & Reserved for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \\hline
 SOG & 10 & Speed over ground \\\\ \\hline
 PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \\hline
 longitude & 28 & Location of the vessel  East West location \\\\ \\hline
@@ -1144,7 +1144,7 @@ Reserved1"""
         + delim
         + "8"
         + delim
-        + """Reseverd for definition by a compentent regional or local authority.  Should be set to zero.
+        + """Reserved for definition by a compentent regional or local authority.  Should be set to zero.
 SOG"""
         + delim
         + "10"

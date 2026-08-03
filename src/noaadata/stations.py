@@ -334,16 +334,16 @@ class ActiveStations:
 
         body = BODY_TEMPLATE
         blen = len(body)
-        requestor = http.client.HTTP(SERVER_ADDR, SERVER_PORT)
-        requestor.putrequest("POST", "/axis/services/ActiveStations")
-        requestor.putheader("Host", SERVER_ADDR)
-        requestor.putheader("Content-Type", 'text/plain; charset="utf-8"')
-        requestor.putheader("Content-Length", str(blen))
-        requestor.putheader("SOAPAction", NS)
-        requestor.endheaders()
-        requestor.send(body)
-        (_status_code, _message, _reply_headers) = requestor.getreply()
-        reply_body = requestor.getfile().read()
+        requester = http.client.HTTP(SERVER_ADDR, SERVER_PORT)
+        requester.putrequest("POST", "/axis/services/ActiveStations")
+        requester.putheader("Host", SERVER_ADDR)
+        requester.putheader("Content-Type", 'text/plain; charset="utf-8"')
+        requester.putheader("Content-Length", str(blen))
+        requester.putheader("SOAPAction", NS)
+        requester.endheaders()
+        requester.send(body)
+        (_status_code, _message, _reply_headers) = requester.getreply()
+        reply_body = requester.getfile().read()
 
         # print "status code:", status_code
         # print "status message:", message

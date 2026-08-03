@@ -62,7 +62,7 @@ def decode(bv, validate=False):
       - fixtype(uint): Method used for positioning
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @type bv: BitVector
@@ -192,7 +192,7 @@ def printFields(
       - fixtype(uint): Method used for positioning
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.

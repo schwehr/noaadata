@@ -114,7 +114,7 @@ def encode(params, validate=False):
       - assigned_mode(uint): autonomous or assigned mode
       - RAIM(bool): Receiver autonomous integrity monitoring flag
       - comm_state(uint): SOTDMA or ITDMA
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
@@ -217,7 +217,7 @@ def decode(bv, validate=False):
       - assigned_mode(uint): autonomous or assigned mode
       - RAIM(bool): Receiver autonomous integrity monitoring flag
       - comm_state(uint): SOTDMA or ITDMA
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @type bv: BitVector
@@ -599,7 +599,7 @@ def printFields(
       - assigned_mode(uint): autonomous or assigned mode
       - RAIM(bool): Receiver autonomous integrity monitoring flag
       - comm_state(uint): SOTDMA or ITDMA
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.
@@ -1029,7 +1029,7 @@ Spare & 3 & Not used.  Should be set to zero. \\\\ \\hline
 assigned\\_mode & 1 & autonomous or assigned mode \\\\ \\hline
 RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \\hline
 comm\\_state & 1 & SOTDMA or ITDMA \\\\ \\hline
-state\\_syncstate & 2 & Communications State - SOTDMA  Sycronization state \\\\ \\hline
+state\\_syncstate & 2 & Communications State - SOTDMA  Synchronization state \\\\ \\hline
 state\\_slottimeout & 3 & Communications State - SOTDMA  Frames remaining until a new slot is selected \\\\ \\hline
 state\\_slotoffset & 14 & Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
@@ -1145,7 +1145,7 @@ state_syncstate"""
         + delim
         + "2"
         + delim
-        + """Communications State - SOTDMA  Sycronization state
+        + """Communications State - SOTDMA  Synchronization state
 state_slottimeout"""
         + delim
         + "3"

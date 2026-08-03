@@ -190,7 +190,7 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                 @type msgDict: dict
                 \'\'\'
                 wx.Frame.__init__(self,parent,-1,title,size=(640,480)) # FIX: what size?
-                self.msgDict = msgDict # Save this so we can edit and return valies in the incoming dict
+                self.msgDict = msgDict # Save this so we can edit and return values in the incoming dict
 
                 defaults = testParams # FIX: turn off this hack and use the unavailable values
 

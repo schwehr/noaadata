@@ -77,7 +77,7 @@
 
 
     <field name="radius" numberofbits="10" type="uint">
-      <description>Extention of closed area</description>
+      <description>Extension of closed area</description>
       <note>WARNING: the units of this value are determined by the unit field</note>
       <units>See unit field</units>
       <range min="0" max="1000"/>

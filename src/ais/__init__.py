@@ -1,4 +1,4 @@
-"""Python module for Automatic Indentification System (AIS).
+"""Python module for Automatic Identification System (AIS).
 
 This is the 3rd iteration of creating an AIS codec package in python.
 This version is more a compiler so that it could be altered to emit

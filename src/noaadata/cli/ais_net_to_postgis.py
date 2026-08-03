@@ -165,7 +165,7 @@ class DatabaseHandler:
             # No time expirations, so don't clean.
             return
 
-        # Do this everytime to make sure daylight savings does not nail us.
+        # Do this every time to make sure daylight savings does not nail us.
         tzoffset = datetime.timedelta(seconds=time.timezone)
 
         if self.verbose:

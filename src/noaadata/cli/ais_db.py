@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Command line AIS database utilities.
 
-TODO(schwehr): Move the create strings here to aisutils.database or similiar.
+TODO(schwehr): Move the create strings here to aisutils.database or similar.
 TODO(schwehr): What indices need to get created?
 """
 

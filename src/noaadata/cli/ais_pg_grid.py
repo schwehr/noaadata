@@ -210,7 +210,7 @@ def main():
         "-R",
         "--restrict-field",
         dest="field",
-        default="catagory",
+        default="category",
         help="SQL field to use for picking the ship type [default: %default]",
     )
 

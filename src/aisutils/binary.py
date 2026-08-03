@@ -39,7 +39,7 @@ They are usually encoded an ASCII 6-bit packing within NMEA
 @todo: test cases for ais6tobitvec
 
 @var decode: cache of character to BitVector lookup
-@var encode: cache of ais int value to charcter
+@var encode: cache of ais int value to character
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ myparser
 @undocumented: buildLookupTables ais6tobitvecSLOW
@@ -95,7 +95,7 @@ def bitvec2float(bv):
     @type bv: BitVector
     @param bv: 32 bits representing an IEEE float
     @rtype: float
-    @return: the corresponing number
+    @return: the corresponding number
     @see: U{struct module<http://www.python.org/doc/current/lib/module-struct.html>}
     """
     return struct.unpack(
@@ -120,7 +120,7 @@ def joinBV(bvSeq):
 def setBitVectorSize(bv, size=8):
     """Pad a BitVector with 0's on the left until it is at least the size specified
 
-    @param bv: BitVector that needs to meet a minimim size
+    @param bv: BitVector that needs to meet a minimum size
     @type bv: BitVector
     @param size: Minimum number of bits to make the new BitVector
     @type size: int

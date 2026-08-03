@@ -46,7 +46,7 @@ convert -delay 200 -loop  100 2006-01-31.xymt*.gif anim.gif
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ parser success
 @since: 2007-Apr-21
-@status: Intial working version.  Still needs development
+@status: Initial working version.  Still needs development
 @organization: U{CCOM<http://ccom.unh.edu/>}
 
 @license: Apache 2.0

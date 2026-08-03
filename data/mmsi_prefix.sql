@@ -203,7 +203,7 @@ INSERT INTO "mmsi_prefix" VALUES(565,'Singapore (Republic of)','Singapore');
 INSERT INTO "mmsi_prefix" VALUES(567,'Thailand','Thailand');
 INSERT INTO "mmsi_prefix" VALUES(570,'Tonga (Kingdom of)','Tonga');
 INSERT INTO "mmsi_prefix" VALUES(572,'Tuvalu','Tuvalu');
-INSERT INTO "mmsi_prefix" VALUES(574,'Viet Nam (Socialist Republic of)','Viet Nam');
+INSERT INTO "mmsi_prefix" VALUES(574,'Viet Name (Socialist Republic of)','Viet Name');
 INSERT INTO "mmsi_prefix" VALUES(576,'Vanuatu (Republic of)','Vanuatu');
 INSERT INTO "mmsi_prefix" VALUES(578,'Wallis and Futuna Islands','Wallis and Futuna Islands');
 INSERT INTO "mmsi_prefix" VALUES(601,'South Africa (Republic of)','South Africa');

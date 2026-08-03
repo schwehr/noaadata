@@ -110,7 +110,7 @@ def encode(params, validate=False):
       - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Spare(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -239,7 +239,7 @@ def decode(bv, validate=False):
       - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Spare(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -654,7 +654,7 @@ def printFields(
       - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Spare(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location
@@ -802,10 +802,10 @@ TimeStampDecodeLut = {
 
 shipandcargoEncodeLut = {
     "Wing in ground (WIG), all ships of this type": "20",
-    "Wing in ground (WIG), Hazardous catagory A": "21",
-    "Wing in ground (WIG), Hazardous catagory B": "22",
-    "Wing in ground (WIG), Hazardous catagory C": "23",
-    "Wing in ground (WIG), Hazardous catagory D": "24",
+    "Wing in ground (WIG), Hazardous category A": "21",
+    "Wing in ground (WIG), Hazardous category B": "22",
+    "Wing in ground (WIG), Hazardous category C": "23",
+    "Wing in ground (WIG), Hazardous category D": "24",
     "Wing in ground (WIG), Reserved for future use": "25",
     "Wing in ground (WIG), Reserved for future use": "26",
     "Wing in ground (WIG), Reserved for future use": "27",
@@ -822,10 +822,10 @@ shipandcargoEncodeLut = {
     "reserved": "38",
     "reserved": "39",
     "High speed craft (HSC), all ships of this type": "40",
-    "High speed craft (HSC), Hazardous catagory A": "41",
-    "High speed craft (HSC), Hazardous catagory B": "42",
-    "High speed craft (HSC), Hazardous catagory C": "43",
-    "High speed craft (HSC), Hazardous catagory D": "44",
+    "High speed craft (HSC), Hazardous category A": "41",
+    "High speed craft (HSC), Hazardous category B": "42",
+    "High speed craft (HSC), Hazardous category C": "43",
+    "High speed craft (HSC), Hazardous category D": "44",
     "High speed craft (HSC), Reserved for future use": "45",
     "High speed craft (HSC), Reserved for future use": "46",
     "High speed craft (HSC), Reserved for future use": "47",
@@ -842,40 +842,40 @@ shipandcargoEncodeLut = {
     "medical transport": "58",
     "ship according to RR Resolution No. 18": "59",
     "passenger, all ships of this type": "60",
-    "passenger, Hazardous catagory A": "61",
-    "passenger, Hazardous catagory B": "62",
-    "passenger, Hazardous catagory C": "63",
-    "passenger, Hazardous catagory D": "64",
+    "passenger, Hazardous category A": "61",
+    "passenger, Hazardous category B": "62",
+    "passenger, Hazardous category C": "63",
+    "passenger, Hazardous category D": "64",
     "passenger, Reserved for future use": "65",
     "passenger, Reserved for future use": "66",
     "passenger, Reserved for future use": "67",
     "passenger, Reserved for future use": "68",
     "passenger, No additional information": "69",
     "cargo, all ships of this type": "70",
-    "cargo, Hazardous catagory A": "71",
-    "cargo, Hazardous catagory B": "72",
-    "cargo, Hazardous catagory C": "73",
-    "cargo, Hazardous catagory D": "74",
+    "cargo, Hazardous category A": "71",
+    "cargo, Hazardous category B": "72",
+    "cargo, Hazardous category C": "73",
+    "cargo, Hazardous category D": "74",
     "cargo, Reserved for future use": "75",
     "cargo, Reserved for future use": "76",
     "cargo, Reserved for future use": "77",
     "cargo, Reserved for future use": "78",
     "cargo, No additional information": "79",
     "tanker, all ships of this type": "80",
-    "tanker, Hazardous catagory A": "81",
-    "tanker, Hazardous catagory B": "82",
-    "tanker, Hazardous catagory C": "83",
-    "tanker, Hazardous catagory D": "84",
+    "tanker, Hazardous category A": "81",
+    "tanker, Hazardous category B": "82",
+    "tanker, Hazardous category C": "83",
+    "tanker, Hazardous category D": "84",
     "tanker, Reserved for future use": "85",
     "tanker, Reserved for future use": "86",
     "tanker, Reserved for future use": "87",
     "tanker, Reserved for future use": "88",
     "tanker, No additional information": "89",
     "other type, all ships of this type": "90",
-    "other type, Hazardous catagory A": "91",
-    "other type, Hazardous catagory B": "92",
-    "other type, Hazardous catagory C": "93",
-    "other type, Hazardous catagory D": "94",
+    "other type, Hazardous category A": "91",
+    "other type, Hazardous category B": "92",
+    "other type, Hazardous category C": "93",
+    "other type, Hazardous category D": "94",
     "other type, Reserved for future use": "95",
     "other type, Reserved for future use": "96",
     "other type, Reserved for future use": "97",
@@ -885,10 +885,10 @@ shipandcargoEncodeLut = {
 
 shipandcargoDecodeLut = {
     "20": "Wing in ground (WIG), all ships of this type",
-    "21": "Wing in ground (WIG), Hazardous catagory A",
-    "22": "Wing in ground (WIG), Hazardous catagory B",
-    "23": "Wing in ground (WIG), Hazardous catagory C",
-    "24": "Wing in ground (WIG), Hazardous catagory D",
+    "21": "Wing in ground (WIG), Hazardous category A",
+    "22": "Wing in ground (WIG), Hazardous category B",
+    "23": "Wing in ground (WIG), Hazardous category C",
+    "24": "Wing in ground (WIG), Hazardous category D",
     "25": "Wing in ground (WIG), Reserved for future use",
     "26": "Wing in ground (WIG), Reserved for future use",
     "27": "Wing in ground (WIG), Reserved for future use",
@@ -905,10 +905,10 @@ shipandcargoDecodeLut = {
     "38": "reserved",
     "39": "reserved",
     "40": "High speed craft (HSC), all ships of this type",
-    "41": "High speed craft (HSC), Hazardous catagory A",
-    "42": "High speed craft (HSC), Hazardous catagory B",
-    "43": "High speed craft (HSC), Hazardous catagory C",
-    "44": "High speed craft (HSC), Hazardous catagory D",
+    "41": "High speed craft (HSC), Hazardous category A",
+    "42": "High speed craft (HSC), Hazardous category B",
+    "43": "High speed craft (HSC), Hazardous category C",
+    "44": "High speed craft (HSC), Hazardous category D",
     "45": "High speed craft (HSC), Reserved for future use",
     "46": "High speed craft (HSC), Reserved for future use",
     "47": "High speed craft (HSC), Reserved for future use",
@@ -925,40 +925,40 @@ shipandcargoDecodeLut = {
     "58": "medical transport",
     "59": "ship according to RR Resolution No. 18",
     "60": "passenger, all ships of this type",
-    "61": "passenger, Hazardous catagory A",
-    "62": "passenger, Hazardous catagory B",
-    "63": "passenger, Hazardous catagory C",
-    "64": "passenger, Hazardous catagory D",
+    "61": "passenger, Hazardous category A",
+    "62": "passenger, Hazardous category B",
+    "63": "passenger, Hazardous category C",
+    "64": "passenger, Hazardous category D",
     "65": "passenger, Reserved for future use",
     "66": "passenger, Reserved for future use",
     "67": "passenger, Reserved for future use",
     "68": "passenger, Reserved for future use",
     "69": "passenger, No additional information",
     "70": "cargo, all ships of this type",
-    "71": "cargo, Hazardous catagory A",
-    "72": "cargo, Hazardous catagory B",
-    "73": "cargo, Hazardous catagory C",
-    "74": "cargo, Hazardous catagory D",
+    "71": "cargo, Hazardous category A",
+    "72": "cargo, Hazardous category B",
+    "73": "cargo, Hazardous category C",
+    "74": "cargo, Hazardous category D",
     "75": "cargo, Reserved for future use",
     "76": "cargo, Reserved for future use",
     "77": "cargo, Reserved for future use",
     "78": "cargo, Reserved for future use",
     "79": "cargo, No additional information",
     "80": "tanker, all ships of this type",
-    "81": "tanker, Hazardous catagory A",
-    "82": "tanker, Hazardous catagory B",
-    "83": "tanker, Hazardous catagory C",
-    "84": "tanker, Hazardous catagory D",
+    "81": "tanker, Hazardous category A",
+    "82": "tanker, Hazardous category B",
+    "83": "tanker, Hazardous category C",
+    "84": "tanker, Hazardous category D",
     "85": "tanker, Reserved for future use",
     "86": "tanker, Reserved for future use",
     "87": "tanker, Reserved for future use",
     "88": "tanker, Reserved for future use",
     "89": "tanker, No additional information",
     "90": "other type, all ships of this type",
-    "91": "other type, Hazardous catagory A",
-    "92": "other type, Hazardous catagory B",
-    "93": "other type, Hazardous catagory C",
-    "94": "other type, Hazardous catagory D",
+    "91": "other type, Hazardous category A",
+    "92": "other type, Hazardous category B",
+    "93": "other type, Hazardous category C",
+    "94": "other type, Hazardous category D",
     "95": "other type, Reserved for future use",
     "96": "other type, Reserved for future use",
     "97": "other type, Reserved for future use",
@@ -1237,7 +1237,7 @@ Parameter & Number of bits & Description
 MessageID & 6 & AIS message number.  Must be 19 \\\\ \\hline
 RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
 UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
-Spare & 8 & Reseverd for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \\hline
+Spare & 8 & Reserved for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \\hline
 SOG & 10 & Speed over ground \\\\ \\hline
 PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \\hline
 longitude & 28 & Location of the vessel  East West location \\\\ \\hline
@@ -1304,7 +1304,7 @@ Spare"""
         + delim
         + "8"
         + delim
-        + """Reseverd for definition by a compentent regional or local authority.  Should be set to zero.
+        + """Reserved for definition by a compentent regional or local authority.  Should be set to zero.
 SOG"""
         + delim
         + "10"

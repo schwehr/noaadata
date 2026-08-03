@@ -46,7 +46,7 @@
     </field>
 
     <field name="Reserved1" numberofbits="8" type="uint">
-      <description>Reseverd for definition by a compentent regional or local authority.  Should be set to zero.</description>
+      <description>Reserved for definition by a compentent regional or local authority.  Should be set to zero.</description>
       <required>0</required>
     </field>
 

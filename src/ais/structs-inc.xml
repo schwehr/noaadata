@@ -97,7 +97,7 @@
 
   <struct name="sotdmaState">
     <field name="syncstate" numberofbits="2" type="uint">
-      <description>Sycronization state</description>
+      <description>Synchronization state</description>
       <lookuptable>
         <entry key="0">UTC direct</entry>
         <entry key="1">UTC indirect</entry>

@@ -84,12 +84,12 @@ ______________________________________________________________________
   - [x] Fix all linter warnings and errors reported by `ruff check` (e.g., removing unused imports, unnecessary dunders, and pointless statements).
   - [x] Verification command: `uv run ruff check && uv run ruff format --check`
 
-- [ ] **3.2 Standardize Markdown & Spell Checking (`mdformat` & `codespell`)**
+- [x] **3.2 Standardize Markdown & Spell Checking (`mdformat` & `codespell`)**
 
-  - [ ] Format all Markdown files to 80-column GitHub Flavored Markdown using `mdformat`.
-  - [ ] Configure `codespell` with a custom dictionary for marine/NOAA abbreviations (`MMSI`, `SOG`, `COG`, `NMEA`, `CO-OPS`, `RTCM`).
-  - [ ] Fix all reported spelling errors across docstrings, documentation, and comments.
-  - [ ] Verification command: `uv run mdformat --check . && uv run codespell .`
+  - [x] Format all Markdown files to 80-column GitHub Flavored Markdown using `mdformat`.
+  - [x] Configure `codespell` with a custom dictionary for marine/NOAA abbreviations (`MMSI`, `SOG`, `COG`, `NMEA`, `CO-OPS`, `RTCM`).
+  - [x] Fix all reported spelling errors across docstrings, documentation, and comments.
+  - [x] Verification command: `uv run mdformat --check . && uv run codespell .`
 
 - [ ] **3.3 Expand Pre-Commit Hooks & Static Security Scanning**
 
@@ -154,8 +154,8 @@ ______________________________________________________________________
 
 ## Phase 6: Idiomatic API & Architectural Refactoring
 
-
 - [ ] **6.0 Switch to using bitvector-modern**
+
   - [ ] Verify that all python files using BitVector have more than 95% test coverages.
   - [ ] Switch from Avi KaK's BitVector to https://github.com/schwehr/bitvector-modern
 

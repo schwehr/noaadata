@@ -332,7 +332,7 @@ class create:
 
 class insert:
     """
-    Help create an SQL insert statement for injecting data into a database.  Wee!
+    Help create an SQL insert statement for injecting data into a database.  We!
 
     @todo: FIX: provide some sort of validation, maybe with the CREATE string or class?
     @todo: Put in a remove/delete call to pull a value out so that it is not inserted

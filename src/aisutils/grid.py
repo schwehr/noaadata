@@ -14,7 +14,7 @@ __date__ = [
 __author__ = "Kurt Schwehr"
 __doc__ = (
     """
-Privide a class to allow laying ship tracks down into a grid.
+Provide a class to allow laying ship tracks down into a grid.
 
 @requires: U{epydoc<http://epydoc.sourceforge.net/>} > 3.0alpha3
 @requires: U{numpy<http://numpy.scipy.org/>}
@@ -126,7 +126,7 @@ gridTypes = ["occurrence", "distance", "distanceWeightedSpeed"]
 class Grid:
     """
     Provide a grid data structure.  Will resize up to include the full
-    range on the max size if not an interger size of stepSize.  Units are
+    range on the max size if not an integer size of stepSize.  Units are
     whatever you desire.  It is up to you to project them.
 
     0,0 is at the lower left and (xNumCells-1,yNumCells-1) is the upper right cell
@@ -225,7 +225,7 @@ class Grid:
         return i, j
 
     def getCellCenter(self, i, j):
-        """@param i: the horizonal cell count from the left starting at 0
+        """@param i: the horizontal cell count from the left starting at 0
         @return the x,y of the center of specified cell"""
         x = self.minx + self.stepSize * i + 0.5 * self.stepSize
         y = self.miny + self.stepSize * j + 0.5 * self.stepSize
@@ -241,7 +241,7 @@ class Grid:
         """
         Scan convert a single line segment with two vertices.
 
-        Used for when we need to calculated paraeters off the line to
+        Used for when we need to calculated parameters off the line to
         add a value to the cell.  e.g. distance or speed wieghted by
         distance.
 
@@ -676,7 +676,7 @@ class Grid:
     def writeLayoutGnuplot(self, filename):
         "Write out the grid lines as gnuplot dat file"
         o = open(filename, "w")
-        # Horizonal lines
+        # Horizontal lines
         minxStr = str(self.minx) + " "
         maxxStr = str(self.maxx) + " "
         for yCell in range(self.yNumCells + 1):

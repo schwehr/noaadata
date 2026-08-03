@@ -165,7 +165,7 @@ def printFields(
       - MessageID(uint): AIS message number.  Must be 19 (field automatically set to "19")
       - RepeatIndicator(uint): Indicated how many times a message has been repeated
       - UserID(uint): Unique ship identification number (MMSI)
-      - Spare(uint): Reseverd for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
+      - Spare(uint): Reserved for definition by a compentent regional or local authority.  Should be set to zero. (field automatically set to "0")
       - SOG(udecimal): Speed over ground
       - PositionAccuracy(uint): Accuracy of positioning fixes
       - longitude(decimal): Location of the vessel  East West location

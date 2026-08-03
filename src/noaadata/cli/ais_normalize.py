@@ -159,7 +159,7 @@ def assembleAisNmeaMessages(
 
                 payload = "".join([p[0] for p in parts])
 
-                # Try to mirror orgininal lines in the packet as much as possible.
+                # Try to mirror original lines in the packet as much as possible.
                 # Keep the same seqId and channel, but make a single line message.
                 checksumed_str = ",".join(
                     (

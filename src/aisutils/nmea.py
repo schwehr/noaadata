@@ -58,7 +58,7 @@ def checksumStr(data, verbose=False):
 
     @param data: NMEA message.  Leading ?/! and training checksum are optional
     @type data: str
-    @return: hexidecimal value
+    @return: hexadecimal value
     @rtype: str
 
     """
@@ -363,7 +363,7 @@ Transmit and Received modes.  See Page 88 61993-2 and XXXX???
 acaInfoSrcLUT = {
     "A": "ITU-R M.1371 message 22: addressed message",
     "B": "ITU-R M.1371 message 22: broadcast message",
-    "C": "IEC 61162-1 AIS Channel Assignment setence",
+    "C": "IEC 61162-1 AIS Channel Assignment sentence",
     "D": "DSC Channel 70 telecommand",
     "M": "Operator manual input",
     "I": "Why is the L-3 unit returning I???  It is not defined on page 88 or 61993-2",
@@ -1000,7 +1000,7 @@ def bcfEncode(
     validate=True,
 ):
     """
-    Enocde a General Base Station Configuation Message.  Defaults to not changing anything
+    Encode a General Base Station Configuration Message.  Defaults to not changing anything
 
     >>> bcfEncode(appendEOL=False)
     '!AIBCF,,,,,,,,,,,,,,,,AI*47'
@@ -1049,11 +1049,11 @@ def bcfEncode(
     @type  TxChanB: int
     @param PowerA: Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
-                   2 or 5 watts for low?  2..9 reservered
+                   2 or 5 watts for low?  2..9 reserved
     @type  PowerA: int
     @param PowerB:Transmit power for channel A - 0 high (12.5 W), 1 low (Nominal 2 watts).
                    FIX: Seems there is a disagreement between specs on the power levels.
-                   2 or 5 watts for low?  2..9 reservered
+                   2 or 5 watts for low?  2..9 reserved
     @type  PowerB: int
     @param VDLretries: FIX: what does this mean?
     @type  VDLretries: int

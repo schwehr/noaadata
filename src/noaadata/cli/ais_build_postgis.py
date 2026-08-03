@@ -4,7 +4,7 @@
 NOTE: this following sets up postgres totally open.  You need to use a
 password and firewall on any deployment on the internet!
 
-You may need to some intial setup: (examples assume mac osx + fink)
+You may need to some initial setup: (examples assume mac osx + fink)
   - start postgres: sudo pgsql.sh start
   - create the database: sudo -u postgres createdb ais
   - Add your username to the db: sudo -u postgres createuser -U postgres -W $USER -P

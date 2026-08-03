@@ -109,7 +109,7 @@ def encode(params, validate=False):
       - min(uint): Start time of most recent notice  UTC minutes
       - longitude(decimal): Center of the area/zone  East West location
       - latitude(decimal): Center of the area/zone  North South location
-      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is aprox 23 days
+      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is approx 23 days
       - radius(udecimal): Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters
       - areatype(uint): What does this circular area represent
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
@@ -189,7 +189,7 @@ def decode(bv, validate=False):
       - min(uint): Start time of most recent notice  UTC minutes
       - longitude(decimal): Center of the area/zone  East West location
       - latitude(decimal): Center of the area/zone  North South location
-      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is aprox 23 days
+      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is approx 23 days
       - radius(udecimal): Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters
       - areatype(uint): What does this circular area represent
     @type bv: BitVector
@@ -475,7 +475,7 @@ def printFields(
       - min(uint): Start time of most recent notice  UTC minutes
       - longitude(decimal): Center of the area/zone  East West location
       - latitude(decimal): Center of the area/zone  North South location
-      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is aprox 23 days
+      - timetoexpire(uint): Minutes from the start time until the notice expires.  Max is approx 23 days
       - radius(udecimal): Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters
       - areatype(uint): What does this circular area represent
     @param params: Dictionary of field names/values.
@@ -865,7 +865,7 @@ hour & 5 & Start time of most recent notice  UTC hours 0..23 \\\\ \\hline
 min & 6 & Start time of most recent notice  UTC minutes \\\\ \\hline
 longitude & 28 & Center of the area/zone  East West location \\\\ \\hline
 latitude & 27 & Center of the area/zone  North South location \\\\ \\hline
-timetoexpire & 15 & Minutes from the start time until the notice expires.  Max is aprox 23 days \\\\ \\hline
+timetoexpire & 15 & Minutes from the start time until the notice expires.  Max is approx 23 days \\\\ \\hline
 radius & 14 & Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters \\\\ \\hline
 areatype & 8 & What does this circular area represent\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
@@ -961,7 +961,7 @@ timetoexpire"""
         + delim
         + "15"
         + delim
-        + """Minutes from the start time until the notice expires.  Max is aprox 23 days
+        + """Minutes from the start time until the notice expires.  Max is approx 23 days
 radius"""
         + delim
         + "14"

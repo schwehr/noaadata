@@ -53,7 +53,7 @@ class Decimate:
         mmsi - ship ID number
         x - longitude
         y - latitude (decimal degrees)
-        Return true if position should be emitted.  False, if redunant
+        Return true if position should be emitted.  False, if redundant
         """
         if mmsi not in self.ship_status:
             self.ship_status[mmsi] = {"x": x, "y": y, "timestamp": timestamp}

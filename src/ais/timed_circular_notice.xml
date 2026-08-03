@@ -61,7 +61,7 @@
       Proposed transmission scheme for areatype=0 (right whale
       acoustic): A notice will be sent every 3 minutes for each buoy.
       Messages will be sent with timetoexpire of 0 when no acoustic
-      detection has occured in the last 24 hours.  When an acoustic
+      detection has occurred in the last 24 hours.  When an acoustic
       detection, the system will send an separate broadcast for that
       buoy as soon as possible in addition to the normal 3 minute
       schedule.
@@ -113,7 +113,7 @@ This needs to somehow be expressed.  Is there a XML
 
     <!-- FIX: switch to seconds with a scaler -->
     <field name="timetoexpire" numberofbits="15" type="uint">
-      <description>Minutes from the start time until the notice expires.  Max is aprox 23 days</description>
+      <description>Minutes from the start time until the notice expires.  Max is approx 23 days</description>
       <units>Minutes</units>
       <unavailable>32767</unavailable>  <!-- is this equivalent to will not expire? -->
       <lookuptable>

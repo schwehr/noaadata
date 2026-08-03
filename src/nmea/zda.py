@@ -6,7 +6,7 @@ For now, this just supports ZDA time stamps.
 
 import calendar
 
-# List of the valide clock sources.
+# List of the valid clock sources.
 timekeepers = {
     "ZA": "atomic clock",
     "ZC": "chronometer",
@@ -82,7 +82,7 @@ def ggaDecode(nmeaStr, validate=False):
     r["hour"] = fields[1][0:2]
     r["min"] = fields[1][2:4]
     r["sec"] = fields[1][4:6]
-    r["hsec"] = fields[1][7:9]  # Hundreths of seconds.
+    r["hsec"] = fields[1][7:9]  # Hundredths of seconds.
     r["lat"] = float(fields[2][0:2]) + float(fields[2][2:]) / 60.0
     if fields[3] == "S":
         r["lat"] = -r["lat"]

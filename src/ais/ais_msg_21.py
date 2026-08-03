@@ -1136,7 +1136,7 @@ assigned\\_mode\\_flag & 1 & autonomous or controlled \\\\ \\hline
 spare & 1 & Not Used\\\\ \\hline \\hline
 Total bits & 272 & Appears to take 2 slots with 152 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
-\\caption{AIS message number 21: Used by a station mounted on an aid-to-navigation.  Note IALA A-124 P.19 for more bits than are here.  Also covered in A-126 in ANNEX 1 - MESSAGE 21 in IALA Recommendation A-126 on the use of AIS in Marine Aids to Navigation Serves Ed 1.1.  This has optional extensions.  What is the IALA Page 7 that Mueller refered to for the RegioanlApp field?}
+\\caption{AIS message number 21: Used by a station mounted on an aid-to-navigation.  Note IALA A-124 P.19 for more bits than are here.  Also covered in A-126 in ANNEX 1 - MESSAGE 21 in IALA Recommendation A-126 on the use of AIS in Marine Aids to Navigation Serves Ed 1.1.  This has optional extensions.  What is the IALA Page 7 that Mueller referred to for the RegioanlApp field?}
 \\label{tab:AidsToNavReport}
 \\end{table}
 """)

@@ -107,7 +107,7 @@ def encode(params, validate=False):
       - reason(aisstr6): Reason for closing
       - from(aisstr6): Location of closing from
       - to(aisstr6): Location of closing To
-      - radius(uint): Extention of closed area
+      - radius(uint): Extension of closed area
       - unit(uint): Unit of extension value for range field
       - closingday(uint): Closing from day
       - closingmonth(uint): Closing from month
@@ -180,7 +180,7 @@ def decode(bv, validate=False):
       - reason(aisstr6): Reason for closing
       - from(aisstr6): Location of closing from
       - to(aisstr6): Location of closing To
-      - radius(uint): Extention of closed area
+      - radius(uint): Extension of closed area
       - unit(uint): Unit of extension value for range field
       - closingday(uint): Closing from day
       - closingmonth(uint): Closing from month
@@ -504,7 +504,7 @@ def printFields(
       - reason(aisstr6): Reason for closing
       - from(aisstr6): Location of closing from
       - to(aisstr6): Location of closing To
-      - radius(uint): Extention of closed area
+      - radius(uint): Extension of closed area
       - unit(uint): Unit of extension value for range field
       - closingday(uint): Closing from day
       - closingmonth(uint): Closing from month
@@ -818,7 +818,7 @@ fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \\hline
 reason & 120 & Reason for closing \\\\ \\hline
 from & 120 & Location of closing from \\\\ \\hline
 to & 120 & Location of closing To \\\\ \\hline
-radius & 10 & Extention of closed area \\\\ \\hline
+radius & 10 & Extension of closed area \\\\ \\hline
 unit & 2 & Unit of extension value for range field \\\\ \\hline
 closingday & 5 & Closing from day \\\\ \\hline
 closingmonth & 4 & Closing from month \\\\ \\hline
@@ -907,7 +907,7 @@ radius"""
         + delim
         + "10"
         + delim
-        + """Extention of closed area
+        + """Extension of closed area
 unit"""
         + delim
         + "2"

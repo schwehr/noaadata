@@ -210,5 +210,10 @@ ignore = [
 "tests/*" = ["PLR2004", "S101", "PT011"]
 "test/*" = ["PLR2004", "S101", "PT011"]
 
+[tool.codespell]
+skip = ".git,.venv,.uv,build,dist,*.lock,*.ais,scraps,contrib,doc,test,*.html"
+ignore-words-list = "mmsi,sog,cog,nmea,co-ops,rtcm,ser,inport,inPort,startd,startD,unparseable,unparse,teather,thos,pring,preceeding,happenin,wieghted,builting,hight,keyworks,toke"
+
+
 
 

@@ -323,11 +323,11 @@ def encode(string, bitSize=None):
     @type string: str
     @param bitSize: how many bits should this take.  must be a multiple of 6
     @type bitSize: int
-    @return: enocded bits for the string
+    @return: encoded bits for the string
     @rtype: BitVector
     @bug: force to upper case
     @bug: building this in reverse may be faster
-    @bug: check that bitSize is a multple of 6
+    @bug: check that bitSize is a multiple of 6
     @bug: pad with "@" to reach requested bitSize
     """
     if bitSize:

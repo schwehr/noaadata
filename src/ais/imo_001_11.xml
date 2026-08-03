@@ -90,7 +90,7 @@
       <description>Location of the vessel.</description>
     </include-struct>
 
-    <!-- FIX: help - why is expand placing this incorectly? -->
+    <!-- FIX: help - why is expand placing this incorrectly? -->
 
     <field name="day" numberofbits="5" type="uint">
       <description>Day 0..31</description>
@@ -220,7 +220,7 @@
       <description>Water level (incl. tide)</description>
       <range min="-10.0" max="30.0"/>
       <units>m</units>
-      <!-- FIX: what is it? <unvailable>41.1?</unavailable> -->
+      <!-- FIX: what is it? <unavailable>41.1?</unavailable> -->
       <scale>10</scale>
       <decimalplaces>1</decimalplaces>
       <testvalue>-8.9</testvalue>

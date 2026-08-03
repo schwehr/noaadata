@@ -68,7 +68,7 @@
     </field>
 
     <field name="Spare" numberofbits="2" type="uint">
-      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <description>Not used.  Should be set to zero. Reserved for future use.</description>
       <required>0</required>
     </field>
 
@@ -83,7 +83,7 @@
     </field>
 
     <field name="Spare2" numberofbits="2" type="uint">
-      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <description>Not used.  Should be set to zero. Reserved for future use.</description>
       <required>0</required>
     </field>
 
@@ -104,7 +104,7 @@
     </field>
 
     <field name="Spare3" numberofbits="2" type="uint">
-      <description>Not used.  Should be set to zero. Researved for future use.</description>
+      <description>Not used.  Should be set to zero. Reserved for future use.</description>
       <required>0</required>
     </field>
 

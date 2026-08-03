@@ -1,5 +1,5 @@
 
-# Skip strutures... no other s*.xml files
+# Skip structures... no other s*.xml files
 AISXMLFILES:=${wildcard [a-gi-rt-z]*.xml}
 
 GEN:=../../scripts/aisxmlbinmsg2py.py

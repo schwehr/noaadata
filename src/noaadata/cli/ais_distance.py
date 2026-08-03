@@ -2,7 +2,7 @@
 # License: Apache 2.0
 
 """Calculate the distances for received messages.  Stores them
-in an sqlite database.  Builds a historgram of receives.  Hoping to
+in an sqlite database.  Builds a histogram of receives.  Hoping to
 have a spectrogram like view of the data by day.
 
 Trying to do better than ais_nmea_uptime*.py

@@ -114,7 +114,7 @@ def encode(params, validate=False):
       - RegionalReserved(uint): Reserved for definition by a regional authority. (field automatically set to "0")
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.  Throws a ValueError exception if required is missing
@@ -226,7 +226,7 @@ def decode(bv, validate=False):
       - RegionalReserved(uint): Reserved for definition by a regional authority. (field automatically set to "0")
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @type bv: BitVector
@@ -587,7 +587,7 @@ def printFields(
       - RegionalReserved(uint): Reserved for definition by a regional authority. (field automatically set to "0")
       - Spare(uint): Not used.  Should be set to zero. (field automatically set to "0")
       - RAIM(bool): Receiver autonomous integrity monitoring flag
-      - state_syncstate(uint): Communications State - SOTDMA  Sycronization state
+      - state_syncstate(uint): Communications State - SOTDMA  Synchronization state
       - state_slottimeout(uint): Communications State - SOTDMA  Frames remaining until a new slot is selected
       - state_slotoffset(uint): Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN
     @param params: Dictionary of field names/values.
@@ -1022,7 +1022,7 @@ TimeStamp & 6 & UTC second when the report was generated \\\\ \\hline
 RegionalReserved & 4 & Reserved for definition by a regional authority. \\\\ \\hline
 Spare & 1 & Not used.  Should be set to zero. \\\\ \\hline
 RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \\hline
-state\\_syncstate & 2 & Communications State - SOTDMA  Sycronization state \\\\ \\hline
+state\\_syncstate & 2 & Communications State - SOTDMA  Synchronization state \\\\ \\hline
 state\\_slottimeout & 3 & Communications State - SOTDMA  Frames remaining until a new slot is selected \\\\ \\hline
 state\\_slotoffset & 14 & Communications State - SOTDMA  In what slot will the next transmission occur. BROKEN\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
@@ -1133,7 +1133,7 @@ state_syncstate"""
         + delim
         + "2"
         + delim
-        + """Communications State - SOTDMA  Sycronization state
+        + """Communications State - SOTDMA  Synchronization state
 state_slottimeout"""
         + delim
         + "3"

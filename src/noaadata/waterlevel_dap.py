@@ -49,7 +49,7 @@ datasetURL = "http://opendap.co-ops.nos.noaa.gov/dods/IOOS/Raw_Water_Level"
 waterlevelDataset = dap.client.open(datasetURL)
 "This set only contains raw 6 minute water level data"
 waterlevelSeq = waterlevelDataset["WATERLEVEL_RAW_PX"]
-"This is a sequence containter for waterlevels"
+"This is a sequence container for waterlevels"
 
 stationsAll = {
     "8639348": "Money Point",
