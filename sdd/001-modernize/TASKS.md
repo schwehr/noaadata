@@ -153,15 +153,15 @@ ______________________________________________________________________
 
 ## Phase 4: Python Syntax & Language Modernization
 
-- [ ] **4.1 Automated Syntax Upgrades (`pyupgrade`)**
+- [x] **4.1 Automated Syntax Upgrades (`pyupgrade`)**
 
-  - [ ] Run `pyupgrade --py313-plus` across all Python source files in `src/`,
+  - [x] Run `pyupgrade --py313-plus` across all Python source files in `src/`,
     `tests/`, and `scripts/`.
-  - [ ] Strip remaining Python 2 compatibility artifacts: remove explicit
+  - [x] Strip remaining Python 2 compatibility artifacts: remove explicit
     `(object)` inheritance, modernize exception syntax
     (`except Exception as err:`), and convert `super(Class, self)` to
     zero-argument `super()`.
-  - [ ] Verification command: `uv run ruff check`
+  - [x] Verification command: `uv run ruff check`
 
 - [ ] **4.2 String Formatting Modernization**
 

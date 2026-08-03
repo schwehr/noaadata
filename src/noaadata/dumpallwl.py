@@ -11,11 +11,11 @@ import calendar
 import sys
 from decimal import Decimal
 
+import ais.waterlevel as wl_ais
+from ais.nmea import buildNmea
 from SOAPpy import SOAPProxy
 
-import ais.waterlevel as wl_ais
 import noaadata.stations as Stations
-from ais.nmea import buildNmea
 
 stations = Stations.ActiveStations(forceCache=True)
 

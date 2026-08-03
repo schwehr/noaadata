@@ -32,8 +32,6 @@ def main():
             connected = True
             print("CONNECT to ", host_name, port_num)
 
-        buf = ""
-
         prev_time = time.time()
         rcv_count = 0
         while connected:
@@ -48,7 +46,7 @@ def main():
                 )
             if count % 100 == 0:
                 time.sleep(0.01)
-            readersready, outputready, exceptready = select.select(
+            readersready, _outputready, _exceptready = select.select(
                 [
                     soc,
                 ],
@@ -71,10 +69,10 @@ def main():
             if dt >= 1.0:
                 rate = rcv_count / dt
                 offset = now - start_time
-                o.write("{offset} {rate} {rcv_count} {now} {dt}\n".format(**locals()))
+                o.write(f"{offset} {rate} {rcv_count} {now} {dt}\n")
                 o.flush()
                 if count % 5 == 0:
-                    print("{offset} {rate} {rcv_count} {now}".format(**locals()))
+                    print(f"{offset} {rate} {rcv_count} {now}")
                 rcv_count = 0
                 prev_time = now
 
