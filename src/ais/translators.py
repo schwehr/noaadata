@@ -1,15 +1,11 @@
 #!/Usr/bin/env python
 """Codecs to handle encoding to and from BitVectors."""
 
-import sys
 from decimal import Decimal
 from optparse import OptionParser
 
+from aisutils import aisstring, binary
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-
 
 encode = {}
 """use this table to get the functions to go from usable values in python to bitvectors"""
@@ -60,9 +56,7 @@ def bool_enc(val, bitSize):
 def bool_dec(bv):
     """@rtype: bool"""
     assert len(bv) == 1
-    if bv[0] == 0:
-        return False
-    return True
+    return bv[0] != 0
 
 
 encode["bool"] = bool_enc

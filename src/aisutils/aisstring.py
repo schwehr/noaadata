@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 2068 $".split()[1]
-__date__ = "$Date: 2006-05-02 08:17:59 -0400 (Tue, 02 May 2006) $".split()[1]
+__version__ = ["$Revision:", "2068", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-05-02",
+    "08:17:59",
+    "-0400",
+    "(Tue,",
+    "02",
+    "May",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -37,11 +47,12 @@ Handle encoding and decoding AIS strings.
 # python standard library
 import sys
 
+# Local
+from . import binary
+
 # External libs
 from .BitVector import BitVector
 
-# Local
-from . import binary
 # import verbosity
 # from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
 
@@ -331,7 +342,7 @@ def encode(string, bitSize=None):
                 bitSize,
                 len(bv),
             )
-            assert False
+            raise AssertionError()
         extra = bitSize - len(bv)
         bv = bv + BitVector(size=extra)
     return bv

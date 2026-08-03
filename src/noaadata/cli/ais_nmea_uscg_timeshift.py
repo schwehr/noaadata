@@ -11,9 +11,8 @@ import sys
 
 import ais.ais_msg_1_handcoded as ais_msg_1
 import ais.ais_msg_4_handcoded as ais_msg_4
-
-from aisutils.uscg import uscg_ais_nmea_regex
 from aisutils import binary
+from aisutils.uscg import uscg_ais_nmea_regex
 
 
 def main():
@@ -51,7 +50,7 @@ def main():
         else:
             if time_of_arrival_prev is not None:
                 dt_time_of_arrival = time_of_arrival - time_of_arrival_prev
-                dt_time_of_arrival = "%8.4f" % dt_time_of_arrival
+                dt_time_of_arrival = f"{dt_time_of_arrival:8.4f}"
             else:
                 dt_time_of_arrival = "N/A".rjust(8)
             time_of_arrival_prev = time_of_arrival
@@ -59,7 +58,7 @@ def main():
         try:
             slot_num = int(match["slot"])
             slot_t = slot_num / 2250.0 * 60
-            slot_t = "%5.2f" % slot_t
+            slot_t = f"{slot_t:5.2f}"
         except:
             slot_num = "N/A"
             slot_t = "N/A"
@@ -90,7 +89,6 @@ def main():
             msg = ais_msg_1.decode(bits)
             # print msg.keys()
             # all_keys.update(set(msg.keys()))
-            msg_slot = "N/A"
             if "slot_number" not in msg:
                 msg["slot_number"] = "N/A"
                 msg["slot_time"] = "N/A"
@@ -110,7 +108,6 @@ def main():
             all_keys.update(set(msg.keys()))
             # print msg
 
-            msg_slot = "N/A"
             if "slot_number" not in msg:
                 msg["slot_number"] = "N/A"
                 msg["slot_time"] = "N/A"

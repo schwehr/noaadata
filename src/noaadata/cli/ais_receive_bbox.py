@@ -1,10 +1,20 @@
 #!/usr/bin/env python
-__author__    = 'Kurt Schwehr'
-__version__   = '$Revision: 4799 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
+__author__ = "Kurt Schwehr"
+__version__ = ["$Revision:", "4799", "$"][1]
+__revision__ = __version__  # For pylint
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
+__copyright__ = "2008"
+__license__ = "Apache 2.0"
 
 """Filter AIS messages to a bounding box.
 
@@ -14,51 +24,55 @@ TODO(schwehr): How to deal with bad positions?
 """
 import sys
 
-import ais.ais_msg_1 as m1
 import ais.binary
-import aisutils.uscg as uscg
+
+import ais.ais_msg_1 as m1
+from aisutils import uscg
 
 
-def get_stations_bboxes(filename,current_stations=None,verbose=False):
+def get_stations_bboxes(filename, current_stations=None, verbose=False):
     """TODO(schwehr): move to utils."""
     v = verbose
     s = current_stations
     if s is None:
         s = {}
 
-    lineNum=0
+    lineNum = 0
     for line in file(filename):
-        lineNum+=1
-        if v and lineNum%1000==0:
-            sys.stderr.write('%d\n' % lineNum)
+        lineNum += 1
+        if v and lineNum % 1000 == 0:
+            sys.stderr.write("%d\n" % lineNum)
 
-        if line[3:6] not in ('VDO','VDM'):
+        if line[3:6] not in ("VDO", "VDM"):
             continue
 
         # FIX: switch to a function that only pulls the station and payload
         try:
             contents = uscg.get_contents(line)
             station = uscg.get_station(line)
-        except (ValueError,IndexError),inst:
-            sys.stderr.write('ERROR:'+str(inst)+'\n')
-            sys.stderr.write('  Unable to parse message:'+line+'\n')
+        except (ValueError, IndexError) as inst:
+            sys.stderr.write("ERROR:" + str(inst) + "\n")
+            sys.stderr.write("  Unable to parse message:" + line + "\n")
             continue
 
         if len(contents) != 28:
-            if v: sys.stderr.write('bad msg len of %d for %s\n' % (len(contents),line[:-1]))
+            if v:
+                sys.stderr.write(
+                    "bad msg len of %d for %s\n" % (len(contents), line[:-1])
+                )
             continue
         # FIX: slice out the characters for just lon/lat
         bv = ais.binary.ais6tobitvec(contents[:20])
-        #print str(bv)
+        # print str(bv)
         try:
             lon = float(m1.decodelongitude(bv))
             lat = float(m1.decodelatitude(bv))
-        except ValueError, inst:
-            sys.stderr.write('ERROR:'+str(inst)+'\n')
-            sys.stderr.write('  Not enough bits?  message:'+line)
+        except ValueError as inst:
+            sys.stderr.write("ERROR:" + str(inst) + "\n")
+            sys.stderr.write("  Not enough bits?  message:" + line)
             continue
 
-        #station = cgMsg.station
+        # station = cgMsg.station
         if lon < -180 or lon > 180:
             continue
         if lat < -90 or lon > 90:
@@ -66,42 +80,55 @@ def get_stations_bboxes(filename,current_stations=None,verbose=False):
 
         if station not in s:
             if v:
-                sys.stderr.write('new station: %s\n' % station)
-            s[station] = {'x1':lon,'x2':lon,'y1':lat,'y2':lat}
+                sys.stderr.write(f"new station: {station}\n")
+            s[station] = {"x1": lon, "x2": lon, "y1": lat, "y2": lat}
 
         cur_bbox = s[station]
-        if lon < cur_bbox['x1']: s[station]['x1'] = lon
-        if lon > cur_bbox['x2']: s[station]['x2'] = lon
+        if lon < cur_bbox["x1"]:
+            s[station]["x1"] = lon
+        if lon > cur_bbox["x2"]:
+            s[station]["x2"] = lon
 
-        if lat < cur_bbox['y1']: s[station]['y1'] = lat
-        if lat > cur_bbox['y2']: s[station]['y2'] = lat
+        if lat < cur_bbox["y1"]:
+            s[station]["y1"] = lat
+        if lat > cur_bbox["y2"]:
+            s[station]["y2"] = lat
 
     return s
 
 
 def main():
     from optparse import OptionParser
-    parser = OptionParser(usage="%prog [options] files",
-                          version="%prog "+__version__+' ('+__date__+')')
 
-    parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
-                      help='run the tests run in verbose mode')
+    parser = OptionParser(
+        usage="%prog [options] files",
+        version="%prog " + __version__ + " (" + __date__ + ")",
+    )
+
+    parser.add_option(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        default=False,
+        action="store_true",
+        help="run the tests run in verbose mode",
+    )
 
     (options, args) = parser.parse_args()
     v = options.verbose
 
-    stations = {} # Fill in with station names and {x1,x2,y1,y2}
+    stations = {}  # Fill in with station names and {x1,x2,y1,y2}
 
     for filename in args:
         if v:
-            sys.stderr.write('file %s\n' % filename)
+            sys.stderr.write(f"file {filename}\n")
 
         stations = get_stations_bboxes(filename, current_stations=stations, verbose=v)
-    #print stations
-    for key in stations.keys():
+    # print stations
+    for key in stations:
         s = stations[key]
-        print key,s['x1'],s['x2'],s['y1'],s['y2']
+        print(key, s["x1"], s["x2"], s["y1"], s["y2"])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

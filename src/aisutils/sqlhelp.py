@@ -11,12 +11,11 @@ and tables.
 # Python standard libraries
 import datetime
 import doctest
-from optparse import OptionParser
 import os
 import sys
+from optparse import OptionParser
 
 from .BitVector import BitVector
-
 
 BOMBASTIC = 4
 VERBOSE = 3
@@ -63,7 +62,7 @@ def sec2timestamp(utcsec):
     >>> sec2timestamp(int(1169703371))
     '2007-01-25 05:36:11'
     """
-    d = datetime.datetime.fromtimestamp(utcsec, datetime.timezone.utc)
+    d = datetime.datetime.fromtimestamp(utcsec, datetime.UTC)
     s = "%d-%02d-%02d %02d:%02d:%02d" % (
         d.year,
         d.month,
@@ -90,7 +89,6 @@ class select:
         self.from_tables = []
         self.orderby = None
         self.desc = False  # Descending sort if true.
-        return
 
     def setorderby(self, field, desc=False):
         """Make the returned rows come in some order."""
@@ -98,35 +96,30 @@ class select:
             print("ERROR: fix throw type exception")
         self.orderby = field
         self.desc = desc
-        return
 
     def addfield(self, fieldname):
         """Add a field name to return."""
         if str != type(fieldname):
             print("ERROR: fix throw type exception")
         self.fields.append(fieldname)
-        return
 
     def addwhere(self, boolTest):
         "Add expressions to chain together with ANDs"
         if str != type(boolTest):
             print("ERROR: fix throw type exception")
         self.where.append(boolTest)
-        return
 
     def addfrom(self, tableName):
         "Which tables the query will pull from"
         if str != type(tableName):
             print("ERROR: fix throw type exception")
         self.from_tables.append(tableName)
-        return
 
     def setlimit(self, numOfItems):
         "Set the maximum number of items to return"
         if int != type(numOfItems):
             print("ERROR: fix throw type exception")
         self.limit = numOfItems
-        return
 
     def __str__(self):
         "Return the query as a string"
@@ -156,12 +149,12 @@ class select:
         if len(self.where) > 0:
             s += self.where[-1]
 
-        if None != self.orderby:
+        if self.orderby is not None:
             s += " ORDER BY " + self.orderby
             if self.desc:
                 s += " DESC"
 
-        if None != self.limit:
+        if self.limit is not None:
             s += " LIMIT " + str(self.limit)
 
         s += ";"
@@ -185,7 +178,6 @@ class create:
         self.fields = []
         self.types = []
         self.postgis = []  # Tuples of (field,typeName,dim,srid)
-        return
 
     def add(self, field, typeStr):
         """
@@ -204,7 +196,6 @@ class create:
         """
         self.fields.append(field)
         self.types.append(typeStr)
-        return
 
     def addPrimaryKey(self, keyName="key"):
         """
@@ -213,17 +204,16 @@ class create:
         """
 
         self.fields.append(keyName)
-        if "sqlite" == self.dbType:
+        if self.dbType == "sqlite":
             self.types.append("INTEGER PRIMARY KEY")
-        elif "postgres" == self.dbType:
+        elif self.dbType == "postgres":
             self.types.append("SERIAL PRIMARY KEY")
         else:
             print(
                 "Do not know how to construct a primary key for database type of",
                 self.dbType,
             )
-            assert False
-        return
+            raise AssertionError()
 
     def addInt(self, field):
         """
@@ -283,7 +273,6 @@ class create:
         """
         self.fields.append(field)
         self.types.append("TIMESTAMP")
-        return
 
     def addPostGIS(self, field, typeName, dimension, SRID="-1"):
         """
@@ -312,7 +301,7 @@ class create:
         assert len(self.types) > 0
         assert len(self.fields) == len(self.types)
         cstr = "CREATE TABLE "
-        if "postgres" == self.dbType:
+        if self.dbType == "postgres":
             cstr += self.table.lower() + " ("
             for i in range(len(self.fields) - 1):
                 cstr += str(self.fields[i].lower()) + " " + str(self.types[i]) + ", "
@@ -362,7 +351,6 @@ class insert:
         self.fields = []
         self.values = []
         self.postGIS = []
-        return
 
     def dump(self):
         """Print out a safer dump to std out rather than str for debugging"""
@@ -380,20 +368,20 @@ class insert:
 
     def __str__(self):
         "Return the SQL string for the insert"
-        if 0 == len(self.fields):
+        if len(self.fields) == 0:
             print("WARNING: empty insert.  returning empty string")
             return ""  # FIX: throw exception and a hissy fit
 
         s = "INSERT INTO "
 
-        if "postgres" == self.dbType:
+        if self.dbType == "postgres":
             s += self.table.lower() + " "
         else:
             s += self.table + " "
 
         assert len(self.fields) == len(self.values)
         fields = None
-        if "postgres" == self.dbType:
+        if self.dbType == "postgres":
             fields = [f.lower() for f in self.fields]
         else:
             fields = self.fields
@@ -411,16 +399,14 @@ class insert:
         for i in range(len(fields)):
             # s1List.append(str(fields[i]))
             if bool == type(self.values[i]):
-                if "sqlite" == self.dbType:
+                if self.dbType == "sqlite":
                     if self.values[i]:
                         s2List.append("1")
                     else:
                         s2List.append("0")
                 else:
                     s2List.append(str(self.values[i]))
-            elif isinstance(self.values[i], BitVector):
-                s2List.append("'" + str(self.values[i]) + "'")
-            elif str == type(self.values[i]):
+            elif isinstance(self.values[i], BitVector) or str == type(self.values[i]):
                 s2List.append("'" + str(self.values[i]) + "'")
             elif type(self.values[i]) in (int, float):
                 s2List.append(str(self.values[i]))
@@ -463,7 +449,6 @@ class insert:
             value = value.replace('"', '""')
         self.fields.append(field)
         self.values.append(value)
-        return
 
 
 def sqlInsertStrFromList(table, aList, dbType="postgres"):
@@ -485,11 +470,11 @@ def sqlInsertStrFromList(table, aList, dbType="postgres"):
     @rtype: str
     """
 
-    if "postgres" == dbType:
+    if dbType == "postgres":
         table = table.lower()
     ins = "insert into " + table + " ("
     first = []
-    if "postgres" == dbType:
+    if dbType == "postgres":
         first = [f[0].lower() for f in aList]
     else:
         first = [f[0] for f in aList]

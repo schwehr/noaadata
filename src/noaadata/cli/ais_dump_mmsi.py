@@ -7,12 +7,10 @@
  TODO(schwehr):Option to check the AIVDM tags to make sure that the messages should be combined
 """
 
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
 
 from aisutils import binary
-from aisutils import aisstring
-from aisutils.BitVector import BitVector
 
 
 def main():
@@ -38,7 +36,7 @@ def main():
 
     (options, args) = parser.parse_args()
     o = sys.stdout
-    if None != options.outputFilename:
+    if options.outputFilename is not None:
         o = open(options.outFilename, "w")
 
     print(args)
@@ -48,7 +46,7 @@ def main():
             if line[0] == "#":
                 continue
             fields = line.split(",")[:6]
-            if "1" != fields[2]:  # Must be the start of a sequence
+            if fields[2] != "1":  # Must be the start of a sequence
                 continue
             if len(fields[5]) < 7:
                 continue

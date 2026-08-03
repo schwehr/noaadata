@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 10544 $".split()[1]
-__date__ = "$Date: 2008-10-14 19:30:01 -0400 (Tue, 14 Oct 2008) $".split()[1]
+__version__ = ["$Revision:", "10544", "$"][1]
+__date__ = [
+    "$Date:",
+    "2008-10-14",
+    "19:30:01",
+    "-0400",
+    "(Tue,",
+    "14",
+    "Oct",
+    "2008)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 DOS_EOL = "\x0d\x0a"
@@ -11,8 +21,11 @@ DOS style end-of-line (<cr><lf>) for talking to AIS base stations
 EOL = DOS_EOL
 EOL = "\r\n"
 
-import os, time, serial
+import os
 import sys
+import time
+
+import serial
 
 
 def main():
@@ -83,7 +96,7 @@ def main():
         help="Number of loops to listen for responses [default: %default]",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     # options.timeout=10
 
     options.baud = int(options.baud)
@@ -91,7 +104,7 @@ def main():
     ser = serial.Serial(options.port, options.baud, timeout=options.timeout)
     time.sleep(0.1)
     for line in sys.stdin:
-        print('sending "%s"' % line.strip())
+        print(f'sending "{line.strip()}"')
         ser.write(line)
 
 

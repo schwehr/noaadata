@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -29,10 +39,9 @@ Send a message to a socket.  Used to control an AIS base station over ethernet.
 """
 )
 
-import socket, select
-import sys
+import select
+import socket
 import time
-
 
 DOS_EOL = "\x0d\x0a"
 """
@@ -153,21 +162,18 @@ def main():
         # print start
         while options.receive and (time.time() - start < options.time):
             # print time.time()-start
-            readersready, outputready, exceptready = select.select([s], [], [], 1)
+            readersready, _outputready, _exceptready = select.select([s], [], [], 1)
             for sock in readersready:
                 data = sock.recv(100)
                 buf += data
                 newline = buf.find("\n")
-                if -1 != newline:
+                if newline != -1:
                     fields = buf.split("\n")
                     if options.uscgFormat:
                         print(fields[0].strip() + "," + str(time.time()))
                     else:
                         print(fields[0].strip())
-                    if len(fields) > 1:
-                        buf = "" + buf[newline + 1 :]
-                    else:
-                        buf = ""
+                    buf = "" + buf[newline + 1 :] if len(fields) > 1 else ""
     if len(buf) > 0:
         print(buf)
 

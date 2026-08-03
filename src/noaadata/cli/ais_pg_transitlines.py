@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = """
 Create track lines for each transit from points in each line.
@@ -44,8 +54,8 @@ AS '
 
 import os
 import sys
+
 import psycopg2 as psycopg
-from aistuils import sqlhelp
 
 
 def main():
@@ -102,7 +112,7 @@ def main():
         help="Make the test output verbose",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     verbose = options.verbose
 
     connectStr = (

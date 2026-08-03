@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 12383 $".split()[1]
-__date__ = "$Date: 2009-08-03 09:41:06 -0400 (Mon, 03 Aug 2009) $".split()[1]
+__version__ = ["$Revision:", "12383", "$"][1]
+__date__ = [
+    "$Date:",
+    "2009-08-03",
+    "09:41:06",
+    "-0400",
+    "(Mon,",
+    "03",
+    "Aug",
+    "2009)",
+    "$",
+][1]
 __author__ = ""
 __doc__ = (
     """
@@ -55,13 +65,12 @@ convert -delay 200 -loop  100 2006-01-31.xymt*.gif anim.gif
 """
 )
 
-import sys
 import os
-import pyExcelerator as excel
+import sys
 from datetime import datetime
 
+import pyExcelerator as excel
 from pyproj import Proj
-import shapely.geometry
 
 
 def lon_to_utm_zone(lon):
@@ -92,7 +101,7 @@ def detectTransits(inFile, basename, options):
     # sys.stderr.write
     print("utm_zone:", utm_zone)
     params = {"proj": "utm", "zone": utm_zone}
-    proj = Proj(params)
+    Proj(params)
 
     transitsFile = None
     transitsFilename = basename + ".transits"
@@ -251,16 +260,14 @@ def detectTransits(inFile, basename, options):
             newT = int(pt[2])
             # max_delta_t = 0
 
-            if None == start:
+            if start is None:
                 start = newT
 
-            if t != None:
+            if t is not None:
                 dt = newT - t
                 print(dt, max_delta_t)
-                if dt > max_delta_t:
-                    # print 'setting!'
-                    max_delta_t = dt
-                    # print max_delta_t
+                max_delta_t = max(max_delta_t, dt)
+                # print max_delta_t
 
                 if newT > t + 3600:
                     shipTransits += 1
@@ -391,7 +398,7 @@ def detectTransits(inFile, basename, options):
 
         # print transits
 
-        if None != summaryFile:
+        if summaryFile is not None:
             summaryFile.write(ship + " " + str(shipTransits) + "\n")
         if transitsFile:
             transitsFile.write("\n\n")
@@ -539,13 +546,13 @@ def main():
     (options, args) = parser.parse_args()
 
     if len(args) == 0:
-        if options.basename == None:
+        if options.basename is None:
             options.basename = "transit_log"
         detectTransits(sys.stdin, options.basename, options)
     else:
         for filename in args:
             basename = options.basename
-            if None == basename:
+            if basename is None:
                 basename = filename
             detectTransits(file(filename), basename, options)
 

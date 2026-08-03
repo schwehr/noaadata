@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 13257 $".split()[1]
-__date__ = "$Date: 2010-03-10 09:44:45 -0500 (Wed, 10 Mar 2010) $".split()[1]
+__version__ = ["$Revision:", "13257", "$"][1]
+__date__ = [
+    "$Date:",
+    "2010-03-10",
+    "09:44:45",
+    "-0500",
+    "(Wed,",
+    "10",
+    "Mar",
+    "2010)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = """
 MakeLine is really really slow on 180K point lines, so this is the same as the other
@@ -43,7 +53,8 @@ AS '
 
  TODO(schwehr):find a pure sql way to do this on the server side.  This would be the run section of the SQL boo
 """
-import os, sys
+import os
+import sys
 
 
 def main():
@@ -109,7 +120,7 @@ def main():
         help="Make the test output verbose",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     verbose = options.verbose
     import psycopg2 as psycopg
 

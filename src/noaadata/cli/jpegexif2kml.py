@@ -2,23 +2,26 @@
 """Convert a sequence of geotagged jpeg images to kml."""
 
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
 import sys
-import os
 
-import time
-import datetime
-
-import exceptions  # For KeyboardInterupt pychecker complaint
-import traceback
-
-import pyexiv2
 import Image  # PIL
+import pyexiv2
 
 
 def rational2deg(r):
@@ -71,10 +74,10 @@ def process_image(filename):
     image = pyexiv2.Image(filename)
     image.readMetadata()
     lon = rational2deg(image["Exif.GPSInfo.GPSLongitude"])
-    if "W" == image["Exif.GPSInfo.GPSLongitudeRef"]:
+    if image["Exif.GPSInfo.GPSLongitudeRef"] == "W":
         lon = -lon
     lat = rational2deg(image["Exif.GPSInfo.GPSLatitude"])
-    if "S" == image["Exif.GPSInfo.GPSLatitudeRef"]:
+    if image["Exif.GPSInfo.GPSLatitudeRef"] == "S":
         lat = -lat
     dt = image["Exif.Image.DateTime"]
 
@@ -87,8 +90,8 @@ def process_image(filename):
     description = [
         indent + filename,
         indent + str(dt),
-        indent + "Longitude %s" % lon,
-        indent + "Latitude %s" % lat,
+        indent + f"Longitude {lon}",
+        indent + f"Latitude {lat}",
         indent + '<img src="' + thumbname + '"/>',
     ]
     description = "<br/>\n".join(description)

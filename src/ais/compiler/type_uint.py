@@ -34,13 +34,14 @@ def encode(
         )
 
     assert type == "uint"
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("\t### FIELD: " + name + " (type=" + type + ")\n")
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -55,7 +56,7 @@ def encode(
             o.write("\n")
         return
 
-    if None == unavailable:
+    if unavailable is None:
         o.write(
             "\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params['"
             + name
@@ -142,14 +143,14 @@ def decode(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     assert arraylen == 1  # FIX... handle arrays
     assert numbits >= 1
     if not decodeOnly:
         verbose = False
 
-    if None != required:
+    if required is not None:
         int(required)  # Make sure required is a number
         if not decodeOnly:
             o.write("\t" + dataDict + "['" + name + "']=")

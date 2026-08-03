@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 12372 $".split()[1]
+__version__ = ["$Revision:", "12372", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2009-08-01 16:02:01 -0400 (Sat, 01 Aug 2009) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2009-08-01",
+    "16:02:01",
+    "-0400",
+    "(Sat,",
+    "01",
+    "Aug",
+    "2009)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 __contact__ = "kurt at ccom.unh.edu"
@@ -21,10 +31,11 @@ AIS database utilities.
 @see: U{WKT<http://dev.mysql.com/doc/refman/5.0/en/gis-wkt-format.html>}
 """
 
+import datetime
 import os
 import sys
-import datetime
 import traceback
+
 import psycopg2 as psycopg
 
 import ais
@@ -263,8 +274,7 @@ def rebuild_track_lines(
             sql = "SELECT distinct(userid) FROM position WHERE cg_timestamp > %s;"
             print("FIX remove sql == ", sql)
             sys.stderr.write(
-                "FIX: remove  startTime: %s   now: %s \n"
-                % (str(startTime), str(datetime.datetime.utcnow()))
+                f"FIX: remove  startTime: {startTime!s}   now: {datetime.datetime.utcnow()!s} \n"
             )
             cu.execute(sql, (startTime,))
         else:
@@ -278,8 +288,7 @@ def rebuild_track_lines(
         # sys.stderr.write('  vessels %s\n' % str(vessels))
         sys.stderr.write("  Number of vessels %d\n" % len(vessels))
         sys.stderr.write(
-            "  startTime: %s   now: %s \n"
-            % (str(startTime), str(datetime.datetime.utcnow()))
+            f"  startTime: {startTime!s}   now: {datetime.datetime.utcnow()!s} \n"
         )
 
     for vessel in vessels:
@@ -310,15 +319,13 @@ def rebuild_track_lines(
             if x == "181" and y == "91":
                 if v:
                     sys.stderr.write(
-                        "skipping point with no position: %s %s\n" % (vessel, row)
+                        f"skipping point with no position: {vessel} {row}\n"
                     )
                 continue
             linePoints.append(row[0].split("(")[1].split(")")[0])
         if len(linePoints) < 2:  # lineLen<2:
             if v:
-                sys.stderr.write(
-                    "Line needs at least 2 points for vessel %s\n" % vessel
-                )
+                sys.stderr.write(f"Line needs at least 2 points for vessel {vessel}\n")
             cu.execute(
                 "SELECT " + trackKey + " FROM " + trackTable + " WHERE userid = %s;",
                 (vessel,),
@@ -326,7 +333,7 @@ def rebuild_track_lines(
             row = cu.fetchall()
             if len(row) > 0:
                 if v:
-                    sys.stderr.write("dropping vessel %s from track\n" % vessel)
+                    sys.stderr.write(f"dropping vessel {vessel} from track\n")
                 cu.execute(
                     "DELETE FROM " + trackTable + " WHERE userid = %s;", (vessel,)
                 )
@@ -342,10 +349,7 @@ def rebuild_track_lines(
 
         # Always strip the junk off the name
         name = cu.fetchall()
-        if len(name) == 1:
-            name = name[0][0].strip("@ ")
-        else:
-            name = str(vessel)
+        name = name[0][0].strip("@ ") if len(name) == 1 else str(vessel)
 
         if name == "":
             name = str(vessel)
@@ -415,7 +419,7 @@ def rebuild_track_lines(
         # checkpoint()
         count = cu.fetchone()
         # checkpoint()
-        print('COUNT track_lines "%s"' % count)
+        print(f'COUNT track_lines "{count}"')
 
         # checkpoint()
 
@@ -467,8 +471,7 @@ def rebuild_last_position(
     #
     if v:
         sys.stderr.write(
-            "REBUILD_LAST_POSITION: (%s to %s)\n"
-            % (str(startTime), str(datetime.datetime.utcnow()))
+            f"REBUILD_LAST_POSITION: ({startTime!s} to {datetime.datetime.utcnow()!s})\n"
         )
 
     vesselsUpdated = 0
@@ -484,7 +487,7 @@ def rebuild_last_position(
             vesselsClassA.add(v[0])
 
     if v:
-        sys.stderr.write("  num class A vessels: %s\n" % len(vesselsClassA))
+        sys.stderr.write(f"  num class A vessels: {len(vesselsClassA)}\n")
 
     for vessel in vesselsClassA:
         query = "SELECT position,cog,sog,cg_timestamp FROM position WHERE userid=%s ORDER BY cg_sec DESC LIMIT 1;"
@@ -522,7 +525,7 @@ def rebuild_last_position(
             row = cu.fetchall()
             if len(row) > 0:
                 if v:
-                    sys.stderr.write("dropping vessel %s from last_position\n" % vessel)
+                    sys.stderr.write(f"dropping vessel {vessel} from last_position\n")
                 q = "DELETE FROM " + lastPosTable + " WHERE userid = %s;"
                 # sys.stderr.write('delete cmd: %s %s\n' % (q,str(vessel)))
                 cu.execute(q, (vessel,))
@@ -535,10 +538,7 @@ def rebuild_last_position(
             + " LIMIT 1"
         )
         name = cu.fetchall()
-        if len(name) == 1:
-            name = name[0][0].strip("@ ")
-        else:
-            name = str(vessel)
+        name = name[0][0].strip("@ ") if len(name) == 1 else str(vessel)
 
         if name == "":
             sys.stderr.write("Bad ship with empty name: %d\n" % vessel)

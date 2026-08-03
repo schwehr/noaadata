@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = """
@@ -13,7 +23,8 @@ Convert the old ais-py log format with ZDA nmea strings to the USCG log format
 @license: Apache 2.0
 """
 
-import sys, calendar
+import calendar
+import sys
 
 # import nmea
 # import nmeamessages as nm
@@ -56,7 +67,7 @@ def main():
     verbose = options.verbose
 
     out = sys.stdout
-    if options.outFile != None:
+    if options.outFile is not None:
         out = file(options.outFile, "w")
 
     for filename in args:
@@ -66,7 +77,7 @@ def main():
             linenum += 1
             if verbose and linenum % 1000 == 0:
                 sys.stderr.write("line " + str(linenum) + "\n")
-            if "#" == line[0]:
+            if line[0] == "#":
                 continue  # Skip comments
             if line[3:6] == "ZDA":
                 z = nmea.zda.zdaDecode(line)
@@ -80,7 +91,7 @@ def main():
                 )
                 curTime = calendar.timegm(timeTuple)
                 continue
-            if line[1:6] in ("AITXT", "AIVDM") and None != curTime:
+            if line[1:6] in ("AITXT", "AIVDM") and curTime is not None:
                 out.write(
                     line.strip() + ",r" + options.station + "," + str(curTime) + "\n"
                 )

@@ -18,19 +18,14 @@ You may need to some intial setup: (examples assume mac osx + fink)
  TODO(schwehr):Add an option to allow a prefix to the database table names.
 """
 
-from decimal import Decimal
 import os
 import sys
-import io
-
-from aisutils.BitVector import BitVector
-from aisutils import binary
-from aisutils import sqlhelp
 
 import ais
 import ais.ais_msg_1
 import ais.ais_msg_2
 import ais.ais_msg_3
+from aisutils import binary
 
 
 def createTables(cx, verbose=False):
@@ -69,8 +64,6 @@ def loadData(cx, datafile, verbose=False, uscg=True):
     cu = cx.cursor()
     lineNum = 0
 
-    import psycopg2  # For ProgrammingError exception
-
     counts = {1: 0, 2: 0, 3: 0, 5: 0}
 
     #    buf=[]
@@ -94,7 +87,7 @@ def loadData(cx, datafile, verbose=False, uscg=True):
                 print("# skipping", line)
             continue
 
-        payload = bv = binary.ais6tobitvec(line.split(",")[5])
+        bv = binary.ais6tobitvec(line.split(",")[5])
 
         # TODO(schwehr): Need to take padding into account.
         if msgNum in (1, 2, 3):
@@ -103,12 +96,11 @@ def loadData(cx, datafile, verbose=False, uscg=True):
                 print("#  ", line, end=" ")
                 print("#   Got length", len(bv), "expected", 168)
                 continue
-        elif msgNum == 5:
-            if len(bv) < 424:
-                print("# ERROR: skipping bad shipdata message, line:", lineNum)
-                print("#  ", line, end=" ")
-                print("#   Got length", len(bv), "expected", 424)
-                continue
+        elif msgNum == 5 and len(bv) < 424:
+            print("# ERROR: skipping bad shipdata message, line:", lineNum)
+            print("#  ", line, end=" ")
+            print("#   Got length", len(bv), "expected", 424)
+            continue
 
         fields = line.split(",")
 
@@ -119,7 +111,7 @@ def loadData(cx, datafile, verbose=False, uscg=True):
 
             # print len(fields),fields
             for i in range(len(fields) - 1, 5, -1):
-                if 0 < len(fields[i]) and "r" == fields[i][0]:
+                if len(fields[i]) > 0 and fields[i][0] == "r":
                     cg_station = fields[i]
                     break  # Found it so ditch the for loop
 
@@ -170,11 +162,11 @@ def loadData(cx, datafile, verbose=False, uscg=True):
         counts[msgNum] += 1
 
         if uscg:
-            if None != cg_sec:
+            if cg_sec is not None:
                 ins.add("cg_sec", cg_sec)
-            if None != cg_timestamp:
+            if cg_timestamp is not None:
                 ins.add("cg_timestamp", cg_timestamp)
-            if None != cg_station:
+            if cg_station is not None:
                 ins.add("cg_r", cg_station)
         if verbose:
             print(str(ins))

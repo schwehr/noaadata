@@ -9,7 +9,6 @@ import logging
 import os
 import sys
 
-
 import aisutils.database
 
 
@@ -33,8 +32,9 @@ def main():
         dest="dbType",
         default=aisutils.database.dbTypes[0],
         choices=aisutils.database.dbTypes,
-        help="Which database type to use [default: %%default]"
-        " on of (%s)" % ", ".join(aisutils.database.dbTypes),
+        help="Which database type to use [default: %default] on of ({})".format(
+            ", ".join(aisutils.database.dbTypes)
+        ),
     )
 
     aisutils.database.stdCmdlineOptions(parser, "all")
@@ -126,7 +126,7 @@ def main():
         help="Remove the last position table for postgis",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     verbose = options.verbose
 
     if options.createDB and options.dbType != "sqlite":

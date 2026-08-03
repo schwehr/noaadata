@@ -1,4 +1,4 @@
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __docformat__ = "epytext en"
 
 __doc__ = (
@@ -89,11 +89,11 @@ import ais_msg_19
 import ais_msg_20
 import ais_msg_21
 import ais_msg_22
+
 # import ais_msg_23
 # import ais_msg_24
 # import ais_msg_25
 # import ais_msg_26
-
 import binary
 
 msgModByNumber = {

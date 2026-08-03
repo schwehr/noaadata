@@ -7,15 +7,14 @@ Try to pull all the water level messages for a station over a long
 time period.
 """
 
-from decimal import Decimal
 import calendar
 import sys
+from decimal import Decimal
 
+import ais.waterlevel as wl_ais
+from ais.nmea import buildNmea
 from SOAPpy import SOAPProxy
 
-import ais.ais_msg_8 as msg8_ais
-from ais.nmea import buildNmea
-import ais.waterlevel as wl_ais
 import noaadata.stations as Stations
 
 stations = Stations.ActiveStations(forceCache=True)
@@ -57,7 +56,7 @@ def splitNoaaDateTimeSoap(datetimeStr):
     (
         hr,
         mi,
-        sec,
+        _sec,
     ) = fields[1].split(":")
 
     return yr, mo, da, hr, mi
@@ -116,7 +115,7 @@ def noaawaterlevel2aisBits(stationID, mmsi, datum, wl, verbose=False, debug=Fals
 
     # Commented params are those that are required by the spec and do not need to be set.
     # params['dac'] = 366  # params['fid'] = 1  # params['efid'] = 1
-    yearDummy, monthDummy, dayDummy, hourDummy, minDummy = splitNoaaDateTimeSoap(
+    _yearDummy, monthDummy, dayDummy, hourDummy, minDummy = splitNoaaDateTimeSoap(
         wl.timeStamp
     )
     params["month"] = int(monthDummy)

@@ -16,16 +16,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
-
 
 fieldList = (
     "MessageID",
@@ -197,11 +192,11 @@ def encode(params, validate=False):
     if "draught" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["draught"]) * Decimal("10")))), 8
+                BitVector(intVal=int(Decimal(params["draught"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(0)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
     if "destination" in params:
         bvList.append(aisstring.encode(params["destination"], 120))
     else:
@@ -602,7 +597,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("shipdata:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -646,8 +641,8 @@ def printFields(
             out.write("    dte:              " + str(params["dte"]) + "\n")
         if "Spare" in params:
             out.write("    Spare:            " + str(params["Spare"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -658,15 +653,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1051,23 +1044,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1075,7 +1067,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1105,26 +1097,26 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 5 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-AISversion & 2 & Compliant with what edition.  0 is the first edition. \\\\ \hline
-IMOnumber & 30 & vessel identification number (different than mmsi) \\\\ \hline
-callsign & 42 & Ship radio call sign \\\\ \hline
-name & 120 & Vessel name \\\\ \hline
-shipandcargo & 8 & Type of ship and cargo type \\\\ \hline
-dimA & 9 & Distance from bow to reference position \\\\ \hline
-dimB & 9 & Distance from reference position to stern \\\\ \hline
-dimC & 6 & Distance from port side to reference position \\\\ \hline
-dimD & 6 & Distance from reference position to starboard side \\\\ \hline
-fixtype & 4 & Method used for positioning \\\\ \hline
-ETAmonth & 4 & Estimated time of arrival - month \\\\ \hline
-ETAday & 5 & Estimated time of arrival - day \\\\ \hline
-ETAhour & 5 & Estimated time of arrival - hour \\\\ \hline
-ETAminute & 6 & Estimated time of arrival - minutes \\\\ \hline
-draught & 8 & Maximum present static draught \\\\ \hline
-destination & 120 & Where is the vessel going \\\\ \hline
-dte & 1 & Data terminal ready \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 5 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+AISversion & 2 & Compliant with what edition.  0 is the first edition. \\\\ \\hline
+IMOnumber & 30 & vessel identification number (different than mmsi) \\\\ \\hline
+callsign & 42 & Ship radio call sign \\\\ \\hline
+name & 120 & Vessel name \\\\ \\hline
+shipandcargo & 8 & Type of ship and cargo type \\\\ \\hline
+dimA & 9 & Distance from bow to reference position \\\\ \\hline
+dimB & 9 & Distance from reference position to stern \\\\ \\hline
+dimC & 6 & Distance from port side to reference position \\\\ \\hline
+dimD & 6 & Distance from reference position to starboard side \\\\ \\hline
+fixtype & 4 & Method used for positioning \\\\ \\hline
+ETAmonth & 4 & Estimated time of arrival - month \\\\ \\hline
+ETAday & 5 & Estimated time of arrival - day \\\\ \\hline
+ETAhour & 5 & Estimated time of arrival - hour \\\\ \\hline
+ETAminute & 6 & Estimated time of arrival - minutes \\\\ \\hline
+draught & 8 & Maximum present static draught \\\\ \\hline
+destination & 120 & Where is the vessel going \\\\ \\hline
+dte & 1 & Data terminal ready \\\\ \\hline
 Spare & 1 & Reserved for definition by a regional authority.\\\\ \\hline \\hline
 Total bits & 424 & Appears to take 2 slots \\\\ \\hline
 \\end{tabular}
@@ -1312,27 +1304,27 @@ class Testshipdata(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["AISversion"], params["AISversion"])
-        self.assertEqual(r["IMOnumber"], params["IMOnumber"])
-        self.assertEqual(r["callsign"], params["callsign"])
-        self.assertEqual(r["name"], params["name"])
-        self.assertEqual(r["shipandcargo"], params["shipandcargo"])
-        self.assertEqual(r["dimA"], params["dimA"])
-        self.assertEqual(r["dimB"], params["dimB"])
-        self.assertEqual(r["dimC"], params["dimC"])
-        self.assertEqual(r["dimD"], params["dimD"])
-        self.assertEqual(r["fixtype"], params["fixtype"])
-        self.assertEqual(r["ETAmonth"], params["ETAmonth"])
-        self.assertEqual(r["ETAday"], params["ETAday"])
-        self.assertEqual(r["ETAhour"], params["ETAhour"])
-        self.assertEqual(r["ETAminute"], params["ETAminute"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["AISversion"] == params["AISversion"]
+        assert r["IMOnumber"] == params["IMOnumber"]
+        assert r["callsign"] == params["callsign"]
+        assert r["name"] == params["name"]
+        assert r["shipandcargo"] == params["shipandcargo"]
+        assert r["dimA"] == params["dimA"]
+        assert r["dimB"] == params["dimB"]
+        assert r["dimC"] == params["dimC"]
+        assert r["dimD"] == params["dimD"]
+        assert r["fixtype"] == params["fixtype"]
+        assert r["ETAmonth"] == params["ETAmonth"]
+        assert r["ETAday"] == params["ETAday"]
+        assert r["ETAhour"] == params["ETAhour"]
+        assert r["ETAminute"] == params["ETAminute"]
         self.assertAlmostEqual(r["draught"], params["draught"], 1)
-        self.assertEqual(r["destination"], params["destination"])
-        self.assertEqual(r["dte"], params["dte"])
-        self.assertEqual(r["Spare"], params["Spare"])
+        assert r["destination"] == params["destination"]
+        assert r["dte"] == params["dte"]
+        assert r["Spare"] == params["Spare"]
 
 
 def addMsgOptions(parser):
@@ -1639,48 +1631,48 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.AISversionField:
+        if options.AISversionField is None:
             parser.error("missing value for AISversionField")
-        if None == options.IMOnumberField:
+        if options.IMOnumberField is None:
             parser.error("missing value for IMOnumberField")
-        if None == options.callsignField:
+        if options.callsignField is None:
             parser.error("missing value for callsignField")
-        if None == options.nameField:
+        if options.nameField is None:
             parser.error("missing value for nameField")
-        if None == options.shipandcargoField:
+        if options.shipandcargoField is None:
             parser.error("missing value for shipandcargoField")
-        if None == options.dimAField:
+        if options.dimAField is None:
             parser.error("missing value for dimAField")
-        if None == options.dimBField:
+        if options.dimBField is None:
             parser.error("missing value for dimBField")
-        if None == options.dimCField:
+        if options.dimCField is None:
             parser.error("missing value for dimCField")
-        if None == options.dimDField:
+        if options.dimDField is None:
             parser.error("missing value for dimDField")
-        if None == options.fixtypeField:
+        if options.fixtypeField is None:
             parser.error("missing value for fixtypeField")
-        if None == options.ETAmonthField:
+        if options.ETAmonthField is None:
             parser.error("missing value for ETAmonthField")
-        if None == options.ETAdayField:
+        if options.ETAdayField is None:
             parser.error("missing value for ETAdayField")
-        if None == options.ETAhourField:
+        if options.ETAhourField is None:
             parser.error("missing value for ETAhourField")
-        if None == options.ETAminuteField:
+        if options.ETAminuteField is None:
             parser.error("missing value for ETAminuteField")
-        if None == options.draughtField:
+        if options.draughtField is None:
             parser.error("missing value for draughtField")
-        if None == options.destinationField:
+        if options.destinationField is None:
             parser.error("missing value for destinationField")
-        if None == options.dteField:
+        if options.dteField is None:
             parser.error("missing value for dteField")
     msgDict = {
         "MessageID": "5",
@@ -1707,9 +1699,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1717,7 +1709,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1735,7 +1727,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

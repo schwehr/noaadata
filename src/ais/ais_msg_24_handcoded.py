@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2008-10-08 $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = ["$Date:", "2008-10-08", "$"][1]
 __author__ = "xmlbinmsg"
 
 __doc__ = (
@@ -26,15 +26,14 @@ Hand coded processing of ais msg 24
 """
 )
 
-from decimal import Decimal
 import logging
 import sys
+from decimal import Decimal
+
+from aisutils import aisstring, binary, sqlhelp
+from aisutils.BitVector import BitVector
 
 from . import ais_msg_5
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils.BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -90,7 +89,7 @@ def encode(params, validate=False):
         bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
     bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
 
-    assert False
+    raise AssertionError()
 
     return binary.joinBV(bvList)
 
@@ -119,10 +118,10 @@ def decode(bv, validate=False):
     r["UserID"] = int(bv[8:38])
     r["partnum"] = int(bv[38:40])
 
-    if 0 == r["partnum"]:  # Part A message
+    if r["partnum"] == 0:  # Part A message
         r["name"] = aisstring.decode(bv[40:160]).rstrip(" @")
 
-    elif 1 == r["partnum"]:  # Part B message
+    elif r["partnum"] == 1:  # Part B message
         r["shipandcargo"] = int(bv[40:48])
         r["vendorid"] = aisstring.decode(bv[48:90]).rstrip(" @")
         r["callsign"] = aisstring.decode(bv[90:132]).rstrip(" @")
@@ -132,10 +131,10 @@ def decode(bv, validate=False):
         r["dimD"] = int(bv[156:162])
         r["mothership"] = int(bv[132:162])
         r["spare"] = int(bv[162:168])
-    elif 2 == r["partnum"]:  # Part C message - no such thing
+    elif r["partnum"] == 2:  # Part C message - no such thing
         logging.info("Msg 24 with invalid part C.")
         r["bits"] = str(bv[40:])
-    elif 3 == r["partnum"]:  # Part D message - no such thing
+    elif r["partnum"] == 3:  # Part D message - no such thing
         logging.info("Msg 24 with invalid part D.")
         r["bits"] = str(bv[40:])
 
@@ -195,13 +194,11 @@ def printFields(
         out.write("b_staticdata:\n")
         for field in ALL_FIELDS:
             if field in params:
-                out.write("  {0:<20} {1}\n".format(field, params[field]))
-    elif "sql" == format:
+                out.write(f"  {field:<20} {params[field]}\n")
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         logging.fatal("ERROR: unknown format: %s", format)
-
-    return
 
 
 RepeatIndicatorEncodeLut = {
@@ -283,7 +280,7 @@ def sqlCreate(
     @return: An object that can be used to generate a return
     @rtype: sqlhelp.create
     """
-    if None == fields:
+    if fields is None:
         fields = fieldList
 
     c = sqlhelp.create(dbTableName, dbType=dbType)
@@ -368,7 +365,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
         else:
             i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -518,7 +515,7 @@ if __name__ == "__main__":
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.sqlCreate:

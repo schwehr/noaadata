@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 12383 $".split()[1]
+__version__ = ["$Revision:", "12383", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2009-08-03 09:41:06 -0400 (Mon, 03 Aug 2009) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2009-08-03",
+    "09:41:06",
+    "-0400",
+    "(Mon,",
+    "03",
+    "Aug",
+    "2009)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 
@@ -23,11 +33,10 @@ Try to process the tide data for summer hydro 2009.  Don't trust this code!
 @see: internal ccom wiki on tide4 at Star Island
 """
 
-import re
-import sys
-import glob
-import datetime
 import calendar  # To get unix utc seconds
+import datetime
+import glob
+import re
 
 # Fix make date and time separate so the column numbers can be auto generated
 output_names = [
@@ -117,8 +126,7 @@ def main():
     parser = OptionParser(
         usage="%prog [options]", version="%prog " + __version__ + " (" + __date__ + ")"
     )
-    (options, args) = parser.parse_args()
-    v = options.verbose
+    (_options, _args) = parser.parse_args()
 
     misses = 0
 
@@ -144,7 +152,7 @@ def main():
                     break
             if match is None:
                 if len(line) > 4:
-                    print('No_match_for_line: "%s"' % (line.strip(),))
+                    print(f'No_match_for_line: "{line.strip()}"')
                 misses += 1
                 continue
             match = match.groupdict()
@@ -158,10 +166,7 @@ def main():
         print(filename, filename[3:].lstrip("0"))
         julianday = int(filename[:3].lstrip("0"))
         daysec_str = filename[3:].lstrip("0").split(".")[0]
-        if daysec_str == "":
-            daysec = 0
-        else:
-            daysec = int(daysec_str)
+        daysec = 0 if daysec_str == "" else int(daysec_str)
 
         hour = daysec / 3600
         print("hour:", daysec, "->", hour)
@@ -181,8 +186,8 @@ def main():
                 )
                 break
 
-        if startdate == None:
-            o.write("# File has no aanderaa timestamps: %s\n" % filename)
+        if startdate is None:
+            o.write(f"# File has no aanderaa timestamps: {filename}\n")
             continue  # This file is empty
 
         print("daysec:", daysec)

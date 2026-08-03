@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -437,7 +433,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("waterlevel:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -469,8 +465,8 @@ def printFields(
             out.write("    sigma:            " + str(params["sigma"]) + "\n")
         if "source" in params:
             out.write("    source:           " + str(params["source"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -481,15 +477,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -694,23 +688,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -718,7 +711,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -748,20 +741,20 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
-dac & 10 & Designated Area Code \\\\ \hline
-fid & 6 & Functional Identifier \\\\ \hline
-month & 4 & Time the measurement represents  month 1..12 \\\\ \hline
-day & 5 & Time the measurement represents  day of the month 1..31 \\\\ \hline
-hour & 5 & Time the measurement represents  UTC hours 0..23 \\\\ \hline
-min & 6 & Time the measurement represents  minutes \\\\ \hline
-stationid & 42 & Character identifier of the station.  Usually a number. \\\\ \hline
-waterlevel & 16 & Water level in centimeters \\\\ \hline
-datum & 5 & What reference datum applies to the value \\\\ \hline
-sigma & 7 & Standard deviation of 1 second samples used to compute the water level height.  FIX: is this the correct description of sigma? \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code \\\\ \\hline
+fid & 6 & Functional Identifier \\\\ \\hline
+month & 4 & Time the measurement represents  month 1..12 \\\\ \\hline
+day & 5 & Time the measurement represents  day of the month 1..31 \\\\ \\hline
+hour & 5 & Time the measurement represents  UTC hours 0..23 \\\\ \\hline
+min & 6 & Time the measurement represents  minutes \\\\ \\hline
+stationid & 42 & Character identifier of the station.  Usually a number. \\\\ \\hline
+waterlevel & 16 & Water level in centimeters \\\\ \\hline
+datum & 5 & What reference datum applies to the value \\\\ \\hline
+sigma & 7 & Standard deviation of 1 second samples used to compute the water level height.  FIX: is this the correct description of sigma? \\\\ \\hline
 source & 3 & How the water level was derived\\\\ \\hline \\hline
 Total bits & 149 & Appears to take 1 slot with 19 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -913,21 +906,21 @@ class Testwaterlevel(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["month"], params["month"])
-        self.assertEqual(r["day"], params["day"])
-        self.assertEqual(r["hour"], params["hour"])
-        self.assertEqual(r["min"], params["min"])
-        self.assertEqual(r["stationid"], params["stationid"])
-        self.assertEqual(r["waterlevel"], params["waterlevel"])
-        self.assertEqual(r["datum"], params["datum"])
-        self.assertEqual(r["sigma"], params["sigma"])
-        self.assertEqual(r["source"], params["source"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["month"] == params["month"]
+        assert r["day"] == params["day"]
+        assert r["hour"] == params["hour"]
+        assert r["min"] == params["min"]
+        assert r["stationid"] == params["stationid"]
+        assert r["waterlevel"] == params["waterlevel"]
+        assert r["datum"] == params["datum"]
+        assert r["sigma"] == params["sigma"]
+        assert r["source"] == params["source"]
 
 
 def addMsgOptions(parser):
@@ -1167,32 +1160,32 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.monthField:
+        if options.monthField is None:
             parser.error("missing value for monthField")
-        if None == options.dayField:
+        if options.dayField is None:
             parser.error("missing value for dayField")
-        if None == options.hourField:
+        if options.hourField is None:
             parser.error("missing value for hourField")
-        if None == options.minField:
+        if options.minField is None:
             parser.error("missing value for minField")
-        if None == options.stationidField:
+        if options.stationidField is None:
             parser.error("missing value for stationidField")
-        if None == options.waterlevelField:
+        if options.waterlevelField is None:
             parser.error("missing value for waterlevelField")
-        if None == options.datumField:
+        if options.datumField is None:
             parser.error("missing value for datumField")
-        if None == options.sigmaField:
+        if options.sigmaField is None:
             parser.error("missing value for sigmaField")
-        if None == options.sourceField:
+        if options.sourceField is None:
             parser.error("missing value for sourceField")
     msgDict = {
         "MessageID": "8",
@@ -1213,9 +1206,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1223,7 +1216,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1241,7 +1234,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

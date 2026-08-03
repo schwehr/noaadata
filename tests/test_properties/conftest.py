@@ -1,9 +1,9 @@
 """Hypothesis configuration and fixtures for property-based testing."""
 
 import os
-import hypothesis
-from hypothesis import HealthCheck, settings
+
 import hypofuzz
+from hypothesis import HealthCheck, settings
 
 # Register profiles for local development, CI, and continuous fuzzing
 settings.register_profile("dev", max_examples=50)

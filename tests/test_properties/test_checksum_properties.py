@@ -1,7 +1,10 @@
 """Property-based tests for NMEA-0183 XOR checksum calculation invariance in checksum.py."""
 
 import re
-from hypothesis import given, strategies as st
+
+from hypothesis import given
+from hypothesis import strategies as st
+
 from nmea import checksum
 
 # Printable ASCII characters suitable for NMEA payloads (excluding !, ?, *)
@@ -35,7 +38,9 @@ def test_corrupted_payload_detection_invariant(s, prefix, data):
     mutate_idx = data.draw(st.integers(min_value=0, max_value=len(s) - 1))
     orig_char = s[mutate_idx]
     # Replace orig_char with a different printable ASCII character
-    new_char = chr((ord(orig_char) + 1) if ord(orig_char) < 126 else (ord(orig_char) - 1))
+    new_char = chr(
+        (ord(orig_char) + 1) if ord(orig_char) < 126 else (ord(orig_char) - 1)
+    )
     corrupted_s = s[:mutate_idx] + new_char + s[mutate_idx + 1 :]
 
     # Calculate expected new checksum and verify old checksum fails on corrupted string

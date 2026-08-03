@@ -9,368 +9,423 @@ TODO(schwehr): there is a crashing bug in the send thread
 TODO(schwehr): need to log time and messages received/sent.
 """
 
-import exceptions
 import logging
-import Queue
-import thread
 import select
 import socket
 import sys
 import time
 import traceback
 
+import exceptions
+import Queue
+import thread
+
+import ais.ais_msg_1 as msg1
 import aisutils.daemon
 import aisutils.normalize
 import aisutils.uscg
-import ais.ais_msg_1 as msg1
 
 
 class PassThroughServer:
     """Receive data from a socket and write the data to all clients that
     are connected.  Starts two threads and returns to the caller.
     """
-    def __init__(self,options,maxSendQueue=1000,verbose=False):
+
+    def __init__(self, options, maxSendQueue=1000, verbose=False):
         self.v = verbose
         self.clients = []
         self.options = options
-        self.count=0
-        self.running=True
-        self.timeout=options.timeout
+        self.count = 0
+        self.running = True
+        self.timeout = options.timeout
 
-        self.recvThreadStopped=False;
-        self.filtThreadStopped=False;
-        self.sendThreadStopped=False;
-        self.maxSendQueue=maxSendQueue
+        self.recvThreadStopped = False
+        self.filtThreadStopped = False
+        self.sendThreadStopped = False
+        self.maxSendQueue = maxSendQueue
 
-        self.log_count_interval = 100 # How many loops before logging
+        self.log_count_interval = 100  # How many loops before logging
 
-        self.rQueue=Queue.Queue() # messages that have been received that need to be filtered
-        self.sQueue=Queue.Queue() # messages ready to send
+        self.rQueue = (
+            Queue.Queue()
+        )  # messages that have been received that need to be filtered
+        self.sQueue = Queue.Queue()  # messages ready to send
 
     def start(self):
-        print 'starting thread'
-        thread.start_new_thread(self.startRecvThread,(self,))
-        thread.start_new_thread(self.startFilterThread,(self,))
-        thread.start_new_thread(self.startSendThread,(self,))
-        #thread.start_new_thread(self.filterThread,(self,))
-        #thread.start_new_thread(self.sendThread,(self,))
-        return
+        print("starting thread")
+        thread.start_new_thread(self.startRecvThread, (self,))
+        thread.start_new_thread(self.startFilterThread, (self,))
+        thread.start_new_thread(self.startSendThread, (self,))
+        # thread.start_new_thread(self.filterThread,(self,))
+        # thread.start_new_thread(self.sendThread,(self,))
 
-    def startRecvThread(self,unused=None):
-        '''
+    def startRecvThread(self, unused=None):
+        """
         Wrapper for logging.  Trap exceptions and restart
-        '''
-        crashCount=0
-        #logger = logging.getLogger("recv_thread")
-        logging.warn('starting recv_thread')
+        """
+        crashCount = 0
+        # logger = logging.getLogger("recv_thread")
+        logging.warn("starting recv_thread")
         # FIX: remove crash count from the while
-        while self.running: # and crashCount<10:
+        while self.running:  # and crashCount<10:
             try:
-                time.sleep(1) # Throttle back if something is totally wrong
+                time.sleep(1)  # Throttle back if something is totally wrong
                 self.recvThread()
-            except Exception, e:
-                logging.exception("recvThread crashed.  Restarting.  %s " % str(e))
+            except Exception as e:
+                logging.exception(f"recvThread crashed.  Restarting.  {e!s} ")
                 sys.stderr.write("\n\n\n*** recvThread crashed.  Restarting\n")
-                sys.stderr.write(' Exception:' + str(type(Exception))+'\n')
-                sys.stderr.write(' Exception args:'+ str(e)+'\n')
+                sys.stderr.write(" Exception:" + str(type(Exception)) + "\n")
+                sys.stderr.write(" Exception args:" + str(e) + "\n")
                 traceback.print_exc(file=sys.stderr)
-                sys.stderr.write(' startRecvThread - crash count: '+str(crashCount)+'\n')
+                sys.stderr.write(
+                    " startRecvThread - crash count: " + str(crashCount) + "\n"
+                )
 
                 crashCount += 1
             # Might want to shutdown the whole thing for certain exceptions
-        self.running=False # Just be sure
-        logging.warn('exiting recv_thread')
+        self.running = False  # Just be sure
+        logging.warn("exiting recv_thread")
 
-
-    def recvThread(self,unused=None):
-        '''Do not use this.  Call start() instead.
+    def recvThread(self, unused=None):
+        """Do not use this.  Call start() instead.
 
         @bug: how can I get rid of unused?
-        '''
-        sys.stderr.write('starting receive thread\n')
-        v = self.v
-        connected=False
-        logCount=0
+        """
+        sys.stderr.write("starting receive thread\n")
+        connected = False
+        logCount = 0
         while self.running:
             logCount += 1
             if logCount % self.log_count_interval == 1:
-                logging.warn('recv loop count '+str(logCount))
+                logging.warn("recv loop count " + str(logCount))
 
-            count=0
+            count = 0
             while not connected and self.running:
                 count += 1
-                if count%10==1: sys.stderr.write('connecting to '+str((self.options.inHost,self.options.inPort))+'\n')
+                if count % 10 == 1:
+                    sys.stderr.write(
+                        "connecting to "
+                        + str((self.options.inHost, self.options.inPort))
+                        + "\n"
+                    )
                 try:
-                    src = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                    src = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     src.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    src.connect((self.options.inHost,self.options.inPort))
-                except socket.error, inst:
-                    sys.stderr.write(str(count)+': Failed to connect to src ... '+str(inst)+'\tWill try again\n')
+                    src.connect((self.options.inHost, self.options.inPort))
+                except (OSError, inst):
+                    sys.stderr.write(
+                        str(count)
+                        + ": Failed to connect to src ... "
+                        + str(inst)
+                        + "\tWill try again\n"
+                    )
                     time.sleep(5)
                 else:
-                    connected=True
+                    connected = True
 
-            readersready,outputready,exceptready = select.select([src,],[],[],self.timeout)
-            if len(readersready)==0:
-                sys.stderr.write('r')
+            readersready, _outputready, _exceptready = select.select(
+                [
+                    src,
+                ],
+                [],
+                [],
+                self.timeout,
+            )
+            if len(readersready) == 0:
+                sys.stderr.write("r")
             for sock in readersready:
                 m = sock.recv(10000)
                 if self.v:
                     tmp_msg = m
-                    if m[-1] == '\n': tmp_msg = m[:-1]
-                    sys.stderr.write('recved '+str(len(m))+':"'+tmp_msg+'"\n')
-                if len(m)==0:
-                    connected=False
-                    sys.stderr.write(' DISCONNECT for recvThread\n')
+                    if m[-1] == "\n":
+                        tmp_msg = m[:-1]
+                    sys.stderr.write("recved " + str(len(m)) + ':"' + tmp_msg + '"\n')
+                if len(m) == 0:
+                    connected = False
+                    sys.stderr.write(" DISCONNECT for recvThread\n")
                 else:
                     self.rQueue.put(m)
 
-            #sys.stderr.write('recv thread end of loop '+str(self.running)+ ' ' + str(connected) + '\n')
+            # sys.stderr.write('recv thread end of loop '+str(self.running)+ ' ' + str(connected) + '\n')
 
-        self.recvThreadStopped=True
-        sys.stderr.write('... end of recv thread\n')
+        self.recvThreadStopped = True
+        sys.stderr.write("... end of recv thread\n")
         # FIX: remove these two for debugging
-        sys.stderr.write('  stopped'+str(self.recvThreadStopped) +'\n')
-        sys.stderr.write('  running'+str(self.running) +'\n')
+        sys.stderr.write("  stopped" + str(self.recvThreadStopped) + "\n")
+        sys.stderr.write("  running" + str(self.running) + "\n")
 
-
-    def startFilterThread(self,unused=None):
-        '''
+    def startFilterThread(self, unused=None):
+        """
         Wrapper for logging.  Trap exceptions and restart
-        '''
-        crashCount=0
-        #logger = logging.getLogger("filter_thread")
-        logging.warn('starting startFilterThread')
+        """
+        crashCount = 0
+        # logger = logging.getLogger("filter_thread")
+        logging.warn("starting startFilterThread")
         # FIX: remove crash count from the while
-        while self.running: # and crashCount<10:
+        while self.running:  # and crashCount<10:
             try:
-                time.sleep(1) # Throttle back if something is totally wrong
+                time.sleep(1)  # Throttle back if something is totally wrong
                 self.filterThread()
-            except Exception, e:
+            except Exception as e:
                 logging.exception("filterThread crashed.  Restarting")
                 sys.stderr.write("\n\n\n*** filterThread crashed.  Restarting\n")
 
-                sys.stderr.write(' Exception:' + str(type(Exception))+'\n')
-                sys.stderr.write(' Exception args:'+ str(e)+'\n')
+                sys.stderr.write(" Exception:" + str(type(Exception)) + "\n")
+                sys.stderr.write(" Exception args:" + str(e) + "\n")
                 traceback.print_exc(file=sys.stderr)
-                sys.stderr.write(' startRecvThread - crash count: '+str(crashCount)+'\n')
+                sys.stderr.write(
+                    " startRecvThread - crash count: " + str(crashCount) + "\n"
+                )
 
                 crashCount += 1
             # Might want to shutdown the whole thing for certain exceptions
-        self.running=False # Just be sure
-        sys.stderr.write(' EXITING filter_thread\n')
-        logging.warn('exiting filter_thread')
+        self.running = False  # Just be sure
+        sys.stderr.write(" EXITING filter_thread\n")
+        logging.warn("exiting filter_thread")
 
-    def filterThread(self,unused=None):
-        '''Do not use this.  Call start() instead.
+    def filterThread(self, unused=None):
+        """Do not use this.  Call start() instead.
         TODO(schwehr): How can I get rid of unused?
         TODO(schwehr): Normalize messages.
-        '''
-        v = self.v # Verbose flag
+        """
+        v = self.v  # Verbose flag
         normQueue = aisutils.normalize.Normalize()
         usebbox = self.options.useBox
         if usebbox:
-            x1=self.options.lonMin
-            x2=self.options.lonMax
-            y1=self.options.latMin
-            y2=self.options.latMax
+            x1 = self.options.lonMin
+            x2 = self.options.lonMax
+            y1 = self.options.latMin
+            y2 = self.options.latMax
             if v:
-                sys.stderr.write('bbox lon: %f.2 ... %.2f lat: %f.2 ... %.2f\n'  % (x1,x2,y1,y2))
+                sys.stderr.write(
+                    f"bbox lon: {x1:f}.2 ... {x2:.2f} lat: {y1:f}.2 ... {y2:.2f}\n"
+                )
 
-        sys.stderr.write('beginning filterThread\n')
+        sys.stderr.write("beginning filterThread\n")
         if v:
             if self.options.allowStations is None:
-                sys.stderr.write('Allowing all stations\n')
+                sys.stderr.write("Allowing all stations\n")
             else:
-                sys.stderr.write('allowable stations: '+str(self.options.allowStations)+'\n')
+                sys.stderr.write(
+                    "allowable stations: " + str(self.options.allowStations) + "\n"
+                )
         buf = None
 
-        logCount=0
+        logCount = 0
         while self.running:
             logCount += 1
             if logCount % self.log_count_interval == 1:
-                logging.warn('filter count '+str(logCount))
+                logging.warn("filter count " + str(logCount))
 
             try:
                 m = self.rQueue.get(timeout=self.timeout)
             except Queue.Empty:
-                sys.stderr.write('f')
-                #logging.warn('filter empty queue')
+                sys.stderr.write("f")
+                # logging.warn('filter empty queue')
                 continue
 
             if buf is not None:
-                m = buf+m
+                m = buf + m
                 buf = None
 
-            msgs = m.split('\n')
-            if msgs[-1]!='\n':
+            msgs = m.split("\n")
+            if msgs[-1] != "\n":
                 buf = msgs.pop()  # save incomplete message part
 
             for msg in msgs:
-                if len(msg)<6: continue
-                if 'AIVDM'!=msg[1:6]:
-                    #sys.stderr.write('not aivdm: '+msg+'\n')
+                if len(msg) < 6:
+                    continue
+                if msg[1:6] != "AIVDM":
+                    # sys.stderr.write('not aivdm: '+msg+'\n')
                     continue
                 if v:
-                    sys.stderr.write('parsing station from: ' + msg + '\n')
+                    sys.stderr.write("parsing station from: " + msg + "\n")
                 try:
                     cgMsg = aisutils.uscg.UscgNmea(msg)
-                except (ValueError,IndexError),inst:
-                    sys.stderr.write('ERROR:'+str(inst)+'\n')
-                    sys.stderr.write('Unable to parse message:'+msg+'\n')
+                except (ValueError, IndexError) as inst:
+                    sys.stderr.write("ERROR:" + str(inst) + "\n")
+                    sys.stderr.write("Unable to parse message:" + msg + "\n")
                     continue
 
                 try:
                     station = cgMsg.station
                 except:
-                    sys.stderr.write('ERROR: no station for line\n %s' % msg)
+                    sys.stderr.write(f"ERROR: no station for line\n {msg}")
                     continue
 
-                if not(self.options.allowStations is None or station in self.options.allowStations):
+                if not (
+                    self.options.allowStations is None
+                    or station in self.options.allowStations
+                ):
                     if v:
-                        #sys.stderr.write('rejecting station '+station+'\n')
+                        # sys.stderr.write('rejecting station '+station+'\n')
                         pass
                     continue
 
-                sys.stderr.write('Found okay station %s\n'% station)
+                sys.stderr.write(f"Found okay station {station}\n")
 
-                if usebbox and cgMsg.sentenceNum==1 and cgMsg.msgTypeChar in ('1','2','3'):
+                if (
+                    usebbox
+                    and cgMsg.sentenceNum == 1
+                    and cgMsg.msgTypeChar in ("1", "2", "3")
+                ):
                     bv = cgMsg.getBitVector()
-                    #drv = cgMsg.getDriver()
+                    # drv = cgMsg.getDriver()
                     msgDrv = msg1
                     lon = float(msgDrv.decodelongitude(bv))
                     lat = float(msgDrv.decodelatitude(bv))
-                    if lon<x1 or lon>x2 or lat<y1 or lat>y2:
-                        if v: sys.stderr.write('reject on bounds '+str(lon)+' '+str(lat)+'\n')
+                    if lon < x1 or lon > x2 or lat < y1 or lat > y2:
+                        if v:
+                            sys.stderr.write(
+                                "reject on bounds " + str(lon) + " " + str(lat) + "\n"
+                            )
                         continue
 
                     if v:
-                        sys.stderr.write('forwarding pos '+msg+'\n')
-                    if msg[-1]!='\n':
-                        msg+='\n'
+                        sys.stderr.write("forwarding pos " + msg + "\n")
+                    if msg[-1] != "\n":
+                        msg += "\n"
                     self.sQueue.put(msg)
                     continue
 
-                if cgMsg.totalSentences==1:
+                if cgMsg.totalSentences == 1:
                     if v:
-                        sys.stderr.write('forwarding single line msg '+msg+'\n')
-                    if msg[-1]!='\n': msg+='\n'
+                        sys.stderr.write("forwarding single line msg " + msg + "\n")
+                    if msg[-1] != "\n":
+                        msg += "\n"
                     self.sQueue.put(msg)
                     continue
 
-                #sys.stderr.write('queuing a nmea piece\n')
+                # sys.stderr.write('queuing a nmea piece\n')
                 normQueue.put(msg)
 
                 # FIX: I just put something on the queue... so why should it be empty???
-                if normQueue.qsize()==0:
+                if normQueue.qsize() == 0:
                     if v:
-                        sys.stderr.write('partial message did not finish a message\n')
+                        sys.stderr.write("partial message did not finish a message\n")
                     pass
-                while normQueue.qsize()>0:
+                while normQueue.qsize() > 0:
                     msg = normQueue.get()
-                    #sys.stderr.write('\n\n\n *** forwarding normalized msg '+msg+'\n\n\n')
-                    if msg[-1]!='\n': msg+='\n'
+                    # sys.stderr.write('\n\n\n *** forwarding normalized msg '+msg+'\n\n\n')
+                    if msg[-1] != "\n":
+                        msg += "\n"
                     self.sQueue.put(msg)
 
+        self.filtThreadStopped = True
+        sys.stderr.write("end of filter thread\n")
 
-
-        self.filtThreadStopped=True
-        sys.stderr.write('end of filter thread\n')
-
-    def startSendThread(self,unused=None):
-        '''
+    def startSendThread(self, unused=None):
+        """
         Wrapper for logging.  Trap exceptions and restart
-        '''
-        crashCount=0
-        #logger = logging.getLogger("send_thread")
-        logging.warn('starting send_thread')
+        """
+        crashCount = 0
+        # logger = logging.getLogger("send_thread")
+        logging.warn("starting send_thread")
         # FIX: remove crash count from the while
-        while self.running: # and crashCount<10:
+        while self.running:  # and crashCount<10:
             try:
-                time.sleep(1) # Throttle back if something is totally wrong
+                time.sleep(1)  # Throttle back if something is totally wrong
                 self.sendThread()
-            except Exception, e:
+            except Exception as e:
                 logging.exception("sendThread crashed.  Restarting")
                 sys.stderr.write("\n\n\n*** sendThread crashed.  Restarting\n")
-                sys.stderr.write(' Exception:' + str(type(Exception))+'\n')
-                sys.stderr.write(' Exception args:'+ str(e)+'\n')
+                sys.stderr.write(" Exception:" + str(type(Exception)) + "\n")
+                sys.stderr.write(" Exception args:" + str(e) + "\n")
                 traceback.print_exc(file=sys.stderr)
-                sys.stderr.write(' startRecvThread - crash count: '+str(crashCount)+'\n')
+                sys.stderr.write(
+                    " startRecvThread - crash count: " + str(crashCount) + "\n"
+                )
                 crashCount += 1
             # Might want to shutdown the whole thing for certain exceptions
-        self.running=False # Just be sure
-        sys.stderr.write(' EXITING filter_thread\n')
-        logging.warn('exiting send_thread')
+        self.running = False  # Just be sure
+        sys.stderr.write(" EXITING filter_thread\n")
+        logging.warn("exiting send_thread")
 
-    def sendThread(self,unused=None):
-        '''Do not use this.  Call start() instead.
+    def sendThread(self, unused=None):
+        """Do not use this.  Call start() instead.
 
         @bug: how can I get rid of unused?
-        '''
-        v = self.v # Verbose flag
+        """
+        v = self.v  # Verbose flag
 
-        sys.stderr.write('beginning  sendThread\n')
+        sys.stderr.write("beginning  sendThread\n")
 
         # dst is where our data comes from
-        connected=False
+        connected = False
 
-        logCount=0
-        sent_count=0
+        logCount = 0
+        sent_count = 0
         while self.running:
             logCount += 1
             if logCount % self.log_count_interval == 1:
-                logging.warn('send loop count '+str(logCount))
+                logging.warn("send loop count " + str(logCount))
 
             count = 0
             while not connected and self.running:
-                if self.sQueue.qsize()>0:
+                if self.sQueue.qsize() > 0:
                     if v:
-                        sys.stderr.write(str(self.sQueue.qsize())+' messages queued\n')
+                        sys.stderr.write(
+                            str(self.sQueue.qsize()) + " messages queued\n"
+                        )
                     # Throw a little buffer in there for fun
-                    if self.sQueue.qsize()>self.maxSendQueue+5:
-                        sys.stderr.write(str('Dropping messages'))
-                        while self.sQueue.qsize()>self.maxSendQueue:
-                            print 'drop'
+                    if self.sQueue.qsize() > self.maxSendQueue + 5:
+                        sys.stderr.write("Dropping messages")
+                        while self.sQueue.qsize() > self.maxSendQueue:
+                            print("drop")
                             self.sQueue.get()
 
                 count += 1
-                if count%10==1: sys.stderr.write('connecting to '+str((self.options.outHost,self.options.outPort))+'\n')
+                if count % 10 == 1:
+                    sys.stderr.write(
+                        "connecting to "
+                        + str((self.options.outHost, self.options.outPort))
+                        + "\n"
+                    )
                 try:
-                    dst = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+                    dst = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     dst.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                    dst.connect((self.options.outHost,self.options.outPort))
-                except socket.error, inst:
-                    sys.stderr.write(str(count)+': Failed to connect to dst ... '+str(inst)+'\t\tWill try again\n')
+                    dst.connect((self.options.outHost, self.options.outPort))
+                except (OSError, inst):
+                    sys.stderr.write(
+                        str(count)
+                        + ": Failed to connect to dst ... "
+                        + str(inst)
+                        + "\t\tWill try again\n"
+                    )
                     time.sleep(5)
                 else:
-                    connected=True
+                    connected = True
 
             try:
                 m = self.sQueue.get(timeout=5)
             except Queue.Empty:
-                sys.stderr.write('s')
-                #logging.warn('send empty queue')
+                sys.stderr.write("s")
+                # logging.warn('send empty queue')
                 continue
 
             try:
                 dst.send(m)
                 sent_count += 1
-                logging.warn('sent_count %d' % sent_count)
-            except socket.error:
-                sys.stderr.write('Destination disconnect\n')
-                connected=False
+                logging.warn("sent_count %d" % sent_count)
+            except OSError:
+                sys.stderr.write("Destination disconnect\n")
+                connected = False
                 continue
             # FIX: can we push m back somehow to try to send again?
 
-        self.sendThreadStopped=True
-        sys.stderr.write('end of sendThread\n')
+        self.sendThreadStopped = True
+        sys.stderr.write("end of sendThread\n")
 
     def stop(self):
-        self.running=False
-        while not self.recvThreadStopped or not self.filtThreadStopped or not self.sendThreadStopped:
+        self.running = False
+        while (
+            not self.recvThreadStopped
+            or not self.filtThreadStopped
+            or not self.sendThreadStopped
+        ):
             # FIX: bail out after 2xtimeout
-            time.sleep(.1)
-        sys.stderr.write('All threads are now stopped\n')
+            time.sleep(0.1)
+        sys.stderr.write("All threads are now stopped\n")
 
 
 ######################################################################
@@ -380,126 +435,234 @@ def main():
     from optparse import OptionParser
 
     # FIX: is importing __init__ safe?
-    parser = OptionParser(
-        usage="%prog [options]",
-        version="%prog")
+    parser = OptionParser(usage="%prog [options]", version="%prog")
 
-    parser.add_option('-i','--in-port',dest='inPort',type='int', default=31401
-                      ,help='Where the data comes from [default: %default]')
-    parser.add_option('-I','--in-host',dest='inHost',type='string',default='localhost'
-                      ,help='What host to read data from [default: %default]')
-    parser.add_option('--in-gethostname',dest='inHostname', action='store_true',
-                      default=False,
-                      help='Where the data comes from [default: %default]')
+    parser.add_option(
+        "-i",
+        "--in-port",
+        dest="inPort",
+        type="int",
+        default=31401,
+        help="Where the data comes from [default: %default]",
+    )
+    parser.add_option(
+        "-I",
+        "--in-host",
+        dest="inHost",
+        type="string",
+        default="localhost",
+        help="What host to read data from [default: %default]",
+    )
+    parser.add_option(
+        "--in-gethostname",
+        dest="inHostname",
+        action="store_true",
+        default=False,
+        help="Where the data comes from [default: %default]",
+    )
 
+    parser.add_option(
+        "-o",
+        "--out-port",
+        dest="outPort",
+        type="int",
+        default=31402,
+        help="Where to send the data [default: %default]",
+    )
+    parser.add_option(
+        "-O",
+        "--out-host",
+        dest="outHost",
+        type="string",
+        default="localhost",
+        help="What machine to send the data to [default: %default]",
+    )
+    parser.add_option(
+        "--out-gethostname",
+        dest="outHostname",
+        action="store_true",
+        default=False,
+        help="Use the default hostname [" + socket.gethostname() + "]",
+    )
 
-    parser.add_option('-o','--out-port', dest="outPort", type='int',default=31402
-                      ,help='Where to send the data [default: %default]')
-    parser.add_option('-O','--out-host',dest='outHost',type='string', default='localhost'
-                      ,help='What machine to send the data to [default: %default]')
-    parser.add_option('--out-gethostname',dest='outHostname', action='store_true', default=False
-                      ,help='Use the default hostname ['+socket.gethostname()+']')
+    parser.add_option(
+        "-t",
+        "--timeout",
+        dest="timeout",
+        type="float",
+        default="5",
+        help="Number of seconds to timeout after if no data [default: %default]",
+    )
 
-    parser.add_option('-t','--timeout',dest='timeout',type='float', default='5'
-                      ,help='Number of seconds to timeout after if no data [default: %default]')
+    parser.add_option(
+        "-a",
+        "--add-station",
+        action="append",
+        dest="allowStations",
+        default=None,
+        help="Specify limited set stations to forward (e.g. r003679900) [default: all]",
+    )
 
-    parser.add_option('-a','--add-station',action='append',dest='allowStations'
-                      ,default=None
-                      ,help='Specify limited set stations to forward (e.g. r003679900) [default: all]')
+    parser.add_option(
+        "--sbnms",
+        action="store_true",
+        dest="sbnms",
+        default=False,
+        help="Allow the NOAA Stellwagen Bank National Marine Sanctuary receivers",
+    )
 
-    parser.add_option('--sbnms',action='store_true',dest='sbnms',default=False
-                      ,help='Allow the NOAA Stellwagen Bank National Marine Sanctuary receivers')
+    parser.add_option(
+        "-m",
+        "--max-send-queue",
+        dest="maxSendQueue",
+        type="int",
+        default="10",
+        help="Maximum number of messages to queue for sending before dropping [default: %default]",
+    )
 
-    parser.add_option('-m','--max-send-queue',dest='maxSendQueue',type='int', default='10'
-                      ,help='Maximum number of messages to queue for sending before dropping [default: %default]')
+    parser.add_option(
+        "-b",
+        "--bounding-box",
+        "--box",
+        dest="useBox",
+        default=False,
+        action="store_true",
+        help="Apply a bounding box on messages 1..3 to forward",
+    )
 
-    parser.add_option('-b','--bounding-box','--box',dest='useBox',default=False,action='store_true'
-                      ,help='Apply a bounding box on messages 1..3 to forward')
+    parser.add_option(
+        "-x",
+        "--lon-min",
+        dest="lonMin",
+        type="float",
+        default=-73.0,
+        help=" [default: %default]",
+    )
+    parser.add_option(
+        "-X",
+        "--lon-max",
+        dest="lonMax",
+        type="float",
+        default=-69.0,
+        help=" [default: %default]",
+    )
 
-    parser.add_option('-x','--lon-min', dest='lonMin', type='float', default=-73.0
-                      ,help=' [default: %default]')
-    parser.add_option('-X','--lon-max', dest='lonMax', type='float', default=-69.0
-                      ,help=' [default: %default]')
-
-    parser.add_option('-y','--lat-min', dest='latMin', type='float', default=42.7
-                      ,help=' [default: %default]')
-    parser.add_option('-Y','--lat-max', dest='latMax', type='float', default=47.0
-                      ,help=' [default: %default]')
+    parser.add_option(
+        "-y",
+        "--lat-min",
+        dest="latMin",
+        type="float",
+        default=42.7,
+        help=" [default: %default]",
+    )
+    parser.add_option(
+        "-Y",
+        "--lat-max",
+        dest="latMax",
+        type="float",
+        default=47.0,
+        help=" [default: %default]",
+    )
 
     aisutils.daemon.stdCmdlineOptions(parser)
 
-    parser.add_option('-v','--verbose',dest='verbose',default=False,action='store_true'
-                      ,help='Make the test output verbose')
+    parser.add_option(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        default=False,
+        action="store_true",
+        help="Make the test output verbose",
+    )
 
-    default_log = sys.argv[0].split('/')[-1]+'.log'
-    parser.add_option('-l', '--log-file', dest='log_file', type='string', default=default_log,
-                      help='Tracing and logging file for status [default: %default]')
+    default_log = sys.argv[0].split("/")[-1] + ".log"
+    parser.add_option(
+        "-l",
+        "--log-file",
+        dest="log_file",
+        type="string",
+        default=default_log,
+        help="Tracing and logging file for status [default: %default]",
+    )
 
-    parser.add_option('-L','--log-level',dest='log_level',type='int', default='0'
-                      ,help='Log level for tracing.  Defaults to all [default: %default]')
+    parser.add_option(
+        "-L",
+        "--log-level",
+        dest="log_level",
+        type="int",
+        default="0",
+        help="Log level for tracing.  Defaults to all [default: %default]",
+    )
 
-    (options,args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     v = options.verbose
 
     if v:
-        sys.stderr.write('starting logging to '+options.log_file+' at '+str(options.log_level)+'\n')
+        sys.stderr.write(
+            "starting logging to "
+            + options.log_file
+            + " at "
+            + str(options.log_level)
+            + "\n"
+        )
 
     if options.sbnms:
         if options.allowStations is None:
-            options.allowStations=[]
-        options.allowStations.append('r003669959') # Fisher island
-        options.allowStations.append('r003679900')
-        options.allowStations.append('r003669945')
-        options.allowStations.append('r003679946')
-        options.allowStations.append('r003669947')
-        options.allowStations.append('r000006099') # No... this is Volpe, not SBNMS
+            options.allowStations = []
+        options.allowStations.append("r003669959")  # Fisher island
+        options.allowStations.append("r003679900")
+        options.allowStations.append("r003669945")
+        options.allowStations.append("r003679946")
+        options.allowStations.append("r003669947")
+        options.allowStations.append("r000006099")  # No... this is Volpe, not SBNMS
 
     if v:
-        sys.stderr.write('bounding box long: %f...%f  lat: %f...%f\n' % (options.lonMin,options.lonMax,options.latMin,options.latMax))
+        sys.stderr.write(
+            f"bounding box long: {options.lonMin:f}...{options.lonMax:f}  lat: {options.latMin:f}...{options.latMax:f}\n"
+        )
 
-    #print [type(x) for x in (options.lonMin,options.lonMax,options.latMin,options.latMax)]
+    # print [type(x) for x in (options.lonMin,options.lonMax,options.latMin,options.latMax)]
 
     if options.inHostname:
-        options.inHost=socket.gethostname()
+        options.inHost = socket.gethostname()
     if options.outHostname:
-        options.outHost=socket.gethostname()
+        options.outHost = socket.gethostname()
 
     if options.daemon_mode:
         aisutils.daemon.start(options.pid_file)
 
     # Must start this after detaching
-    logging.basicConfig(filename = options.log_file
-                        , level  = options.log_level
-                        )
+    logging.basicConfig(filename=options.log_file, level=options.log_level)
 
-    pts = PassThroughServer(options,verbose=v,maxSendQueue=options.maxSendQueue)
+    pts = PassThroughServer(options, verbose=v, maxSendQueue=options.maxSendQueue)
     pts.start()
 
     timeout = options.timeout
-    del(options) # remove global to force self.options
-
+    del options  # remove global to force self.options
 
     i = 0
-    running=True  # Running is currently kind of pointless
+    running = True  # Running is currently kind of pointless
 
     try:
         while running:
-            i+=1
-            time.sleep(timeout*5)
+            i += 1
+            time.sleep(timeout * 5)
             if v:
-                sys.stderr.write('ping '+str(i)+'\n')
-            logging.critical('ping '+str(i))
+                sys.stderr.write("ping " + str(i) + "\n")
+            logging.critical("ping " + str(i))
     except exceptions.KeyboardInterrupt:
-        running=False
-        if v: sys.stderr.write('\bshutting down...\n')
+        running = False
+        if v:
+            sys.stderr.write("\bshutting down...\n")
 
     pts.stop()
 
-#    while not pts.stopped:
-#        time.sleep(.1)
+    #    while not pts.stopped:
+    #        time.sleep(.1)
 
-    if v: sys.stderr.write('Finished cleaning up ... goodbye\n')
+    if v:
+        sys.stderr.write("Finished cleaning up ... goodbye\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

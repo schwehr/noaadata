@@ -2,13 +2,12 @@
 # Since 2010-Apr-22
 # Try to decimate messages for ships
 
+import datetime
 import math
 import sqlite3
-import datetime
 
-from pyproj import Proj
 import pytz
-
+from pyproj import Proj
 
 EST = pytz.timezone("EST")
 
@@ -87,9 +86,7 @@ class Bbox:
 
         if self.bounds[1] is not None and self.bounds[1] > y:
             return False
-        if self.bounds[3] is not None and self.bounds[3] < y:
-            return False
-        return True
+        return not (self.bounds[3] is not None and self.bounds[3] < y)
 
     def is_outside(self, x, y):
         return not self.is_inside(x, y)
@@ -166,7 +163,7 @@ def main():
         help="Make the test output verbose",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     verbose = options.verbose
 
     bbox = Bbox(options.x_min, options.y_min, options.X_max, options.Y_max)

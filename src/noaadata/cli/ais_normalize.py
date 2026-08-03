@@ -17,7 +17,7 @@ TODO(schwehr): Allow the parts to be separated by one (or two?) seconds for the
 import sys
 import traceback
 
-from nmea.checksum import isChecksumValid, checksumStr  # Needed for checksums
+from nmea.checksum import checksumStr, isChecksumValid  # Needed for checksums
 
 
 def assembleAisNmeaMessages(
@@ -43,7 +43,7 @@ def assembleAisNmeaMessages(
 
     if not uscg:
         print("Without uscg not yet supported.")
-        assert False
+        raise AssertionError()
 
     # Put partial messages in a queue by station so that they can be reassembled
     buffers = {}
@@ -61,7 +61,7 @@ def assembleAisNmeaMessages(
             if validateChecksum and not isChecksumValid(line):
                 invalid_checksums += 1
                 print("ERROR: Invalid checksum on line ", line_num, file=sys.stderr)
-                print('\t"%s"' % (line.strip(),), file=sys.stderr)
+                print(f'\t"{line.strip()}"', file=sys.stderr)
                 if not pass_invalid_checksums:
                     continue
 
@@ -80,7 +80,7 @@ def assembleAisNmeaMessages(
             totNumSentences = int(
                 fields[1]
             )  # Total nmea lines that compose this message 1..9 (numPackets)
-            if 1 == totNumSentences:  # Easy case
+            if totNumSentences == 1:  # Easy case
                 o.write(line)
                 continue
 
@@ -92,14 +92,14 @@ def assembleAisNmeaMessages(
 
             station = None  # USCG Receive Stations
             for i in range(len(fields) - 1, 5, -1):
-                if 0 < len(fields[i]) and fields[i][0] in ("r", "b", "R", "B", "D"):
+                if len(fields[i]) > 0 and fields[i][0] in ("r", "b", "R", "B", "D"):
                     station = fields[i]
                     break  # Found it so ditch the for loop.
 
-            if None == station and options.allowUnknown:
+            if station is None and options.allowUnknown:
                 station = "UNKNOWN"
 
-            if None == station:
+            if station is None:
                 sys.stderr.write(
                     "ERROR line " + str(line_num) + ": No station found... skipping\n"
                 )
@@ -295,7 +295,7 @@ def main():
     (options, args) = parser.parse_args()
 
     out = sys.stdout
-    if options.outFile != None:
+    if options.outFile is not None:
         out = file(options.outFile, "w")
 
     if len(args) == 0:

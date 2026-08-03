@@ -16,16 +16,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
-
 
 fieldList = (
     "MessageID",
@@ -525,7 +520,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("ChanMngmt:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -561,8 +556,8 @@ def printFields(
             out.write("    TransZoneSize:    " + str(params["TransZoneSize"]) + "\n")
         if "Spare2" in params:
             out.write("    Spare2:           " + str(params["Spare2"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -573,15 +568,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -735,18 +728,14 @@ def sqlCreate(
         c.addInt("TxRxMode")
     if "power" in fields:
         c.addInt("power")
-    if dbType != "postgres":
-        if "corner1_lon" in fields:
-            c.addDecimal("corner1_lon", 5, 2)
-    if dbType != "postgres":
-        if "corner1_lat" in fields:
-            c.addDecimal("corner1_lat", 5, 2)
-    if dbType != "postgres":
-        if "corner2_lon" in fields:
-            c.addDecimal("corner2_lon", 5, 2)
-    if dbType != "postgres":
-        if "corner2_lat" in fields:
-            c.addDecimal("corner2_lat", 5, 2)
+    if dbType != "postgres" and "corner1_lon" in fields:
+        c.addDecimal("corner1_lon", 5, 2)
+    if dbType != "postgres" and "corner1_lat" in fields:
+        c.addDecimal("corner1_lat", 5, 2)
+    if dbType != "postgres" and "corner2_lon" in fields:
+        c.addDecimal("corner2_lon", 5, 2)
+    if dbType != "postgres" and "corner2_lat" in fields:
+        c.addDecimal("corner2_lat", 5, 2)
     if "IndicatorType" in fields:
         c.addInt("IndicatorType")
     if "ChanABandwidth" in fields:
@@ -822,23 +811,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -846,7 +834,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -876,22 +864,22 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 22 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Not used.  Should be set to zero. \\\\ \hline
-ChanA & 12 & Channel number from ITU-R M.1084 Annex 4 \\\\ \hline
-ChanB & 12 & Channel number from ITU-R M.1084 Annex 4 \\\\ \hline
-TxRxMode & 4 & FIX: find the description \\\\ \hline
-power & 1 & FIX: put in a description \\\\ \hline
-corner1\_lon & 18 & north-east corner of area for assignment  longitude of corner \\\\ \hline
-corner1\_lat & 17 & north-east corner of area for assignment  latitude of corner \\\\ \hline
-corner2\_lon & 18 & south-west corner of area for assignment  longitude of corner \\\\ \hline
-corner2\_lat & 17 & south-west corner of area for assignment  latitude of corner \\\\ \hline
-IndicatorType & 1 & FIX: put in a description \\\\ \hline
-ChanABandwidth & 1 & FIX: put in a description \\\\ \hline
-ChanBBandwidth & 1 & FIX: put in a description \\\\ \hline
-TransZoneSize & 3 & FIX: put in a description \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 22 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Not used.  Should be set to zero. \\\\ \\hline
+ChanA & 12 & Channel number from ITU-R M.1084 Annex 4 \\\\ \\hline
+ChanB & 12 & Channel number from ITU-R M.1084 Annex 4 \\\\ \\hline
+TxRxMode & 4 & FIX: find the description \\\\ \\hline
+power & 1 & FIX: put in a description \\\\ \\hline
+corner1\\_lon & 18 & north-east corner of area for assignment  longitude of corner \\\\ \\hline
+corner1\\_lat & 17 & north-east corner of area for assignment  latitude of corner \\\\ \\hline
+corner2\\_lon & 18 & south-west corner of area for assignment  longitude of corner \\\\ \\hline
+corner2\\_lat & 17 & south-west corner of area for assignment  latitude of corner \\\\ \\hline
+IndicatorType & 1 & FIX: put in a description \\\\ \\hline
+ChanABandwidth & 1 & FIX: put in a description \\\\ \\hline
+ChanBBandwidth & 1 & FIX: put in a description \\\\ \\hline
+TransZoneSize & 3 & FIX: put in a description \\\\ \\hline
 Spare2 & 23 & Not used.  Should be set to zero.\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
 \\end{tabular}
@@ -1055,23 +1043,23 @@ class TestChanMngmt(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["ChanA"], params["ChanA"])
-        self.assertEqual(r["ChanB"], params["ChanB"])
-        self.assertEqual(r["TxRxMode"], params["TxRxMode"])
-        self.assertEqual(r["power"], params["power"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["ChanA"] == params["ChanA"]
+        assert r["ChanB"] == params["ChanB"]
+        assert r["TxRxMode"] == params["TxRxMode"]
+        assert r["power"] == params["power"]
         self.assertAlmostEqual(r["corner1_lon"], params["corner1_lon"], 2)
         self.assertAlmostEqual(r["corner1_lat"], params["corner1_lat"], 2)
         self.assertAlmostEqual(r["corner2_lon"], params["corner2_lon"], 2)
         self.assertAlmostEqual(r["corner2_lat"], params["corner2_lat"], 2)
-        self.assertEqual(r["IndicatorType"], params["IndicatorType"])
-        self.assertEqual(r["ChanABandwidth"], params["ChanABandwidth"])
-        self.assertEqual(r["ChanBBandwidth"], params["ChanBBandwidth"])
-        self.assertEqual(r["TransZoneSize"], params["TransZoneSize"])
-        self.assertEqual(r["Spare2"], params["Spare2"])
+        assert r["IndicatorType"] == params["IndicatorType"]
+        assert r["ChanABandwidth"] == params["ChanABandwidth"]
+        assert r["ChanBBandwidth"] == params["ChanBBandwidth"]
+        assert r["TransZoneSize"] == params["TransZoneSize"]
+        assert r["Spare2"] == params["Spare2"]
 
 
 def addMsgOptions(parser):
@@ -1331,38 +1319,38 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.ChanAField:
+        if options.ChanAField is None:
             parser.error("missing value for ChanAField")
-        if None == options.ChanBField:
+        if options.ChanBField is None:
             parser.error("missing value for ChanBField")
-        if None == options.TxRxModeField:
+        if options.TxRxModeField is None:
             parser.error("missing value for TxRxModeField")
-        if None == options.powerField:
+        if options.powerField is None:
             parser.error("missing value for powerField")
-        if None == options.corner1_lonField:
+        if options.corner1_lonField is None:
             parser.error("missing value for corner1_lonField")
-        if None == options.corner1_latField:
+        if options.corner1_latField is None:
             parser.error("missing value for corner1_latField")
-        if None == options.corner2_lonField:
+        if options.corner2_lonField is None:
             parser.error("missing value for corner2_lonField")
-        if None == options.corner2_latField:
+        if options.corner2_latField is None:
             parser.error("missing value for corner2_latField")
-        if None == options.IndicatorTypeField:
+        if options.IndicatorTypeField is None:
             parser.error("missing value for IndicatorTypeField")
-        if None == options.ChanABandwidthField:
+        if options.ChanABandwidthField is None:
             parser.error("missing value for ChanABandwidthField")
-        if None == options.ChanBBandwidthField:
+        if options.ChanBBandwidthField is None:
             parser.error("missing value for ChanBBandwidthField")
-        if None == options.TransZoneSizeField:
+        if options.TransZoneSizeField is None:
             parser.error("missing value for TransZoneSizeField")
     msgDict = {
         "MessageID": "22",
@@ -1385,9 +1373,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1395,7 +1383,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1413,7 +1401,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

@@ -8,12 +8,12 @@ This works on the last_position and track_lines tables.
 
 import datetime
 import logging
-import sys
 import time
+
+import magicdate
 
 import aisutils.database
 import aisutils.uscg
-import magicdate
 
 
 def main():
@@ -105,14 +105,14 @@ def main():
         help="magicdate - Oldest allowable time for a last position [default %default]",
     )
 
-    options, args = parser.parse_args()
+    options, _args = parser.parse_args()
     verbose = options.verbose
 
     if options.timeLimitAll is not None:
         when = datetime.datetime.now() - datetime.timedelta(hours=options.timeLimitAll)
-        if options.track_start == None:
+        if options.track_start is None:
             options.track_start = when
-        if options.last_position_start == None:
+        if options.last_position_start is None:
             options.last_position_start = when
 
     if type(options.last_position_start) is datetime.date:

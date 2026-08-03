@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 4762 $".split()[1]
-__date__ = "$Date: 2006-09-19 14:56:22 -0400 (Tue, 19 Sep 2006) $".split()[1]
+__version__ = ["$Revision:", "4762", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-19",
+    "14:56:22",
+    "-0400",
+    "(Tue,",
+    "19",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -27,7 +37,7 @@ query/response from the NOAA Axis server.
 """
 )
 
-import sys, http.client
+import sys
 
 # FIX: document the datums
 datumList = ["MLLW", "MSL", "MHW", "STND", "IGLD", "NGVD", "NAVD"]

@@ -1,12 +1,13 @@
 """Unit tests for NMEA checksum validation and sentence decoding."""
 
 import pytest
+
 from nmea.checksum import checksumStr, isChecksumValid
 from nmea.gga import ggaDecode, zdaDecode, zdaDict2TIMESTAMP
 
 
 @pytest.mark.parametrize(
-    "nmea_str, expected_checksum",
+    ("nmea_str", "expected_checksum"),
     [
         ("!AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09", "09"),
         ("AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0", "09"),

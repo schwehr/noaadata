@@ -6,10 +6,6 @@ For now, this just supports ZDA time stamps.
 
 # Python standard libraries
 import calendar
-import sys
-import time
-
-import nmea
 
 # List of the valide clock sources.
 # timekeepers={

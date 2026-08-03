@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = (
     """
@@ -27,7 +37,7 @@ Talk to a postgres/postgis db to build the transit table
 """
 )
 
-import os, sys
+import os
 
 
 def main():
@@ -75,7 +85,7 @@ def main():
         help="Time gap in seconds that determines when a new transit starts [default: %default]",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
 
     import psycopg2 as psycopg
 

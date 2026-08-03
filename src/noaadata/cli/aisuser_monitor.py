@@ -4,17 +4,11 @@
 # Since 2010-Jul-13
 # Connect to AISUser and watch how many messages it is receiving from the USCG
 
-import os
-import sys
-import re
 
-import time
-import socket
 import datetime
-import exceptions
-import traceback
-
 import select
+import socket
+import time
 
 
 def main():
@@ -32,7 +26,7 @@ def main():
             soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             soc.connect((host_name, port_num))
-        except socket.error as inst:
+        except OSError as inst:
             print("soc connect failed:", str(inst))
         else:
             connected = True

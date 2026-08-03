@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
+
 import ais
 from aisutils import database
 
@@ -211,7 +212,7 @@ def test_rebuild_track_lines_vessels_none_with_starttime() -> None:
         [(1,)],  # count
         [(1,)],  # count after
     ]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     database.rebuild_track_lines(mock_cx, vessels=None, startTime=now, verbose=True)
     assert mock_cx.commit.called
 
@@ -226,7 +227,7 @@ def test_rebuild_track_lines_update_existing_track() -> None:
         [("  SHIP NAME @  ",)],  # shipdata name
         [(101,)],  # 1 track key -> UPDATE line
     ]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     database.rebuild_track_lines(
         mock_cx, vessels={366998390}, startTime=now, verbose=True
     )
@@ -242,7 +243,7 @@ def test_rebuild_track_lines_skip_invalid_pos_and_drop_vessel() -> None:
         [("POINT(181 91)",), ("POINT(-70.0 42.0)",)],  # only 1 valid point remains
         [(101,)],  # existing track row to delete
     ]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     database.rebuild_track_lines(
         mock_cx, vessels={366998390}, startTime=now, verbose=True
     )
@@ -274,7 +275,7 @@ def test_rebuild_track_lines_programming_error_handling(
         None,  # DELETE old
         None,  # SELECT COUNT after
     ]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     database.rebuild_track_lines(
         mock_cx, vessels={366998390}, startTime=now, verbose=True
     )
@@ -294,7 +295,7 @@ def test_rebuild_track_lines_corrupted_multiple_keys(
         [("",)],  # empty ship name -> falls back to str(vessel)
         [(101,), (102,)],  # >1 track keys -> error
     ]
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     database.rebuild_track_lines(
         mock_cx, vessels={366998390}, startTime=now, verbose=True
     )
@@ -345,7 +346,7 @@ def test_rebuild_last_position_insert_and_update() -> None:
     mock_cx = MagicMock()
     mock_cu = MagicMock()
     mock_cx.cursor.return_value = mock_cu
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
 
     # Test INSERT
     mock_cu.fetchall.side_effect = [
@@ -377,7 +378,7 @@ def test_rebuild_last_position_class_b_and_error_handling(
     mock_cx = MagicMock()
     mock_cu = MagicMock()
     mock_cx.cursor.return_value = mock_cu
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     mock_cu.fetchall.side_effect = [
         [("POINT(-70.0 42.0)", 90, 10.0, now)],
         [("SHIP B", 1)],
@@ -406,7 +407,7 @@ def test_rebuild_last_position_corrupted(capsys: pytest.CaptureFixture[str]) -> 
     mock_cx = MagicMock()
     mock_cu = MagicMock()
     mock_cx.cursor.return_value = mock_cu
-    now = datetime.datetime.now(datetime.timezone.utc)
+    now = datetime.datetime.now(datetime.UTC)
     mock_cu.fetchall.side_effect = [
         [("POINT(-70.0 42.0)", 90, 10.0, now)],
         [("SHIP C", 1)],

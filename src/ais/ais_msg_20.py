@@ -16,15 +16,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 fieldList = (
     "MessageID",
@@ -584,7 +580,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("datalinkmng:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -628,8 +624,8 @@ def printFields(
             out.write("    increment4:       " + str(params["increment4"]) + "\n")
         if "variablespare" in params:
             out.write("    variablespare:    " + str(params["variablespare"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -640,15 +636,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -811,23 +805,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -835,7 +828,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -865,26 +858,26 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 20 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Not used.  Should be set to zero. \\\\ \hline
-offset1 & 12 & Reserved offset number \\\\ \hline
-numslots1 & 4 & Number of reserved consecutive slots \\\\ \hline
-timeout1 & 3 & Time-out value in minutes \\\\ \hline
-increment1 & 11 & Increment to repeast reservation of this block \\\\ \hline
-offset2 & 12 & Reserved offset number (optional) \\\\ \hline
-numslots2 & 4 & Number of reserved consecutive slots (optional) \\\\ \hline
-timeout2 & 3 & Time-out value in minutes (optional) \\\\ \hline
-increment2 & 11 & Increment to repeast reservation of this block (optional) \\\\ \hline
-offset3 & 12 & Reserved offset number (optional) \\\\ \hline
-numslots3 & 4 & Number of reserved consecutive slots (optional) \\\\ \hline
-timeout3 & 3 & Time-out value in minutes (optional) \\\\ \hline
-increment3 & 11 & Increment to repeast reservation of this block (optional) \\\\ \hline
-offset4 & 12 & Reserved offset number (optional) \\\\ \hline
-numslots4 & 4 & Number of reserved consecutive slots (optional) \\\\ \hline
-timeout4 & 3 & Time-out value in minutes (optional) \\\\ \hline
-increment4 & 11 & Increment to repeast reservation of this block (optional) \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 20 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Not used.  Should be set to zero. \\\\ \\hline
+offset1 & 12 & Reserved offset number \\\\ \\hline
+numslots1 & 4 & Number of reserved consecutive slots \\\\ \\hline
+timeout1 & 3 & Time-out value in minutes \\\\ \\hline
+increment1 & 11 & Increment to repeast reservation of this block \\\\ \\hline
+offset2 & 12 & Reserved offset number (optional) \\\\ \\hline
+numslots2 & 4 & Number of reserved consecutive slots (optional) \\\\ \\hline
+timeout2 & 3 & Time-out value in minutes (optional) \\\\ \\hline
+increment2 & 11 & Increment to repeast reservation of this block (optional) \\\\ \\hline
+offset3 & 12 & Reserved offset number (optional) \\\\ \\hline
+numslots3 & 4 & Number of reserved consecutive slots (optional) \\\\ \\hline
+timeout3 & 3 & Time-out value in minutes (optional) \\\\ \\hline
+increment3 & 11 & Increment to repeast reservation of this block (optional) \\\\ \\hline
+offset4 & 12 & Reserved offset number (optional) \\\\ \\hline
+numslots4 & 4 & Number of reserved consecutive slots (optional) \\\\ \\hline
+timeout4 & 3 & Time-out value in minutes (optional) \\\\ \\hline
+increment4 & 11 & Increment to repeast reservation of this block (optional) \\\\ \\hline
 variablespare & 6 & This field is a serious pain.  This padding makes the message byte aligned\\\\ \\hline \\hline
 Total bits & 166 & Appears to take 1 slot with 2 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1072,27 +1065,27 @@ class Testdatalinkmng(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["offset1"], params["offset1"])
-        self.assertEqual(r["numslots1"], params["numslots1"])
-        self.assertEqual(r["timeout1"], params["timeout1"])
-        self.assertEqual(r["increment1"], params["increment1"])
-        self.assertEqual(r["offset2"], params["offset2"])
-        self.assertEqual(r["numslots2"], params["numslots2"])
-        self.assertEqual(r["timeout2"], params["timeout2"])
-        self.assertEqual(r["increment2"], params["increment2"])
-        self.assertEqual(r["offset3"], params["offset3"])
-        self.assertEqual(r["numslots3"], params["numslots3"])
-        self.assertEqual(r["timeout3"], params["timeout3"])
-        self.assertEqual(r["increment3"], params["increment3"])
-        self.assertEqual(r["offset4"], params["offset4"])
-        self.assertEqual(r["numslots4"], params["numslots4"])
-        self.assertEqual(r["timeout4"], params["timeout4"])
-        self.assertEqual(r["increment4"], params["increment4"])
-        self.assertEqual(r["variablespare"], params["variablespare"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["offset1"] == params["offset1"]
+        assert r["numslots1"] == params["numslots1"]
+        assert r["timeout1"] == params["timeout1"]
+        assert r["increment1"] == params["increment1"]
+        assert r["offset2"] == params["offset2"]
+        assert r["numslots2"] == params["numslots2"]
+        assert r["timeout2"] == params["timeout2"]
+        assert r["increment2"] == params["increment2"]
+        assert r["offset3"] == params["offset3"]
+        assert r["numslots3"] == params["numslots3"]
+        assert r["timeout3"] == params["timeout3"]
+        assert r["increment3"] == params["increment3"]
+        assert r["offset4"] == params["offset4"]
+        assert r["numslots4"] == params["numslots4"]
+        assert r["timeout4"] == params["timeout4"]
+        assert r["increment4"] == params["increment4"]
+        assert r["variablespare"] == params["variablespare"]
 
 
 def addMsgOptions(parser):
@@ -1392,46 +1385,46 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.offset1Field:
+        if options.offset1Field is None:
             parser.error("missing value for offset1Field")
-        if None == options.numslots1Field:
+        if options.numslots1Field is None:
             parser.error("missing value for numslots1Field")
-        if None == options.timeout1Field:
+        if options.timeout1Field is None:
             parser.error("missing value for timeout1Field")
-        if None == options.increment1Field:
+        if options.increment1Field is None:
             parser.error("missing value for increment1Field")
-        if None == options.offset2Field:
+        if options.offset2Field is None:
             parser.error("missing value for offset2Field")
-        if None == options.numslots2Field:
+        if options.numslots2Field is None:
             parser.error("missing value for numslots2Field")
-        if None == options.timeout2Field:
+        if options.timeout2Field is None:
             parser.error("missing value for timeout2Field")
-        if None == options.increment2Field:
+        if options.increment2Field is None:
             parser.error("missing value for increment2Field")
-        if None == options.offset3Field:
+        if options.offset3Field is None:
             parser.error("missing value for offset3Field")
-        if None == options.numslots3Field:
+        if options.numslots3Field is None:
             parser.error("missing value for numslots3Field")
-        if None == options.timeout3Field:
+        if options.timeout3Field is None:
             parser.error("missing value for timeout3Field")
-        if None == options.increment3Field:
+        if options.increment3Field is None:
             parser.error("missing value for increment3Field")
-        if None == options.offset4Field:
+        if options.offset4Field is None:
             parser.error("missing value for offset4Field")
-        if None == options.numslots4Field:
+        if options.numslots4Field is None:
             parser.error("missing value for numslots4Field")
-        if None == options.timeout4Field:
+        if options.timeout4Field is None:
             parser.error("missing value for timeout4Field")
-        if None == options.increment4Field:
+        if options.increment4Field is None:
             parser.error("missing value for increment4Field")
     msgDict = {
         "MessageID": "20",
@@ -1458,9 +1451,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1468,7 +1461,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1486,7 +1479,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

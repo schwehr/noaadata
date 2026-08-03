@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
 "Created Fall 2009 by Chaoyi Yin for Kurt Schwehr"
 
-import os, sys, time
-import logging
-from logging.handlers import BaseRotatingHandler
-import socket
 import _thread
+import logging
+import os
 import queue
+import socket
+import sys
+import time
+from logging.handlers import BaseRotatingHandler
 
 
 class MidnightRotatingFileHandler(BaseRotatingHandler):
@@ -145,13 +146,12 @@ class PassThroughServerHandler(logging.Handler):
 
     def emit(self, record):
         msg = self.format(record)
-        self.put("%s\n" % msg)
+        self.put(f"{msg}\n")
 
     def start(self):
         print("starting threads")
         _thread.start_new_thread(self.passdata, (self,))
         _thread.start_new_thread(self.connection_handler, (self,))
-        return
 
     def put(self, nmea_str):
         self.q.put(nmea_str)
@@ -172,11 +172,11 @@ class PassThroughServerHandler(logging.Handler):
             for c in self.clients:
                 try:
                     if self.v:
-                        sys.stderr.write("sending message %s" % m)
+                        sys.stderr.write(f"sending message {m}")
                         if m[-1] != "\n":
                             sys.stderr.write("\n")
                     c.send(m)
-                except socket.error:
+                except OSError:
                     sys.stderr.write("Client Disconnect\n")
                     self.clients.remove(c)
 
@@ -188,8 +188,7 @@ class PassThroughServerHandler(logging.Handler):
         """
         sys.stderr.write("starting incoming connection receiver\n")
         sys.stderr.write(
-            "  listening for connections at %s:%s\n"
-            % (self.options.outHost, self.options.outPort)
+            f"  listening for connections at {self.options.outHost}:{self.options.outPort}\n"
         )
 
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -199,7 +198,7 @@ class PassThroughServerHandler(logging.Handler):
 
         while 1:
             (clientsocket, address) = serversocket.accept()
-            sys.stderr.write("connect from %s\n" % (address,))
+            sys.stderr.write(f"connect from {address}\n")
             self.clients.append(clientsocket)
 
 

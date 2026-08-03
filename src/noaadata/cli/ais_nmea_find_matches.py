@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 12308 $".split()[1]
+__version__ = ["$Revision:", "12308", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2009-07-22 17:22:17 -0400 (Wed, 22 Jul 2009) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2009-07-22",
+    "17:22:17",
+    "-0400",
+    "(Wed,",
+    "22",
+    "Jul",
+    "2009)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -20,6 +30,7 @@ Trying to do better than ais_nmea_uptime*.py
 @status: In progress
 """
 import sys
+
 from aisutils.uscg import uscg_ais_nmea_regex
 
 

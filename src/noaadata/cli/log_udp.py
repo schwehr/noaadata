@@ -23,8 +23,8 @@ def main():
             log.write("NO DATA")
             break
         else:
-            timestamp = time.time()
-        log_str = "%s,%s" % (data.strip(), addr[0])
+            time.time()
+        log_str = f"{data.strip()},{addr[0]}"
         log.write(log_str, verbose=True)
 
 

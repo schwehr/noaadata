@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 __doc__ = """
@@ -11,9 +21,9 @@ Do an analysis of bs reports from an sqlite db.
 @since: 2009-Jun-09
 """
 
-import sqlite3
-import datetime
 import calendar  # to make a unix utc timestamp
+import datetime
+import sqlite3
 
 
 def main():
@@ -41,8 +51,7 @@ def main():
         help="run the tests run in verbose mode",
     )
 
-    (options, args) = parser.parse_args()
-    v = options.verbose
+    (options, _args) = parser.parse_args()
 
     cx = sqlite3.connect(options.database_file)
     cx.row_factory = sqlite3.Row
@@ -69,12 +78,11 @@ def main():
         x = sum(x) / len(x)
         y = sum(y) / len(y)
         print(x, y, bs)
-        o.write("%f %f %s\n" % (x, y, str(bs)))
+        o.write(f"{x:f} {y:f} {bs!s}\n")
 
     if 1:
-        dt_bs_uscg = []
         for row in cx.execute("SELECT * FROM bsreport;"):
-            bsreport = dict(row)
+            dict(row)
             if row["Time_year"] == 0:
                 continue
             #        print
@@ -88,7 +96,7 @@ def main():
                 row["Time_min"],
                 row["Time_sec"],
             )
-            cg_timestamp = datetime.datetime.utcfromtimestamp(row["cg_sec"])
+            datetime.datetime.utcfromtimestamp(row["cg_sec"])
 
             # get unix utc timestamp from datetime
             bs_sec = calendar.timegm(

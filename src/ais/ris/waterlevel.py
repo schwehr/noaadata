@@ -20,15 +20,11 @@ which should be packaged with the resulting files.
 
 import doctest
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -599,7 +595,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("ris_waterlevel:\n")
         if "MessageID" in params:
             out.write("    MessageID:           " + str(params["MessageID"]) + "\n")
@@ -665,8 +661,8 @@ def printFields(
             out.write(
                 "    id4_i_have_no_idea:  " + str(params["id4_i_have_no_idea"]) + "\n"
             )
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -677,15 +673,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -892,23 +886,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -916,7 +909,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -946,29 +939,29 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
-dac & 10 & Designated Area Code \\\\ \hline
-fid & 6 & Functional Identifier \\\\ \hline
-country & 12 & UN country code using 2*6-Bit ASCII characters according to ERI specification \\\\ \hline
-id1\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \hline
-id1\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \hline
-id1\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \hline
-id1\_i\_have\_no\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \hline
-id2\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \hline
-id2\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \hline
-id2\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \hline
-id2\_i\_have\_no\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \hline
-id3\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \hline
-id3\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \hline
-id3\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \hline
-id3\_i\_have\_no\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \hline
-id4\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \hline
-id4\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \hline
-id4\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \hline
-id4\_i\_have\_no\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified\\\\ \\hline \\hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code \\\\ \\hline
+fid & 6 & Functional Identifier \\\\ \\hline
+country & 12 & UN country code using 2*6-Bit ASCII characters according to ERI specification \\\\ \\hline
+id1\\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \\hline
+id1\\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \\hline
+id1\\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \\hline
+id1\\_i\\_have\\_no\\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \\hline
+id2\\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \\hline
+id2\\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \\hline
+id2\\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \\hline
+id2\\_i\\_have\\_no\\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \\hline
+id3\\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \\hline
+id3\\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \\hline
+id3\\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \\hline
+id3\\_i\\_have\\_no\\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified \\\\ \\hline
+id4\\_id & 11 & One tide gauge measurement.  Station ID defined by ERI for each country \\\\ \\hline
+id4\\_sign & 1 & One tide gauge measurement.  sign of the number in the waterlevel \\\\ \\hline
+id4\\_waterlevel & 11 & One tide gauge measurement.  Water level at the sensor \\\\ \\hline
+id4\\_i\\_have\\_no\\_idea & 2 & One tide gauge measurement.  What are these bits for?  They do not seem to be specified\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
 \\end{tabular}
 \\caption{AIS message number 8: RIS ECE\\TRANS\\SC.3\\2006\\10 Table 2.15: Water level report}
@@ -1167,29 +1160,29 @@ class Testris_waterlevel(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["country"], params["country"])
-        self.assertEqual(r["id1_id"], params["id1_id"])
-        self.assertEqual(r["id1_sign"], params["id1_sign"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["country"] == params["country"]
+        assert r["id1_id"] == params["id1_id"]
+        assert r["id1_sign"] == params["id1_sign"]
         self.assertAlmostEqual(r["id1_waterlevel"], params["id1_waterlevel"], 2)
-        self.assertEqual(r["id1_i_have_no_idea"], params["id1_i_have_no_idea"])
-        self.assertEqual(r["id2_id"], params["id2_id"])
-        self.assertEqual(r["id2_sign"], params["id2_sign"])
+        assert r["id1_i_have_no_idea"] == params["id1_i_have_no_idea"]
+        assert r["id2_id"] == params["id2_id"]
+        assert r["id2_sign"] == params["id2_sign"]
         self.assertAlmostEqual(r["id2_waterlevel"], params["id2_waterlevel"], 2)
-        self.assertEqual(r["id2_i_have_no_idea"], params["id2_i_have_no_idea"])
-        self.assertEqual(r["id3_id"], params["id3_id"])
-        self.assertEqual(r["id3_sign"], params["id3_sign"])
+        assert r["id2_i_have_no_idea"] == params["id2_i_have_no_idea"]
+        assert r["id3_id"] == params["id3_id"]
+        assert r["id3_sign"] == params["id3_sign"]
         self.assertAlmostEqual(r["id3_waterlevel"], params["id3_waterlevel"], 2)
-        self.assertEqual(r["id3_i_have_no_idea"], params["id3_i_have_no_idea"])
-        self.assertEqual(r["id4_id"], params["id4_id"])
-        self.assertEqual(r["id4_sign"], params["id4_sign"])
+        assert r["id3_i_have_no_idea"] == params["id3_i_have_no_idea"]
+        assert r["id4_id"] == params["id4_id"]
+        assert r["id4_sign"] == params["id4_sign"]
         self.assertAlmostEqual(r["id4_waterlevel"], params["id4_waterlevel"], 2)
-        self.assertEqual(r["id4_i_have_no_idea"], params["id4_i_have_no_idea"])
+        assert r["id4_i_have_no_idea"] == params["id4_i_have_no_idea"]
 
 
 def addMsgOptions(parser):
@@ -1461,7 +1454,7 @@ def main():
         if options.verbose:
             sys.argv.append("-v")
 
-        numfail, numtests = doctest.testmod()
+        numfail, _numtests = doctest.testmod()
         if not numfail:
             print("ok")
         else:
@@ -1479,40 +1472,40 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.countryField:
+        if options.countryField is None:
             parser.error("missing value for countryField")
-        if None == options.id1_idField:
+        if options.id1_idField is None:
             parser.error("missing value for id1_idField")
-        if None == options.id1_signField:
+        if options.id1_signField is None:
             parser.error("missing value for id1_signField")
-        if None == options.id1_waterlevelField:
+        if options.id1_waterlevelField is None:
             parser.error("missing value for id1_waterlevelField")
-        if None == options.id2_idField:
+        if options.id2_idField is None:
             parser.error("missing value for id2_idField")
-        if None == options.id2_signField:
+        if options.id2_signField is None:
             parser.error("missing value for id2_signField")
-        if None == options.id2_waterlevelField:
+        if options.id2_waterlevelField is None:
             parser.error("missing value for id2_waterlevelField")
-        if None == options.id3_idField:
+        if options.id3_idField is None:
             parser.error("missing value for id3_idField")
-        if None == options.id3_signField:
+        if options.id3_signField is None:
             parser.error("missing value for id3_signField")
-        if None == options.id3_waterlevelField:
+        if options.id3_waterlevelField is None:
             parser.error("missing value for id3_waterlevelField")
-        if None == options.id4_idField:
+        if options.id4_idField is None:
             parser.error("missing value for id4_idField")
-        if None == options.id4_signField:
+        if options.id4_signField is None:
             parser.error("missing value for id4_signField")
-        if None == options.id4_waterlevelField:
+        if options.id4_waterlevelField is None:
             parser.error("missing value for id4_waterlevelField")
     msgDict = {
         "MessageID": "8",
@@ -1541,9 +1534,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1551,7 +1544,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1569,7 +1562,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

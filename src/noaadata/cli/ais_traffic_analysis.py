@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = """
@@ -15,7 +25,6 @@ Basic traffic analysis by counting message types.
 """
 
 import sys
-
 
 # AIS NMEA tables
 encode = {

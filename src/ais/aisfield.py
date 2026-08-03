@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 5231 $".split()[1]
-__date__ = "$Date: 2006-12-20 08:54:50 -0500 (Wed, 20 Dec 2006) $".split()[1]
+__version__ = ["$Revision:", "5231", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-12-20",
+    "08:54:50",
+    "-0500",
+    "(Wed,",
+    "20",
+    "Dec",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -190,8 +200,6 @@ def makeField(options, out=sys.stdout):
 
     if o.completeXml:
         out.write("</ais-binary-messages>\n")
-
-    return
 
 
 ######################################################################

@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4820 $".split()[1]
-__date__ = "$Date: 2006-09-28 12:11:51 -0400 (Thu, 28 Sep 2006) $".split()[1]
+__version__ = ["$Revision:", "4820", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-28",
+    "12:11:51",
+    "-0400",
+    "(Thu,",
+    "28",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -28,7 +38,6 @@ Expand structs in ais xml to include-struct elements while applying name manglin
 """
 )
 
-import sys
 from lxml import etree
 
 
@@ -115,7 +124,7 @@ def expandAis(inET, verbose=False):
 
             if len(desc) == 1:
                 txt = inc.xpath("description")[0].text
-                if None == txt:
+                if txt is None:
                     if verbose:
                         "WARNING: are you sure you want no text in this description?"
                     txt = ""

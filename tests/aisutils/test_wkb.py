@@ -1,8 +1,10 @@
 """Unit tests for WKB conversion utilities in aisutils.wkb."""
 
 from unittest.mock import MagicMock
+
 import pytest
-import aisutils.wkb as wkb
+
+from aisutils import wkb
 
 
 def test_wkb_module_metadata() -> None:

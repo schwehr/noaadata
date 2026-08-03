@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 4762 $".split()[1]
-__date__ = "$Date: 2006-09-19 14:56:22 -0400 (Tue, 19 Sep 2006) $".split()[1]
+__version__ = ["$Revision:", "4762", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-19",
+    "14:56:22",
+    "-0400",
+    "(Tue,",
+    "19",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -19,8 +29,12 @@ Retrieve 6 minute raw water level data from NOAA CO-OPS server.
 """
 )
 
-import sys, http.client, dap.client
-import urllib.request, urllib.parse, urllib.error  # FIX: remove this when pydap protects the seqReq
+import sys
+import urllib.error  # FIX: remove this when pydap protects the seqReq
+import urllib.parse
+import urllib.request
+
+import dap.client
 
 # FIX: document the datums
 datumList = ["MLLW", "MSL", "MHW", "STND", "IGLD", "NGVD", "NAVD"]
@@ -106,7 +120,7 @@ def getWaterLevelNow(stationId, verbose=False, returnDict=True, datum="MSL"):
     )
 
     if verbose:
-        print("range: %s -> %s" % (str(beginDate), str(endDate)))
+        print(f"range: {beginDate!s} -> {endDate!s}")
 
     reqStr = (
         '_STATION_ID="'

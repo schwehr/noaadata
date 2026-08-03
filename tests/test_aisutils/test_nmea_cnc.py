@@ -1,6 +1,7 @@
 """Comprehensive pytest unit tests for aisutils.nmea_cnc module."""
 
 import pytest
+
 from aisutils.nmea_cnc import msg_1_to_cnc, test
 from nmea.checksum import checksumStr
 

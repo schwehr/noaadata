@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 13270 $".split()[1]
-__date__ = "$Date: 2010-03-11 14:50:30 -0500 (Thu, 11 Mar 2010) $".split()[1]
+__version__ = ["$Revision:", "13270", "$"][1]
+__date__ = [
+    "$Date:",
+    "2010-03-11",
+    "14:50:30",
+    "-0500",
+    "(Thu,",
+    "11",
+    "Mar",
+    "2010)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -29,7 +39,8 @@ in a separate grid class such that it might actually work correctly.
 """
 )
 
-import math, sys, os
+import os
+import sys
 
 
 def utmZoneToEpsg(cx, zone):
@@ -224,12 +235,13 @@ def main():
         help="Which ship category to use as a subset [default: %default] " + catStr,
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     verbose = options.verbose
 
-    import aisutils.grid as grid
     import psycopg2 as psycopg
     from pyproj import Proj
+
+    from aisutils import grid
 
     assert options.xMin < options.xMax
     assert options.yMin < options.yMax
@@ -268,7 +280,7 @@ def main():
     # --- EPSG 32610 : WGS 84 / UTM zone 10N
     # sql='SELECT AsText(Transform(track,32610)) FROM tpath'
 
-    if options.category != None:
+    if options.category is not None:
         s = (
             ",(SELECT userid FROM "
             + options.table
@@ -291,18 +303,18 @@ def main():
         s += ") AS track_id"
         sql += s
 
-    if options.category != None or options.startDate or options.endDate:
+    if options.category is not None or options.startDate or options.endDate:
         sql += " WHERE "
-    if options.category != None:
+    if options.category is not None:
         sql += " ships.userid=tpath.userid"
-    if options.category != None and (
-        options.startDate != None or options.endDate != None
+    if options.category is not None and (
+        options.startDate is not None or options.endDate is not None
     ):
         sql += " AND "
-    if options.startDate != None or options.endDate != None:
+    if options.startDate is not None or options.endDate is not None:
         sql += " tpath.id=track_id.id"
 
-    if options.limit != None:
+    if options.limit is not None:
         sql += " LIMIT " + str(options.limit)
     sql += ";"
     if options.dryRun:

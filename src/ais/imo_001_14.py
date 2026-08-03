@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -262,11 +258,11 @@ def encode(params, validate=False):
     if "curspeed1" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["curspeed1"]) * Decimal("10")))), 7
+                BitVector(intVal=int(Decimal(params["curspeed1"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(127)), 7))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
     if "window2_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -306,11 +302,11 @@ def encode(params, validate=False):
     if "curspeed2" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["curspeed2"]) * Decimal("10")))), 7
+                BitVector(intVal=int(Decimal(params["curspeed2"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(127)), 7))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
     if "window3_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -350,11 +346,11 @@ def encode(params, validate=False):
     if "curspeed3" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["curspeed3"]) * Decimal("10")))), 7
+                BitVector(intVal=int(Decimal(params["curspeed3"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(127)), 7))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
 
     return binary.joinBV(bvList)
 
@@ -1001,7 +997,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("imo_tidal_window:\n")
         if "MessageID" in params:
             out.write("    MessageID:          " + str(params["MessageID"]) + "\n")
@@ -1087,8 +1083,8 @@ def printFields(
             out.write("    curdir3:            " + str(params["curdir3"]) + "\n")
         if "curspeed3" in params:
             out.write("    curspeed3:          " + str(params["curspeed3"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -1099,13 +1095,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -1115,9 +1111,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1213,12 +1207,10 @@ def sqlCreate(
         c.addInt("month")
     if "day" in fields:
         c.addInt("day")
-    if dbType != "postgres":
-        if "window1_longitude" in fields:
-            c.addDecimal("window1_longitude", 8, 5)
-    if dbType != "postgres":
-        if "window1_latitude" in fields:
-            c.addDecimal("window1_latitude", 8, 5)
+    if dbType != "postgres" and "window1_longitude" in fields:
+        c.addDecimal("window1_longitude", 8, 5)
+    if dbType != "postgres" and "window1_latitude" in fields:
+        c.addDecimal("window1_latitude", 8, 5)
     if "fromhour1" in fields:
         c.addInt("fromhour1")
     if "frommin1" in fields:
@@ -1231,12 +1223,10 @@ def sqlCreate(
         c.addInt("curdir1")
     if "curspeed1" in fields:
         c.addDecimal("curspeed1", 3, 1)
-    if dbType != "postgres":
-        if "window2_longitude" in fields:
-            c.addDecimal("window2_longitude", 8, 5)
-    if dbType != "postgres":
-        if "window2_latitude" in fields:
-            c.addDecimal("window2_latitude", 8, 5)
+    if dbType != "postgres" and "window2_longitude" in fields:
+        c.addDecimal("window2_longitude", 8, 5)
+    if dbType != "postgres" and "window2_latitude" in fields:
+        c.addDecimal("window2_latitude", 8, 5)
     if "fromhour2" in fields:
         c.addInt("fromhour2")
     if "frommin2" in fields:
@@ -1249,12 +1239,10 @@ def sqlCreate(
         c.addInt("curdir2")
     if "curspeed2" in fields:
         c.addDecimal("curspeed2", 3, 1)
-    if dbType != "postgres":
-        if "window3_longitude" in fields:
-            c.addDecimal("window3_longitude", 8, 5)
-    if dbType != "postgres":
-        if "window3_latitude" in fields:
-            c.addDecimal("window3_latitude", 8, 5)
+    if dbType != "postgres" and "window3_longitude" in fields:
+        c.addDecimal("window3_longitude", 8, 5)
+    if dbType != "postgres" and "window3_latitude" in fields:
+        c.addDecimal("window3_latitude", 8, 5)
     if "fromhour3" in fields:
         c.addInt("fromhour3")
     if "frommin3" in fields:
@@ -1335,23 +1323,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1359,7 +1346,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1389,40 +1376,40 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 6 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \hline
-SeqNum & 2 & Sequence number as described in 5.3.1.  Assigned to each station \\\\ \hline
-DestinationID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-RetransmitFlag & 1 & Should be set upon retransmission \\\\ \hline
-Spare & 1 & Must be 0 \\\\ \hline
-dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \hline
-fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \hline
-month & 4 & UTC month \\\\ \hline
-day & 5 & UTC day \\\\ \hline
-window1\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \hline
-window1\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \hline
-fromhour1 & 5 & From UTC hour \\\\ \hline
-frommin1 & 6 & From UTC minute \\\\ \hline
-tohour1 & 5 & To UTC hour \\\\ \hline
-tomin1 & 6 & To UTC minute \\\\ \hline
-curdir1 & 9 & Current direction \\\\ \hline
-curspeed1 & 7 & Current speed \\\\ \hline
-window2\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \hline
-window2\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \hline
-fromhour2 & 5 & From UTC hour \\\\ \hline
-frommin2 & 6 & From UTC minute \\\\ \hline
-tohour2 & 5 & To UTC hour \\\\ \hline
-tomin2 & 6 & To UTC minute \\\\ \hline
-curdir2 & 9 & Current direction \\\\ \hline
-curspeed2 & 7 & Current speed \\\\ \hline
-window3\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \hline
-window3\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \hline
-fromhour3 & 5 & From UTC hour \\\\ \hline
-frommin3 & 6 & From UTC minute \\\\ \hline
-tohour3 & 5 & To UTC hour \\\\ \hline
-tomin3 & 6 & To UTC minute \\\\ \hline
-curdir3 & 9 & Current direction \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 6 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \\hline
+SeqNum & 2 & Sequence number as described in 5.3.1.  Assigned to each station \\\\ \\hline
+DestinationID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+RetransmitFlag & 1 & Should be set upon retransmission \\\\ \\hline
+Spare & 1 & Must be 0 \\\\ \\hline
+dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \\hline
+fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \\hline
+month & 4 & UTC month \\\\ \\hline
+day & 5 & UTC day \\\\ \\hline
+window1\\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \\hline
+window1\\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \\hline
+fromhour1 & 5 & From UTC hour \\\\ \\hline
+frommin1 & 6 & From UTC minute \\\\ \\hline
+tohour1 & 5 & To UTC hour \\\\ \\hline
+tomin1 & 6 & To UTC minute \\\\ \\hline
+curdir1 & 9 & Current direction \\\\ \\hline
+curspeed1 & 7 & Current speed \\\\ \\hline
+window2\\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \\hline
+window2\\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \\hline
+fromhour2 & 5 & From UTC hour \\\\ \\hline
+frommin2 & 6 & From UTC minute \\\\ \\hline
+tohour2 & 5 & To UTC hour \\\\ \\hline
+tomin2 & 6 & To UTC minute \\\\ \\hline
+curdir2 & 9 & Current direction \\\\ \\hline
+curspeed2 & 7 & Current speed \\\\ \\hline
+window3\\_longitude & 28 & Not sure what this position is for?  Center?  East West location \\\\ \\hline
+window3\\_latitude & 27 & Not sure what this position is for?  Center?  North South location \\\\ \\hline
+fromhour3 & 5 & From UTC hour \\\\ \\hline
+frommin3 & 6 & From UTC minute \\\\ \\hline
+tohour3 & 5 & To UTC hour \\\\ \\hline
+tomin3 & 6 & To UTC minute \\\\ \\hline
+curdir3 & 9 & Current direction \\\\ \\hline
 curspeed3 & 7 & Current speed\\\\ \\hline \\hline
 Total bits & 376 & Appears to take 2 slots with 48 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1694,40 +1681,40 @@ class Testimo_tidal_window(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["SeqNum"], params["SeqNum"])
-        self.assertEqual(r["DestinationID"], params["DestinationID"])
-        self.assertEqual(r["RetransmitFlag"], params["RetransmitFlag"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["month"], params["month"])
-        self.assertEqual(r["day"], params["day"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["SeqNum"] == params["SeqNum"]
+        assert r["DestinationID"] == params["DestinationID"]
+        assert r["RetransmitFlag"] == params["RetransmitFlag"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["month"] == params["month"]
+        assert r["day"] == params["day"]
         self.assertAlmostEqual(r["window1_longitude"], params["window1_longitude"], 5)
         self.assertAlmostEqual(r["window1_latitude"], params["window1_latitude"], 5)
-        self.assertEqual(r["fromhour1"], params["fromhour1"])
-        self.assertEqual(r["frommin1"], params["frommin1"])
-        self.assertEqual(r["tohour1"], params["tohour1"])
-        self.assertEqual(r["tomin1"], params["tomin1"])
-        self.assertEqual(r["curdir1"], params["curdir1"])
+        assert r["fromhour1"] == params["fromhour1"]
+        assert r["frommin1"] == params["frommin1"]
+        assert r["tohour1"] == params["tohour1"]
+        assert r["tomin1"] == params["tomin1"]
+        assert r["curdir1"] == params["curdir1"]
         self.assertAlmostEqual(r["curspeed1"], params["curspeed1"], 1)
         self.assertAlmostEqual(r["window2_longitude"], params["window2_longitude"], 5)
         self.assertAlmostEqual(r["window2_latitude"], params["window2_latitude"], 5)
-        self.assertEqual(r["fromhour2"], params["fromhour2"])
-        self.assertEqual(r["frommin2"], params["frommin2"])
-        self.assertEqual(r["tohour2"], params["tohour2"])
-        self.assertEqual(r["tomin2"], params["tomin2"])
-        self.assertEqual(r["curdir2"], params["curdir2"])
+        assert r["fromhour2"] == params["fromhour2"]
+        assert r["frommin2"] == params["frommin2"]
+        assert r["tohour2"] == params["tohour2"]
+        assert r["tomin2"] == params["tomin2"]
+        assert r["curdir2"] == params["curdir2"]
         self.assertAlmostEqual(r["curspeed2"], params["curspeed2"], 1)
         self.assertAlmostEqual(r["window3_longitude"], params["window3_longitude"], 5)
         self.assertAlmostEqual(r["window3_latitude"], params["window3_latitude"], 5)
-        self.assertEqual(r["fromhour3"], params["fromhour3"])
-        self.assertEqual(r["frommin3"], params["frommin3"])
-        self.assertEqual(r["tohour3"], params["tohour3"])
-        self.assertEqual(r["tomin3"], params["tomin3"])
-        self.assertEqual(r["curdir3"], params["curdir3"])
+        assert r["fromhour3"] == params["fromhour3"]
+        assert r["frommin3"] == params["frommin3"]
+        assert r["tohour3"] == params["tohour3"]
+        assert r["tomin3"] == params["tomin3"]
+        assert r["curdir3"] == params["curdir3"]
         self.assertAlmostEqual(r["curspeed3"], params["curspeed3"], 1)
 
 
@@ -2129,72 +2116,72 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.SeqNumField:
+        if options.SeqNumField is None:
             parser.error("missing value for SeqNumField")
-        if None == options.DestinationIDField:
+        if options.DestinationIDField is None:
             parser.error("missing value for DestinationIDField")
-        if None == options.RetransmitFlagField:
+        if options.RetransmitFlagField is None:
             parser.error("missing value for RetransmitFlagField")
-        if None == options.monthField:
+        if options.monthField is None:
             parser.error("missing value for monthField")
-        if None == options.dayField:
+        if options.dayField is None:
             parser.error("missing value for dayField")
-        if None == options.window1_longitudeField:
+        if options.window1_longitudeField is None:
             parser.error("missing value for window1_longitudeField")
-        if None == options.window1_latitudeField:
+        if options.window1_latitudeField is None:
             parser.error("missing value for window1_latitudeField")
-        if None == options.fromhour1Field:
+        if options.fromhour1Field is None:
             parser.error("missing value for fromhour1Field")
-        if None == options.frommin1Field:
+        if options.frommin1Field is None:
             parser.error("missing value for frommin1Field")
-        if None == options.tohour1Field:
+        if options.tohour1Field is None:
             parser.error("missing value for tohour1Field")
-        if None == options.tomin1Field:
+        if options.tomin1Field is None:
             parser.error("missing value for tomin1Field")
-        if None == options.curdir1Field:
+        if options.curdir1Field is None:
             parser.error("missing value for curdir1Field")
-        if None == options.curspeed1Field:
+        if options.curspeed1Field is None:
             parser.error("missing value for curspeed1Field")
-        if None == options.window2_longitudeField:
+        if options.window2_longitudeField is None:
             parser.error("missing value for window2_longitudeField")
-        if None == options.window2_latitudeField:
+        if options.window2_latitudeField is None:
             parser.error("missing value for window2_latitudeField")
-        if None == options.fromhour2Field:
+        if options.fromhour2Field is None:
             parser.error("missing value for fromhour2Field")
-        if None == options.frommin2Field:
+        if options.frommin2Field is None:
             parser.error("missing value for frommin2Field")
-        if None == options.tohour2Field:
+        if options.tohour2Field is None:
             parser.error("missing value for tohour2Field")
-        if None == options.tomin2Field:
+        if options.tomin2Field is None:
             parser.error("missing value for tomin2Field")
-        if None == options.curdir2Field:
+        if options.curdir2Field is None:
             parser.error("missing value for curdir2Field")
-        if None == options.curspeed2Field:
+        if options.curspeed2Field is None:
             parser.error("missing value for curspeed2Field")
-        if None == options.window3_longitudeField:
+        if options.window3_longitudeField is None:
             parser.error("missing value for window3_longitudeField")
-        if None == options.window3_latitudeField:
+        if options.window3_latitudeField is None:
             parser.error("missing value for window3_latitudeField")
-        if None == options.fromhour3Field:
+        if options.fromhour3Field is None:
             parser.error("missing value for fromhour3Field")
-        if None == options.frommin3Field:
+        if options.frommin3Field is None:
             parser.error("missing value for frommin3Field")
-        if None == options.tohour3Field:
+        if options.tohour3Field is None:
             parser.error("missing value for tohour3Field")
-        if None == options.tomin3Field:
+        if options.tomin3Field is None:
             parser.error("missing value for tomin3Field")
-        if None == options.curdir3Field:
+        if options.curdir3Field is None:
             parser.error("missing value for curdir3Field")
-        if None == options.curspeed3Field:
+        if options.curspeed3Field is None:
             parser.error("missing value for curspeed3Field")
     msgDict = {
         "MessageID": "6",
@@ -2235,9 +2222,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -2245,7 +2232,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -2263,7 +2250,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

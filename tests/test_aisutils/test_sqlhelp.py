@@ -1,6 +1,5 @@
 """Unit tests for SQL query builder utilities."""
 
-import pytest
 from aisutils import sqlhelp
 
 

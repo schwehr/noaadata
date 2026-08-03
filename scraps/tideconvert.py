@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 9833 $".split()[1]
+__version__ = ["$Revision:", "9833", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2008-07-03 22:21:26 -0400 (Thu, 03 Jul 2008) $".split()[1]
+__date__ = ["$Date:", "2008-07-03", "22:21:26", "-0400", "(Thu,", "03", "Jul", "2008)", "$"][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 __doc__ = """
@@ -63,9 +63,7 @@ std_dev          REAL    4   metres
 
 @see: http://pypi.python.org/pypi/tappy/ Is tappy useful for CCOM?
 """
-import time
 import datetime
-import os
 import sys
 
 timeFmts = {"caris": "%Y/%m/%d %H:%M:%S", "matlab": "%Y\t%m\t%d\t%H\t%M\t%S\t"}
@@ -93,7 +91,7 @@ def processFile(
     timeFormat=timeFmts["caris"],
     datumOffset=0,
 ):
-    """
+    r"""
     @param d: water density in grams per cubic centimeters
     @param datumOffset: meters above the sensor for datum 0 level
     @param stddev: what the heck?
@@ -107,14 +105,14 @@ def processFile(
         # print 'after',stdDev
     elif type(stdDev) is float:
         # print 'before',stdDev
-        stdDev = "%0.3f" % stdDev
+        stdDev = f"{stdDev:0.3f}"
         # print 'after',stdDev
 
     for line in infile:
-        if "#" == line[0]:
+        if line[0] == "#":
             continue
         try:
-            fields, station, timestamp = line.split(",")
+            fields, _station, timestamp = line.split(",")
         except:
             sys.stderr.write("bad line: " + line.strip() + "\n")
             sys.stderr.write("continuing...\n")
@@ -134,7 +132,7 @@ def processFile(
 
         # N is raw pressure value
         try:
-            stationId, N, rawTemp = fields.split()
+            _stationId, N, _rawTemp = fields.split()
             N = float(N)
         except:
             sys.stderr.write("bad line2: " + line.strip() + "\n")
@@ -149,7 +147,7 @@ def processFile(
         # print waterlevel, d*g, d, g
         # print waterlevel
 
-        resultStr = timeStr + "    " + ("%0.2f" % waterlevel) + "   " + str(stdDev)
+        resultStr = timeStr + "    " + (f"{waterlevel:0.2f}") + "   " + str(stdDev)
         out.write(resultStr + "\n")
 
 
@@ -241,8 +239,8 @@ def main():
     if options.outFilename:
         out = file(options.outFilename, "a")
 
-    sys.stderr.write("using density: %s\n" % options.density)
-    sys.stderr.write("using gravity: %s\n" % options.gravity)
+    sys.stderr.write(f"using density: {options.density}\n")
+    sys.stderr.write(f"using gravity: {options.gravity}\n")
 
     for filename in args:
         processFile(

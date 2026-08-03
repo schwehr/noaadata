@@ -1,7 +1,17 @@
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 
@@ -47,7 +57,7 @@ def sotdma_parse_bits(bv):
     elif slottimeout == 0:
         r["slot_offset"] = int(submessage)
     else:
-        assert False
+        raise AssertionError()
 
     return r
 

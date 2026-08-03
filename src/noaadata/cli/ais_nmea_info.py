@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 12308 $".split()[1]
+__version__ = ["$Revision:", "12308", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2009-07-22 17:22:17 -0400 (Wed, 22 Jul 2009) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2009-07-22",
+    "17:22:17",
+    "-0400",
+    "(Wed,",
+    "22",
+    "Jul",
+    "2009)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -21,12 +31,12 @@ Summarize the AIS message traffic at the NMEA level without decoding the content
 from optparse import OptionParser
 
 import ais
-from aisutils.uscg import uscg_ais_nmea_regex
 from aisutils import binary
+from aisutils.uscg import uscg_ais_nmea_regex
 
 
 def nmea_summary(filename):
-    msgs = dict([(val, 0) for val in binary.encode])
+    msgs = dict.fromkeys(binary.encode, 0)
 
     station_counts = {}
     channel_counts = {"A": 0, "B": 0}
@@ -60,11 +70,11 @@ def main():
         usage="%prog [options] file1.ais [file2.ais ...]",
         version="%prog " + __version__,
     )
-    (options, args) = parser.parse_args()
+    (_options, args) = parser.parse_args()
 
     for filename in args:
         results = nmea_summary(filename)
-        print("%s:" % (filename,))
+        print(f"{filename}:")
 
         msgs = results["msgs"]
 

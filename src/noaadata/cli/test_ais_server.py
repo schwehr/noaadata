@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 2275 $".split()[1]
+__version__ = ["$Revision:", "2275", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-07-10",
+    "16:22:35",
+    "-0400",
+    "(Mon,",
+    "10",
+    "Jul",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -15,16 +25,10 @@ Feed AIS data to who ever connects at a moderated rate.
 @since: 05-May-2009
 """
 
-import sys
-
-import time
-import datetime
-
-import socket
-import _thread
 import select
-
-import traceback
+import socket
+import sys
+import time
 
 
 class DataServer:
@@ -36,7 +40,6 @@ class DataServer:
 
         inHost = self.options.inHost
         inPort = self.options.inPort
-        timeout = self.options.timeout
         running = False
 
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,7 +54,7 @@ class DataServer:
             )
             running = True
             while running:
-                readersready, outputready, exceptready = select.select(
+                _readersready, outputready, _exceptready = select.select(
                     [],
                     [
                         clientsocket,
@@ -133,7 +136,7 @@ def main():
         action="store_true",
         help="Make the test output verbose",
     )
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
 
     ds = DataServer(options)
     ds.run()

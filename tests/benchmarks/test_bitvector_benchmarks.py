@@ -1,7 +1,7 @@
 """Performance benchmarks for BitVector slice extraction, concatenation, padding, and joining."""
 
-from aisutils.BitVector import BitVector
 from aisutils import binary
+from aisutils.BitVector import BitVector
 
 
 def test_benchmark_bitvector_slice_extraction(benchmark):

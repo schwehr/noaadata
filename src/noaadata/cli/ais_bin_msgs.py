@@ -1,14 +1,8 @@
 #!/usr/bin/env python
 """Summarize AIS binary messages (6 and 8) in files."""
 
-import datetime
-from decimal import Decimal
-import exceptions
-import io
 import sys
-import traceback
 
-from aisutils.BitVector import BitVector
 from aisutils import binary
 from aisutils.uscg import uscg_ais_nmea_regex
 
@@ -34,17 +28,17 @@ def parse_msgs(infile, verbose=False):
         try:
             bv = binary.ais6tobitvec(match["body"][:15])
         except ValueError:
-            sys.stderr.write("bad msg: %s\n" % line.strip())
+            sys.stderr.write(f"bad msg: {line.strip()}\n")
             continue
 
         r = {}
         r["MessageID"] = int(bv[0:6])
         r["UserID"] = int(bv[8:38])
 
-        if "6" == msg_type:
+        if msg_type == "6":
             dac = int(bv[72:82])
             fi = int(bv[82:88])
-        elif "8" == msg_type:
+        elif msg_type == "8":
             dac = int(bv[40:50])
             fi = int(bv[50:56])
         elif verbose:

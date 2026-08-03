@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2010-03-31 $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = ["$Date:", "2010-03-31", "$"][1]
 __author__ = "xmlbinmsg"
 
 __doc__ = (
@@ -39,15 +39,12 @@ which should be packaged with the resulting files.
 """
 )
 
+import math
 import sys
 from decimal import Decimal
-import math
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import uscg
-from aisutils import sqlhelp
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -160,7 +157,7 @@ def encode(params, validate=False):
     @return: encoded binary message (for binary messages, this needs to be wrapped in a msg 8
     @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
     """
-    assert False  # FIX: need to handle the extended name case
+    raise AssertionError()  # FIX: need to handle the extended name case
 
     bvList = []
     bvList.append(binary.setBitVectorSize(BitVector(intVal=21), 6))
@@ -300,7 +297,7 @@ def decode(bv, validate=False):
     # if len(bv) > 272:
     if len(bv) > 276:
         # Have an extended name
-        ext_len = int(math.floor((len(bv) - 272) / 6.0))
+        ext_len = math.floor((len(bv) - 272) / 6.0)
         print("ext:", len(bv), ext_len, len(bv[272:]))
         text = aisstring.decode(bv[272 : 272 + 6 * ext_len])
         r["name"] += text
@@ -394,7 +391,7 @@ def decodespare(bv, validate=False):
 
 
 def decodespare2(bv, validate=False):
-    assert False  # FIX: actually decode this
+    raise AssertionError()  # FIX: actually decode this
 
 
 def printHtml(params, out=sys.stdout):
@@ -636,7 +633,7 @@ def printHtml(params, out=sys.stdout):
 
 def printKml(params, out=sys.stdout):
     """KML (Keyhole Markup Language) for Google Earth, but without the header/footer"""
-    out.write("\    <Placemark>\n")
+    out.write("\\    <Placemark>\n")
     out.write("\t    <name>" + str(params["UserID"]) + "</name>\n")
     out.write("\t\t<description>\n")
     import io
@@ -690,7 +687,7 @@ def printFields(
     @rtype: stdout
     @return: text to out
     """
-    if "std" == format:
+    if format == "std":
         out.write("AidsToNavReport:\n")
         if "MessageID" in params:
             out.write("    MessageID:           " + str(params["MessageID"]) + "\n")
@@ -709,9 +706,9 @@ def printFields(
                 "    PositionAccuracy:    " + str(params["PositionAccuracy"]) + "\n"
             )
         if "longitude" in params:
-            out.write("    longitude:           %.7f\n" % params["longitude"])
+            out.write("    longitude:           {:.7f}\n".format(params["longitude"]))
         if "latitude" in params:
-            out.write("    latitude:            %.7f\n" % params["latitude"])
+            out.write("    latitude:            {:.7f}\n".format(params["latitude"]))
         if "dimA" in params:
             out.write("    dimA:                " + str(params["dimA"]) + "\n")
         if "dimB" in params:
@@ -742,8 +739,8 @@ def printFields(
             out.write("    spare:               " + str(params["spare"]) + "\n")
         if "spare2" in params:
             out.write("    spare2:              " + str(params["spare2"]) + "\n")
-    elif "csv" == format:
-        if None == options.fieldList:
+    elif format == "csv":
+        if options.fieldList is None:
             options.fieldList = fieldList
         needComma = False
         for field in fieldList:
@@ -754,13 +751,13 @@ def printFields(
                 out.write(str(params[field]))
             # else: leave it empty
         out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -770,9 +767,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1019,7 +1014,7 @@ def sqlCreate(
     @return: An object that can be used to generate a return
     @rtype: sqlhelp.create
     """
-    if None == fields:
+    if fields is None:
         fields = fieldList
 
     c = sqlhelp.create("AidsToNavReport", dbType=dbType)
@@ -1036,12 +1031,10 @@ def sqlCreate(
         c.addVarChar("name", 20 + 14)  # Up to 14 characters in the extended name
     if "PositionAccuracy" in fields:
         c.addInt("PositionAccuracy")
-    if dbType != "postgres":
-        if "longitude" in fields:
-            c.addDecimal("longitude", 8, 5)
-    if dbType != "postgres":
-        if "latitude" in fields:
-            c.addDecimal("latitude", 8, 5)
+    if dbType != "postgres" and "longitude" in fields:
+        c.addDecimal("longitude", 8, 5)
+    if dbType != "postgres" and "latitude" in fields:
+        c.addDecimal("latitude", 8, 5)
     if "dimA" in fields:
         c.addInt("dimA")
     if "dimB" in fields:
@@ -1127,23 +1120,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1151,7 +1143,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1179,25 +1171,25 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 21 aka 'F' \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-type & 5 & IALA type of aid-to-navigation \\\\ \hline
-name & 120 or more & Name of the aid-to-navigation \\\\ \hline
-PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \hline
-longitude & 28 & Location of the AtoN  East West location \\\\ \hline
-latitude & 27 & Location of the AtoN  North South location \\\\ \hline
-dimA & 9 & Distance from bow to reference position \\\\ \hline
-dimB & 9 & Distance from reference position to stern \\\\ \hline
-dimC & 6 & Distance from port side to reference position \\\\ \hline
-dimD & 6 & Distance from reference position to starboard side \\\\ \hline
-FixType & 4 & Type of electronic position fixing device \\\\ \hline
-timestamp & 6 & UTC second when report was generated \\\\ \hline
-OffPosition & 1 & True when the AtoN is off station \\\\ \hline
-status & 8 & Unknown \\\\ \hline
-RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \hline
-virtual\_aton\_flag & 1 & Does the unit physically exist? \\\\ \hline
-assigned\_mode\_flag & 1 & autonomous or controlled \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 21 aka 'F' \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+type & 5 & IALA type of aid-to-navigation \\\\ \\hline
+name & 120 or more & Name of the aid-to-navigation \\\\ \\hline
+PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \\hline
+longitude & 28 & Location of the AtoN  East West location \\\\ \\hline
+latitude & 27 & Location of the AtoN  North South location \\\\ \\hline
+dimA & 9 & Distance from bow to reference position \\\\ \\hline
+dimB & 9 & Distance from reference position to stern \\\\ \\hline
+dimC & 6 & Distance from port side to reference position \\\\ \\hline
+dimD & 6 & Distance from reference position to starboard side \\\\ \\hline
+FixType & 4 & Type of electronic position fixing device \\\\ \\hline
+timestamp & 6 & UTC second when report was generated \\\\ \\hline
+OffPosition & 1 & True when the AtoN is off station \\\\ \\hline
+status & 8 & Unknown \\\\ \\hline
+RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \\hline
+virtual\\_aton\\_flag & 1 & Does the unit physically exist? \\\\ \\hline
+assigned\\_mode\\_flag & 1 & autonomous or controlled \\\\ \\hline
 spare & 1 & Not Used\\\\ \\hline \\hline
 spare2 & 0,2,4, or 6 & Not Used\\\\ \\hline \\hline
 Total bits & 272 & Appears to take 2 slots with 152 pad bits to fill the last slot \\\\ \\hline
@@ -1383,27 +1375,27 @@ class TestAidsToNavReport(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["type"], params["type"])
-        self.assertEqual(r["name"], params["name"])
-        self.assertEqual(r["PositionAccuracy"], params["PositionAccuracy"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["type"] == params["type"]
+        assert r["name"] == params["name"]
+        assert r["PositionAccuracy"] == params["PositionAccuracy"]
         self.assertAlmostEqual(r["longitude"], params["longitude"], 5)
         self.assertAlmostEqual(r["latitude"], params["latitude"], 5)
-        self.assertEqual(r["dimA"], params["dimA"])
-        self.assertEqual(r["dimB"], params["dimB"])
-        self.assertEqual(r["dimC"], params["dimC"])
-        self.assertEqual(r["dimD"], params["dimD"])
-        self.assertEqual(r["FixType"], params["FixType"])
-        self.assertEqual(r["timestamp"], params["timestamp"])
-        self.assertEqual(r["OffPosition"], params["OffPosition"])
-        self.assertEqual(r["status"], params["status"])
-        self.assertEqual(r["RAIM"], params["RAIM"])
-        self.assertEqual(r["virtual_aton_flag"], params["virtual_aton_flag"])
-        self.assertEqual(r["assigned_mode_flag"], params["assigned_mode_flag"])
-        self.assertEqual(r["spare"], params["spare"])
-        self.assertEqual(r["spare2"], params["spare2"])
+        assert r["dimA"] == params["dimA"]
+        assert r["dimB"] == params["dimB"]
+        assert r["dimC"] == params["dimC"]
+        assert r["dimD"] == params["dimD"]
+        assert r["FixType"] == params["FixType"]
+        assert r["timestamp"] == params["timestamp"]
+        assert r["OffPosition"] == params["OffPosition"]
+        assert r["status"] == params["status"]
+        assert r["RAIM"] == params["RAIM"]
+        assert r["virtual_aton_flag"] == params["virtual_aton_flag"]
+        assert r["assigned_mode_flag"] == params["assigned_mode_flag"]
+        assert r["spare"] == params["spare"]
+        assert r["spare2"] == params["spare2"]
 
 
 def addMsgOptions(parser):
@@ -1694,46 +1686,46 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # First make sure all non required options are specified
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.typeField:
+        if options.typeField is None:
             parser.error("missing value for typeField")
-        if None == options.nameField:
+        if options.nameField is None:
             parser.error("missing value for nameField")
-        if None == options.PositionAccuracyField:
+        if options.PositionAccuracyField is None:
             parser.error("missing value for PositionAccuracyField")
-        if None == options.longitudeField:
+        if options.longitudeField is None:
             parser.error("missing value for longitudeField")
-        if None == options.latitudeField:
+        if options.latitudeField is None:
             parser.error("missing value for latitudeField")
-        if None == options.dimAField:
+        if options.dimAField is None:
             parser.error("missing value for dimAField")
-        if None == options.dimBField:
+        if options.dimBField is None:
             parser.error("missing value for dimBField")
-        if None == options.dimCField:
+        if options.dimCField is None:
             parser.error("missing value for dimCField")
-        if None == options.dimDField:
+        if options.dimDField is None:
             parser.error("missing value for dimDField")
-        if None == options.FixTypeField:
+        if options.FixTypeField is None:
             parser.error("missing value for FixTypeField")
-        if None == options.timestampField:
+        if options.timestampField is None:
             parser.error("missing value for timestampField")
-        if None == options.OffPositionField:
+        if options.OffPositionField is None:
             parser.error("missing value for OffPositionField")
-        if None == options.statusField:
+        if options.statusField is None:
             parser.error("missing value for statusField")
-        if None == options.RAIMField:
+        if options.RAIMField is None:
             parser.error("missing value for RAIMField")
-        if None == options.virtual_aton_flagField:
+        if options.virtual_aton_flagField is None:
             parser.error("missing value for virtual_aton_flagField")
-        if None == options.assigned_mode_flagField:
+        if options.assigned_mode_flagField is None:
             parser.error("missing value for assigned_mode_flagField")
         msgDict = {
             "MessageID": "21",
@@ -1760,9 +1752,9 @@ def main():
         }
 
         bits = encode(msgDict)
-        if "binary" == options.ioType:
+        if options.ioType == "binary":
             print(str(bits))
-        elif "nmeapayload" == options.ioType:
+        elif options.ioType == "nmeapayload":
             # FIX: figure out if this might be necessary at compile time
             # print "bitLen",len(bits)
             bitLen = len(bits)
@@ -1772,7 +1764,7 @@ def main():
                 )  # Pad out to multiple of 6
                 # print "result:",binary.bitvectoais6(bits)[0]
                 print(binary.bitvectoais6(bits)[0])
-        elif "nmea" == options.ioType:
+        elif options.ioType == "nmea":
             nmea = uscg.create_nmea(bits)
             print(nmea)
         else:
@@ -1790,7 +1782,7 @@ def main():
 
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
-        if None == options.fieldList:
+        if options.fieldList is None:
             options.fieldList = fieldList
         import io
 

@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 8524 $".split()[1]
+__version__ = ["$Revision:", "8524", "$"][1]
 __revision__ = __version__
-__date__ = "$Date: 2008-02-05 11:03:16 -0500 (Tue, 05 Feb 2008) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2008-02-05",
+    "11:03:16",
+    "-0500",
+    "(Tue,",
+    "05",
+    "Feb",
+    "2008)",
+    "$",
+][1]
 __copyright__ = "2007-2009"
 __license__ = "Apache 2.0"
 __doc__ = """
@@ -19,8 +29,11 @@ Modified by Chaoyi Yin Fall 2009 as work for hire.
  TODO(schwehr):Clean way to shut down
 """
 
-import os, socket, serial
 import logging
+import os
+import socket
+
+import serial
 from lockfile import LockFailed
 from logger_handlers import MidnightRotatingFileHandler, PassThroughServerHandler
 
@@ -35,19 +48,15 @@ class SerialLoggerFormatter:
         record.message = record.getMessage()
         line = record.message.strip()
         if len(line) == 0:
-            if self.mark:
-                s = "# MARK: " + str(record.created)
-            else:
-                s = ""
+            s = "# MARK: " + str(record.created) if self.mark else ""
+        elif self.uscgFormat:
+            s = record.message
+            if self.stationId:
+                s += ",r" + self.stationId
+            s += "," + str(record.created)
         else:
-            if self.uscgFormat:
-                s = record.message
-                if self.stationId:
-                    s += ",r" + self.stationId
-                s += "," + str(record.created)
-            else:
-                s = "# " + str(record.created) + "\n"
-                s += record.message
+            s = "# " + str(record.created) + "\n"
+            s += record.message
         return s
 
 
@@ -280,7 +289,7 @@ def parseOptions():
         help="Number of seconds to timeout after if no data [default: %default]",
     )
 
-    options, arguments = parser.parse_args()
+    options, _arguments = parser.parse_args()
     options.baud = int(options.baud)
 
     return options
@@ -308,12 +317,11 @@ def main():
             pidfile=pidfile, working_directory=options.working_directory
         ):
             run(options)
-    else:
-        if pidfile:
-            with pidfile:
-                run(options)
-        else:
+    elif pidfile:
+        with pidfile:
             run(options)
+    else:
+        run(options)
 
 
 if __name__ == "__main__":

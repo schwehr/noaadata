@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 __doc__ = """
@@ -19,9 +29,8 @@ How many minutes did we receive data from during the time span?
 @organization: U{CCOM<http://ccom.unh.edu/>}
 """
 
-import sys
 import datetime
-import traceback
+import sys
 
 
 def uptime(filename):
@@ -30,12 +39,12 @@ def uptime(filename):
     tmin = None
     tmax = None
     for linenum, line in enumerate(file(filename)):
-        if "!AIVDM" != line[:6]:
+        if line[:6] != "!AIVDM":
             continue
         try:
             t = int(line.split(",")[-1])
             t = datetime.datetime.utcfromtimestamp(t)
-        except Exception as e:
+        except Exception:
             # sys.stderr.write('    Exception:' + str(type(Exception))+'\n')
             # sys.stderr.write('    Exception args:'+ str(e)+'\n')
             # sys.stderr.write('    LINE: %s\n' % (line,))
@@ -47,10 +56,8 @@ def uptime(filename):
         if tmin is None:
             tmin = t
             tmax = t
-        if t < tmin:
-            tmin = t
-        if t > tmax:
-            tmax = t
+        tmin = min(tmin, t)
+        tmax = max(tmax, t)
         times.add(t)
 
         if linenum % 10000 == 0:
@@ -88,8 +95,7 @@ def main():
         help="run the tests run in verbose mode",
     )
 
-    (options, args) = parser.parse_args()
-    v = options.verbose
+    (_options, args) = parser.parse_args()
 
     for filename in args:
         day, up = uptime(filename)

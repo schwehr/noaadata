@@ -11,16 +11,12 @@ Trying to do better than ais_nmea_uptime*.py
 
 import datetime
 import math
-from optparse import OptionParser
 import os
 import sys
-
-import ais
-from aisutils.uscg import uscg_ais_nmea_regex
+from optparse import OptionParser
 
 from aisutils import binary
-
-from aisutils.BitVector import BitVector
+from aisutils.uscg import uscg_ais_nmea_regex
 
 # Seconds in a day
 day_sec = 24 * 60 * 60.0
@@ -79,8 +75,9 @@ class Histogram:
         print("hist:", min_val, max_val, num_bins, self.extent, self.bin_size)
 
     def add_point(self, value):
-        assert value >= self.min_val and value <= self.max_val
-        bin = int(math.floor((value - self.min_val) / self.bin_size))
+        assert value >= self.min_val
+        assert value <= self.max_val
+        bin = math.floor((value - self.min_val) / self.bin_size)
         # print 'bin:',value,'->',bin
         self.bins[bin] += 1
 
@@ -184,7 +181,7 @@ class Uptime:
         self.max_sec = timestamp
 
         # Track all time going backwards ... USCG
-        if self.old_sec_raw == None:
+        if self.old_sec_raw is None:
             self.old_sec_raw = timestamp
         else:
             dt_raw = timestamp - self.old_sec_raw
@@ -208,7 +205,7 @@ class Uptime:
                     self.gap_counts_neg[dt_raw] += 1
             self.old_sec_raw = timestamp
 
-        if self.old_sec == None:
+        if self.old_sec is None:
             self.old_sec = timestamp
             return
 
@@ -368,23 +365,18 @@ class BoundingBox:
         self.y_max = None
 
     def add_point(self, x, y):
-        if self.x_min == None or self.x_min > x:
+        if self.x_min is None or self.x_min > x:
             self.x_min = x
-        if self.x_max == None or self.x_max < x:
+        if self.x_max is None or self.x_max < x:
             self.x_max = x
-        if self.y_min == None or self.y_min > y:
+        if self.y_min is None or self.y_min > y:
             self.y_min = y
-        if self.y_max == None or self.y_max < y:
+        if self.y_max is None or self.y_max < y:
             self.y_max = y
         # print x,y,'->', str(self)
 
     def __str__(self):
-        return "bounding_box: x %.4f to %.4f  y %.4f to %.4f" % (
-            self.x_min,
-            self.x_max,
-            self.y_min,
-            self.y_max,
-        )
+        return f"bounding_box: x {self.x_min:.4f} to {self.x_max:.4f}  y {self.y_min:.4f} to {self.y_max:.4f}"
 
 
 class AisPositionStats:
@@ -431,7 +423,7 @@ class AisPositionStats:
                 if self.max_dist_km < dist:
                     # print 'bbox_dropping_point:',x,y,dist,'km'
                     self.count_bad_pos += 1
-                    raise AisErrorPositionTooFar("%.2f %.2f -> %.2f km" % (x, y, dist))
+                    raise AisErrorPositionTooFar(f"{x:.2f} {y:.2f} -> {dist:.2f} km")
                     # return
 
                 self.dist_hist.add_point(dist)
@@ -453,7 +445,7 @@ class AisStreamInfo:
         verbose=False,
     ):
         # intialize all counts to 0 for major numbers
-        self.msgs_counts = dict([(val, 0) for val in binary.encode])
+        self.msgs_counts = dict.fromkeys(binary.encode, 0)
         self.up = Uptime(
             dt_raw_filename=dt_raw_filename, min_gap_sec=min_gap_sec, verbose=verbose
         )
@@ -463,14 +455,14 @@ class AisStreamInfo:
             self.pos_stats = AisPositionStats()
 
     def add_file(self, filename):
-        for line_num, line in enumerate(file(filename)):
+        for _line_num, line in enumerate(file(filename)):
             if len(line) < 10 or line[0] == "#":
                 continue
             line = line.rstrip()
             try:
                 timestamp = float(line.split(",")[-1])
             except:
-                sys.stderr.write("skipping line: %s\n" % (line,))
+                sys.stderr.write(f"skipping line: {line}\n")
                 continue
 
             self.up.add_time(timestamp)
@@ -647,11 +639,7 @@ def main():
 
         # print (dt_sec - tot_gap_sec), dt_sec
         print(
-            "uptime: %.2f (days) => %.2f%%"
-            % (
-                ((dt_sec - tot_gap_sec) / day_sec),
-                (100 * (dt_sec - tot_gap_sec) / float(dt_sec)),
-            )
+            f"uptime: {(dt_sec - tot_gap_sec) / day_sec:.2f} (days) => {100 * (dt_sec - tot_gap_sec) / float(dt_sec):.2f}%"
         )
 
         if options.gap_file is not None:
@@ -659,10 +647,10 @@ def main():
             o.write(
                 "# gap_len_sec count_of_gaps gap_len_as_decimal_days gap_len_as_decimal_hours gap_len_as_decimal_minutes\n"
             )
-            o.write('# pwd="%s"\n' % (os.getcwd(),))
+            o.write(f'# pwd="{os.getcwd()}"\n')
             if len(args) > 0:
-                o.write("# first_file=%s\n" % (args[0],))
-                o.write("#  last_file=%s\n" % (args[-1],))
+                o.write(f"# first_file={args[0]}\n")
+                o.write(f"#  last_file={args[-1]}\n")
             keys = list(info.up.gap_counts_raw.keys())
             keys.sort()
             for gap_len_sec in keys:
@@ -689,7 +677,7 @@ def main():
         uptime = info.up.up_time()
         for entry in uptime:
             jday = str(entry[0])[4:].lstrip("0").rjust(3)
-            o.write("%s %6.2f\n" % (jday, entry[1]))
+            o.write(f"{jday} {entry[1]:6.2f}\n")
 
     if False:
         print("count_no_gps:", info.pos_stats.count_no_gps)

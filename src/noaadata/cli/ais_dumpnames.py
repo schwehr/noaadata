@@ -7,13 +7,10 @@ version with no error checking.
  TODO(schwehr):Option to check the AIVDM tags to make sure that the messages should be combined
 """
 
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
 
-from ais import ais_msg_5 as ais_msg_5
-from aisutils import aisstring
-from aisutils import binary
-from aisutils.BitVector import BitVector
+from aisutils import aisstring, binary
 from aisutils.uscg import uscg_ais_nmea_regex
 
 
@@ -39,10 +36,8 @@ def main():
 
     options, args = parser.parse_args()
     o = sys.stdout
-    if None != options.outputFilename:
+    if options.outputFilename is not None:
         o = open(options.outputFilename, "w")
-
-    verbose = options.verbose
 
     for filename in args:
         print(filename)
@@ -65,7 +60,7 @@ def main():
             #    continue
 
             fields = line.split(",")[:6]
-            if "1" != fields[2]:  # Must be the start of a sequence
+            if fields[2] != "1":  # Must be the start of a sequence
                 # if verbose:
                 #    print 'skipping based on field 2',line
                 continue

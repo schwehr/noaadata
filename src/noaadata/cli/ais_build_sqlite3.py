@@ -12,14 +12,8 @@ Only works with sqlite3.  Uses the internal python sqlite db interface.
 """
 
 import datetime
-from decimal import Decimal
-import io
 import sqlite3
 import sys
-import time
-
-from aisutils import BitVector
-from aisutils import binary
 
 import ais.ais_msg_1
 import ais.ais_msg_2
@@ -28,6 +22,7 @@ import ais.ais_msg_4
 import ais.ais_msg_5
 import ais.ais_msg_18
 import ais.ais_msg_19
+from aisutils import binary
 
 
 def createTables(cx, verbose=False):
@@ -103,7 +98,7 @@ def loadData(cx, datafile, verbose=False, uscg=True):
         if verbose:
             print("msgNum:", msgNum)
 
-        payload = bv = binary.ais6tobitvec(line.split(",")[5])
+        bv = binary.ais6tobitvec(line.split(",")[5])
 
         # TODO(schwehr): Take padding into account.x
         if msgNum in (1, 2, 3):
@@ -112,12 +107,11 @@ def loadData(cx, datafile, verbose=False, uscg=True):
                 print("  ", line, end=" ")
                 print("   Got length", len(bv), "expected", 168)
                 continue
-        elif msgNum == 5:
-            if len(bv) < 424:
-                print("ERROR: skipping bad shipdata message, line:", lineNum)
-                print("  ", line, end=" ")
-                print("   Got length", len(bv), "expected", 424)
-                continue
+        elif msgNum == 5 and len(bv) < 424:
+            print("ERROR: skipping bad shipdata message, line:", lineNum)
+            print("  ", line, end=" ")
+            print("   Got length", len(bv), "expected", 424)
+            continue
 
         fields = line.split(",")
 
@@ -132,7 +126,7 @@ def loadData(cx, datafile, verbose=False, uscg=True):
                 pass
             # print len(fields),fields
             for i in range(len(fields) - 1, 5, -1):
-                if 0 < len(fields[i]) and "r" == fields[i][0]:
+                if len(fields[i]) > 0 and fields[i][0] == "r":
                     cg_station = fields[i]
                     break  # Found it so ditch the for loop
 
@@ -171,9 +165,9 @@ def loadData(cx, datafile, verbose=False, uscg=True):
 
         if uscg:
             # FIX: make cg_timestamp work
-            if None != cg_timestamp:
+            if cg_timestamp is not None:
                 ins.add("cg_timestamp", cg_timestamp)
-            if None != cg_station:
+            if cg_station is not None:
                 ins.add("cg_r", cg_station)
         if verbose:
             print(str(ins))

@@ -20,15 +20,11 @@ which should be packaged with the resulting files.
 
 import doctest
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -392,7 +388,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("sls_waterlevel:\n")
         if "time_month" in params:
             out.write("    time_month:     " + str(params["time_month"]) + "\n")
@@ -416,8 +412,8 @@ def printFields(
             out.write("    datum:          " + str(params["datum"]) + "\n")
         if "reserved" in params:
             out.write("    reserved:       " + str(params["reserved"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -428,13 +424,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -444,9 +440,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 typeEncodeLut = {
@@ -534,12 +528,10 @@ def sqlCreate(
         c.addInt("time_min")
     if "stationid" in fields:
         c.addVarChar("stationid", 7)
-    if dbType != "postgres":
-        if "pos_longitude" in fields:
-            c.addDecimal("pos_longitude", 7, 4)
-    if dbType != "postgres":
-        if "pos_latitude" in fields:
-            c.addDecimal("pos_latitude", 7, 4)
+    if dbType != "postgres" and "pos_longitude" in fields:
+        c.addDecimal("pos_longitude", 7, 4)
+    if dbType != "postgres" and "pos_latitude" in fields:
+        c.addDecimal("pos_latitude", 7, 4)
     if "type" in fields:
         c.addInt("type")
     if "waterlevel" in fields:
@@ -610,23 +602,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -634,7 +625,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -664,16 +655,16 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-time\_month & 4 & Time tag of measurement  month 1..12 \\\\ \hline
-time\_day & 5 & Time tag of measurement  day of the month 1..31 \\\\ \hline
-time\_hour & 5 & Time tag of measurement  UTC hours 0..23 \\\\ \hline
-time\_min & 6 & Time tag of measurement  minutes \\\\ \hline
-stationid & 42 & Character identifier of the station.  Usually a number. \\\\ \hline
-pos\_longitude & 25 & Location of measurement  East West location \\\\ \hline
-pos\_latitude & 24 & Location of measurement  North South location \\\\ \hline
-type & 1 & How to interpret the water level \\\\ \hline
-waterlevel & 16 & Water level in centimeters \\\\ \hline
-datum & 2 & What reference datum applies to the value \\\\ \hline
+time\\_month & 4 & Time tag of measurement  month 1..12 \\\\ \\hline
+time\\_day & 5 & Time tag of measurement  day of the month 1..31 \\\\ \\hline
+time\\_hour & 5 & Time tag of measurement  UTC hours 0..23 \\\\ \\hline
+time\\_min & 6 & Time tag of measurement  minutes \\\\ \\hline
+stationid & 42 & Character identifier of the station.  Usually a number. \\\\ \\hline
+pos\\_longitude & 25 & Location of measurement  East West location \\\\ \\hline
+pos\\_latitude & 24 & Location of measurement  North South location \\\\ \\hline
+type & 1 & How to interpret the water level \\\\ \\hline
+waterlevel & 16 & Water level in centimeters \\\\ \\hline
+datum & 2 & What reference datum applies to the value \\\\ \\hline
 reserved & 14 & Reserved bits for future use\\\\ \\hline \\hline
 Total bits & 144 & Appears to take 1 slot with 24 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -801,17 +792,17 @@ class Testsls_waterlevel(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["time_month"], params["time_month"])
-        self.assertEqual(r["time_day"], params["time_day"])
-        self.assertEqual(r["time_hour"], params["time_hour"])
-        self.assertEqual(r["time_min"], params["time_min"])
-        self.assertEqual(r["stationid"], params["stationid"])
+        assert r["time_month"] == params["time_month"]
+        assert r["time_day"] == params["time_day"]
+        assert r["time_hour"] == params["time_hour"]
+        assert r["time_min"] == params["time_min"]
+        assert r["stationid"] == params["stationid"]
         self.assertAlmostEqual(r["pos_longitude"], params["pos_longitude"], 4)
         self.assertAlmostEqual(r["pos_latitude"], params["pos_latitude"], 4)
-        self.assertEqual(r["type"], params["type"])
-        self.assertEqual(r["waterlevel"], params["waterlevel"])
-        self.assertEqual(r["datum"], params["datum"])
-        self.assertEqual(r["reserved"], params["reserved"])
+        assert r["type"] == params["type"]
+        assert r["waterlevel"] == params["waterlevel"]
+        assert r["datum"] == params["datum"]
+        assert r["reserved"] == params["reserved"]
 
 
 def addMsgOptions(parser):
@@ -1052,7 +1043,7 @@ def main():
         if options.verbose:
             sys.argv.append("-v")
 
-        numfail, numtests = doctest.testmod()
+        numfail, _numtests = doctest.testmod()
         if not numfail:
             print("ok")
         else:
@@ -1070,30 +1061,30 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.time_monthField:
+        if options.time_monthField is None:
             parser.error("missing value for time_monthField")
-        if None == options.time_dayField:
+        if options.time_dayField is None:
             parser.error("missing value for time_dayField")
-        if None == options.time_hourField:
+        if options.time_hourField is None:
             parser.error("missing value for time_hourField")
-        if None == options.time_minField:
+        if options.time_minField is None:
             parser.error("missing value for time_minField")
-        if None == options.stationidField:
+        if options.stationidField is None:
             parser.error("missing value for stationidField")
-        if None == options.pos_longitudeField:
+        if options.pos_longitudeField is None:
             parser.error("missing value for pos_longitudeField")
-        if None == options.pos_latitudeField:
+        if options.pos_latitudeField is None:
             parser.error("missing value for pos_latitudeField")
-        if None == options.typeField:
+        if options.typeField is None:
             parser.error("missing value for typeField")
-        if None == options.waterlevelField:
+        if options.waterlevelField is None:
             parser.error("missing value for waterlevelField")
-        if None == options.datumField:
+        if options.datumField is None:
             parser.error("missing value for datumField")
     msgDict = {
         "time_month": options.time_monthField,
@@ -1110,9 +1101,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1120,7 +1111,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1138,7 +1129,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

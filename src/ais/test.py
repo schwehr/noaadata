@@ -4,13 +4,10 @@
 @todo: turn this into a real test runner for everything in the test subdir.
 """
 
-import sys
-from aisutils.BitVector import BitVector
 from aisutils import binary
-from . import ais_msg_1
-from . import ais_msg_8
-from ais.sls import waterlevel
+from aisutils.BitVector import BitVector
 
+from . import ais_msg_1, ais_msg_8
 
 if __name__ == "__main__":
     # Try to parse some binary message

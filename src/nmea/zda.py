@@ -4,10 +4,6 @@
 For now, this just supports ZDA time stamps.
 """
 
-import time
-import sys
-
-import nmea
 import calendar
 
 # List of the valide clock sources.

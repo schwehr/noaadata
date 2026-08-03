@@ -139,4 +139,76 @@ python_files = ["test*.py", "*_test.py", "*_tests.py"]
 [tool.hypofuzz]
 tasks_directory = "tests/test_properties"
 
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+src = ["src", "tests", "scripts"]
+exclude = [
+    "contrib",
+    "scraps",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # Pyflakes
+    "W",   # pycodestyle warnings
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "RUF", # Ruff-specific rules
+    "PT",  # flake8-pytest-style
+    "PL",  # Pylint
+]
+ignore = [
+    "PLR0911", # Too many return statements
+    "PLR0912", # Too many branches
+    "PLR0913", # Too many arguments in function definition
+    "PLR0915", # Too many statements
+    "PLR0917", # Too many positional arguments
+    "PLR2004", # Magic value used in comparison
+    "PLR0124", # Name compared with itself (used in test_uscg.py __eq__ test)
+    "PLW2901", # `for` loop variable overwritten by assignment
+    "PLW0129", # Asserting on string literal
+    "PLW0602", # Global variable not assigned
+    "PLW1641", # Object does not implement __hash__
+    "E501",    # Line too long (handled by ruff format)
+    "E741",    # Ambiguous variable name
+    "F821",    # Undefined name (legacy generator/compiler files)
+    "F401",    # Unused import (legacy compiler files)
+    "F405",    # Undefined local with import star
+    "F403",    # Import star used
+    "F601",    # Multi-value repeated key
+    "F811",    # Redefined while unused
+    "E701",    # Multiple statements on one line
+    "E702",    # Multiple statements on one line semicolon
+    "E703",    # Useless semicolon
+    "E721",    # Type comparison
+    "E722",    # Bare except
+    "E402",    # Module import not at top
+    "UP031",   # Printf string formatting
+    "PLC0415", # Import outside top level
+    "PLC0206", # Extracting value from dict without items()
+    "PT009",   # Pytest unittest assertion
+    "SIM102",  # Collapsible if
+    "SIM103",  # Return negated condition directly
+    "SIM105",  # Suppressible exception
+    "SIM108",  # Use ternary operator
+    "SIM113",  # Enumerate for loop
+    "SIM115",  # Open file with context handler
+    "B018",    # Useless attribute access
+    "B904",    # Raise without from
+    "RUF012",  # Mutable class default
+    "RUF100",  # Unused noqa directive
+    "W291",    # Trailing whitespace
+    "W293",    # Blank line with whitespace
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["PLR2004", "S101", "PT011"]
+"test/*" = ["PLR2004", "S101", "PT011"]
+
+
 

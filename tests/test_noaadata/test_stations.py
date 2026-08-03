@@ -1,6 +1,5 @@
 """Unit tests for NOAA CO-OPS station parsing utilities."""
 
-import pytest
 from noaadata import stations
 
 

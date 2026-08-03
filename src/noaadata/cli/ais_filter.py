@@ -20,7 +20,7 @@ def filterInTimestamp(lineList):
 
      TODO(schwehr):preserve order within each second and support multi line messages
     """
-    if 1 == len(lineList):
+    if len(lineList) == 1:
         # NOP
         print(lineList[0], end=" ")
         return
@@ -57,7 +57,7 @@ def main():
     for line in sys.stdin:
         ts = line.split(",")[-1].strip()
         if ts != tsOld:
-            if None != tsOld:
+            if tsOld is not None:
                 filterInTimestamp(linesInTS)
 
             linesInTS = []
@@ -71,7 +71,7 @@ def main():
         else:
             print(line, end=" ")
 
-    if None != tsOld:
+    if tsOld is not None:
         filterInTimestamp(linesInTS)
 
 

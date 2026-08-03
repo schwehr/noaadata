@@ -1,6 +1,8 @@
 """Property-based tests for bidirectional 6-bit ASCII encoding/decoding in aisstring.py."""
 
-from hypothesis import given, strategies as st
+from hypothesis import given
+from hypothesis import strategies as st
+
 from aisutils import aisstring
 
 # Strategy for valid 6-bit AIS characters

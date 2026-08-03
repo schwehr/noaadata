@@ -1,6 +1,16 @@
-__version__ = "$Revision: 8167 $".split()[1]
+__version__ = ["$Revision:", "8167", "$"][1]
 """The version of ais-py"""
-__date__ = "$Date: 2008-01-09 14:44:36 -0500 (Wed, 09 Jan 2008) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2008-01-09",
+    "14:44:36",
+    "-0500",
+    "(Wed,",
+    "09",
+    "Jan",
+    "2008)",
+    "$",
+][1]
 __docformat__ = "epytext en"
 __author__ = "Kurt Schwehr <kurt@ccom.unh.edu>"
 """The primary author of ais-py"""

@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 13407 $".split()[1]
-__date__ = "$Date: 2010-04-07 10:36:00 -0400 (Wed, 07 Apr 2010) $".split()[1]
+__version__ = ["$Revision:", "13407", "$"][1]
+__date__ = [
+    "$Date:",
+    "2010-04-07",
+    "10:36:00",
+    "-0400",
+    "(Wed,",
+    "07",
+    "Apr",
+    "2010)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = (
     """
@@ -32,13 +42,16 @@ Migrated from ais-py in August 2007.
 """
 )
 
-import sys, os
-import time
-import socket
 import _thread
 import datetime
-import exceptions  # For KeyboardInterupt pychecker complaint
+import os
+import socket
+import sys
+import time
 import traceback
+
+import exceptions  # For KeyboardInterupt pychecker complaint
+
 import nmea.znt  # NTP tracking
 
 ######################################################################
@@ -115,10 +128,7 @@ class PassThroughServer:
         self.running = True
 
         # NTP monitoring
-        if options.verbosity > 0:
-            verbose = True
-        else:
-            verbose = False
+        verbose = options.verbosity > 0
 
         self.znt = nmea.znt.ZntLogger(
             self.log,  # Make sure to change this with the log file rotation
@@ -133,8 +143,9 @@ class PassThroughServer:
     def stop(self):
         if self.log:
             self.log.write(
-                "# Closing log file at %s UTC,%s\n"
-                % (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), time.time())
+                "# Closing log file at {} UTC,{}\n".format(
+                    datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), time.time()
+                )
             )
             self.log.close()
             self.log = None
@@ -144,7 +155,6 @@ class PassThroughServer:
         print("starting threads")
         _thread.start_new_thread(self.passdata, (self,))
         _thread.start_new_thread(self.connection_handler, (self,))
-        return
 
     def getLogFileName(self):
         """Return the log file name.  Appends date if rotation is happenin
@@ -152,7 +162,7 @@ class PassThroughServer:
         FIX: update when the program can rotate at arbitrary times.
         """
         if self.options.rotateLog:
-            return "%s-%s%s" % (
+            return "{}-{}{}".format(
                 self.options.log_file,
                 datetime.datetime.utcnow().strftime("%Y-%m-%d"),
                 self.options.log_file_extension,
@@ -161,22 +171,23 @@ class PassThroughServer:
 
     def logfile_add_start(self):
         self.log.write(
-            "# Opening log file at %s UTC,%s\n"
-            % (datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), time.time())
+            "# Opening log file at {} UTC,{}\n".format(
+                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), time.time()
+            )
         )
         try:
-            self.log.write("# Logging host: %s %s %s\n" % os.uname()[:3])
+            self.log.write("# Logging host: {} {} {}\n".format(*os.uname()[:3]))
         except:
             print("os.uname not supported")
         try:
-            self.log.write("# platform: %s \n" % sys.platform)
+            self.log.write(f"# platform: {sys.platform} \n")
             for line in sys.version.splitlines():
-                self.log.write("# python: %s \n" % line)
+                self.log.write(f"# python: {line} \n")
         except:
             print("Python really should have platform and version!")
         self.log.write("# NTP status:\n")
         for line in os.popen("ntpq -p -n"):
-            self.log.write("#    ntp: %s\n" % line.rstrip())
+            self.log.write(f"#    ntp: {line.rstrip()}\n")
 
     def passdata(self, unused=None):
         while self.running:
@@ -225,8 +236,7 @@ class PassThroughServer:
                         print("ROTATING LOG: ", self.curLogFile, new_log_file)
                     now = time.time()
                     self.log.write(
-                        "# Closing log file at %s UTC,%s\n"
-                        % (
+                        "# Closing log file at {} UTC,{}\n".format(
                             datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
                             time.time(),
                         )
@@ -256,7 +266,7 @@ class PassThroughServer:
                         print("WARNING... not seeing line endings.  NOT forwarding")
                         if self.log:
                             self.log.write(data_cache)
-                            self.log.write("%s,%s\n" % (station_id, now))
+                            self.log.write(f"{station_id},{now}\n")
                         recv_time = None
                         data_cache = ""
                         continue
@@ -267,7 +277,7 @@ class PassThroughServer:
                     lines = data_cache.split("\n")
                     for line in lines[:-1]:
                         line = line.rstrip()
-                        line += ",%s,%s\n" % (station_id, recv_time)
+                        line += f",{station_id},{recv_time}\n"
 
                         if self.log:
                             self.log.write(line)
@@ -277,7 +287,7 @@ class PassThroughServer:
                         for c in self.clients:
                             try:
                                 c.send(line)
-                            except socket.error:
+                            except OSError:
                                 print("Client Disconnect")
                                 self.clients.remove(c)
 
@@ -293,7 +303,7 @@ class PassThroughServer:
                     for c in self.clients:
                         try:
                             c.send(m)
-                        except socket.error:
+                        except OSError:
                             print("Client Disconnect")
                             self.clients.remove(c)
 

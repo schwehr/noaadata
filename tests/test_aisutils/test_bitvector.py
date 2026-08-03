@@ -1,6 +1,5 @@
 """Unit tests for BitVector manipulation and operations."""
 
-import pytest
 from aisutils.BitVector import BitVector
 
 

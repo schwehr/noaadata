@@ -2,18 +2,15 @@
 
 """Adds ITDMA commstate to message 3."""
 
+import io
 import sys
 from decimal import Decimal
 from optparse import OptionParser
-import io
 
+from aisutils import binary, sqlhelp
 from aisutils.BitVector import BitVector
 
-from aisutils import aisstring
-from aisutils import binary
 from . import commstate
-from aisutils import sqlhelp
-
 
 # from ais_msg_1 import *
 
@@ -33,7 +30,8 @@ fieldList = (
     "RegionalReserved",
     "Spare",
     "RAIM",
-) + commstate.itdma_fields
+    *commstate.itdma_fields,
+)
 
 
 def decode_aivdm(msg):
@@ -106,12 +104,10 @@ def sqlCreate(
         c.addDecimal("SOG", 4, 1)
     if "PositionAccuracy" in fields:
         c.addInt("PositionAccuracy")
-    if dbType != "postgres":
-        if "longitude" in fields:
-            c.addDecimal("longitude", 8, 5)
-    if dbType != "postgres":
-        if "latitude" in fields:
-            c.addDecimal("latitude", 8, 5)
+    if dbType != "postgres" and "longitude" in fields:
+        c.addDecimal("longitude", 8, 5)
+    if dbType != "postgres" and "latitude" in fields:
+        c.addDecimal("latitude", 8, 5)
     if "COG" in fields:
         c.addDecimal("COG", 4, 1)
     if "TrueHeading" in fields:
@@ -151,7 +147,7 @@ def printFields(
     params, out=sys.stdout, format="std", fieldList=None, dbType="postgres"
 ):
 
-    if "std" == format:
+    if format == "std":
         out.write("position:\n")
         if "MessageID" in params:
             out.write("   MessageID:          " + str(params["MessageID"]) + "\n")
@@ -199,8 +195,8 @@ def printFields(
             else:
                 out.write(fieldname + "n/a\n")
 
-    elif "csv" == format:
-        if None == options.fieldList:
+    elif format == "csv":
+        if options.fieldList is None:
             options.fieldList = fieldList
         needComma = False
         for field in fieldList:
@@ -211,13 +207,13 @@ def printFields(
                 out.write(str(params[field]))
             # else: leave it empty
         out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -227,9 +223,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 def main():
@@ -351,7 +345,7 @@ def main():
     (options, args) = parser.parse_args()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.sqlCreate:
@@ -366,7 +360,7 @@ def main():
 
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
-        if None == options.fieldList:
+        if options.fieldList is None:
             options.fieldList = fieldList
 
         buf = io.StringIO()

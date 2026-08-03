@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -117,7 +113,7 @@ def encode(params, validate=False):
     bvList.append(aisstring.encode(params["aStr"], 30))
     bvList.append(
         binary.setBitVectorSize(
-            BitVector(intVal=int((Decimal(params["anUDecimal"]) * Decimal("10")))), 16
+            BitVector(intVal=int(Decimal(params["anUDecimal"]) * Decimal("10"))), 16
         )
     )
     bvList.append(
@@ -321,7 +317,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("alltypesmsg:\n")
         if "dac" in params:
             out.write("    dac:           " + str(params["dac"]) + "\n")
@@ -343,8 +339,8 @@ def printFields(
             out.write("    aDecimal:      " + str(params["aDecimal"]) + "\n")
         if "aFloat" in params:
             out.write("    aFloat:        " + str(params["aFloat"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -355,15 +351,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 ######################################################################
@@ -494,23 +488,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -518,7 +511,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -548,15 +541,15 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-dac & 16 & Designated Area Code \\\\ \hline
-reqDecimal & 8 & required decimal value... FIX: scale or no? \\\\ \hline
-unavail\_uint & 2 & Unavailable unsigned integer \\\\ \hline
-anUInt & 2 & NO unavailable unsigned integer \\\\ \hline
-anInt & 3 & NO unavailable signed integer \\\\ \hline
-aBool & 1 & Simple bool \\\\ \hline
-aStr & 30 & An ais string of 5 characters \\\\ \hline
-anUDecimal & 16 & An unsigned decimal.  Allow smaller numbers \\\\ \hline
-aDecimal & 16 & A decimal \\\\ \hline
+dac & 16 & Designated Area Code \\\\ \\hline
+reqDecimal & 8 & required decimal value... FIX: scale or no? \\\\ \\hline
+unavail\\_uint & 2 & Unavailable unsigned integer \\\\ \\hline
+anUInt & 2 & NO unavailable unsigned integer \\\\ \\hline
+anInt & 3 & NO unavailable signed integer \\\\ \\hline
+aBool & 1 & Simple bool \\\\ \\hline
+aStr & 30 & An ais string of 5 characters \\\\ \\hline
+anUDecimal & 16 & An unsigned decimal.  Allow smaller numbers \\\\ \\hline
+aDecimal & 16 & A decimal \\\\ \\hline
 aFloat & 32 & An IEEE floating point number\\\\ \\hline \\hline
 Total bits & 126 & Appears to take 1 slot with 42 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -678,13 +671,13 @@ class Testalltypesmsg(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["dac"], params["dac"])
+        assert r["dac"] == params["dac"]
         self.assertAlmostEqual(r["reqDecimal"], params["reqDecimal"], 0)
-        self.assertEqual(r["unavail_uint"], params["unavail_uint"])
-        self.assertEqual(r["anUInt"], params["anUInt"])
-        self.assertEqual(r["anInt"], params["anInt"])
-        self.assertEqual(r["aBool"], params["aBool"])
-        self.assertEqual(r["aStr"], params["aStr"])
+        assert r["unavail_uint"] == params["unavail_uint"]
+        assert r["anUInt"] == params["anUInt"]
+        assert r["anInt"] == params["anInt"]
+        assert r["aBool"] == params["aBool"]
+        assert r["aStr"] == params["aStr"]
         self.assertAlmostEqual(r["anUDecimal"], params["anUDecimal"], 1)
         self.assertAlmostEqual(r["aDecimal"], params["aDecimal"], 0)
         self.assertAlmostEqual(r["aFloat"], params["aFloat"], 3)
@@ -901,26 +894,26 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.unavail_uintField:
+        if options.unavail_uintField is None:
             parser.error("missing value for unavail_uintField")
-        if None == options.anUIntField:
+        if options.anUIntField is None:
             parser.error("missing value for anUIntField")
-        if None == options.anIntField:
+        if options.anIntField is None:
             parser.error("missing value for anIntField")
-        if None == options.aBoolField:
+        if options.aBoolField is None:
             parser.error("missing value for aBoolField")
-        if None == options.aStrField:
+        if options.aStrField is None:
             parser.error("missing value for aStrField")
-        if None == options.anUDecimalField:
+        if options.anUDecimalField is None:
             parser.error("missing value for anUDecimalField")
-        if None == options.aDecimalField:
+        if options.aDecimalField is None:
             parser.error("missing value for aDecimalField")
-        if None == options.aFloatField:
+        if options.aFloatField is None:
             parser.error("missing value for aFloatField")
     msgDict = {
         "dac": "366",
@@ -936,9 +929,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -946,7 +939,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -964,7 +957,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

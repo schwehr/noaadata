@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = """
 Split an USCG N-AIS log file into one file per receiving station.
@@ -14,7 +24,8 @@ Split an USCG N-AIS log file into one file per receiving station.
  TODO(schwehr):make sure binary is only used in AIS ITU messages and not within the binary messages!
 """
 
-import sys, os
+import os
+import sys
 
 
 def getStation(msg, withR=True):
@@ -70,9 +81,9 @@ def towersplit(options, filenames):
             if line[0] == "#":
                 continue  # Allow for comments
             station = getStation(line)
-            if None == station:
+            if station is None:
                 print("Line had no station:", line)
-                if None == unknown:
+                if unknown is None:
                     unknown = file(subdir + "unknown", "w")
                 unknown.write(line)
             if station not in stationFiles:
@@ -126,8 +137,6 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    success = True
-
     if options.doctest:
         import os
 
@@ -138,12 +147,11 @@ def main():
             sys.argv.append("-v")
         import doctest
 
-        numfail, numtests = doctest.testmod()
+        numfail, _numtests = doctest.testmod()
         if numfail == 0:
             print("ok")
         else:
             print("FAILED")
-            success = False
         sys.argv = argvOrig  # Restore the original args
         del argvOrig  # hide from epydoc
         sys.exit()  # FIX: Will this exit success?

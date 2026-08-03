@@ -4,13 +4,12 @@
 @license: Apache 2.0
 """
 
-import os
 import sys
 
 
 def getStation(line, withR=False):
     fields = line.split(",")
-    if "!AIVDM" != fields[0]:
+    if fields[0] != "!AIVDM":
         return None
 
     foundChecksum = False
@@ -21,7 +20,7 @@ def getStation(line, withR=False):
         if len(f) < 1:
             continue
         if not foundChecksum:
-            if -1 == f.find("*"):
+            if f.find("*") == -1:
                 continue  # FIX: Is this sufficient to make sure this is a checksum?
             # if '0'==f[0]: continue
             foundChecksum = True
@@ -108,7 +107,7 @@ def main():
                     if linenum % progress_interval == 0:
                         sys.stderr.write("linenum: %d\n" % linenum)
                 station = getStation(line, options.withR)
-                if None == station:
+                if station is None:
                     if verbose:
                         print("WARNING: no station for line", line)
                     continue

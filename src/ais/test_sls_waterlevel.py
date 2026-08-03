@@ -4,14 +4,11 @@
 Run a water level message from NMEA to decoded
 """
 
-import sys
+import pytest
 
-from aisutils.BitVector import BitVector
 from aisutils import binary
 
 from . import ais_msg_8
-from ais.sls import waterlevel
-import pytest
 
 
 def test_sls_waterlevel():

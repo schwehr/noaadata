@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 7731 $".split()[1]
-__date__ = "$Date: 2007-12-01 17:50:19 -0500 (Sat, 01 Dec 2007) $".split()[1]
+__version__ = ["$Revision:", "7731", "$"][1]
+__date__ = ["$Date:", "2007-12-01", "17:50:19", "-0500", "(Sat,", "01", "Dec", "2007)", "$"][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -29,9 +29,9 @@ Purely graph the vessels per day.  Vessels seen per day
 """
 )
 
+import datetime
 import os
 import sys
-import datetime
 
 ######################################################################
 if __name__ == "__main__":

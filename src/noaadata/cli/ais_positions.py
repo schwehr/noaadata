@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 9672 $".split()[1]
-__date__ = "$Date: 2008-06-20 01:49:30 -0400 (Fri, 20 Jun 2008) $".split()[1]
+__version__ = ["$Revision:", "9672", "$"][1]
+__date__ = [
+    "$Date:",
+    "2008-06-20",
+    "01:49:30",
+    "-0400",
+    "(Fri,",
+    "20",
+    "Jun",
+    "2008)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __copyright__ = "2007"
 __license__ = "Apache 2.0"
@@ -19,12 +29,13 @@ Return positions of vessels, but require a minimum distance moved before emittin
 @license: Apache 2.0
 """
 
-import sys
-from pyproj import Proj
 import math
+import sys
+
+from pyproj import Proj
 
 # Can decode messages 1,2,3 with any of the three codecs.
-import ais.ais_msg_1 as ais_msg_1
+from ais import ais_msg_1
 from aisutils import binary
 
 
@@ -45,7 +56,7 @@ def getPosition(logfile, outfile, minDist=None):
     # FIX: use the right utm zone.  14 is the central US so it will kind of work
     params = {"proj": "utm", "zone": 14}  # int(options.zone)}
     proj = None
-    if minDist != None:
+    if minDist is not None:
         proj = Proj(params)
 
     positions = {}  # Last recoded ship position
@@ -53,9 +64,9 @@ def getPosition(logfile, outfile, minDist=None):
     for line in logfile:
         fields = line.split(",")
         # FIX: use regex instead
-        if "!AIVDM" != fields[0]:
+        if fields[0] != "!AIVDM":
             continue
-        if "1" != fields[1] and "1" != fields[2]:  # Must be the start of a sequence
+        if fields[1] != "1" and fields[2] != "1":  # Must be the start of a sequence
             continue
         if fields[5][0] not in ("1", "2", "3"):
             continue
@@ -70,7 +81,7 @@ def getPosition(logfile, outfile, minDist=None):
         d = None
         if mmsi not in positions:
             positions[mmsi] = (lon, lat)
-        elif minDist != None:
+        elif minDist is not None:
             lonOld, latOld = positions[mmsi]
             oldUTM = proj(lonOld, latOld)
             newUTM = proj(lon, lat)
@@ -132,11 +143,11 @@ def main():
 
     outfile = sys.stdout
 
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         print("outfilename=", options.outputFileName)
         outfile = file(options.outputFileName, "w")
 
-    if 0 == len(args):
+    if len(args) == 0:
         getPosition(sys.stdin, outfile, options.minDist)
     else:
         for filename in args:

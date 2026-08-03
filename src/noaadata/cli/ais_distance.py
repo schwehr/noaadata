@@ -9,15 +9,14 @@ Trying to do better than ais_nmea_uptime*.py
 """
 
 import datetime
-from optparse import OptionParser
 import math
 import sqlite3
-import os
 import sys
+from optparse import OptionParser
+
 from pyproj import Proj
 
 from aisutils import binary
-from aisutils import BitVector
 from aisutils.uscg import uscg_ais_nmea_regex
 
 
@@ -232,20 +231,20 @@ class Histogram:
         print("hist:", min_val, max_val, num_bins, self.extent, self.bin_size)
 
     def add_value(self, value):
-        assert value >= self.min_val and value <= self.max_val
-        bin = int(math.floor((value - self.min_val) / self.bin_size))
+        assert value >= self.min_val
+        assert value <= self.max_val
+        bin = math.floor((value - self.min_val) / self.bin_size)
         # print 'bin:',value,'->',bin
         self.bins[bin] += 1
 
 
-from numpy import array
 import numpy
+from numpy import array
 
 
 def main():
     parser = get_parser()
     (options, args) = parser.parse_args()
-    v = options.verbose
 
     max_dist_km = 200
     num_bins = 40  # 5 km bins

@@ -1,6 +1,5 @@
 """Unit tests for NMEA RMC, ZDA, and ZNT sentence parsers."""
 
-import pytest
 from nmea import rmc, zda, znt
 
 

@@ -5,13 +5,11 @@ This should be built in to the binary messages.  They need to be able
 to handle themselves.
 """
 
-from decimal import Decimal
-from optparse import OptionParser
 import sys
+from optparse import OptionParser
 
-from aisutils.BitVector import BitVector
 from aisutils import binary
-from aisutils import aisstring
+from aisutils.BitVector import BitVector
 
 
 def main():
@@ -90,7 +88,7 @@ def main():
             sys.argv.append("-v")
         import doctest
 
-        numfail, numtests = doctest.testmod()
+        numfail, _numtests = doctest.testmod()
         if not numfail:
             print("ok")
         else:
@@ -108,16 +106,16 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     bv = None
     for msg in args:
-        if "binary" == options.inputType:
+        if options.inputType == "binary":
             bv = BitVector(bitstring=msg)
-        elif "nmeapayload" == options.inputType:
+        elif options.inputType == "nmeapayload":
             bv = binary.ais6tobitvec(msg)
-        elif "nmea" == options.inputType:
+        elif options.inputType == "nmea":
             bv = binary.ais6tobitvec(msg.split(",")[5])
         else:
             sys.exit("ERROR: unknown inputType.  Help!")

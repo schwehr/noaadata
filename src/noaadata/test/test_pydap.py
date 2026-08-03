@@ -4,6 +4,8 @@ Try out pydap to fetch the current water level from the NOAA Co-ops
 server.  This is a really slow way to pull one data point!
 """
 
+import contextlib
+
 import pytest
 
 pytest.skip(
@@ -11,16 +13,13 @@ pytest.skip(
     allow_module_level=True,
 )
 
-try:
+with contextlib.suppress(ImportError):
     import dap.client
-except ImportError:
-    pass
 
 if __name__ == "__main__":
     dataset = dap.client.open(
         "http://opendap.co-ops.nos.noaa.gov/dods/IOOS/Raw_Water_Level"
     )
-    #
     print("Dataset keys:")
     for item in list(dataset.keys()):
         print("  ", item)

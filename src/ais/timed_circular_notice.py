@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -167,11 +163,11 @@ def encode(params, validate=False):
     if "radius" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["radius"]) * Decimal("0.1")))), 14
+                BitVector(intVal=int(Decimal(params["radius"]) * Decimal("0.1"))), 14
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(16383)), 14))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=16383), 14))
     bvList.append(binary.setBitVectorSize(BitVector(intVal=params["areatype"]), 8))
 
     return binary.joinBV(bvList)
@@ -488,7 +484,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("timed_circular_notice:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -520,8 +516,8 @@ def printFields(
             out.write("    radius:           " + str(params["radius"]) + "\n")
         if "areatype" in params:
             out.write("    areatype:         " + str(params["areatype"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -532,13 +528,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -548,9 +544,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -734,12 +728,10 @@ def sqlCreate(
         c.addInt("hour")
     if "min" in fields:
         c.addInt("min")
-    if dbType != "postgres":
-        if "longitude" in fields:
-            c.addDecimal("longitude", 8, 5)
-    if dbType != "postgres":
-        if "latitude" in fields:
-            c.addDecimal("latitude", 8, 5)
+    if dbType != "postgres" and "longitude" in fields:
+        c.addDecimal("longitude", 8, 5)
+    if dbType != "postgres" and "latitude" in fields:
+        c.addDecimal("latitude", 8, 5)
     if "timetoexpire" in fields:
         c.addInt("timetoexpire")
     if "radius" in fields:
@@ -808,23 +800,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -832,7 +823,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -862,20 +853,20 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
-dac & 10 & Designated Area Code - 366 for the United States \\\\ \hline
-fid & 6 & Functional IDentifier - 63 \\\\ \hline
-month & 4 & Start time of most recent notice  UTC month \\\\ \hline
-day & 5 & Start time of most recent notice  UTC day of the month 1..31 \\\\ \hline
-hour & 5 & Start time of most recent notice  UTC hours 0..23 \\\\ \hline
-min & 6 & Start time of most recent notice  UTC minutes \\\\ \hline
-longitude & 28 & Center of the area/zone  East West location \\\\ \hline
-latitude & 27 & Center of the area/zone  North South location \\\\ \hline
-timetoexpire & 15 & Minutes from the start time until the notice expires.  Max is aprox 23 days \\\\ \hline
-radius & 14 & Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code - 366 for the United States \\\\ \\hline
+fid & 6 & Functional IDentifier - 63 \\\\ \\hline
+month & 4 & Start time of most recent notice  UTC month \\\\ \\hline
+day & 5 & Start time of most recent notice  UTC day of the month 1..31 \\\\ \\hline
+hour & 5 & Start time of most recent notice  UTC hours 0..23 \\\\ \\hline
+min & 6 & Start time of most recent notice  UTC minutes \\\\ \\hline
+longitude & 28 & Center of the area/zone  East West location \\\\ \\hline
+latitude & 27 & Center of the area/zone  North South location \\\\ \\hline
+timetoexpire & 15 & Minutes from the start time until the notice expires.  Max is aprox 23 days \\\\ \\hline
+radius & 14 & Distance from center of detection zone (lat/lon above).  Distance in increments of 10 meters \\\\ \\hline
 areatype & 8 & What does this circular area represent\\\\ \\hline \\hline
 Total bits & 168 & Appears to take 1 slot \\\\ \\hline
 \\end{tabular}
@@ -1027,21 +1018,21 @@ class Testtimed_circular_notice(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["month"], params["month"])
-        self.assertEqual(r["day"], params["day"])
-        self.assertEqual(r["hour"], params["hour"])
-        self.assertEqual(r["min"], params["min"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["month"] == params["month"]
+        assert r["day"] == params["day"]
+        assert r["hour"] == params["hour"]
+        assert r["min"] == params["min"]
         self.assertAlmostEqual(r["longitude"], params["longitude"], 5)
         self.assertAlmostEqual(r["latitude"], params["latitude"], 5)
-        self.assertEqual(r["timetoexpire"], params["timetoexpire"])
+        assert r["timetoexpire"] == params["timetoexpire"]
         self.assertAlmostEqual(r["radius"], params["radius"], 0)
-        self.assertEqual(r["areatype"], params["areatype"])
+        assert r["areatype"] == params["areatype"]
 
 
 def addMsgOptions(parser):
@@ -1281,32 +1272,32 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.monthField:
+        if options.monthField is None:
             parser.error("missing value for monthField")
-        if None == options.dayField:
+        if options.dayField is None:
             parser.error("missing value for dayField")
-        if None == options.hourField:
+        if options.hourField is None:
             parser.error("missing value for hourField")
-        if None == options.minField:
+        if options.minField is None:
             parser.error("missing value for minField")
-        if None == options.longitudeField:
+        if options.longitudeField is None:
             parser.error("missing value for longitudeField")
-        if None == options.latitudeField:
+        if options.latitudeField is None:
             parser.error("missing value for latitudeField")
-        if None == options.timetoexpireField:
+        if options.timetoexpireField is None:
             parser.error("missing value for timetoexpireField")
-        if None == options.radiusField:
+        if options.radiusField is None:
             parser.error("missing value for radiusField")
-        if None == options.areatypeField:
+        if options.areatypeField is None:
             parser.error("missing value for areatypeField")
     msgDict = {
         "MessageID": "8",
@@ -1327,9 +1318,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1337,7 +1328,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1355,7 +1346,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

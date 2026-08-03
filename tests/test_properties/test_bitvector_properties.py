@@ -1,8 +1,10 @@
 """Property-based tests for BitVector slicing, padding, and binary unpacking invariants."""
 
-from hypothesis import given, strategies as st
-from aisutils.BitVector import BitVector
+from hypothesis import given
+from hypothesis import strategies as st
+
 from aisutils import binary
+from aisutils.BitVector import BitVector
 
 
 # Custom strategy to generate random BitVectors (min_size >= 1 for legacy BitVector compatibility)
@@ -33,7 +35,10 @@ def test_bitvector_addition_length_invariant(bv1, bv2):
     assert len(combined) == len(bv1) + len(bv2)
 
 
-@given(bv=bitvectors(min_size=1, max_size=50), target_size=st.integers(min_value=1, max_value=64))
+@given(
+    bv=bitvectors(min_size=1, max_size=50),
+    target_size=st.integers(min_value=1, max_value=64),
+)
 def test_set_bitvector_size_padding_invariant(bv, target_size):
     """Property: setBitVectorSize pads with left zeros to at least target_size."""
     padded = binary.setBitVectorSize(bv, target_size)
@@ -66,7 +71,9 @@ def test_signed_int_bitvector_roundtrip_invariant(bit_size, data):
 def test_ais6_bitvector_roundtrip_invariant(num_chars, data):
     """Property: 6-bit aligned BitVector roundtrips through bitvectoais6 and ais6tobitvec."""
     bit_len = num_chars * 6
-    bit_list = data.draw(st.lists(st.sampled_from([0, 1]), min_size=bit_len, max_size=bit_len))
+    bit_list = data.draw(
+        st.lists(st.sampled_from([0, 1]), min_size=bit_len, max_size=bit_len)
+    )
     bv_orig = BitVector(bitlist=bit_list)
 
     str6, pad_count = binary.bitvectoais6(bv_orig)
@@ -78,9 +85,7 @@ def test_ais6_bitvector_roundtrip_invariant(num_chars, data):
     assert str(bv_decoded) == str(bv_orig)
 
 
-@given(
-    bv_list=st.lists(bitvectors(min_size=1, max_size=20), min_size=1, max_size=5)
-)
+@given(bv_list=st.lists(bitvectors(min_size=1, max_size=20), min_size=1, max_size=5))
 def test_join_bv_invariant(bv_list):
     """Property: joinBV([bv1, bv2, ...]) == bv1 + bv2 + ..."""
     joined = binary.joinBV(bv_list)

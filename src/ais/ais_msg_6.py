@@ -18,15 +18,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 TrueBV = BitVector(bitstring="1")
 FalseBV = BitVector(bitstring="0")
@@ -320,7 +316,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("abm:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -342,8 +338,8 @@ def printFields(
             out.write("    fi:               " + str(params["fi"]) + "\n")
         if "BinaryData" in params:
             out.write("    BinaryData:       " + str(params["BinaryData"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -354,15 +350,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -503,23 +497,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -527,7 +520,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -557,15 +550,15 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 6 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI).  Also known as the Source ID \\\\ \hline
-SeqNum & 2 & Sequence number as described in 5.3.1.  Assigned to each station \\\\ \hline
-DestinationID & 30 & Unique ship identification number (MMSI). \\\\ \hline
-RetransmitFlag & 1 & Should the message be restransmitted? \\\\ \hline
-Spare & 1 & Must be 0 \\\\ \hline
-dac & 10 & Appid designated area code (country) \\\\ \hline
-fi & 6 & Appid functional identifier \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 6 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI).  Also known as the Source ID \\\\ \\hline
+SeqNum & 2 & Sequence number as described in 5.3.1.  Assigned to each station \\\\ \\hline
+DestinationID & 30 & Unique ship identification number (MMSI). \\\\ \\hline
+RetransmitFlag & 1 & Should the message be restransmitted? \\\\ \\hline
+Spare & 1 & Must be 0 \\\\ \\hline
+dac & 10 & Appid designated area code (country) \\\\ \\hline
+fi & 6 & Appid functional identifier \\\\ \\hline
 BinaryData & -1 & Bits for a binary broadcast message\\\\ \\hline \\hline
 Total bits & 87 & Appears to take 1 slot with 81 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -689,16 +682,16 @@ class Testabm(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["SeqNum"], params["SeqNum"])
-        self.assertEqual(r["DestinationID"], params["DestinationID"])
-        self.assertEqual(r["RetransmitFlag"], params["RetransmitFlag"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fi"], params["fi"])
-        self.assertEqual(r["BinaryData"], params["BinaryData"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["SeqNum"] == params["SeqNum"]
+        assert r["DestinationID"] == params["DestinationID"]
+        assert r["RetransmitFlag"] == params["RetransmitFlag"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fi"] == params["fi"]
+        assert r["BinaryData"] == params["BinaryData"]
 
 
 def addMsgOptions(parser):
@@ -912,26 +905,26 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.SeqNumField:
+        if options.SeqNumField is None:
             parser.error("missing value for SeqNumField")
-        if None == options.DestinationIDField:
+        if options.DestinationIDField is None:
             parser.error("missing value for DestinationIDField")
-        if None == options.RetransmitFlagField:
+        if options.RetransmitFlagField is None:
             parser.error("missing value for RetransmitFlagField")
-        if None == options.dacField:
+        if options.dacField is None:
             parser.error("missing value for dacField")
-        if None == options.fiField:
+        if options.fiField is None:
             parser.error("missing value for fiField")
-        if None == options.BinaryDataField:
+        if options.BinaryDataField is None:
             parser.error("missing value for BinaryDataField")
     msgDict = {
         "MessageID": "6",
@@ -947,9 +940,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -957,7 +950,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -975,7 +968,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

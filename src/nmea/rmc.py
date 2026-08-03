@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -36,37 +46,25 @@ compile_obj = re.compile(rawstr, re.VERBOSE)
 
 def lonlat(match):
     lon_deg = match.group("lon_deg").lstrip("0")
-    if len(lon_deg) == 0:
-        lon_deg = 0
-    else:
-        lon_deg = int(lon_deg)
+    lon_deg = 0 if len(lon_deg) == 0 else int(lon_deg)
 
     lon_min = match.group("lon_min").lstrip("0")
-    if len(lon_min) == 0:
-        lon_min = 0
-    else:
-        lon_min = float(lon_min)
+    lon_min = 0 if len(lon_min) == 0 else float(lon_min)
 
     lon = lon_deg + lon_min / 60.0
 
-    if "W" == match.group("east_west"):
+    if match.group("east_west") == "W":
         lon = -lon
 
     lat_deg = match.group("lat_deg").lstrip("0")
-    if len(lat_deg) == 0:
-        lat_deg = 0
-    else:
-        lat_deg = int(lat_deg)
+    lat_deg = 0 if len(lat_deg) == 0 else int(lat_deg)
 
     lat_min = match.group("lat_min").lstrip("0")
-    if len(lat_min) == 0:
-        lat_min = 0
-    else:
-        lat_min = float(lat_min)
+    lat_min = 0 if len(lat_min) == 0 else float(lat_min)
 
     lat = lat_deg + lat_min / 60.0
 
-    if "S" == match.group("north_south"):
+    if match.group("north_south") == "S":
         lat = -lat
 
     return lon, lat

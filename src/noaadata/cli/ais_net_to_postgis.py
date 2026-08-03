@@ -17,20 +17,19 @@ TODO(schwehr): Perhaps also periodically rebuild the cache if nothing going on
 """
 
 import datetime
-import exceptions
 import logging
 import select
 import socket
 import sys
-import thread
 import time
 import traceback
 
 import magicdate
+import thread
 
 import ais
-import aisutils.sqlhelp
 import aisutils.database
+import aisutils.sqlhelp
 import aisutils.uscg
 
 
@@ -117,7 +116,7 @@ class DatabaseHandler:
                 if not skipDB:
                     try:
                         cu.execute(sqlStr)
-                    except Exception, e:
+                    except Exception as e:
                         logging.error("Exception on sql: %s, ", sqlStr)
                         logging.error("   Exception: %s", type(Exception))
                         logging.error("   Exception args: %s", e)
@@ -250,7 +249,7 @@ class HandleAisConnection:
             logging.info("Handler started.")
 
         while self.running:
-            readersready, outputready, exceptready = select.select(
+            readersready, _outputready, _exceptready = select.select(
                 [
                     self.dataSocket,
                 ],
@@ -368,7 +367,6 @@ class PassThroughServer:
         logging.info("Starting threads.\n")
         thread.start_new_thread(self._connection_handler, (self,))
         logging.info("connection_handler started\n")
-        return
 
     def _connection_handler(self, unused=None):
         """Listen for connections and add to clients.
@@ -514,7 +512,7 @@ def main():
         "[default %default]",
     )
 
-    options, args = parser.parse_args()
+    options, _args = parser.parse_args()
 
     v = options.verbose
     # TODO(schwehr): Don't force this.

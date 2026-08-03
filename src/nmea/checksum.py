@@ -2,8 +2,6 @@
 """Utilities for working with NMEA strings."""
 
 import re
-import sys
-import time
 
 nmeaChecksumRE = re.compile(r"[\!\?][^\*]+\*[0-9A-Fa-f]{2}")
 
@@ -35,7 +33,7 @@ def checksumStr(data):
     sum = 0
     for c in data:
         sum = sum ^ ord(c)
-    sumHex = "%x" % sum
+    sumHex = f"{sum:x}"
     if len(sumHex) == 1:
         sumHex = "0" + sumHex
     return sumHex.upper()
@@ -68,6 +66,4 @@ def isChecksumValid(nmeaStr, allowTailData=True):
     if nmeaStr[-3] != "*":
         return False
     checksum = nmeaStr[-2:]
-    if checksum.upper() == checksumStr(nmeaStr).upper():
-        return True
-    return False
+    return checksum.upper() == checksumStr(nmeaStr).upper()

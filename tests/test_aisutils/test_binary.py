@@ -1,6 +1,5 @@
 """Unit tests for binary AIS bitvector conversions and bit manipulations."""
 
-import pytest
 from aisutils import binary
 from aisutils.BitVector import BitVector
 

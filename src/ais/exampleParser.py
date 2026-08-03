@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2006-10-18 $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = ["$Date:", "2006-10-18", "$"][1]
 __author__ = "xmlbinmsg"
 
 __doc__ = (
@@ -43,10 +43,9 @@ which should be packaged with the resulting files.
 )
 
 import sys
-from decimal import Decimal
-from aisutils.BitVector import BitVector
 
 from aisutils import binary
+from aisutils.BitVector import BitVector
 
 
 def waterlevelEncode(*aDict, **params):
@@ -69,12 +68,15 @@ def waterlevelEncode(*aDict, **params):
     """
 
     if len(aDict) > 1:
-        assert False and "Illegal call to with more than one param"
+        raise AssertionError()
+        assert "Illegal call to with more than one param"
     if len(aDict) == 1:
         if not isinstance(dict, aDict):
-            assert False and "a single parameter must be a dictionary of key values"
+            raise AssertionError()
+            assert "a single parameter must be a dictionary of key values"
         if len(params) > 0:
-            assert False and "Must not specify both a lookup table and keyvalues"
+            raise AssertionError()
+            assert "Must not specify both a lookup table and keyvalues"
         params = aDict
 
     bvList = []

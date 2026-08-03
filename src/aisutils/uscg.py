@@ -7,19 +7,15 @@ Filter to a list of AIS receivers/basestations.
 TODO: For speed, provide functions that only parse the timestamp, station, etc.
 """
 
-import doctest
 import datetime
+import doctest
 import re
 import sys
 import time
 import unittest
 
+from . import binary, nmea, sqlhelp
 from .BitVector import BitVector
-
-from . import sqlhelp
-from . import binary
-from . import nmea
-
 
 ######################################################################
 # NEW Regular Expression Parsing Style
@@ -156,7 +152,7 @@ class UscgNmea:
               61162-1 for the UAIS. (80_330e_PAS) Draft...
 
         """
-        if None != nmeaStr:
+        if nmeaStr is not None:
             fields = nmeaStr.split(",")
             self.cg_sec = float(fields[-1])
             self.timestamp = datetime.datetime.utcfromtimestamp(self.cg_sec)
@@ -295,21 +291,21 @@ class TestUscgNmea(unittest.TestCase):
             "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
         )
 
-        self.assertEqual(un.nmeaType, "AIVDM")
-        self.assertEqual(un.totalSentences, 1)
-        self.assertEqual(un.sentenceNum, 1)
-        self.assertEqual(un.sequentialMsgId, None)
-        self.assertEqual(un.aisChannel, "B")
-        self.assertEqual(un.fillbits, 0)
-        self.assertEqual(un.checksumStr, "63")
+        assert un.nmeaType == "AIVDM"
+        assert un.totalSentences == 1
+        assert un.sentenceNum == 1
+        assert un.sequentialMsgId is None
+        assert un.aisChannel == "B"
+        assert un.fillbits == 0
+        assert un.checksumStr == "63"
 
-        self.assertEqual(un.rssi, 1234)
-        self.assertEqual(un.signalStrength, -119)
-        self.assertEqual(un.timeOfArrival, 12.34567123)
-        self.assertEqual(un.slotNumber, 4321)
-        self.assertEqual(un.station, "r003669958")
-        self.assertEqual(un.stationTypeCode, "r")
-        self.assertEqual(un.cg_sec, float(1085889680))
+        assert un.rssi == 1234
+        assert un.signalStrength == -119
+        assert un.timeOfArrival == 12.34567123
+        assert un.slotNumber == 4321
+        assert un.station == "r003669958"
+        assert un.stationTypeCode == "r"
+        assert un.cg_sec == float(1085889680)
         print(un.timestamp)
         print(un.sqlTimestampStr)  # Hmmm... they look the same
 
@@ -352,21 +348,21 @@ class TestUscgNmea(unittest.TestCase):
         m14 = UscgNmea(
             "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889681"
         )
-        self.assertTrue(m1 == m1)
-        self.assertTrue(m1 == m1same)
-        self.assertTrue(m1 != m2)
-        self.assertTrue(m1 != m3)
-        self.assertTrue(m1 != m4)
-        self.assertTrue(m1 != m5)
-        self.assertTrue(m1 != m6)
-        self.assertTrue(m1 != m7)
-        self.assertTrue(m1 != m8)
+        assert m1 == m1
+        assert m1 == m1same
+        assert m1 != m2
+        assert m1 != m3
+        assert m1 != m4
+        assert m1 != m5
+        assert m1 != m6
+        assert m1 != m7
+        assert m1 != m8
         # self.failUnless(m1!=m9)
         # self.failUnless(m1!=m10)
         # self.failUnless(m1!=m11)
-        self.assertTrue(m1 != m12)
+        assert m1 != m12
         # self.failUnless(m1!=m13)
-        self.assertTrue(m1 != m14)
+        assert m1 != m14
 
 
 def create_nmea(
@@ -425,7 +421,7 @@ def create_nmea(
         sequentialMsgId = ""
 
     pad = 6 - (bitLen % 6)
-    if 6 == pad:
+    if pad == 6:
         pad = 0
     if pad:
         # Pad out to multiple of 6

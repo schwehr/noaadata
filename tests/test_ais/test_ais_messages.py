@@ -1,6 +1,5 @@
 """Unit tests for decoding AIS messages 1-24."""
 
-import pytest
 from ais import ais_msg_1, ais_msg_4
 from aisutils import binary
 

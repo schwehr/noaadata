@@ -1,7 +1,7 @@
 """Comprehensive pytest unit tests for aisutils.normalize module."""
 
-import sys
 import pytest
+
 from aisutils.normalize import Normalize
 from aisutils.uscg import UscgNmea
 

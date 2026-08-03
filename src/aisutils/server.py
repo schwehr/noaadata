@@ -1,7 +1,17 @@
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 __contact__ = "kurt at ccom.unh.edu"
@@ -14,10 +24,10 @@ Tools to support writing python server programs.  Pulled from serial-logger.
 @organization: U{CCOM<http://ccom.unh.edu/>}
 """
 
+import contextlib
 import datetime
 import os
 import time
-import sys
 
 SERIAL_SPEEDS = [
     # 0, 50, 75, 110,
@@ -85,8 +95,6 @@ def create_daemon():
     os.dup2(0, 1)
     os.dup2(0, 2)
 
-    return
-
 
 # Did I want to subclass file?
 class LogFileWithRotate:
@@ -111,7 +119,7 @@ class LogFileWithRotate:
         now = self.current_date = datetime.datetime.utcnow()
         self.log_filename = self.prefix + now.strftime("%Y-%m-%d")
         if self.v:
-            print("opening log file: %s" % self.log_filename)
+            print(f"opening log file: {self.log_filename}")
         self.log_file = open(self.log_filename, "a")
         self.write_header()
 
@@ -143,7 +151,7 @@ class LogFileWithRotate:
             log_str = data
             if data[-1] in ("\n", "\r"):
                 log_str = data[:-1]
-            log_str += ",%s,%s\n" % (self.station, time.time())
+            log_str += f",{self.station},{time.time()}\n"
         else:
             log_str = data
             if data != "\n":
@@ -156,11 +164,7 @@ class LogFileWithRotate:
 
     def __del__(self):
         if getattr(self, "log_file", None) is not None and not self.log_file.closed:
-            try:
+            with contextlib.suppress(Exception):
                 self.write_tail()
-            except Exception:
-                pass
-            try:
+            with contextlib.suppress(Exception):
                 self.log_file.close()
-            except Exception:
-                pass

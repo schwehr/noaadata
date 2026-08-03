@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import contextlib
+
 import pytest
 
 pytest.skip(
@@ -6,11 +8,11 @@ pytest.skip(
     allow_module_level=True,
 )
 
-try:
+with contextlib.suppress(ImportError):
     import dap.client
-except ImportError:
-    pass
-import urllib.request, urllib.parse, urllib.error
+import urllib.error
+import urllib.parse
+import urllib.request
 
 if __name__ == "__main__":
     dataset = dap.client.open(

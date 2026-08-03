@@ -1,11 +1,21 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 6044 $".split()[1]
-__date__ = "$Date: 2007-04-23 15:43:21 -0400 (Mon, 23 Apr 2007) $".split()[1]
+__version__ = ["$Revision:", "6044", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-04-23",
+    "15:43:21",
+    "-0400",
+    "(Mon,",
+    "23",
+    "Apr",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
     """
-Handling code for noaa stations data. 
+Handling code for noaa stations data.
 
 The Web Services Description Language (WSDL) definition for the
 query/response from the NOAA Axis server.
@@ -31,7 +41,8 @@ query/response from the NOAA Axis server.
 """
 )
 
-import sys, http.client
+import http.client
+import sys
 
 # import os, shutil
 # import time
@@ -139,7 +150,7 @@ class Station:
             paramDict["name"] = param.attrib["name"]
             paramDict["sensorID"] = param.attrib["sensorID"]
 
-            if "0" == param.attrib["status"]:
+            if param.attrib["status"] == "0":
                 paramDict["status"] = False
             else:
                 paramDict["status"] = True
@@ -229,19 +240,19 @@ class ActiveStations:
             # FIX: this will not work on Windows!!!
             localDir = __file__[: __file__.rfind("/") + 1]
             xml = open(localDir + "stations-soap.xml").read()
-        else:
-            if allowCache:
-                try:
-                    xml = self.getStationXmlFromSoap()
-                except:
-                    xml = open("stations-soap.xml").read()
-            else:
+        elif allowCache:
+            try:
                 xml = self.getStationXmlFromSoap()
+            except:
+                xml = open("stations-soap.xml").read()
+        else:
+            xml = self.getStationXmlFromSoap()
 
         xml = stripNameSpaces(xml)
 
-        from lxml import etree
         from io import StringIO
+
+        from lxml import etree
 
         # Dig past the top wrappers.  FIX: use xpath instead to get the ActiveStations node
         self.stationsET = etree.parse(StringIO(xml)).getroot()[0][0][0]
@@ -331,7 +342,7 @@ class ActiveStations:
         requestor.putheader("SOAPAction", NS)
         requestor.endheaders()
         requestor.send(body)
-        (status_code, message, reply_headers) = requestor.getreply()
+        (_status_code, _message, _reply_headers) = requestor.getreply()
         reply_body = requestor.getfile().read()
 
         # print "status code:", status_code

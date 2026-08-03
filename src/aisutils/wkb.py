@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 8545 $".split()[1]
+__version__ = ["$Revision:", "8545", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2008-02-06 17:37:24 -0500 (Wed, 06 Feb 2008) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2008-02-06",
+    "17:37:24",
+    "-0500",
+    "(Wed,",
+    "06",
+    "Feb",
+    "2008)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 

@@ -19,7 +19,6 @@ import optparse
 import re
 import time
 
-from .nmea_error import NmeaError
 from .nmea_error import NmeaChecksumError
 
 
@@ -30,13 +29,13 @@ class NmeaNotZnt(Exception):
 # TODO(schwehr): This should be in a library or already is.
 def checksum_str(data):
     end = data.rfind("*")
-    if -1 == end:
+    if end == -1:
         end = len(data)
     start = 1
     sum = 0
     for c in data[start:end]:
         sum = sum ^ ord(c)
-    sum_hex = "%x" % sum
+    sum_hex = f"{sum:x}"
     if len(sum_hex) == 1:
         sum_hex = "0" + sum_hex
     checksum = sum_hex.upper()
@@ -65,37 +64,30 @@ znt_regex = re.compile(znt_regex_str, re.VERBOSE)
 
 
 def print_response(response):
-    print(("Version number : %d" % response.version))
-    print(("Offset : %f" % response.offset))
+    print("Version number : %d" % response.version)
+    print(f"Offset : {response.offset:f}")
     print(
-        (
-            "Stratum : %s (%d)"
-            % (ntplib.stratum_to_text(response.stratum), response.stratum)
-        )
+        "Stratum : %s (%d)"
+        % (ntplib.stratum_to_text(response.stratum), response.stratum)
     )
-    print(("Precision : %d" % response.precision))
-    print(("Root delay : %f " % response.root_delay))
-    print(("Root dispersion : %f" % response.root_dispersion))
-    print(("Delay : %f" % response.delay))
+    print("Precision : %d" % response.precision)
+    print(f"Root delay : {response.root_delay:f} ")
+    print(f"Root dispersion : {response.root_dispersion:f}")
+    print(f"Delay : {response.delay:f}")
     print(
-        (
-            "Leap indicator : %s (%d)"
-            % (ntplib.leap_to_text(response.leap), response.leap)
-        )
+        "Leap indicator : %s (%d)" % (ntplib.leap_to_text(response.leap), response.leap)
     )
-    print(("Poll : %d" % response.poll))
-    print(("Mode : %s (%d)" % (ntplib.mode_to_text(response.mode), response.mode)))
-    print(("Python time: %f, %s" % (time.time(), str(datetime.datetime.utcnow()))))
-    print(("Transmit timestamp : " + time.ctime(response.tx_time)))
-    print(("Reference timestamp : " + time.ctime(response.ref_time)))
-    print(("Original timestamp : " + time.ctime(response.orig_time)))
-    print(("Receive timestamp : " + time.ctime(response.recv_time)))
-    print(("Destination timestamp : " + time.ctime(response.dest_time)))
+    print("Poll : %d" % response.poll)
+    print("Mode : %s (%d)" % (ntplib.mode_to_text(response.mode), response.mode))
+    print(f"Python time: {time.time():f}, {datetime.datetime.utcnow()!s}")
+    print("Transmit timestamp : " + time.ctime(response.tx_time))
+    print("Reference timestamp : " + time.ctime(response.ref_time))
+    print("Original timestamp : " + time.ctime(response.orig_time))
+    print("Receive timestamp : " + time.ctime(response.recv_time))
+    print("Destination timestamp : " + time.ctime(response.dest_time))
     print(
-        (
-            "Reference clock identifier : "
-            + ntplib.ref_id_to_text(response.ref_id, response.stratum)
-        )
+        "Reference clock identifier : "
+        + ntplib.ref_id_to_text(response.ref_id, response.stratum)
     )
 
 
@@ -142,10 +134,10 @@ class Znt:
         params["ref_clock"] = ntplib.ref_id_to_text(response.ref_id, response.stratum)
         params["stratum"] = response.stratum
         params["last_update"] = response.ref_time
-        params["offset"] = "%f" % response.offset
+        params["offset"] = f"{response.offset:f}"
         params["precision"] = response.precision
-        params["root_delay"] = "%.6f" % response.root_delay
-        params["root_dispersion"] = "%.6f" % response.root_dispersion
+        params["root_delay"] = f"{response.root_delay:.6f}"
+        params["root_dispersion"] = f"{response.root_dispersion:.6f}"
 
         fields = []
         for key in (
@@ -169,7 +161,7 @@ class Znt:
         self.params = params
 
         try:
-            match = znt_regex.search(nmea_str).groupdict()
+            znt_regex.search(nmea_str).groupdict()
         except:
             print("Results are wrong?")
             print_response(response)
@@ -184,8 +176,9 @@ class Znt:
 
         if checksum_str(nmea_str) != match["checksum"]:
             raise NmeaChecksumError(
-                'checksums missmatch.  Got "%s", expected "%s"'
-                % (match["checksum"], checksum_str(nmea_str))
+                'checksums missmatch.  Got "{}", expected "{}"'.format(
+                    match["checksum"], checksum_str(nmea_str)
+                )
             )
 
         match["stratum"] = int(match["stratum"])
@@ -260,9 +253,7 @@ class ZntLogger:
             return True
         if self.max_sec is not None and (self.max_sec + self.last_write < time.time()):
             return True
-        if self.max_cnt is not None and (self.cnt_since_last >= self.max_cnt):
-            return True
-        return False
+        return bool(self.max_cnt is not None and self.cnt_since_last >= self.max_cnt)
 
     def state_str(self):
         if not self.enabled:
@@ -293,7 +284,7 @@ class ZntLogger:
         znt_str = Znt().nmea_str
 
         if self.station is not None:
-            znt_str += ",%s,%.2f" % (self.station, time.time())
+            znt_str += f",{self.station},{time.time():.2f}"
 
         self.out_file.write(znt_str + "\n")
 
@@ -326,7 +317,7 @@ def main():
 
     znt_logger_opts(parser)
 
-    options, args = parser.parse_args()
+    options, _args = parser.parse_args()
 
     if options.one_shot:
         znt = Znt(hostname=options.hostname)

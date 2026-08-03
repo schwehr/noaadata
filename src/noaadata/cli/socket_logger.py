@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = """
@@ -14,8 +24,8 @@ FIX: write a description
  TODO(schwehr):make it flexible.
 """
 
-import socket, select
-import sys
+import select
+import socket
 import time
 
 
@@ -26,20 +36,17 @@ def main():
     s.send("$xxBSQ,ACA,*03\x0d\x0a")
     buf = ""
     while True:
-        readersready, outputready, exceptready = select.select([s], [], [], 0.1)
+        readersready, _outputready, _exceptready = select.select([s], [], [], 0.1)
         for sock in readersready:
             data = sock.recv(100)
             buf += data
             newline = buf.find("\n")
-            if -1 != newline:
+            if newline != -1:
                 fields = buf.split("\n")
                 msg = fields[0].strip() + "," + str(time.time())
                 print(msg)
                 o.write(msg + "\n")
-                if len(fields) > 1:
-                    buf = "" + buf[newline + 1 :]
-                else:
-                    buf = ""
+                buf = "" + buf[newline + 1 :] if len(fields) > 1 else ""
 
 
 if __name__ == "__main__":

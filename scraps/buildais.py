@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2006-09-24 14:01:41 -0400 (Sun, 24 Sep 2006) $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = ["$Date:", "2006-09-24", "14:01:41", "-0400", "(Sun,", "24", "Sep", "2006)", "$"][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -28,18 +28,18 @@ Use NMEA GGA and ZDA messages to construct a synthetic AIS track.
 
 # timeshift = 0 # 27593333 # to get the transit to be the same time
 
-import sys, calendar
+import calendar
+import math
+import sys
 from decimal import Decimal
 
-from BitVector import BitVector
-
-import nmea
 import nmeamessages as nm
-import ais.ais_msg_1 as m1
-import ais.binary as binary
-
+from BitVector import BitVector
 from pyproj import Proj
-import math
+
+import ais.ais_msg_1 as m1
+import nmea
+from ais import binary
 
 # mmsi='999999'
 # mmsi='369862000' # NOAA Bay Hydrographer
@@ -84,7 +84,7 @@ def getHeading(utm1, utm2):
     # print 'dx/dy:',dx,dy
     headingRad = math.atan2(dx, dy)
     headingDeg = math.degrees(headingRad)
-    if 0 > headingDeg:
+    if headingDeg < 0:
         headingDeg += 360
     return headingDeg
 
@@ -162,7 +162,7 @@ if __name__ == "__main__":
     proj = Proj(params)
 
     out = sys.stdout
-    if options.outFile != None:
+    if options.outFile is not None:
         out = file(options.outFile, "w")
 
         #    aisMsgNum = int(options.aisMsgNum)
@@ -182,13 +182,13 @@ if __name__ == "__main__":
             if line[:6] == "$GPZDA":
                 z = nm.zdaDecode(line)
                 timeBase = (int(z["year"]), int(z["mon"]), int(z["day"]))
-            if line[:6] == "$GPGGA" and timeBase != None:
+            if line[:6] == "$GPGGA" and timeBase is not None:
                 g = nm.ggaDecode(line)
                 ts = calendar.timegm(
-                    timeBase + ((g["hour"], g["min"], g["decimalsec"]))
+                    (*timeBase, g["hour"], g["min"], g["decimalsec"])
                 )
 
-                if None == lastPos:
+                if lastPos is None:
                     utm = proj(float(g["lon"]), float(g["lat"]))
                     lastPos = (utm, ts)
                     continue  # nothing to do on the first pos
@@ -199,7 +199,7 @@ if __name__ == "__main__":
 
                 deltaT = ts - tsOld
                 dist = getDist(utmOld, utmNew)
-                if 0 != deltaT:
+                if deltaT != 0:
                     speedMetersPerSec = dist / deltaT
                 else:
                     sys.stderr.write("zero delta T for line:\n  " + line)

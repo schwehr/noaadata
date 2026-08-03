@@ -8,152 +8,217 @@ TODO(schwehr):Decimate ships that are not moving and updating fast.
 
 import sys
 import time
+
+
 def timeSec2KmlTime(timeSec):
     t = time.gmtime(float(timeSec))
 
-    s = "%4d-%02d-%02dT%02d:%02d:%02dZ" % (t[0],t[1],t[2],t[3],t[4],t[5])
+    s = "%4d-%02d-%02dT%02d:%02d:%02dZ" % (t[0], t[1], t[2], t[3], t[4], t[5])
     return s
 
 
-def addStyle(out, lineColor='a0a0a0', polyColor="808080", polyOpacity=.25,
-             lineOpacity=0.5, lineWidth=5, indent='    ', styleName='style'):
-    '''
+def addStyle(
+    out,
+    lineColor="a0a0a0",
+    polyColor="808080",
+    polyOpacity=0.25,
+    lineOpacity=0.5,
+    lineWidth=5,
+    indent="    ",
+    styleName="style",
+):
+    """
     @param polyOpacity: 0..1 where 1 is opaque, and 0 is not visible
-    '''
-    o=out
-    lo = (int(lineOpacity*255)).__hex__()
-    lo = lo[lo.find('x')+1:]
-    if len(lo)==1: lo='0'+lo
-    po = (int(polyOpacity*255)).__hex__()
-    po = po[po.find('x')+1:]
-    if len(po)==1: po='0'+po
+    """
+    o = out
+    lo = (int(lineOpacity * 255)).__hex__()
+    lo = lo[lo.find("x") + 1 :]
+    if len(lo) == 1:
+        lo = "0" + lo
+    po = (int(polyOpacity * 255)).__hex__()
+    po = po[po.find("x") + 1 :]
+    if len(po) == 1:
+        po = "0" + po
 
-    o.write(indent+'<Style id="'+styleName+'">\n')
-    o.write(indent+'\t<LineStyle>'+'\n')
-    o.write(indent+'\t  <color>'+lo+str(lineColor)+'</color>\n')
-    o.write(indent+'\t  <width>'+str(lineWidth)+'</width>\n')
-    o.write(indent+'\t</LineStyle>'+'\n')
-    o.write(indent+'\t<PolyStyle>'+'\n')
-    o.write(indent+'\t  <color>'+po+str(polyColor)+'</color>\n')
-    o.write(indent+'\t</PolyStyle>'+'\n')
-    o.write(indent+'</Style>'+'\n')
+    o.write(indent + '<Style id="' + styleName + '">\n')
+    o.write(indent + "\t<LineStyle>" + "\n")
+    o.write(indent + "\t  <color>" + lo + str(lineColor) + "</color>\n")
+    o.write(indent + "\t  <width>" + str(lineWidth) + "</width>\n")
+    o.write(indent + "\t</LineStyle>" + "\n")
+    o.write(indent + "\t<PolyStyle>" + "\n")
+    o.write(indent + "\t  <color>" + po + str(polyColor) + "</color>\n")
+    o.write(indent + "\t</PolyStyle>" + "\n")
+    o.write(indent + "</Style>" + "\n")
 
 
 def main():
     from optparse import OptionParser
 
-    parser = OptionParser(usage='%prog [options] [file1] [file2] ...',
-                          version='%prog ')
+    parser = OptionParser(usage="%prog [options] [file1] [file2] ...", version="%prog ")
 
-    parser.add_option('-S','--with-style',dest='withStyle'
-                      ,default=False
-                      , action='store_true'
-                      ,help='Include a style reference')
+    parser.add_option(
+        "-S",
+        "--with-style",
+        dest="withStyle",
+        default=False,
+        action="store_true",
+        help="Include a style reference",
+    )
 
-    parser.add_option('-c','--hide-children',dest='hideChildren'
-                      ,default=False
-                      , action='store_true'
-                      ,help='Make the folder not open')
+    parser.add_option(
+        "-c",
+        "--hide-children",
+        dest="hideChildren",
+        default=False,
+        action="store_true",
+        help="Make the folder not open",
+    )
 
+    parser.add_option(
+        "--line-color",
+        dest="lineColor",
+        type="string",
+        default="ffffff",
+        help=" [default: %default (white)]",
+    )
+    parser.add_option(
+        "--line-opacity",
+        dest="lineOpacity",
+        type="float",
+        default=1,
+        help=" 0..1 [default: %default]",
+    )
+    parser.add_option(
+        "--line-width",
+        dest="lineWidth",
+        type="float",
+        default=1,
+        help=" [default: %default]",
+    )
+    parser.add_option(
+        "--style-name",
+        dest="styleName",
+        default="s",
+        help="Name of the style for the polygon [default: %default]",
+    )
 
-    parser.add_option('--line-color', dest='lineColor', type='string',
-                      default='ffffff',help=' [default: %default (white)]')
-    parser.add_option('--line-opacity', dest='lineOpacity', type='float',
-                      default=1, help=' 0..1 [default: %default]')
-    parser.add_option('--line-width', dest='lineWidth', type='float',default=1,
-                      help=' [default: %default]')
-    parser.add_option('--style-name', dest='styleName', default='s',
-                      help='Name of the style for the polygon '
-                      '[default: %default]')
+    parser.add_option(
+        "-z",
+        dest="z",
+        default=None,
+        type="float",
+        help="Add a z component [Default: %default]",
+    )
+    parser.add_option(
+        "-v",
+        "--verbose",
+        dest="verbose",
+        default=False,
+        action="store_true",
+        help="run the tests run in verbose mode",
+    )
 
-    parser.add_option('-z', dest='z', default=None, type='float',
-                      help='Add a z component [Default: %default]')
-    parser.add_option('-v', '--verbose', dest='verbose', default=False,
-                      action='store_true',
-                      help='run the tests run in verbose mode')
-
-    (options,args) = parser.parse_args()
+    (options, args) = parser.parse_args()
     v = options.verbose
 
-    print (
+    print(
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<!-- xymt2kml - by Kurt Schwehr from noaadata-py -->\n'
+        "<!-- xymt2kml - by Kurt Schwehr from noaadata-py -->\n"
         '<kml xmlns="http://earth.google.com/kml/2.1">\n'
-        '<Document>'
+        "<Document>"
     )
     if options.withStyle:
-        addStyle(sys.stdout,
-                 lineColor=options.lineColor,
-                 lineOpacity=options.lineOpacity,
-                 lineWidth=options.lineWidth,
-                 styleName=options.styleName)
+        addStyle(
+            sys.stdout,
+            lineColor=options.lineColor,
+            lineOpacity=options.lineOpacity,
+            lineWidth=options.lineWidth,
+            styleName=options.styleName,
+        )
 
-    ships={}
+    ships = {}
     position_count = 0
     for filename in args:
-        for line in file(filename):
+        for line in open(filename):
             try:
                 x, y, m, t = line.split()
-            except:
-                sys.stderr.write('ERROR: %s\n' % line)
+            except Exception:
+                sys.stderr.write(f"ERROR: {line}\n")
                 continue
-            if x == '181':
+            if x == "181":
                 continue  # Position report without a location.
             position_count += 1
             if m not in ships:
                 ships[m] = [(x, y, m, t)]
             else:
-                ships[m].append((x,y,m,int(float(t))))
+                ships[m].append((x, y, m, int(float(t))))
 
     if v:
-        sys.stderr.write('num_ships = %d\n' % len(ships))
-        sys.stderr.write('num_positions = %d\n' % position_count)
+        sys.stderr.write("num_ships = %d\n" % len(ships))
+        sys.stderr.write("num_positions = %d\n" % position_count)
 
-    ship_list = ships.keys()
-    ship_list.sort()
+    ship_list = sorted(ships.keys())
     for ship in ship_list:
         last = None
-        if len (ships[ship])<2:
+        if len(ships[ship]) < 2:
             continue  # Not enough data for ship.
-        print '<Folder><name>'+ship+' ('+str(len(ships[ship]))+')</name>'
+        print("<Folder><name>" + ship + " (" + str(len(ships[ship])) + ")</name>")
         if options.hideChildren:
-            print (
-                '<Style><ListStyle><listItemType>checkHideChildren'
-                '</listItemType></ListStyle></Style>\n'
+            print(
+                "<Style><ListStyle><listItemType>checkHideChildren"
+                "</listItemType></ListStyle></Style>\n"
             )
         for point in ships[ship]:
             x, y, m, t = point
-            if last==None:
+            if last is None:
                 last = point
                 continue
             _x, _y, _m, _t = last
             last = point
 
-            print '<Placemark>'
-            if options.withStyle: print '<styleUrl>#'+options.styleName+'</styleUrl>'
+            print("<Placemark>")
+            if options.withStyle:
+                print("<styleUrl>#" + options.styleName + "</styleUrl>")
             if options.z is not None:
-                print (
-                    '<LineString><coordinates>' + _x + ',' + _y + ',' +
-                    str(options.z) + ' ' + x + ',' + y + ',' +
-                    str(options.z)+'</coordinates></LineString>'
+                print(
+                    "<LineString><coordinates>"
+                    + _x
+                    + ","
+                    + _y
+                    + ","
+                    + str(options.z)
+                    + " "
+                    + x
+                    + ","
+                    + y
+                    + ","
+                    + str(options.z)
+                    + "</coordinates></LineString>"
                 )
             else:
-                print (
-                    '<LineString><coordinates>' + _x + ',' + _y + ',0 ' + x +
-                    ',' + y + ',0</coordinates></LineString>'
+                print(
+                    "<LineString><coordinates>"
+                    + _x
+                    + ","
+                    + _y
+                    + ",0 "
+                    + x
+                    + ","
+                    + y
+                    + ",0</coordinates></LineString>"
                 )
-            print (
-                '<TimeSpan><begin>' + timeSec2KmlTime(_t) + '</begin>'
-                '<end>' + timeSec2KmlTime(t) + '</end></TimeSpan>'
+            print(
+                "<TimeSpan><begin>" + timeSec2KmlTime(_t) + "</begin>"
+                "<end>" + timeSec2KmlTime(t) + "</end></TimeSpan>"
             )
-            print '</Placemark>'
-        print '</Folder>'
+            print("</Placemark>")
+        print("</Folder>")
 
-    print '''
+    print("""
 </Document>
 </kml>
-'''
+""")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

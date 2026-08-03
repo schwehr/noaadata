@@ -1,9 +1,19 @@
 #!/usr/bin/env python
 
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 __doc__ = """
@@ -28,7 +38,7 @@ class Uptime:
 
         for line in file(filename):
             sec = int(line.split(",")[-1])
-            if old_sec == None:
+            if old_sec is None:
                 old_sec = sec
                 continue
 
@@ -53,8 +63,8 @@ class Uptime:
         return tot
 
 
-import sys
 import datetime
+import sys
 
 
 def main():

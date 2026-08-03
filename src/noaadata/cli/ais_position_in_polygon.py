@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 12483 $".split()[1]
-__date__ = "$Date: 2009-08-19 16:55:51 -0400 (Wed, 19 Aug 2009) $".split()[1]
+__version__ = ["$Revision:", "12483", "$"][1]
+__date__ = [
+    "$Date:",
+    "2009-08-19",
+    "16:55:51",
+    "-0400",
+    "(Wed,",
+    "19",
+    "Aug",
+    "2009)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = (
     """
@@ -52,11 +62,12 @@ egrep '!AIVDM,1,1,[0-9]?,[AB],[1-3]' biglog.ais > pos_msgs.ais
 """
 )
 
-import sys, os
-import ais.ais_msg_1 as ais_msg_1
-from aisutils import binary
+import sys
+
 from cartography.geometry import Geometry
 
+from ais import ais_msg_1
+from aisutils import binary
 
 stellwagen = (
     (-70.502624517077535, 42.651229858376865),
@@ -384,7 +395,7 @@ def filter_file(infile, outfile, polygonWKT, verbose=False):
 
         point = Geometry.fromWKT("POINT (" + str(lon) + " " + str(lat) + ")")
         inside = point.within(poly)
-        if 1 == inside:
+        if inside == 1:
             outfile.write(line)
             count += 1
 
@@ -541,7 +552,7 @@ def main():
     (options, args) = parser.parse_args()
 
     outFile = sys.stdout
-    if None != options.outputFilename:
+    if options.outputFilename is not None:
         outFile = open(options.outputFilename, "w")
 
     if options.useBox:

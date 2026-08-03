@@ -77,12 +77,12 @@ ______________________________________________________________________
 
 ## Phase 3: Style, Formatting, & Static Analysis Guardrails
 
-- [ ] **3.1 Configure & Run `ruff` Formatting and Linting**
+- [x] **3.1 Configure & Run `ruff` Formatting and Linting**
 
-  - [ ] Configure `ruff` in `pyproject.toml` with target Python `3.13` and selected rule sets (`E`, `F`, `W`, `I`, `UP`, `B`, `C4`, `SIM`, `RUF`, `PT`, `PL`).
-  - [ ] Run `ruff format` across `src/`, `tests/`, and `scripts/` to standardize formatting.
-  - [ ] Fix all linter warnings and errors reported by `ruff check` (e.g., removing unused imports, unnecessary dunders, and pointless statements).
-  - [ ] Verification command: `uv run ruff check && uv run ruff format --check`
+  - [x] Configure `ruff` in `pyproject.toml` with target Python `3.13` and selected rule sets (`E`, `F`, `W`, `I`, `UP`, `B`, `C4`, `SIM`, `RUF`, `PT`, `PL`).
+  - [x] Run `ruff format` across `src/`, `tests/`, and `scripts/` to standardize formatting.
+  - [x] Fix all linter warnings and errors reported by `ruff check` (e.g., removing unused imports, unnecessary dunders, and pointless statements).
+  - [x] Verification command: `uv run ruff check && uv run ruff format --check`
 
 - [ ] **3.2 Standardize Markdown & Spell Checking (`mdformat` & `codespell`)**
 

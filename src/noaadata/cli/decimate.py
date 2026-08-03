@@ -28,85 +28,132 @@ datasets.  Use this program to subsample lines in files.
 """
 
 # These values end up in the pydoc web page
-__version__ = '$Revision: 343 $'.split()[1] # See man ident
-__date__ = '$Date: 2006-03-31 06:30:40 -0700 (Fri, 31 Mar 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+__version__ = ["$Revision:", "343", "$"][1]  # See man ident
+__date__ = [
+    "$Date:",
+    "2006-03-31",
+    "06:30:40",
+    "-0700",
+    "(Fri,",
+    "31",
+    "Mar",
+    "2006)",
+    "$",
+][1]
+__author__ = "Kurt Schwehr"
 __credits__ = """PaleoIV/xcore derivative"""
 
-import os
-import sys
 
 from optparse import OptionParser
 
-VERSION='0'
+VERSION = "0"
 
-myparser = OptionParser(usage="%prog [options] files",
-                      version="%prog "+VERSION+' - '+__version__)
+myparser = OptionParser(
+    usage="%prog [options] files", version="%prog " + VERSION + " - " + __version__
+)
 
-myparser.add_option('-l','--skip-lines',dest='skipLines',type='int',default='1',
-                    help='Skip this many lines between groups [default: %default]')
+myparser.add_option(
+    "-l",
+    "--skip-lines",
+    dest="skipLines",
+    type="int",
+    default="1",
+    help="Skip this many lines between groups [default: %default]",
+)
 
-myparser.add_option('-L','--keep-lines',dest='keepLines',type='int',default='1',
-                    help='Keep this many lines in each group [default: %default]')
+myparser.add_option(
+    "-L",
+    "--keep-lines",
+    dest="keepLines",
+    type="int",
+    default="1",
+    help="Keep this many lines in each group [default: %default]",
+)
 
-myparser.add_option('-S','--start-skipping',dest='startSkip',default=False,
-                    action="store_true",
-                    help='Start off by immediately skipping [default: %default]')
+myparser.add_option(
+    "-S",
+    "--start-skipping",
+    dest="startSkip",
+    default=False,
+    action="store_true",
+    help="Start off by immediately skipping [default: %default]",
+)
 
-myparser.add_option('-p','--preserve',dest='preserveStr',default=None,
-                    help="Lines starting with this string will be kept no matter what [default : '%default']")
+myparser.add_option(
+    "-p",
+    "--preserve",
+    dest="preserveStr",
+    default=None,
+    help="Lines starting with this string will be kept no matter what [default : '%default']",
+)
 
-myparser.add_option('-b','--preserve-begin',dest='preserveBegin',default=False,
-                    action="store_true",
-                    help="Cause the line counting to start over at a preserve marker [default : '%default']")
+myparser.add_option(
+    "-b",
+    "--preserve-begin",
+    dest="preserveBegin",
+    default=False,
+    action="store_true",
+    help="Cause the line counting to start over at a preserve marker [default : '%default']",
+)
 
-myparser.add_option('-e','--preserve-end',dest='preserveEnd',default=False,
-                    action="store_true",
-                    help="Keep the last line before a separator [default : '%default']")
+myparser.add_option(
+    "-e",
+    "--preserve-end",
+    dest="preserveEnd",
+    default=False,
+    action="store_true",
+    help="Keep the last line before a separator [default : '%default']",
+)
 
-myparser.add_option('-B','--blank-line',dest='blankLine',default=False,action='store_true',
-                    help='Put a blank line between blocks of keep points')
-
+myparser.add_option(
+    "-B",
+    "--blank-line",
+    dest="blankLine",
+    default=False,
+    action="store_true",
+    help="Put a blank line between blocks of keep points",
+)
 
 
 # FIX: make an option to output to a file, but default to stdout
 # How do I do this?
 
+
 def main():
-    (options,args) = myparser.parse_args()
+    (options, args) = myparser.parse_args()
 
     for filename in args:
         count = 1
         skipping = options.startSkip
         previousLine = None
-        for line in open(filename,'r').xreadlines():
-            if None != options.preserveStr:
-                if line[:len(options.preserveStr)] == options.preserveStr:
-                    if options.preserveEnd:
-                        if None != previousLine:
-                            print previousLine,
-                            previousLine = None
-                    print line,
+        for line in open(filename):
+            if options.preserveStr is not None:
+                if line[: len(options.preserveStr)] == options.preserveStr:
+                    if options.preserveEnd and previousLine is not None:
+                        print(previousLine, end="")
+                        previousLine = None
+                    print(line, end="")
                     if options.preserveBegin:
                         count = 1
                         skipping = options.startSkip
                     continue
             if not skipping:
-                print line,
+                print(line, end="")
                 previousLine = None
                 count += 1
                 if count > options.keepLines:
-                    skipping=True
-                    if options.blankLine: print
+                    skipping = True
+                    if options.blankLine:
+                        print()
                     count = 1
-            else: # Skipping is true
+            else:  # Skipping is true
                 count += 1
                 if count > options.skipLines:
-                    skipping=False
+                    skipping = False
                     count = 1
                 else:
                     previousLine = line
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

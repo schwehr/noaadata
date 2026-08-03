@@ -18,15 +18,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 TrueBV = BitVector(bitstring="1")
 FalseBV = BitVector(bitstring="0")
@@ -153,11 +149,11 @@ def encode(params, validate=False):
     if "SOG" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["SOG"]) * Decimal("10")))), 10
+                BitVector(intVal=int(Decimal(params["SOG"]) * Decimal("10"))), 10
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(1023)), 10))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=1023), 10))
     bvList.append(
         binary.setBitVectorSize(BitVector(intVal=params["PositionAccuracy"]), 1)
     )
@@ -180,11 +176,11 @@ def encode(params, validate=False):
     if "COG" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["COG"]) * Decimal("10")))), 12
+                BitVector(intVal=int(Decimal(params["COG"]) * Decimal("10"))), 12
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(3600)), 12))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=3600), 12))
     if "TrueHeading" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["TrueHeading"]), 9)
@@ -683,7 +679,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("b_pos_and_shipdata:\n")
         if "MessageID" in params:
             out.write("    MessageID:         " + str(params["MessageID"]) + "\n")
@@ -731,8 +727,8 @@ def printFields(
             out.write("    DTE:               " + str(params["DTE"]) + "\n")
         if "Spare3" in params:
             out.write("    Spare3:            " + str(params["Spare3"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -743,13 +739,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -759,9 +755,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1093,12 +1087,10 @@ def sqlCreate(
         c.addDecimal("SOG", 4, 1)
     if "PositionAccuracy" in fields:
         c.addInt("PositionAccuracy")
-    if dbType != "postgres":
-        if "longitude" in fields:
-            c.addDecimal("longitude", 8, 5)
-    if dbType != "postgres":
-        if "latitude" in fields:
-            c.addDecimal("latitude", 8, 5)
+    if dbType != "postgres" and "longitude" in fields:
+        c.addDecimal("longitude", 8, 5)
+    if dbType != "postgres" and "latitude" in fields:
+        c.addDecimal("latitude", 8, 5)
     if "COG" in fields:
         c.addDecimal("COG", 4, 1)
     if "TrueHeading" in fields:
@@ -1189,23 +1181,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1213,7 +1204,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1243,27 +1234,27 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 19 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 8 & Reseverd for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \hline
-SOG & 10 & Speed over ground \\\\ \hline
-PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \hline
-longitude & 28 & Location of the vessel  East West location \\\\ \hline
-latitude & 27 & Location of the vessel  North South location \\\\ \hline
-COG & 12 & Course over ground \\\\ \hline
-TrueHeading & 9 & True heading (relative to true North) \\\\ \hline
-TimeStamp & 6 & UTC second when the report was generated \\\\ \hline
-Spare2 & 4 & Not used.  Should be set to zero.  Researched for future use. \\\\ \hline
-name & 120 & Vessel name \\\\ \hline
-shipandcargo & 8 & Type of ship and cargo type \\\\ \hline
-dimA & 9 & Distance from bow to reference position \\\\ \hline
-dimB & 9 & Distance from reference position to stern \\\\ \hline
-dimC & 6 & Distance from port side to reference position \\\\ \hline
-dimD & 6 & Distance from reference position to starboard side \\\\ \hline
-fixtype & 4 & Method used for positioning \\\\ \hline
-RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \hline
-DTE & 1 & Data terminal ready \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 19 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 8 & Reseverd for definition by a compentent regional or local authority.  Should be set to zero. \\\\ \\hline
+SOG & 10 & Speed over ground \\\\ \\hline
+PositionAccuracy & 1 & Accuracy of positioning fixes \\\\ \\hline
+longitude & 28 & Location of the vessel  East West location \\\\ \\hline
+latitude & 27 & Location of the vessel  North South location \\\\ \\hline
+COG & 12 & Course over ground \\\\ \\hline
+TrueHeading & 9 & True heading (relative to true North) \\\\ \\hline
+TimeStamp & 6 & UTC second when the report was generated \\\\ \\hline
+Spare2 & 4 & Not used.  Should be set to zero.  Researched for future use. \\\\ \\hline
+name & 120 & Vessel name \\\\ \\hline
+shipandcargo & 8 & Type of ship and cargo type \\\\ \\hline
+dimA & 9 & Distance from bow to reference position \\\\ \\hline
+dimB & 9 & Distance from reference position to stern \\\\ \\hline
+dimC & 6 & Distance from port side to reference position \\\\ \\hline
+dimD & 6 & Distance from reference position to starboard side \\\\ \\hline
+fixtype & 4 & Method used for positioning \\\\ \\hline
+RAIM & 1 & Receiver autonomous integrity monitoring flag \\\\ \\hline
+DTE & 1 & Data terminal ready \\\\ \\hline
 Spare3 & 5 & Not used. Should be set to zero\\\\ \\hline \\hline
 Total bits & 312 & Appears to take 2 slots with 112 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1457,28 +1448,28 @@ class Testb_pos_and_shipdata(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
         self.assertAlmostEqual(r["SOG"], params["SOG"], 1)
-        self.assertEqual(r["PositionAccuracy"], params["PositionAccuracy"])
+        assert r["PositionAccuracy"] == params["PositionAccuracy"]
         self.assertAlmostEqual(r["longitude"], params["longitude"], 5)
         self.assertAlmostEqual(r["latitude"], params["latitude"], 5)
         self.assertAlmostEqual(r["COG"], params["COG"], 1)
-        self.assertEqual(r["TrueHeading"], params["TrueHeading"])
-        self.assertEqual(r["TimeStamp"], params["TimeStamp"])
-        self.assertEqual(r["Spare2"], params["Spare2"])
-        self.assertEqual(r["name"], params["name"])
-        self.assertEqual(r["shipandcargo"], params["shipandcargo"])
-        self.assertEqual(r["dimA"], params["dimA"])
-        self.assertEqual(r["dimB"], params["dimB"])
-        self.assertEqual(r["dimC"], params["dimC"])
-        self.assertEqual(r["dimD"], params["dimD"])
-        self.assertEqual(r["fixtype"], params["fixtype"])
-        self.assertEqual(r["RAIM"], params["RAIM"])
-        self.assertEqual(r["DTE"], params["DTE"])
-        self.assertEqual(r["Spare3"], params["Spare3"])
+        assert r["TrueHeading"] == params["TrueHeading"]
+        assert r["TimeStamp"] == params["TimeStamp"]
+        assert r["Spare2"] == params["Spare2"]
+        assert r["name"] == params["name"]
+        assert r["shipandcargo"] == params["shipandcargo"]
+        assert r["dimA"] == params["dimA"]
+        assert r["dimB"] == params["dimB"]
+        assert r["dimC"] == params["dimC"]
+        assert r["dimD"] == params["dimD"]
+        assert r["fixtype"] == params["fixtype"]
+        assert r["RAIM"] == params["RAIM"]
+        assert r["DTE"] == params["DTE"]
+        assert r["Spare3"] == params["Spare3"]
 
 
 def addMsgOptions(parser):
@@ -1775,46 +1766,46 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.SOGField:
+        if options.SOGField is None:
             parser.error("missing value for SOGField")
-        if None == options.PositionAccuracyField:
+        if options.PositionAccuracyField is None:
             parser.error("missing value for PositionAccuracyField")
-        if None == options.longitudeField:
+        if options.longitudeField is None:
             parser.error("missing value for longitudeField")
-        if None == options.latitudeField:
+        if options.latitudeField is None:
             parser.error("missing value for latitudeField")
-        if None == options.COGField:
+        if options.COGField is None:
             parser.error("missing value for COGField")
-        if None == options.TrueHeadingField:
+        if options.TrueHeadingField is None:
             parser.error("missing value for TrueHeadingField")
-        if None == options.TimeStampField:
+        if options.TimeStampField is None:
             parser.error("missing value for TimeStampField")
-        if None == options.nameField:
+        if options.nameField is None:
             parser.error("missing value for nameField")
-        if None == options.shipandcargoField:
+        if options.shipandcargoField is None:
             parser.error("missing value for shipandcargoField")
-        if None == options.dimAField:
+        if options.dimAField is None:
             parser.error("missing value for dimAField")
-        if None == options.dimBField:
+        if options.dimBField is None:
             parser.error("missing value for dimBField")
-        if None == options.dimCField:
+        if options.dimCField is None:
             parser.error("missing value for dimCField")
-        if None == options.dimDField:
+        if options.dimDField is None:
             parser.error("missing value for dimDField")
-        if None == options.fixtypeField:
+        if options.fixtypeField is None:
             parser.error("missing value for fixtypeField")
-        if None == options.RAIMField:
+        if options.RAIMField is None:
             parser.error("missing value for RAIMField")
-        if None == options.DTEField:
+        if options.DTEField is None:
             parser.error("missing value for DTEField")
     msgDict = {
         "MessageID": "19",
@@ -1842,9 +1833,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1852,7 +1843,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1870,7 +1861,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

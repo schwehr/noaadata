@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -926,7 +922,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("whalenotice:\n")
         if "MessageID" in params:
             out.write("    MessageID:          " + str(params["MessageID"]) + "\n")
@@ -1008,8 +1004,8 @@ def printFields(
             out.write("    radius3:            " + str(params["radius3"]) + "\n")
         if "Spare2" in params:
             out.write("    Spare2:             " + str(params["Spare2"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -1020,13 +1016,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -1036,9 +1032,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1150,12 +1144,10 @@ def sqlCreate(
         c.addInt("time1_hour")
     if "time1_min" in fields:
         c.addInt("time1_min")
-    if dbType != "postgres":
-        if "center1_longitude" in fields:
-            c.addDecimal("center1_longitude", 8, 5)
-    if dbType != "postgres":
-        if "center1_latitude" in fields:
-            c.addDecimal("center1_latitude", 8, 5)
+    if dbType != "postgres" and "center1_longitude" in fields:
+        c.addDecimal("center1_longitude", 8, 5)
+    if dbType != "postgres" and "center1_latitude" in fields:
+        c.addDecimal("center1_latitude", 8, 5)
     if "timetoexpire1" in fields:
         c.addInt("timetoexpire1")
     if "radius1" in fields:
@@ -1168,12 +1160,10 @@ def sqlCreate(
         c.addInt("time2_hour")
     if "time2_min" in fields:
         c.addInt("time2_min")
-    if dbType != "postgres":
-        if "center2_longitude" in fields:
-            c.addDecimal("center2_longitude", 8, 5)
-    if dbType != "postgres":
-        if "center2_latitude" in fields:
-            c.addDecimal("center2_latitude", 8, 5)
+    if dbType != "postgres" and "center2_longitude" in fields:
+        c.addDecimal("center2_longitude", 8, 5)
+    if dbType != "postgres" and "center2_latitude" in fields:
+        c.addDecimal("center2_latitude", 8, 5)
     if "timetoexpire2" in fields:
         c.addInt("timetoexpire2")
     if "radius2" in fields:
@@ -1186,12 +1176,10 @@ def sqlCreate(
         c.addInt("time3_hour")
     if "time3_min" in fields:
         c.addInt("time3_min")
-    if dbType != "postgres":
-        if "center3_longitude" in fields:
-            c.addDecimal("center3_longitude", 8, 5)
-    if dbType != "postgres":
-        if "center3_latitude" in fields:
-            c.addDecimal("center3_latitude", 8, 5)
+    if dbType != "postgres" and "center3_longitude" in fields:
+        c.addDecimal("center3_longitude", 8, 5)
+    if dbType != "postgres" and "center3_latitude" in fields:
+        c.addDecimal("center3_latitude", 8, 5)
     if "timetoexpire3" in fields:
         c.addInt("timetoexpire3")
     if "radius3" in fields:
@@ -1266,23 +1254,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1290,7 +1277,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1320,38 +1307,38 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
-dac & 10 & Designated Area Code - 366 for the United States \\\\ \hline
-fid & 6 & Functional IDentifier - 63 for the Whale Notice \\\\ \hline
-efid & 12 & Extended Functional IDentifier.  1 for the Whale Notice (dac+fid+efid defines the exact message type) \\\\ \hline
-numreports & 2 & Number of detection reports filled out in this message \\\\ \hline
-stationid1 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \hline
-time1\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \hline
-time1\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \hline
-time1\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \hline
-center1\_longitude & 28 & Center of the detection zone.  East West location \\\\ \hline
-center1\_latitude & 27 & Center of the detection zone.  North South location \\\\ \hline
-timetoexpire1 & 16 & Seconds from the detection time until the notice expires \\\\ \hline
-radius1 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \hline
-stationid2 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \hline
-time2\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \hline
-time2\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \hline
-time2\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \hline
-center2\_longitude & 28 & Center of the detection zone.  East West location \\\\ \hline
-center2\_latitude & 27 & Center of the detection zone.  North South location \\\\ \hline
-timetoexpire2 & 16 & Seconds from the detection time until the notice expires \\\\ \hline
-radius2 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \hline
-stationid3 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \hline
-time3\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \hline
-time3\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \hline
-time3\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \hline
-center3\_longitude & 28 & Center of the detection zone.  East West location \\\\ \hline
-center3\_latitude & 27 & Center of the detection zone.  North South location \\\\ \hline
-timetoexpire3 & 16 & Seconds from the detection time until the notice expires \\\\ \hline
-radius3 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code - 366 for the United States \\\\ \\hline
+fid & 6 & Functional IDentifier - 63 for the Whale Notice \\\\ \\hline
+efid & 12 & Extended Functional IDentifier.  1 for the Whale Notice (dac+fid+efid defines the exact message type) \\\\ \\hline
+numreports & 2 & Number of detection reports filled out in this message \\\\ \\hline
+stationid1 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \\hline
+time1\\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \\hline
+time1\\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \\hline
+time1\\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \\hline
+center1\\_longitude & 28 & Center of the detection zone.  East West location \\\\ \\hline
+center1\\_latitude & 27 & Center of the detection zone.  North South location \\\\ \\hline
+timetoexpire1 & 16 & Seconds from the detection time until the notice expires \\\\ \\hline
+radius1 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \\hline
+stationid2 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \\hline
+time2\\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \\hline
+time2\\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \\hline
+time2\\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \\hline
+center2\\_longitude & 28 & Center of the detection zone.  East West location \\\\ \\hline
+center2\\_latitude & 27 & Center of the detection zone.  North South location \\\\ \\hline
+timetoexpire2 & 16 & Seconds from the detection time until the notice expires \\\\ \\hline
+radius2 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \\hline
+stationid3 & 8 & Identifier of the station that recorded the whale.  Usually a number. \\\\ \\hline
+time3\\_day & 5 & Time of most recent whale detection.  UTC day of the month 1..31 \\\\ \\hline
+time3\\_hour & 5 & Time of most recent whale detection.  UTC hours 0..23 \\\\ \\hline
+time3\\_min & 6 & Time of most recent whale detection.  UTC minutes \\\\ \\hline
+center3\\_longitude & 28 & Center of the detection zone.  East West location \\\\ \\hline
+center3\\_latitude & 27 & Center of the detection zone.  North South location \\\\ \\hline
+timetoexpire3 & 16 & Seconds from the detection time until the notice expires \\\\ \\hline
+radius3 & 16 & Distance from center of detection zone (lat/lon above) \\\\ \\hline
 Spare2 & 21 & Not used.  Should be set to zero.\\\\ \\hline \\hline
 Total bits & 424 & Appears to take 2 slots \\\\ \\hline
 \\end{tabular}
@@ -1611,39 +1598,39 @@ class Testwhalenotice(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["efid"], params["efid"])
-        self.assertEqual(r["numreports"], params["numreports"])
-        self.assertEqual(r["stationid1"], params["stationid1"])
-        self.assertEqual(r["time1_day"], params["time1_day"])
-        self.assertEqual(r["time1_hour"], params["time1_hour"])
-        self.assertEqual(r["time1_min"], params["time1_min"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["efid"] == params["efid"]
+        assert r["numreports"] == params["numreports"]
+        assert r["stationid1"] == params["stationid1"]
+        assert r["time1_day"] == params["time1_day"]
+        assert r["time1_hour"] == params["time1_hour"]
+        assert r["time1_min"] == params["time1_min"]
         self.assertAlmostEqual(r["center1_longitude"], params["center1_longitude"], 5)
         self.assertAlmostEqual(r["center1_latitude"], params["center1_latitude"], 5)
-        self.assertEqual(r["timetoexpire1"], params["timetoexpire1"])
-        self.assertEqual(r["radius1"], params["radius1"])
-        self.assertEqual(r["stationid2"], params["stationid2"])
-        self.assertEqual(r["time2_day"], params["time2_day"])
-        self.assertEqual(r["time2_hour"], params["time2_hour"])
-        self.assertEqual(r["time2_min"], params["time2_min"])
+        assert r["timetoexpire1"] == params["timetoexpire1"]
+        assert r["radius1"] == params["radius1"]
+        assert r["stationid2"] == params["stationid2"]
+        assert r["time2_day"] == params["time2_day"]
+        assert r["time2_hour"] == params["time2_hour"]
+        assert r["time2_min"] == params["time2_min"]
         self.assertAlmostEqual(r["center2_longitude"], params["center2_longitude"], 5)
         self.assertAlmostEqual(r["center2_latitude"], params["center2_latitude"], 5)
-        self.assertEqual(r["timetoexpire2"], params["timetoexpire2"])
-        self.assertEqual(r["radius2"], params["radius2"])
-        self.assertEqual(r["stationid3"], params["stationid3"])
-        self.assertEqual(r["time3_day"], params["time3_day"])
-        self.assertEqual(r["time3_hour"], params["time3_hour"])
-        self.assertEqual(r["time3_min"], params["time3_min"])
+        assert r["timetoexpire2"] == params["timetoexpire2"]
+        assert r["radius2"] == params["radius2"]
+        assert r["stationid3"] == params["stationid3"]
+        assert r["time3_day"] == params["time3_day"]
+        assert r["time3_hour"] == params["time3_hour"]
+        assert r["time3_min"] == params["time3_min"]
         self.assertAlmostEqual(r["center3_longitude"], params["center3_longitude"], 5)
         self.assertAlmostEqual(r["center3_latitude"], params["center3_latitude"], 5)
-        self.assertEqual(r["timetoexpire3"], params["timetoexpire3"])
-        self.assertEqual(r["radius3"], params["radius3"])
-        self.assertEqual(r["Spare2"], params["Spare2"])
+        assert r["timetoexpire3"] == params["timetoexpire3"]
+        assert r["radius3"] == params["radius3"]
+        assert r["Spare2"] == params["Spare2"]
 
 
 def addMsgOptions(parser):
@@ -2006,64 +1993,64 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.numreportsField:
+        if options.numreportsField is None:
             parser.error("missing value for numreportsField")
-        if None == options.stationid1Field:
+        if options.stationid1Field is None:
             parser.error("missing value for stationid1Field")
-        if None == options.time1_dayField:
+        if options.time1_dayField is None:
             parser.error("missing value for time1_dayField")
-        if None == options.time1_hourField:
+        if options.time1_hourField is None:
             parser.error("missing value for time1_hourField")
-        if None == options.time1_minField:
+        if options.time1_minField is None:
             parser.error("missing value for time1_minField")
-        if None == options.center1_longitudeField:
+        if options.center1_longitudeField is None:
             parser.error("missing value for center1_longitudeField")
-        if None == options.center1_latitudeField:
+        if options.center1_latitudeField is None:
             parser.error("missing value for center1_latitudeField")
-        if None == options.timetoexpire1Field:
+        if options.timetoexpire1Field is None:
             parser.error("missing value for timetoexpire1Field")
-        if None == options.radius1Field:
+        if options.radius1Field is None:
             parser.error("missing value for radius1Field")
-        if None == options.stationid2Field:
+        if options.stationid2Field is None:
             parser.error("missing value for stationid2Field")
-        if None == options.time2_dayField:
+        if options.time2_dayField is None:
             parser.error("missing value for time2_dayField")
-        if None == options.time2_hourField:
+        if options.time2_hourField is None:
             parser.error("missing value for time2_hourField")
-        if None == options.time2_minField:
+        if options.time2_minField is None:
             parser.error("missing value for time2_minField")
-        if None == options.center2_longitudeField:
+        if options.center2_longitudeField is None:
             parser.error("missing value for center2_longitudeField")
-        if None == options.center2_latitudeField:
+        if options.center2_latitudeField is None:
             parser.error("missing value for center2_latitudeField")
-        if None == options.timetoexpire2Field:
+        if options.timetoexpire2Field is None:
             parser.error("missing value for timetoexpire2Field")
-        if None == options.radius2Field:
+        if options.radius2Field is None:
             parser.error("missing value for radius2Field")
-        if None == options.stationid3Field:
+        if options.stationid3Field is None:
             parser.error("missing value for stationid3Field")
-        if None == options.time3_dayField:
+        if options.time3_dayField is None:
             parser.error("missing value for time3_dayField")
-        if None == options.time3_hourField:
+        if options.time3_hourField is None:
             parser.error("missing value for time3_hourField")
-        if None == options.time3_minField:
+        if options.time3_minField is None:
             parser.error("missing value for time3_minField")
-        if None == options.center3_longitudeField:
+        if options.center3_longitudeField is None:
             parser.error("missing value for center3_longitudeField")
-        if None == options.center3_latitudeField:
+        if options.center3_latitudeField is None:
             parser.error("missing value for center3_latitudeField")
-        if None == options.timetoexpire3Field:
+        if options.timetoexpire3Field is None:
             parser.error("missing value for timetoexpire3Field")
-        if None == options.radius3Field:
+        if options.radius3Field is None:
             parser.error("missing value for radius3Field")
     msgDict = {
         "MessageID": "8",
@@ -2102,9 +2089,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -2112,7 +2099,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -2130,7 +2117,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

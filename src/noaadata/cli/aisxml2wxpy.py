@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2006-09-24 14:01:41 -0400 (Sun, 24 Sep 2006) $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-24",
+    "14:01:41",
+    "-0400",
+    "(Sun,",
+    "24",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = """
 
@@ -15,7 +25,9 @@ aisxmlbinmsg2py was getting too long, so this functionality is completely broken
 @bug: FIX: deal with the name mangling flag in the xml?
 """
 
-import sys, os
+import os
+import sys
+
 from lxml import etree
 
 
@@ -23,9 +35,7 @@ def hasSubTag(et, subtag):
     """
     @return: true if the tag a sub tag with name subtag
     """
-    if 0 < len(et.xpath(subtag)):
-        return True
-    return False
+    return len(et.xpath(subtag)) > 0
 
 
 def hasBoolField(et):
@@ -33,9 +43,7 @@ def hasBoolField(et):
     @return: true there exists a bool type field
     @param et: message element tree
     """
-    if 0 < len(et.xpath('field[@type="bool"]')):
-        return True
-    return False
+    return len(et.xpath('field[@type="bool"]')) > 0
 
 
 def useChoice(field):
@@ -51,9 +59,7 @@ def useChoice(field):
         return True
     if int(field.attrib["numberofbits"]) > 4:
         return False
-    if hasSubTag(field, "lookuptable"):
-        return True
-    return False
+    return bool(hasSubTag(field, "lookuptable"))
 
 
 def createChoiceList(o, fieldET):
@@ -62,7 +68,7 @@ def createChoiceList(o, fieldET):
     name = fieldET.attrib["name"]
     fieldType = fieldET.attrib["type"]
     if fieldType == "int":
-        assert False  # FIX: write me!
+        raise AssertionError()  # FIX: write me!
     elif fieldType == "uint":
         o.write("\t" + name + "List = [\n")
         lastVal = 0
@@ -226,7 +232,7 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                 + "'])\n"
             )
             o.write("\t\tself." + name + "Widget=")  # Need to lookup what to do...
-            if "uint" == fieldType:
+            if fieldType == "uint":
                 if useChoice(field):
                     o.write("wx.Choice(self,-1, choices = self." + name + "List)\n")
                     o.write("\t\tself." + name + "Widget.SetSelection(int(value))\n")
@@ -236,11 +242,11 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                         + str(2**numBits - 1)
                         + ")\n"
                     )
-            elif "int" == fieldType:
+            elif fieldType == "int":
                 if useChoice(field):
                     o.write("wx.Choice(self,-1, choices = self." + name + "List)\n")
                     # FIX: need to figure out how to select choices when they could be negative
-                    assert False
+                    raise AssertionError()
                 else:
                     o.write(
                         "wx.SpinCtrl(self,value=value,min="
@@ -249,7 +255,7 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                         + str(2 ** (numBits - 1) - 1)
                         + ")\n"
                     )
-            elif "bool" == fieldType:
+            elif fieldType == "bool":
                 o.write("wx.Choice(self,-1, choices = self.BoolList)\n")
                 o.write(
                     "\t\tif defaults['"
@@ -278,10 +284,8 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                         end = float(range.attrib["max"])
                         if hasSubTag(field, "unavailable"):
                             unavailable = float(field.xpath("unavailable")[0].text)
-                            if unavailable < start:
-                                start = unavailable
-                            if end < unavailable:
-                                end = unavailable
+                            start = min(start, unavailable)
+                            end = max(end, unavailable)
 
                     # print 'decimal',start,end
                     o.write(
@@ -295,7 +299,7 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                     name,
                     fieldType,
                 )
-                assert False
+                raise AssertionError()
 
             o.write("\t\tdel value\n")
 
@@ -337,32 +341,31 @@ def buildWxPythonMsg(o, msgET, verbose=False, prefixName=False):
                 )
             else:
                 print("FIX: need to write this case!")
-                assert False
-        else:
-            if fieldType in ["int", "uint", "bool", "udecimal", "decimal"]:
-                if useChoice(field):
-                    o.write(
-                        "\t\tself.msgDict['"
-                        + name
-                        + "']=self."
-                        + name
-                        + "Widget.GetSelection()\n"
-                    )
-                else:
-                    o.write(
-                        "\t\tself.msgDict['"
-                        + name
-                        + "']=self."
-                        + name
-                        + "Widget.GetValue()\n"
-                    )
-            elif fieldType in ["decimal", "udecimal"]:
-                print("FIX: what do I do about decimals?")
-                o.write("\t\t#FIX: handle " + name + " " + fieldType + "\n")
+                raise AssertionError()
+        elif fieldType in ["int", "uint", "bool", "udecimal", "decimal"]:
+            if useChoice(field):
+                o.write(
+                    "\t\tself.msgDict['"
+                    + name
+                    + "']=self."
+                    + name
+                    + "Widget.GetSelection()\n"
+                )
             else:
-                print("FIX: need to write the other cases here", name, fieldType)
-                o.write("\t\t#FIX: handle " + name + " " + fieldType + "\n")
-                assert False
+                o.write(
+                    "\t\tself.msgDict['"
+                    + name
+                    + "']=self."
+                    + name
+                    + "Widget.GetValue()\n"
+                )
+        elif fieldType in ["decimal", "udecimal"]:
+            print("FIX: what do I do about decimals?")
+            o.write("\t\t#FIX: handle " + name + " " + fieldType + "\n")
+        else:
+            print("FIX: need to write the other cases here", name, fieldType)
+            o.write("\t\t#FIX: handle " + name + " " + fieldType + "\n")
+            raise AssertionError()
 
     o.write("\t\tself.Close(True)\n")
 
@@ -457,9 +460,9 @@ if __name__ == "__main__":
         del argvOrig  # hide from epydoc
         sys.exit()  # FIX: Will this exit success?
 
-    if None == options.xmlFileName:
+    if options.xmlFileName is None:
         sys.exit("ERROR: must specify an xml definition file.")
-    if None == options.outputFileName:
+    if options.outputFileName is None:
         sys.exit("ERROR: must specify an python file to write to.")
     generateWxPython(
         options.xmlFileName,

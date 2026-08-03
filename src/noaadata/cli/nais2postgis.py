@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 2275 $".split()[1]
+__version__ = ["$Revision:", "2275", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-07-10",
+    "16:22:35",
+    "-0400",
+    "(Mon,",
+    "10",
+    "Jul",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -16,24 +26,19 @@ Which are just cranky.
 
 errors_file = file("errors-nais2postgis", "w+")
 
-import traceback, exceptions
-
+import logging  # Python's logger module for tracking progress
+import select
+import socket
 import sys
 import time
-import socket
-import select
-import exceptions  # For KeyboardInterupt pychecker complaint
-import logging  # Python's logger module for tracking progress
-import aisutils.daemon
-import aisutils.uscg
-import aisutils.normalize
-
-from aisutils import sqlhelp
-import aisutils.database
+import traceback
 
 # import ais.ais_msg_1 as msg1
 import ais
-
+import aisutils.daemon
+import aisutils.database
+import aisutils.normalize
+import aisutils.uscg
 from ais.ais_msg_1 import NavigationStatusDecodeLut
 from ais.ais_msg_5 import shipandcargoDecodeLut
 
@@ -126,7 +131,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
         try:
             cu.execute(str(ins))
             # print 'Added pos'
-        except Exception as e:
+        except Exception:
             errors_file.write("pos SQL INSERT ERROR for line: %s\t\n", str(msg_dict))
             errors_file.write(str(ins))
             errors_file.write("\n")
@@ -219,7 +224,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
 
         try:
             cu.execute(str(ins))
-        except Exception as e:
+        except Exception:
             # errors_file = file('errors-nais2postgis','w+')
             errors_file.write("SQL INSERT ERROR for line: %s\t\n", str(msg_dict))
             errors_file.write(str(ins))
@@ -272,10 +277,7 @@ def handle_insert_update(cx, uscg_msg, msg_dict, aismsg):
             (userid,),
         )
         row = cu.fetchall()
-        if len(row) > 0:
-            name = row[0][0].rstrip(" @")
-        else:
-            name = str(userid)
+        name = row[0][0].rstrip(" @") if len(row) > 0 else str(userid)
 
         cu.execute(
             "SELECT shipandcargo FROM b_staticdata WHERE partnum=1 AND userid=%s LIMIT 1;",
@@ -382,7 +384,7 @@ class Nais2Postgis:
                 self.nais_src = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.nais_src.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 self.nais_src.connect((self.options.inHost, self.options.inPort))
-            except socket.error as inst:
+            except OSError as inst:
                 if self.loop_count % 50 == 0:
                     sys.stderr.write(
                         "%d : Failed to connect to nais_src ... %s\tWill try again\n"
@@ -395,7 +397,7 @@ class Nais2Postgis:
                 sys.stderr.write("Connected...\n")
             # time.sleep(.1)
 
-        readersready, outputready, exceptready = select.select(
+        readersready, _outputready, _exceptready = select.select(
             [
                 self.nais_src,
             ],
@@ -425,12 +427,12 @@ class Nais2Postgis:
 
         for msg in msgs.split("\n"):
             msg = msg.strip()
-            if "AIVDM" != msg[1:6]:
+            if msg[1:6] != "AIVDM":
                 continue
             try:
                 self.norm_queue.put(msg)
             except Exception as e:
-                sys.stderr.write("Bad AIVDM message: %s\n" % (msg,))
+                sys.stderr.write(f"Bad AIVDM message: {msg}\n")
                 sys.stderr.write("   Exception:" + str(type(Exception)) + "\n")
                 sys.stderr.write("   Exception args:" + str(e) + "\n")
                 traceback.print_exc(file=sys.stderr)
@@ -443,10 +445,8 @@ class Nais2Postgis:
             try:
                 uscg_msg = aisutils.uscg.UscgNmea(msg)
             except Exception as e:
-                logging.exception(
-                    "uscg decode exception %s for msg: %s" % (str(e), msg)
-                )
-                self.bad.write("uscg decode exception %s for msg: %s" % (str(e), msg))
+                logging.exception(f"uscg decode exception {e!s} for msg: {msg}")
+                self.bad.write(f"uscg decode exception {e!s} for msg: {msg}")
                 # self.bad.write(msg+'\n')
                 continue
 
@@ -467,11 +467,7 @@ class Nais2Postgis:
                 aismsg = ais.msgModByFirstChar[uscg_msg.msgTypeChar]
             except Exception as e:
                 sys.stderr.write(
-                    "   Dropping unknown msg type: %s\n\t%s\n"
-                    % (
-                        uscg_msg.msgTypeChar,
-                        str(e),
-                    )
+                    f"   Dropping unknown msg type: {uscg_msg.msgTypeChar}\n\t{e!s}\n"
                 )
                 self.bad.write(msg + "\n")
                 continue
@@ -481,11 +477,7 @@ class Nais2Postgis:
                 msg_dict = aismsg.decode(bv)
             except Exception as e:
                 sys.stderr.write(
-                    "   Dropping bad msg and calling continue: %s,%s\n"
-                    % (
-                        str(e),
-                        msg,
-                    )
+                    f"   Dropping bad msg and calling continue: {e!s},{msg}\n"
                 )
                 self.bad.write(msg + "\n")
                 continue
@@ -646,7 +638,7 @@ def main():
         help="Log level for tracing.  Defaults to all [default: %default]",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     v = options.verbose
     if v:
         sys.stderr.write(
@@ -654,8 +646,7 @@ def main():
         )
 
     sys.stderr.write(
-        "Bounding box: X: %s to %s \t\t Y: %s to %s\n"
-        % (options.lon_min, options.lon_max, options.lat_min, options.lat_max)
+        f"Bounding box: X: {options.lon_min} to {options.lon_max} \t\t Y: {options.lat_min} to {options.lat_max}\n"
     )
 
     if options.inHostname:
@@ -670,7 +661,7 @@ def main():
     loop_count = 0
     while True:
         loop_count += 1
-        if 0 == loop_count % 1000:
+        if loop_count % 1000 == 0:
             print("top level loop", loop_count)
         try:
             n2p.do_one_loop()

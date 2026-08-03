@@ -19,15 +19,11 @@ which should be packaged with the resulting files.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -525,7 +521,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("imo_fairway_closed:\n")
         if "MessageID" in params:
             out.write("    MessageID:        " + str(params["MessageID"]) + "\n")
@@ -567,8 +563,8 @@ def printFields(
             out.write("    tomin:            " + str(params["tomin"]) + "\n")
         if "spare2" in params:
             out.write("    spare2:           " + str(params["spare2"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -579,15 +575,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -762,23 +756,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -786,7 +779,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -816,25 +809,25 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \hline
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline
-dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \hline
-fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \hline
-reason & 120 & Reason for closing \\\\ \hline
-from & 120 & Location of closing from \\\\ \hline
-to & 120 & Location of closing To \\\\ \hline
-radius & 10 & Extention of closed area \\\\ \hline
-unit & 2 & Unit of extension value for range field \\\\ \hline
-closingday & 5 & Closing from day \\\\ \hline
-closingmonth & 4 & Closing from month \\\\ \hline
-fromhour & 5 & From LT hour (appr) \\\\ \hline
-frommin & 6 & From LT minute (appr) \\\\ \hline
-today & 5 & To day \\\\ \hline
-tomonth & 4 & To month \\\\ \hline
-tohour & 5 & To LT hour (appr) \\\\ \hline
-tomin & 6 & To LT minute (appr) \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \\hline
+fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \\hline
+reason & 120 & Reason for closing \\\\ \\hline
+from & 120 & Location of closing from \\\\ \\hline
+to & 120 & Location of closing To \\\\ \\hline
+radius & 10 & Extention of closed area \\\\ \\hline
+unit & 2 & Unit of extension value for range field \\\\ \\hline
+closingday & 5 & Closing from day \\\\ \\hline
+closingmonth & 4 & Closing from month \\\\ \\hline
+fromhour & 5 & From LT hour (appr) \\\\ \\hline
+frommin & 6 & From LT minute (appr) \\\\ \\hline
+today & 5 & To day \\\\ \\hline
+tomonth & 4 & To month \\\\ \\hline
+tohour & 5 & To LT hour (appr) \\\\ \\hline
+tomin & 6 & To LT minute (appr) \\\\ \\hline
 spare2 & 4 & Padding out the slot\\\\ \\hline \\hline
 Total bits & 472 & Appears to take 3 slots with 208 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1016,26 +1009,26 @@ class Testimo_fairway_closed(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
-        self.assertEqual(r["reason"], params["reason"])
-        self.assertEqual(r["from"], params["from"])
-        self.assertEqual(r["to"], params["to"])
-        self.assertEqual(r["radius"], params["radius"])
-        self.assertEqual(r["unit"], params["unit"])
-        self.assertEqual(r["closingday"], params["closingday"])
-        self.assertEqual(r["closingmonth"], params["closingmonth"])
-        self.assertEqual(r["fromhour"], params["fromhour"])
-        self.assertEqual(r["frommin"], params["frommin"])
-        self.assertEqual(r["today"], params["today"])
-        self.assertEqual(r["tomonth"], params["tomonth"])
-        self.assertEqual(r["tohour"], params["tohour"])
-        self.assertEqual(r["tomin"], params["tomin"])
-        self.assertEqual(r["spare2"], params["spare2"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
+        assert r["reason"] == params["reason"]
+        assert r["from"] == params["from"]
+        assert r["to"] == params["to"]
+        assert r["radius"] == params["radius"]
+        assert r["unit"] == params["unit"]
+        assert r["closingday"] == params["closingday"]
+        assert r["closingmonth"] == params["closingmonth"]
+        assert r["fromhour"] == params["fromhour"]
+        assert r["frommin"] == params["frommin"]
+        assert r["today"] == params["today"]
+        assert r["tomonth"] == params["tomonth"]
+        assert r["tohour"] == params["tohour"]
+        assert r["tomin"] == params["tomin"]
+        assert r["spare2"] == params["spare2"]
 
 
 def addMsgOptions(parser):
@@ -1302,40 +1295,40 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.reasonField:
+        if options.reasonField is None:
             parser.error("missing value for reasonField")
-        if None == options.fromField:
+        if options.fromField is None:
             parser.error("missing value for fromField")
-        if None == options.toField:
+        if options.toField is None:
             parser.error("missing value for toField")
-        if None == options.radiusField:
+        if options.radiusField is None:
             parser.error("missing value for radiusField")
-        if None == options.unitField:
+        if options.unitField is None:
             parser.error("missing value for unitField")
-        if None == options.closingdayField:
+        if options.closingdayField is None:
             parser.error("missing value for closingdayField")
-        if None == options.closingmonthField:
+        if options.closingmonthField is None:
             parser.error("missing value for closingmonthField")
-        if None == options.fromhourField:
+        if options.fromhourField is None:
             parser.error("missing value for fromhourField")
-        if None == options.fromminField:
+        if options.fromminField is None:
             parser.error("missing value for fromminField")
-        if None == options.todayField:
+        if options.todayField is None:
             parser.error("missing value for todayField")
-        if None == options.tomonthField:
+        if options.tomonthField is None:
             parser.error("missing value for tomonthField")
-        if None == options.tohourField:
+        if options.tohourField is None:
             parser.error("missing value for tohourField")
-        if None == options.tominField:
+        if options.tominField is None:
             parser.error("missing value for tominField")
     msgDict = {
         "MessageID": "8",
@@ -1361,9 +1354,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1371,7 +1364,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1389,7 +1382,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

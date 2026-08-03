@@ -2,6 +2,7 @@
 
 import io
 import time
+
 import pytest
 
 from aisutils.BitVector import BitVector

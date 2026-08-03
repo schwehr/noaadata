@@ -1,6 +1,7 @@
 """Unit tests for AIS 6-bit ASCII string encoding, decoding, and padding removal."""
 
 import pytest
+
 from aisutils import aisstring
 
 
@@ -29,7 +30,7 @@ def test_encode_fixed_bitsize() -> None:
 
 
 @pytest.mark.parametrize(
-    "padded_str, expected_unpadded",
+    ("padded_str", "expected_unpadded"),
     [
         ("@", ""),
         ("A@", "A"),

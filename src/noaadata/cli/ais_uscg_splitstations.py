@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = """
 Split USCG N-AIS messages into separate stations
@@ -8,7 +18,7 @@ Split USCG N-AIS messages into separate stations
 @license: Apache 2.0
 """
 
-import sys, os
+import os
 
 
 def getStation(line, withR=False):
@@ -19,7 +29,7 @@ def getStation(line, withR=False):
         if len(f) < 1:
             continue
         if not foundChecksum:
-            if -1 == f.find("*"):
+            if f.find("*") == -1:
                 continue  # FIX: Is this sufficient to make sure this is a checksum?
             # if '0'==f[0]: continue
             foundChecksum = True
@@ -48,7 +58,7 @@ def splitstations(
     @param withR: keep the r in front of the station name
     @param verbose: be loud
     """
-    if subdir != None and not os.access(subdir, os.X_OK):  # F_OK):
+    if subdir is not None and not os.access(subdir, os.X_OK):  # F_OK):
         os.mkdir(subdir)
     else:
         subdir = "."
@@ -56,7 +66,7 @@ def splitstations(
     stations = {}
     for line in logfile:
         station = getStation(line)
-        if None == station:
+        if station is None:
             continue
 
         # Handle opening the file if have not seen the station before
@@ -121,7 +131,6 @@ def main():
     )
 
     (options, args) = parser.parse_args()
-    success = True
 
     for filename in args:
         if options.verbose:

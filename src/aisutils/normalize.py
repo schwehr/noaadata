@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 8143 $".split()[1]
-__date__ = "$Date: 2008-01-07 19:19:20 -0500 (Mon, 07 Jan 2008) $".split()[1]
+__version__ = ["$Revision:", "8143", "$"][1]
+__date__ = [
+    "$Date:",
+    "2008-01-07",
+    "19:19:20",
+    "-0500",
+    "(Mon,",
+    "07",
+    "Jan",
+    "2008)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -29,10 +39,11 @@ Rewrite from the command line only ais_normalize
 """
 )
 
-import sys
 import queue
-from . import uscg
-from . import nmea
+import sys
+
+from . import nmea, uscg
+
 # from decimal import Decimal
 # from BitVector import BitVector
 # import StringIO
@@ -66,11 +77,10 @@ class Normalize(queue.Queue):
     def put(self, uscgNmeaStr, block=True, timeout=None):
 
         cgMsg = uscg.UscgNmea(uscgNmeaStr)
-        if self.mostRecentTime < cgMsg.cg_sec:
-            self.mostRecentTime = cgMsg.cg_sec
+        self.mostRecentTime = max(self.mostRecentTime, cgMsg.cg_sec)
 
         # single line message needs no help
-        if 1 == cgMsg.totalSentences:
+        if cgMsg.totalSentences == 1:
             queue.Queue.put(self, uscgNmeaStr, block, timeout)
             return
 

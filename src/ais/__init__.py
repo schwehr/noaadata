@@ -46,6 +46,7 @@ import ais.ais_msg_22
 
 # import ais.ais_msg_23
 import ais.ais_msg_24_handcoded
+
 # import ais.ais_msg_24
 # import ais.ais_msg_25
 # import ais.ais_msg_26

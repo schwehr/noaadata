@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 7470 $".split()[1]
-__date__ = "$Date: 2007-11-06 10:31:44 -0500 (Tue, 06 Nov 2007) $".split()[1]
+__version__ = ["$Revision:", "7470", "$"][1]
+__date__ = [
+    "$Date:",
+    "2007-11-06",
+    "10:31:44",
+    "-0500",
+    "(Tue,",
+    "06",
+    "Nov",
+    "2007)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 """Find unique ais messages within a stream and give only those.
 
@@ -65,7 +75,7 @@ def main():
     (options, args) = parser.parse_args()
     verbose = options.verbose
     out = sys.stdout
-    if options.outFile != None:
+    if options.outFile is not None:
         out = file(options.outFile, "w")
 
     for filename in args:
@@ -94,7 +104,7 @@ def main():
                 dropcount += 1
 
             if (
-                options.maxLines != None
+                options.maxLines is not None
                 and linenum % options.intervalCheck == 0
                 and len(msgs) > options.maxLines
             ):

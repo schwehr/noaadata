@@ -28,6 +28,7 @@ import datetime
 import os
 import sys
 from decimal import Decimal
+
 from lxml import etree
 
 
@@ -75,9 +76,7 @@ def hasSubTag(et, subtag):
     """
     @return: true if the tag a sub tag with name subtag
     """
-    if 0 < len(et.xpath(subtag)):
-        return True
-    return False
+    return len(et.xpath(subtag)) > 0
 
 
 def writeBeginning(o):
@@ -88,7 +87,7 @@ def writeBeginning(o):
     """
 
     d = datetime.datetime.utcnow()
-    dateStr = str(d.year) + "-" + ("%02d" % d.month) + "-" + ("%02d" % d.day)
+    str(d.year) + "-" + ("%02d" % d.month) + "-" + ("%02d" % d.day)
 
     # Need to pass in info about the source file, etc.
 
@@ -138,7 +137,6 @@ FalseBV = BitVector(bitstring="0")
 
 
 """)
-    return
 
 
 def generatePython(infile, outfile, prefixName=False, verbose=False):
@@ -192,8 +190,6 @@ def generatePython(infile, outfile, prefixName=False, verbose=False):
         if msgET.tag != "message":
             continue
         buildMain(o, msgET, prefixName=prefixName)
-
-    return
 
 
 ######################################################################
@@ -325,8 +321,7 @@ def getMaxFieldNameLen(msgET):
     maxStrLen = 0
     for field in msgET.xpath("field"):
         fieldLen = len(field.attrib["name"])
-        if fieldLen > maxStrLen:
-            maxStrLen = fieldLen
+        maxStrLen = max(maxStrLen, fieldLen)
     return maxStrLen
 
 
@@ -341,11 +336,9 @@ def haveLocatableMessage(msgET):
     """
     # if getLongitudeFieldName(msgET) and getLatitudeFieldName(msgET): return True
 
-    if 0 == len(msgET.xpath('field[contains(@name, "longitude")]')):
+    if len(msgET.xpath('field[contains(@name, "longitude")]')) == 0:
         return False
-    if 0 == len(msgET.xpath('field[contains(@name, "latitude")]')):
-        return False
-    return True
+    return len(msgET.xpath('field[contains(@name, "latitude")]')) != 0
 
 
 def getLongitudeFieldName(msgET):
@@ -416,17 +409,15 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
         o.write('        out.write("<td>' + fieldtype + '</td>\\n")\n')
 
         numbits = int(field.attrib["numberofbits"])
-        required = None
         if hasSubTag(field, "required"):
-            required = field.xpath("required")[0].text
-        unavailable = None
+            field.xpath("required")[0].text
         if hasSubTag(field, "unavailable"):
-            unavailable = field.xpath("unavailable")[0].text
+            field.xpath("unavailable")[0].text
         arraylen = 1
         if "arraylength" in field.attrib:
             arraylen = int(field.attrib["arraylength"])
 
-        if 1 == arraylen or fieldtype == "aisstr6":
+        if arraylen == 1 or fieldtype == "aisstr6":
             o.write(
                 "        if '"
                 + fieldname
@@ -579,12 +570,10 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
         fieldname = field.attrib["name"]
         fieldtype = field.attrib["type"]
         numbits = int(field.attrib["numberofbits"])
-        required = None
         if hasSubTag(field, "required"):
-            required = field.xpath("required")[0].text
-        unavailable = None
+            field.xpath("required")[0].text
         if hasSubTag(field, "unavailable"):
-            unavailable = field.xpath("unavailable")[0].text
+            field.xpath("unavailable")[0].text
         arraylen = 1
         if "arraylength" in field.attrib:
             arraylen = int(field.attrib["arraylength"])
@@ -600,18 +589,17 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
                     numbits * arraylen,
                     "bits )",
                 )
-        else:
-            if verbose:
-                print(
-                    "Processing field ...",
-                    fieldname,
-                    "(",
-                    fieldtype + " ",
-                    numbits,
-                    ")",
-                )
+        elif verbose:
+            print(
+                "Processing field ...",
+                fieldname,
+                "(",
+                fieldtype + " ",
+                numbits,
+                ")",
+            )
 
-        if 1 == arraylen or fieldtype == "aisstr6":
+        if arraylen == 1 or fieldtype == "aisstr6":
             o.write(
                 "        if '"
                 + fieldname
@@ -743,7 +731,7 @@ def buildTextDef(o, msgET, verbose=False, prefixName=False):
     totalBits = 0
     for field in msgET.xpath("field"):
         fieldName = field.attrib["name"]
-        fieldType = field.attrib["type"]
+        field.attrib["type"]
         fieldBits = field.attrib["numberofbits"]
         if "arraylength" in field.attrib:
             fieldBits = str(int(fieldBits) * int(field.attrib["arraylength"]))
@@ -759,28 +747,26 @@ def buildTextDef(o, msgET, verbose=False, prefixName=False):
     # FIX: is this right?
     from math import ceil
 
-    numSlots = 1 + int(ceil((totalBits - 168) / 256.0))
+    numSlots = 1 + ceil((totalBits - 168) / 256.0)
     emptySlotBits = (168 + (numSlots - 1) * 256) - totalBits
     s = ""
     if numSlots > 1:
         s = "s"
     o.write(
-        (
-            '\nTotal bits"""+delim+"""'
-            + str(totalBits)
-            + '"""+delim+"""Appears to take '
-            + str(numSlots)
-            + " slot"
-            + s
-        )
+        '\nTotal bits"""+delim+"""'
+        + str(totalBits)
+        + '"""+delim+"""Appears to take '
+        + str(numSlots)
+        + " slot"
+        + s
     )
     if emptySlotBits > 0:
         o.write(" with " + str(emptySlotBits) + " pad bits to fill the last slot")
 
-    o.write((
+    o.write(
         """\"\"\")
 """
-    ))
+    )
 
     # FIX: should it return a copy of outfile?
 
@@ -846,9 +832,9 @@ Parameter & Number of bits & Description
     totalBits = 0
     for field in msgET.xpath("field"):
         fieldName = field.attrib["name"].replace(
-            "_", "\_"
+            "_", r"\_"
         )  # _ means subscript to latex
-        fieldType = field.attrib["type"]
+        field.attrib["type"]
         fieldBits = field.attrib["numberofbits"]
         if "arraylength" in field.attrib:
             fieldBits = str(int(fieldBits) * int(field.attrib["arraylength"]))
@@ -861,7 +847,7 @@ Parameter & Number of bits & Description
     # 168 in the first slot and following slots get to use the whole 256??  FIX: is this right?
     from math import ceil
 
-    numSlots = 1 + int(ceil((totalBits - 168) / 256.0))
+    numSlots = 1 + ceil((totalBits - 168) / 256.0)
     emptySlotBits = (168 + (numSlots - 1) * 256) - totalBits
     s = ""
     if numSlots > 1:
@@ -990,9 +976,7 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
         fieldName = field.attrib["name"]
         fieldType = field.attrib["type"]
 
-        postgis = False
         if "postgisType" in field.attrib:
-            postgis = True
             o.write("    if dbType != 'postgres':\n    ")
         o.write("    if '" + fieldName + "' in fields: c.add")
         # FIX: add the ADD command here.
@@ -1006,7 +990,7 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
             if not hasSubTag(field, "decimalplaces"):
                 print("\n ** ERROR: missing decimalplaces field for ", fieldName)
                 print()
-                assert False
+                raise AssertionError()
             scaleSQL = int(
                 field.xpath("decimalplaces")[0].text
             )  # number of decimal places
@@ -1032,7 +1016,7 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
             )
         elif fieldType == "binary":
             numBits = int(field.attrib["numberofbits"])
-            if -1 == numBits:
+            if numBits == -1:
                 numBits = 1024  # FIX: what is a good maximum for AIS?
             o.write("BitVarying('" + fieldName + "'," + str(numBits) + ")")
         elif fieldType == "aisstr6":
@@ -1045,7 +1029,7 @@ def buildSQL(o, msgET, verbose=False, prefixName=False):
                 fieldType,
                 "\n\n",
             )
-            assert False
+            raise AssertionError()
         o.write("\n")
 
     o.write("""
@@ -1261,10 +1245,10 @@ def encodeBool(
     assert type.lower() == "bool"
     assert numbits == 1
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=bool)\n")
-    if None != required:
+    if required is not None:
         assert type(required) == bool
         if required:
             o.write("        bvList.append(TrueBV)\n")
@@ -1317,13 +1301,14 @@ def encodeUInt(
         print("alen:", arraylen, unavailable)
 
     assert type == "uint"
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + type + ")\n")
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -1414,11 +1399,11 @@ def encodeFloat(
 
     assert numbits == 32  # Force by the IEEE spec
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + fieldType + ")\n")
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -1491,7 +1476,7 @@ def encodeAisstr6(
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + fieldType + ")\n")
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -1571,13 +1556,14 @@ def encodeInt(
             unavailable,
         )
 
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + type + ")\n")
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -1670,21 +1656,22 @@ def encodeDecimal(
             unavailable,
         )
 
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + type + ")\n")
 
     # FIX: optimize to not emit the scaling when it is not needed... or tell the user to switch to an int!
-    if None == scale:
+    if scale is None:
         print(
             "WARNING: if you are not scaling, then you probably want to use an int instead!"
         )
         print("Beware canadians bearing travel videos")
         scale = "1"
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
@@ -1700,7 +1687,7 @@ def encodeDecimal(
         return
 
     offsetStr = ""
-    if None != offset:
+    if offset is not None:
         offsetStr = "-(" + offset + ")"
 
     # FIX: can I get rid of the Decimal around params?
@@ -1786,25 +1773,26 @@ def encodeUDecimal(
             unavailable,
         )
     assert type == "udecimal"
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + type + ")\n")
 
     # FIX: optimize to not emit the scaling when it is not needed... or tell the user to switch to an int!
-    if None == scale:
+    if scale is None:
         print(
             "WARNING: if you are not scaling, then you probably want to use an int instead!"
         )
         print("Beware canadians bearing travel videos")
         scale = "1"
 
-    if None != required:
+    if required is not None:
         if verbose:
             print("  required:", required)
         required = int(required)
-        assert 0 <= required
+        assert required >= 0
         o.write(
             "    bvList.append(binary.setBitVectorSize(BitVector(intVal="
             + str(int(Decimal(required) * Decimal(scale)))
@@ -1817,7 +1805,7 @@ def encodeUDecimal(
         return
 
     offsetStr = ""
-    if None != offset:
+    if offset is not None:
         offsetStr = "-(" + offset + ")"
 
     # FIX: can I get rid of the Decimal around params?
@@ -1904,11 +1892,11 @@ def encodeBinary(
         )
     assert type == "binary"
     assert (numbits >= 1 and numbits <= 1024) or numbits == -1
-    assert None == required  # don't allow this
-    assert None == unavailable  # don't allow this
+    assert required is None  # don't allow this
+    assert unavailable is None  # don't allow this
 
     if arraylen != 1:
-        assert False  # Do not handle arrays.  Arrays of bits is just not necessary.
+        raise AssertionError()  # Do not handle arrays.  Arrays of bits is just not necessary.
     if verbose:
         o.write("    ### FIELD: " + name + " (type=" + type + ")\n")
 
@@ -1983,7 +1971,7 @@ def decodeBool(
     assert numbits == 1
     assert arraylen == 1  # FIX... handle arrays
 
-    if None != required:
+    if required is not None:
         assert type(required) == bool
         if not decodeOnly:
             o.write("    " + dataDict + "['" + name + "']=")
@@ -2153,7 +2141,7 @@ def decodeInt(
     assert arraylen == 1  # FIX: handle arrays
     assert numbits >= 1
 
-    if None != required:
+    if required is not None:
         int(required)  # Make sure required is a number
         if not decodeOnly:
             o.write("    " + dataDict + "['" + name + "']=")
@@ -2230,13 +2218,13 @@ def decodeFloat(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     end = startindex + int(numbits) * int(arraylen)
     assert arraylen == 1  # FIX... handle arrays
     assert numbits >= 1
 
-    if None != required:
+    if required is not None:
         float(required)  # Make sure required is a number
         if not decodeOnly:
             o.write("    " + dataDict + "['" + name + "']=")
@@ -2311,13 +2299,13 @@ def decodeAisstr6(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     end = startindex + int(numbits) * int(arraylen)
     assert arraylen >= 1  # FIX... handle arrays
     assert numbits >= 1
 
-    if None != required:
+    if required is not None:
         float(required)  # Make sure required is a number
         if not decodeOnly:
             o.write("    " + dataDict + "['" + name + "']=")
@@ -2392,16 +2380,17 @@ def decodeDecimal(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     end = startindex + int(numbits) * int(arraylen)
     assert arraylen == 1  # FIX... handle arrays
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
 
-    if None == scale:
+    if scale is None:
         scale = "1"  # Warning about this was in the encode section
 
-    if None != required:
+    if required is not None:
         Decimal(required)  # Make sure required is a number
         if not decodeOnly:
             o.write("    " + dataDict + "['" + name + "']=")
@@ -2411,7 +2400,7 @@ def decodeDecimal(
         return end
 
     offsetStr = ""
-    if offset != None:
+    if offset is not None:
         offsetStr += "+Decimal('" + offset + "')"
 
     if not decodeOnly:
@@ -2492,16 +2481,17 @@ def decodeUDecimal(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     end = startindex + int(numbits) * int(arraylen)
     assert arraylen == 1  # FIX... handle arrays
-    assert numbits >= 1 and numbits <= 32
+    assert numbits >= 1
+    assert numbits <= 32
 
-    if None == scale:
+    if scale is None:
         scale = "1"  # Warning about this was in the encode section
 
-    if None != required:
+    if required is not None:
         assert (
             Decimal(required) >= 0.0
         )  # Make sure required is a number and not negative
@@ -2513,7 +2503,7 @@ def decodeUDecimal(
         return end
 
     offsetStr = ""
-    if offset != None:
+    if offset is not None:
         offsetStr += "+Decimal('" + offset + "')"
 
     if not decodeOnly:
@@ -2593,11 +2583,11 @@ def decodeBinary(
             "  startindex=",
             startindex,
         )
-    if None == arraylen:
+    if arraylen is None:
         arraylen = 1
     end = startindex + int(numbits) * int(arraylen)
     assert arraylen == 1  # FIX... handle arrays
-    assert (numbits >= 1 and numbits <= 1024) or -1 == numbits  # What is good max?
+    assert (numbits >= 1 and numbits <= 1024) or numbits == -1  # What is good max?
     # FIX: assert not required and not an array an not unavailable
 
     if not decodeOnly:
@@ -2642,7 +2632,7 @@ def buildTestParamFunc(o, msgET, verbose=False, prefixName=False):
             print(
                 "ERROR: can not have both test value and required tags in the same field"
             )
-            assert False
+            raise AssertionError()
         if hasSubTag(field, "testvalue"):
             val = field.xpath("testvalue")[0].text
         else:
@@ -2653,10 +2643,7 @@ def buildTestParamFunc(o, msgET, verbose=False, prefixName=False):
             print("buildTestParamFunc for field " + name + " ...", type, val)
         o.write("    params['" + name + "'] = ")
         if type == "bool":
-            if val == "1" or val.lower == "true":
-                val = "True"
-            else:
-                val = "False"
+            val = "True" if val == "1" or val.lower == "true" else "False"
             o.write(val)
         elif type in ("uint", "int", "float"):
             o.write(val)
@@ -2676,7 +2663,7 @@ def buildTestParamFunc(o, msgET, verbose=False, prefixName=False):
                 " field).  Time to buy more coffee",
             )
             suggestType(name, type)
-            assert False
+            raise AssertionError()
 
         o.write("\n")
 
@@ -2816,8 +2803,6 @@ def buildEncode(o, msgET, verbose=False, prefixName=False):
     if verbose:
         print("number of fields = ", len(msgET.xpath("field")))
 
-    dynamicArrays = False  # Set to true when positioning must be calculated
-
     for field in msgET.xpath("field"):
         name = field.attrib["name"]
         type = field.attrib["type"]
@@ -2843,9 +2828,8 @@ def buildEncode(o, msgET, verbose=False, prefixName=False):
                     numbits * arraylen,
                     "bits )",
                 )
-        else:
-            if verbose:
-                print("Processing field ...", name, "(", type + " ", numbits, ")")
+        elif verbose:
+            print("Processing field ...", name, "(", type + " ", numbits, ")")
 
         if type == "bool":
             encodeBool(o, name, type, numbits, required, arraylen, unavailable)
@@ -2900,7 +2884,7 @@ def buildEncode(o, msgET, verbose=False, prefixName=False):
                 "WARNING: In buildEncode - Unhandled field type for", name, "...", type
             )
             suggestType(name, type)
-            assert False
+            raise AssertionError()
 
     #    o.write('\n    bv=binary.joinBV(bvList)\n')
     #    o.write('\n    bvLen=len(bv)\n')
@@ -2976,7 +2960,7 @@ def buildDecodeParts(o, msgET, verbose=False, prefixName=False):
                     "bits )",
                 )
 
-        assert None != startindex
+        assert startindex is not None
         if verbose:
             print("startindex", startindex)
         if type == "bool":
@@ -3098,7 +3082,7 @@ def buildDecodeParts(o, msgET, verbose=False, prefixName=False):
                 "WARNING: In buildDecode - Unhandled field type for", name, "...", type
             )
             suggestType(name, type)
-            assert False
+            raise AssertionError()
 
         # o.write('    return(r[\''+name+'\'])\n\n')
         o.write("\n\n")
@@ -3173,8 +3157,6 @@ def buildDecode(o, msgET, verbose=False, prefixName=False):
     if verbose:
         print("number of fields = ", len(msgET.xpath("field")))
 
-    dynamicArrays = False  # Set to true when positioning must be calculated
-
     startindex = (
         0  # Where we are in the bitvector... FIX: what about variable length jobs?
     )
@@ -3204,11 +3186,10 @@ def buildDecode(o, msgET, verbose=False, prefixName=False):
                     numbits * arraylen,
                     "bits )",
                 )
-        else:
-            if verbose:
-                print("Processing field ...", name, "(", type + " ", numbits, ")")
+        elif verbose:
+            print("Processing field ...", name, "(", type + " ", numbits, ")")
 
-        assert None != startindex
+        assert startindex is not None
         if verbose:
             print("startindex", startindex)
 
@@ -3220,7 +3201,7 @@ def buildDecode(o, msgET, verbose=False, prefixName=False):
                     "optional is only allow on AIS msg 20.  Do NOT use it on new messages!!!"
                 )
             text = field.xpath("optional")[0].text
-            if None == field.xpath("optional")[0].text:  # Found a NoReturn
+            if field.xpath("optional")[0].text is None:  # Found a NoReturn
                 # Message 20 is a pain!
                 pad = 8 - (startindex % 8)
                 print("not found: noreturn.  pad=", pad)
@@ -3303,11 +3284,11 @@ def buildDecode(o, msgET, verbose=False, prefixName=False):
                 "WARNING: In buildDecode - Unhandled field type for", name, "...", type
             )
             suggestType(name, type)
-            assert False
+            raise AssertionError()
 
-        if None == startindex:
+        if startindex is None:
             print("FIX: here. drat.  treat me right")
-        assert None != startindex
+        assert startindex is not None
 
     o.write("    return r\n\n")
 
@@ -3345,13 +3326,12 @@ aisType2optParseType["float"] = "float"
 def buildOptParse(o, msgET, prefixName=False):
     """Create a function that adds the options to a parse object"""
 
-    assert None != msgET
+    assert msgET is not None
     assert msgET.tag == "message"
     msgName = msgET.attrib["name"]
 
-    prefix = ""
     if prefixName:
-        prefix = msgName
+        pass
 
     funcName = "addMsgOptions"
     if prefixName:
@@ -3405,7 +3385,7 @@ def buildOptParse(o, msgET, prefixName=False):
 
 
 def buildMain(o, msgET, prefixName=False):
-    assert None != msgET
+    assert msgET is not None
     assert msgET.tag == "message"
     msgName = msgET.attrib["name"]
 
@@ -3522,7 +3502,7 @@ def main():
     o.write("        # Make sure all non required options are specified.\n")
     for field in msgET.xpath("field"):
         name = field.attrib["name"]
-        fieldType = field.attrib["type"]
+        field.attrib["type"]
         varName = prefix + name + "Field"
         if not hasSubTag(field, "required"):
             o.write(
@@ -3725,9 +3705,9 @@ if __name__ == "__main__":
 
     # FIX: down the road, it would be good to allow either filenames of std{in/out}
 
-    if None == options.xmlFileName:
+    if options.xmlFileName is None:
         sys.exit("ERROR: must specify an xml definition file.")
-    if None == options.outputFileName:
+    if options.outputFileName is None:
         sys.exit("ERROR: must specify an python file to write to.")
     generatePython(
         options.xmlFileName,

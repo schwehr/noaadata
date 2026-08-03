@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -24,10 +34,11 @@ Convert AIS messages from AIVDM binary to IVS C&C NMEA strings
 """
 
 import datetime
+
 import ais.ais_msg_1
 import nmea.checksum
-from . import binary
-from . import uscg
+
+from . import binary, uscg
 
 
 def msg_1_to_cnc(nmea_str: str) -> str | None:
@@ -48,14 +59,14 @@ def msg_1_to_cnc(nmea_str: str) -> str | None:
     ]
     r.append(str(body["UserID"]))  # Vehicle name
     r.append(
-        datetime.datetime.fromtimestamp(
-            float(grp("timeStamp")), datetime.timezone.utc
-        ).strftime("%H:%M:%S.0")
+        datetime.datetime.fromtimestamp(float(grp("timeStamp")), datetime.UTC).strftime(
+            "%H:%M:%S.0"
+        )
     )
     r.append(str(float(body["longitude"])))
     r.append(str(float(body["latitude"])))
     heading = body["TrueHeading"]
-    if 511 == heading:
+    if heading == 511:
         heading = 0  # Unknown, so just point it north
     r.append(str(heading))
     r.append("0.0,0.0,0.0,0.0")  # pitch, roll, height, altitude

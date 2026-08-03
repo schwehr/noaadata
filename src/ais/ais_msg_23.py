@@ -16,16 +16,11 @@ TODO(schwehr): Put in a description of the message here with fields and types.
 """
 
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
-
 
 fieldList = (
     "MessageID",
@@ -480,7 +475,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("ChanMngmt:\n")
         if "MessageID" in params:
             out.write("    MessageID:          " + str(params["MessageID"]) + "\n")
@@ -516,8 +511,8 @@ def printFields(
             out.write("    QuietTime:          " + str(params["QuietTime"]) + "\n")
         if "Spare3" in params:
             out.write("    Spare3:             " + str(params["Spare3"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -528,15 +523,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -864,18 +857,14 @@ def sqlCreate(
         c.addInt("UserID")
     if "Spare" in fields:
         c.addInt("Spare")
-    if dbType != "postgres":
-        if "corner1_lon" in fields:
-            c.addDecimal("corner1_lon", 5, 2)
-    if dbType != "postgres":
-        if "corner1_lat" in fields:
-            c.addDecimal("corner1_lat", 5, 2)
-    if dbType != "postgres":
-        if "corner2_lon" in fields:
-            c.addDecimal("corner2_lon", 5, 2)
-    if dbType != "postgres":
-        if "corner2_lat" in fields:
-            c.addDecimal("corner2_lat", 5, 2)
+    if dbType != "postgres" and "corner1_lon" in fields:
+        c.addDecimal("corner1_lon", 5, 2)
+    if dbType != "postgres" and "corner1_lat" in fields:
+        c.addDecimal("corner1_lat", 5, 2)
+    if dbType != "postgres" and "corner2_lon" in fields:
+        c.addDecimal("corner2_lon", 5, 2)
+    if dbType != "postgres" and "corner2_lat" in fields:
+        c.addDecimal("corner2_lat", 5, 2)
     if "StationType" in fields:
         c.addInt("StationType")
     if "shipandcargo" in fields:
@@ -955,23 +944,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -979,7 +967,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1009,20 +997,20 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 23 \\\\ \hline
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline
-UserID & 30 & Unique ship identification number (MMSI) \\\\ \hline
-Spare & 2 & Not used.  Should be set to zero. \\\\ \hline
-corner1\_lon & 18 & north-east corner of area for assignment  longitude of corner \\\\ \hline
-corner1\_lat & 17 & north-east corner of area for assignment  latitude of corner \\\\ \hline
-corner2\_lon & 18 & south-west corner of area for assignment  longitude of corner \\\\ \hline
-corner2\_lat & 17 & south-west corner of area for assignment  latitude of corner \\\\ \hline
-StationType & 4 & TODO \\\\ \hline
-shipandcargo & 8 & Type of ship and cargo type.  FIX: need to verify that I got this lookup table right.  Also need to handle entryranges in the lookup table \\\\ \hline
-Spare2 & 22 & Not used.  Should be set to zero. \\\\ \hline
-TxRxMode & 4 & TODO \\\\ \hline
-ReportingInterval & 4 & Command the stations to report as given in table 17 \\\\ \hline
-QuietTime & 22 & How long to be quiet \\\\ \hline
+MessageID & 6 & AIS message number.  Must be 23 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & Unique ship identification number (MMSI) \\\\ \\hline
+Spare & 2 & Not used.  Should be set to zero. \\\\ \\hline
+corner1\\_lon & 18 & north-east corner of area for assignment  longitude of corner \\\\ \\hline
+corner1\\_lat & 17 & north-east corner of area for assignment  latitude of corner \\\\ \\hline
+corner2\\_lon & 18 & south-west corner of area for assignment  longitude of corner \\\\ \\hline
+corner2\\_lat & 17 & south-west corner of area for assignment  latitude of corner \\\\ \\hline
+StationType & 4 & TODO \\\\ \\hline
+shipandcargo & 8 & Type of ship and cargo type.  FIX: need to verify that I got this lookup table right.  Also need to handle entryranges in the lookup table \\\\ \\hline
+Spare2 & 22 & Not used.  Should be set to zero. \\\\ \\hline
+TxRxMode & 4 & TODO \\\\ \\hline
+ReportingInterval & 4 & Command the stations to report as given in table 17 \\\\ \\hline
+QuietTime & 22 & How long to be quiet \\\\ \\hline
 Spare3 & 6 & Not used.  Should be set to zero.\\\\ \\hline \\hline
 Total bits & 180 & Appears to take 2 slots with 244 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1174,21 +1162,21 @@ class TestChanMngmt(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
         self.assertAlmostEqual(r["corner1_lon"], params["corner1_lon"], 2)
         self.assertAlmostEqual(r["corner1_lat"], params["corner1_lat"], 2)
         self.assertAlmostEqual(r["corner2_lon"], params["corner2_lon"], 2)
         self.assertAlmostEqual(r["corner2_lat"], params["corner2_lat"], 2)
-        self.assertEqual(r["StationType"], params["StationType"])
-        self.assertEqual(r["shipandcargo"], params["shipandcargo"])
-        self.assertEqual(r["Spare2"], params["Spare2"])
-        self.assertEqual(r["TxRxMode"], params["TxRxMode"])
-        self.assertEqual(r["ReportingInterval"], params["ReportingInterval"])
-        self.assertEqual(r["QuietTime"], params["QuietTime"])
-        self.assertEqual(r["Spare3"], params["Spare3"])
+        assert r["StationType"] == params["StationType"]
+        assert r["shipandcargo"] == params["shipandcargo"]
+        assert r["Spare2"] == params["Spare2"]
+        assert r["TxRxMode"] == params["TxRxMode"]
+        assert r["ReportingInterval"] == params["ReportingInterval"]
+        assert r["QuietTime"] == params["QuietTime"]
+        assert r["Spare3"] == params["Spare3"]
 
 
 def addMsgOptions(parser):
@@ -1428,32 +1416,32 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.corner1_lonField:
+        if options.corner1_lonField is None:
             parser.error("missing value for corner1_lonField")
-        if None == options.corner1_latField:
+        if options.corner1_latField is None:
             parser.error("missing value for corner1_latField")
-        if None == options.corner2_lonField:
+        if options.corner2_lonField is None:
             parser.error("missing value for corner2_lonField")
-        if None == options.corner2_latField:
+        if options.corner2_latField is None:
             parser.error("missing value for corner2_latField")
-        if None == options.StationTypeField:
+        if options.StationTypeField is None:
             parser.error("missing value for StationTypeField")
-        if None == options.shipandcargoField:
+        if options.shipandcargoField is None:
             parser.error("missing value for shipandcargoField")
-        if None == options.TxRxModeField:
+        if options.TxRxModeField is None:
             parser.error("missing value for TxRxModeField")
-        if None == options.ReportingIntervalField:
+        if options.ReportingIntervalField is None:
             parser.error("missing value for ReportingIntervalField")
-        if None == options.QuietTimeField:
+        if options.QuietTimeField is None:
             parser.error("missing value for QuietTimeField")
     msgDict = {
         "MessageID": "23",
@@ -1474,9 +1462,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -1484,7 +1472,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -1502,7 +1490,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

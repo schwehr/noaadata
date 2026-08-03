@@ -26,10 +26,10 @@ def encode(
     assert type.lower() == "bool"
     assert numbits == 1
     if arraylen != 1:
-        assert False  # FIX... handle arrays
+        raise AssertionError()  # FIX... handle arrays
     if verbose:
         o.write("\t### FIELD: " + name + " (type=bool)\n")
-    if None != required:
+    if required is not None:
         assert type(required) == bool
         if required:
             o.write("\t\tbvList.append(TrueBV)\n")
@@ -39,7 +39,7 @@ def encode(
             o.write("\n")
         return
 
-    if None == unavailable:
+    if unavailable is None:
         o.write('\tif params["' + name + '"]: bvList.append(TrueBV)\n')
         o.write("\telse: bvList.append(FalseBV)\n")
     else:  # Have a default value that can be filled in
@@ -115,7 +115,7 @@ def decode(
     assert numbits == 1
     assert arraylen == 1  # FIX... handle arrays
 
-    if None != required:
+    if required is not None:
         assert type(required) == bool
         if not decodeOnly:
             o.write("\t" + dataDict + "['" + name + "']=")

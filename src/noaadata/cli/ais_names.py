@@ -19,19 +19,17 @@ interleaving of msg 5 nmea strings.
  TODO(schwehr):is this a repeat of merge5?
 """
 
-from optparse import OptionParser
-import os
 import sys
+from optparse import OptionParser
 
 from ais import ais_msg_5
-from aisutils import binary
-from aisutils import aisstring
+from aisutils import aisstring, binary
 
 
 def getNameMMSI(logfile, outfile):
     for line in logfile:
         fields = line.split(",")[:6]
-        if "1" != fields[2]:  # Must be the start of a sequence
+        if fields[2] != "1":  # Must be the start of a sequence
             continue
         if len(fields[5]) < 39:
             continue
@@ -58,10 +56,10 @@ def main():
     (options, args) = parser.parse_args()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         print("outfilename=", options.outputFileName)
         outfile = file(options.outputFileName, "w")
-    if 0 == len(args):
+    if len(args) == 0:
         getNameMMSI(sys.stdin, outfile)
     else:
         for filename in args:

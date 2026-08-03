@@ -7,15 +7,12 @@
  TODO(schwehr):Maybe make a flag that has the code always check for the same message and not repeat
 """
 
-from datetime import datetime
 import sys
-import os
 
 import pyExcelerator as excel
 
 from ais import ais_msg_5 as m5
-from aisutils import binary
-from aisutils import aisstring
+from aisutils import aisstring, binary
 
 
 def main():
@@ -37,7 +34,7 @@ def main():
     if len(args) == 0:
         sys.exit("ERROR: must specify at least one input file")
 
-    if None == options.basename:
+    if options.basename is None:
         options.basename = args[0]
 
     workbook = excel.Workbook()
@@ -121,20 +118,6 @@ def main():
     ships.sort()
 
     # FIX: use this to make sure that only these fields have changed
-    critFields = (
-        "IMOnumber",
-        "callsign",
-        "name",
-        "shipandcargo",
-        "dimA",
-        "dimB",
-        "dimC",
-        "dimD",
-        "ETAminute",
-        "ETAhour",
-        "draught",
-        "destination",
-    )
 
     for mmsi in ships:
         lastMsg = None  # FIX:  maybe do a closer check? This is a good first cut but need to look closer after this

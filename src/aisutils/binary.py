@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 2075 $".split()[1]  # See man ident
-__date__ = "$Date: 2006-05-03 04:18:20 -0400 (Wed, 03 May 2006) $".split()[1]
+__version__ = ["$Revision:", "2075", "$"][1]  # See man ident
+__date__ = [
+    "$Date:",
+    "2006-05-03",
+    "04:18:20",
+    "-0400",
+    "(Wed,",
+    "03",
+    "May",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -42,11 +52,11 @@ They are usually encoded an ASCII 6-bit packing within NMEA
 
 
 # Python standard library
+import struct
 import sys
 
 # Outside modules
 from .BitVector import BitVector
-import struct
 
 
 def float2bitvec(floatval):
@@ -138,7 +148,7 @@ def addone(bv):
     r = list(range(1, len(bv) + 1))
     for i in r:
         index = len(bv) - i
-        if 0 == bv[index]:
+        if bv[index] == 0:
             new[index] = 1
             break
         new[index] = 0
@@ -157,7 +167,7 @@ def subone(bv):
     r = list(range(1, len(bv) + 1))
     for i in r:
         index = len(bv) - i
-        if 1 == bv[index]:
+        if bv[index] == 1:
             new[index] = 0
             break
         new[index] = 1
@@ -180,14 +190,14 @@ def bvFromSignedInt(intVal, bitSize=None):
     @rtype: BitVector
     """
     bv = None
-    if None == bitSize:
+    if bitSize is None:
         bv = BitVector(intVal=abs(intVal))
     else:
         bv = setBitVectorSize(BitVector(intVal=abs(intVal)), bitSize - 1)
         if bitSize - 1 != len(bv) and bv[0] != 1 and bv[-1] != 0:
             print("ERROR: bitsize not right")
             print("  ", bitSize - 1, len(bv))
-            assert False
+            raise AssertionError()
         if len(bv) == bitSize and bv[0] == 1:
             return bv
     if intVal >= 0:
@@ -218,11 +228,11 @@ def signedIntFromBV(bv):
 
     @note: Does not know the difference between byte orders.
     """
-    if 0 == bv[0]:
+    if bv[0] == 0:
         return int(bv)
     # Nope, so it is negative
     val = int(addone(~(bv[1:])))
-    if 0 != val:
+    if val != 0:
         return -val
     return -(int(bv))
 
@@ -247,7 +257,7 @@ def ais6chartobitvec(char6):
     val = c - 48
     if val >= 40:
         val -= 8
-    if 0 == val:
+    if val == 0:
         return BitVector(size=6)
     return setBitVectorSize(BitVector(intVal=val), 6)
 
@@ -279,7 +289,7 @@ def ais6tobitvecSLOW(str6):
             val -= 8
         bv = None
         # print 'slow: ',c,val
-        if 0 == val:
+        if val == 0:
             bv = BitVector(size=6)
         else:
             bv = setBitVectorSize(BitVector(intVal=val), 6)
@@ -353,10 +363,7 @@ def test_encode():
         return False
     if "[" in encode:
         return False
-    if "]" in encode:
-        return False
-
-    return True
+    return "]" not in encode
 
 
 # assert (test_encode())
@@ -397,7 +404,7 @@ def getPadding(bv):
     @return: number of pad bits required for this bitvector to make it bit aligned to the ais nmea string
     """
     pad = 6 - (len(bv) % 6)
-    if 6 == pad:
+    if pad == 6:
         pad = 0
     return pad
 
@@ -414,7 +421,7 @@ def bitvectoais6(bv, doPadding=True):
     @bug: handle case when padding needed
     """
     pad = 6 - (len(bv) % 6)
-    if 6 == pad:
+    if pad == 6:
         pad = 0
     strLen = len(bv) // 6
     if pad > 0:
@@ -428,7 +435,7 @@ def bitvectoais6(bv, doPadding=True):
             print("pad after", len(bv))
         else:
             print("ERROR: What are you doing with a non-align entity?  Let me pad it!")
-            assert False
+            raise AssertionError()
 
     # else: # No pad needed
     for i in range(strLen):
@@ -456,7 +463,7 @@ def stuffBits(bv):
     @todo: Add a nice description of how bit stuffing works
     @todo: Actually write the code
     """
-    assert False
+    raise AssertionError()
 
 
 def unstuffBits(bv):
@@ -470,7 +477,7 @@ def unstuffBits(bv):
     @todo: Actually write the code
     @see: stuffBits
     """
-    assert False
+    raise AssertionError()
 
 
 if __name__ == "__main__":

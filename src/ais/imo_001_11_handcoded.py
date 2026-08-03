@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 4791 $".split()[1]
-__date__ = "$Date: 2010-03-31 $".split()[1]
+__version__ = ["$Revision:", "4791", "$"][1]
+__date__ = ["$Date:", "2010-03-31", "$"][1]
 __author__ = "xmlbinmsg"
 
 __doc__ = (
@@ -41,13 +41,9 @@ which should be packaged with the resulting files.
 
 import sys
 from decimal import Decimal
+
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-
-from aisutils import aisstring
-from aisutils import sqlhelp
-from aisutils import uscg
-from aisutils import binary
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -227,7 +223,7 @@ def encode(params, validate=False):
     @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
     """
 
-    assert False  # Need to handle encoding in the style of Ohmex using Spare2
+    raise AssertionError()  # Need to handle encoding in the style of Ohmex using Spare2
 
     bvList = []
     bvList.append(binary.setBitVectorSize(BitVector(intVal=8), 6))
@@ -304,13 +300,13 @@ def encode(params, validate=False):
         bvList.append(
             binary.setBitVectorSize(
                 BitVector(
-                    intVal=int((Decimal(params["airpressure"] - (800)) * Decimal("1")))
+                    intVal=int(Decimal(params["airpressure"] - (800)) * Decimal("1"))
                 ),
                 9,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(1311)), 9))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=1311), 9))
     if "airpressuretrend" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["airpressuretrend"]), 2)
@@ -320,11 +316,11 @@ def encode(params, validate=False):
     if "horizvis" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["horizvis"]) * Decimal("10")))), 8
+                BitVector(intVal=int(Decimal(params["horizvis"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     bvList.append(
         binary.bvFromSignedInt(int(Decimal(params["waterlevel"]) * Decimal("10")), 9)
     )
@@ -337,14 +333,12 @@ def encode(params, validate=False):
     if "surfcurspeed" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(
-                    intVal=int((Decimal(params["surfcurspeed"]) * Decimal("10")))
-                ),
+                BitVector(intVal=int(Decimal(params["surfcurspeed"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     if "surfcurdir" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["surfcurdir"]), 9)
@@ -354,11 +348,11 @@ def encode(params, validate=False):
     if "curspeed2" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["curspeed2"]) * Decimal("10")))), 8
+                BitVector(intVal=int(Decimal(params["curspeed2"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     if "curdir2" in params:
         bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir2"]), 9))
     else:
@@ -370,11 +364,11 @@ def encode(params, validate=False):
     if "curspeed3" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["curspeed3"]) * Decimal("10")))), 8
+                BitVector(intVal=int(Decimal(params["curspeed3"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     if "curdir3" in params:
         bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir3"]), 9))
     else:
@@ -386,14 +380,12 @@ def encode(params, validate=False):
     if "sigwaveheight" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(
-                    intVal=int((Decimal(params["sigwaveheight"]) * Decimal("10")))
-                ),
+                BitVector(intVal=int(Decimal(params["sigwaveheight"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     if "waveperiod" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["waveperiod"]), 6)
@@ -407,12 +399,12 @@ def encode(params, validate=False):
     if "swellheight" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int((Decimal(params["swellheight"]) * Decimal("10")))),
+                BitVector(intVal=int(Decimal(params["swellheight"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(255)), 8))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
     if "swellperiod" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["swellperiod"]), 6)
@@ -431,13 +423,13 @@ def encode(params, validate=False):
         bvList.append(
             binary.setBitVectorSize(
                 BitVector(
-                    intVal=int((Decimal(params["watertemp"] - (-10)) * Decimal("10")))
+                    intVal=int(Decimal(params["watertemp"] - (-10)) * Decimal("10"))
                 ),
                 10,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=int(923)), 10))
+        bvList.append(binary.setBitVectorSize(BitVector(intVal=923), 10))
     if "preciptype" in params:
         bvList.append(
             binary.setBitVectorSize(BitVector(intVal=params["preciptype"]), 3)
@@ -1163,7 +1155,7 @@ def printHtml(params, out=sys.stdout):
 
 def printKml(params, out=sys.stdout):
     """KML (Keyhole Markup Language) for Google Earth, but without the header/footer"""
-    out.write("\    <Placemark>\n")
+    out.write("\\    <Placemark>\n")
     out.write("\t   <name>" + str(params["UserID"]) + "</name>\n")
     out.write("\t\t<description>\n")
     import io
@@ -1240,7 +1232,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("imo_met_hydro:\n")
         if "MessageID" in params:
             out.write("   MessageID:         " + str(params["MessageID"]) + "\n")
@@ -1338,8 +1330,8 @@ def printFields(
             out.write(" ice:               " + str(params["ice"]) + "\n")
         if "Spare2" in params:
             out.write("      Spare2:            " + str(params["Spare2"]) + "\n")
-    elif "csv" == format:
-        if None == options.fieldList:
+    elif format == "csv":
+        if options.fieldList is None:
             options.fieldList = fieldList
         needComma = False
         for field in fieldList:
@@ -1350,13 +1342,13 @@ def printFields(
                 out.write(str(params[field]))
             # else: leave it empty
         out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -1366,9 +1358,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 RepeatIndicatorEncodeLut = {
@@ -1515,7 +1505,7 @@ def sqlCreate(
     @return: An object that can be used to generate a return
     @rtype: sqlhelp.create
     """
-    if None == fields:
+    if fields is None:
         fields = fieldList
 
     c = sqlhelp.create("imo_met_hydro", dbType=dbType)
@@ -1532,12 +1522,10 @@ def sqlCreate(
         c.addInt("dac")
     if "fid" in fields:
         c.addInt("fid")
-    if dbType != "postgres":
-        if "latitude" in fields:
-            c.addDecimal("latitude", 7, 4)
-    if dbType != "postgres":
-        if "longitude" in fields:
-            c.addDecimal("longitude", 7, 4)
+    if dbType != "postgres" and "latitude" in fields:
+        c.addDecimal("latitude", 7, 4)
+    if dbType != "postgres" and "longitude" in fields:
+        c.addDecimal("longitude", 7, 4)
     if "day" in fields:
         c.addInt("day")
     if "hour" in fields:
@@ -1670,23 +1658,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -1694,7 +1681,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -1722,50 +1709,50 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\centering
 \\begin{tabular}{|l|c|l|}
 \\hline
-Parameter & Number of bits & Description 
+Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-MessageID & 6 & AIS message number.  Must be 8 \\\\ \hline 
-RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \hline 
-UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \hline 
-Spare & 2 & Reserved for definition by a regional authority. \\\\ \hline 
-dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \hline 
-fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \hline 
-latitude & 24 & Location of the vessel.  North South location \\\\ \hline 
-longitude & 25 & Location of the vessel.  East West location \\\\ \hline 
-day & 5 & Day 0..31 \\\\ \hline 
-hour & 5 & Hour 0..23 \\\\ \hline 
-min & 6 & Min \\\\ \hline 
-avewind & 7 & Average wind speed values for the last 10 minutes. \\\\ \hline 
-windgust & 7 & Wind gust is the max wind speed value reading  during the last 10 minutes. \\\\ \hline 
-winddir & 9 & Wind direction \\\\ \hline 
-windgustdir & 9 & Wind direction for the gust. \\\\ \hline 
-airtemp & 11 & Dry bulb temperature \\\\ \hline 
-relhumid & 7 & Relative humidity \\\\ \hline 
-dewpoint & 10 & Dew Point \\\\ \hline 
-airpressure & 9 & Air pressure \\\\ \hline 
-airpressuretrend & 2 & Air pressure trend \\\\ \hline 
-horizvis & 8 & Horizontal visibility \\\\ \hline 
-waterlevel & 9 & Water level (incl. tide) \\\\ \hline 
-waterleveltrend & 2 & Water level trend \\\\ \hline 
-surfcurspeed & 8 & Surface current speed \\\\ \hline 
-surfcurdir & 9 & Surface current direction \\\\ \hline 
-curspeed2 & 8 & Level 2 current speed \\\\ \hline 
-curdir2 & 9 & Level 2 current direction \\\\ \hline 
-curlevel2 & 5 & Measuring level below sea surface for level 2 \\\\ \hline 
-curspeed3 & 8 & Level 3 current speed \\\\ \hline 
-curdir3 & 9 & Level 3 current direction \\\\ \hline 
-curlevel3 & 5 & Measuring level below sea surface for level 3 \\\\ \hline 
-sigwaveheight & 8 & Significant wave height \\\\ \hline 
-waveperiod & 6 & Wave period \\\\ \hline 
-wavedir & 9 & Wave direction \\\\ \hline 
-swellheight & 8 & Swell height \\\\ \hline 
-swellperiod & 6 & Swell period \\\\ \hline 
-swelldir & 9 & Swell direction \\\\ \hline 
-seastate & 4 & Sea state according to the Beaufort scale \\\\ \hline 
-watertemp & 10 & Water temperature \\\\ \hline 
-preciptype & 3 & According to WMO \\\\ \hline 
-salinity & 9 & Salinity \\\\ \hline 
-ice & 2 & Yes or no for the presence of ice \\\\ \hline 
+MessageID & 6 & AIS message number.  Must be 8 \\\\ \\hline
+RepeatIndicator & 2 & Indicated how many times a message has been repeated \\\\ \\hline
+UserID & 30 & MMSI number of transmitter broadcasting the message \\\\ \\hline
+Spare & 2 & Reserved for definition by a regional authority. \\\\ \\hline
+dac & 10 & Designated Area Code - part 1 of the IAI \\\\ \\hline
+fid & 6 & Functional Identifier - part 2 of the IAI \\\\ \\hline
+latitude & 24 & Location of the vessel.  North South location \\\\ \\hline
+longitude & 25 & Location of the vessel.  East West location \\\\ \\hline
+day & 5 & Day 0..31 \\\\ \\hline
+hour & 5 & Hour 0..23 \\\\ \\hline
+min & 6 & Min \\\\ \\hline
+avewind & 7 & Average wind speed values for the last 10 minutes. \\\\ \\hline
+windgust & 7 & Wind gust is the max wind speed value reading  during the last 10 minutes. \\\\ \\hline
+winddir & 9 & Wind direction \\\\ \\hline
+windgustdir & 9 & Wind direction for the gust. \\\\ \\hline
+airtemp & 11 & Dry bulb temperature \\\\ \\hline
+relhumid & 7 & Relative humidity \\\\ \\hline
+dewpoint & 10 & Dew Point \\\\ \\hline
+airpressure & 9 & Air pressure \\\\ \\hline
+airpressuretrend & 2 & Air pressure trend \\\\ \\hline
+horizvis & 8 & Horizontal visibility \\\\ \\hline
+waterlevel & 9 & Water level (incl. tide) \\\\ \\hline
+waterleveltrend & 2 & Water level trend \\\\ \\hline
+surfcurspeed & 8 & Surface current speed \\\\ \\hline
+surfcurdir & 9 & Surface current direction \\\\ \\hline
+curspeed2 & 8 & Level 2 current speed \\\\ \\hline
+curdir2 & 9 & Level 2 current direction \\\\ \\hline
+curlevel2 & 5 & Measuring level below sea surface for level 2 \\\\ \\hline
+curspeed3 & 8 & Level 3 current speed \\\\ \\hline
+curdir3 & 9 & Level 3 current direction \\\\ \\hline
+curlevel3 & 5 & Measuring level below sea surface for level 3 \\\\ \\hline
+sigwaveheight & 8 & Significant wave height \\\\ \\hline
+waveperiod & 6 & Wave period \\\\ \\hline
+wavedir & 9 & Wave direction \\\\ \\hline
+swellheight & 8 & Swell height \\\\ \\hline
+swellperiod & 6 & Swell period \\\\ \\hline
+swelldir & 9 & Swell direction \\\\ \\hline
+seastate & 4 & Sea state according to the Beaufort scale \\\\ \\hline
+watertemp & 10 & Water temperature \\\\ \\hline
+preciptype & 3 & According to WMO \\\\ \\hline
+salinity & 9 & Salinity \\\\ \\hline
+ice & 2 & Yes or no for the presence of ice \\\\ \\hline
 Spare2 & 6 & Must be zero\\\\ \\hline \\hline
 Total bits & 352 & Appears to take 2 slots with 72 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -1794,7 +1781,7 @@ def textDefinitionTable(outfile=sys.stdout, delim="\t"):
         """Parameter""" + delim + "Number of bits"
         ""
         + delim
-        + """Description 
+        + """Description
 MessageID"""
         + delim
         + """6"""
@@ -2087,49 +2074,49 @@ class Testimo_met_hydro(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["MessageID"], params["MessageID"])
-        self.assertEqual(r["RepeatIndicator"], params["RepeatIndicator"])
-        self.assertEqual(r["UserID"], params["UserID"])
-        self.assertEqual(r["Spare"], params["Spare"])
-        self.assertEqual(r["dac"], params["dac"])
-        self.assertEqual(r["fid"], params["fid"])
+        assert r["MessageID"] == params["MessageID"]
+        assert r["RepeatIndicator"] == params["RepeatIndicator"]
+        assert r["UserID"] == params["UserID"]
+        assert r["Spare"] == params["Spare"]
+        assert r["dac"] == params["dac"]
+        assert r["fid"] == params["fid"]
         self.assertAlmostEqual(r["latitude"], params["latitude"], 4)
         self.assertAlmostEqual(r["longitude"], params["longitude"], 4)
-        self.assertEqual(r["day"], params["day"])
-        self.assertEqual(r["hour"], params["hour"])
-        self.assertEqual(r["min"], params["min"])
-        self.assertEqual(r["avewind"], params["avewind"])
-        self.assertEqual(r["windgust"], params["windgust"])
-        self.assertEqual(r["winddir"], params["winddir"])
-        self.assertEqual(r["windgustdir"], params["windgustdir"])
+        assert r["day"] == params["day"]
+        assert r["hour"] == params["hour"]
+        assert r["min"] == params["min"]
+        assert r["avewind"] == params["avewind"]
+        assert r["windgust"] == params["windgust"]
+        assert r["winddir"] == params["winddir"]
+        assert r["windgustdir"] == params["windgustdir"]
         self.assertAlmostEqual(r["airtemp"], params["airtemp"], 1)
-        self.assertEqual(r["relhumid"], params["relhumid"])
+        assert r["relhumid"] == params["relhumid"]
         self.assertAlmostEqual(r["dewpoint"], params["dewpoint"], 1)
         self.assertAlmostEqual(r["airpressure"], params["airpressure"], 0)
-        self.assertEqual(r["airpressuretrend"], params["airpressuretrend"])
+        assert r["airpressuretrend"] == params["airpressuretrend"]
         self.assertAlmostEqual(r["horizvis"], params["horizvis"], 1)
         self.assertAlmostEqual(r["waterlevel"], params["waterlevel"], 1)
-        self.assertEqual(r["waterleveltrend"], params["waterleveltrend"])
+        assert r["waterleveltrend"] == params["waterleveltrend"]
         self.assertAlmostEqual(r["surfcurspeed"], params["surfcurspeed"], 1)
-        self.assertEqual(r["surfcurdir"], params["surfcurdir"])
+        assert r["surfcurdir"] == params["surfcurdir"]
         self.assertAlmostEqual(r["curspeed2"], params["curspeed2"], 1)
-        self.assertEqual(r["curdir2"], params["curdir2"])
-        self.assertEqual(r["curlevel2"], params["curlevel2"])
+        assert r["curdir2"] == params["curdir2"]
+        assert r["curlevel2"] == params["curlevel2"]
         self.assertAlmostEqual(r["curspeed3"], params["curspeed3"], 1)
-        self.assertEqual(r["curdir3"], params["curdir3"])
-        self.assertEqual(r["curlevel3"], params["curlevel3"])
+        assert r["curdir3"] == params["curdir3"]
+        assert r["curlevel3"] == params["curlevel3"]
         self.assertAlmostEqual(r["sigwaveheight"], params["sigwaveheight"], 1)
-        self.assertEqual(r["waveperiod"], params["waveperiod"])
-        self.assertEqual(r["wavedir"], params["wavedir"])
+        assert r["waveperiod"] == params["waveperiod"]
+        assert r["wavedir"] == params["wavedir"]
         self.assertAlmostEqual(r["swellheight"], params["swellheight"], 1)
-        self.assertEqual(r["swellperiod"], params["swellperiod"])
-        self.assertEqual(r["swelldir"], params["swelldir"])
-        self.assertEqual(r["seastate"], params["seastate"])
+        assert r["swellperiod"] == params["swellperiod"]
+        assert r["swelldir"] == params["swelldir"]
+        assert r["seastate"] == params["seastate"]
         self.assertAlmostEqual(r["watertemp"], params["watertemp"], 1)
-        self.assertEqual(r["preciptype"], params["preciptype"])
+        assert r["preciptype"] == params["preciptype"]
         self.assertAlmostEqual(r["salinity"], params["salinity"], 1)
-        self.assertEqual(r["ice"], params["ice"])
-        self.assertEqual(r["Spare2"], params["Spare2"])
+        assert r["ice"] == params["ice"]
+        assert r["Spare2"] == params["Spare2"]
 
 
 def addMsgOptions(parser):
@@ -2585,86 +2572,86 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # First make sure all non required options are specified
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.latitudeField:
+        if options.latitudeField is None:
             parser.error("missing value for latitudeField")
-        if None == options.longitudeField:
+        if options.longitudeField is None:
             parser.error("missing value for longitudeField")
-        if None == options.dayField:
+        if options.dayField is None:
             parser.error("missing value for dayField")
-        if None == options.hourField:
+        if options.hourField is None:
             parser.error("missing value for hourField")
-        if None == options.minField:
+        if options.minField is None:
             parser.error("missing value for minField")
-        if None == options.avewindField:
+        if options.avewindField is None:
             parser.error("missing value for avewindField")
-        if None == options.windgustField:
+        if options.windgustField is None:
             parser.error("missing value for windgustField")
-        if None == options.winddirField:
+        if options.winddirField is None:
             parser.error("missing value for winddirField")
-        if None == options.windgustdirField:
+        if options.windgustdirField is None:
             parser.error("missing value for windgustdirField")
-        if None == options.airtempField:
+        if options.airtempField is None:
             parser.error("missing value for airtempField")
-        if None == options.relhumidField:
+        if options.relhumidField is None:
             parser.error("missing value for relhumidField")
-        if None == options.dewpointField:
+        if options.dewpointField is None:
             parser.error("missing value for dewpointField")
-        if None == options.airpressureField:
+        if options.airpressureField is None:
             parser.error("missing value for airpressureField")
-        if None == options.airpressuretrendField:
+        if options.airpressuretrendField is None:
             parser.error("missing value for airpressuretrendField")
-        if None == options.horizvisField:
+        if options.horizvisField is None:
             parser.error("missing value for horizvisField")
-        if None == options.waterlevelField:
+        if options.waterlevelField is None:
             parser.error("missing value for waterlevelField")
-        if None == options.waterleveltrendField:
+        if options.waterleveltrendField is None:
             parser.error("missing value for waterleveltrendField")
-        if None == options.surfcurspeedField:
+        if options.surfcurspeedField is None:
             parser.error("missing value for surfcurspeedField")
-        if None == options.surfcurdirField:
+        if options.surfcurdirField is None:
             parser.error("missing value for surfcurdirField")
-        if None == options.curspeed2Field:
+        if options.curspeed2Field is None:
             parser.error("missing value for curspeed2Field")
-        if None == options.curdir2Field:
+        if options.curdir2Field is None:
             parser.error("missing value for curdir2Field")
-        if None == options.curlevel2Field:
+        if options.curlevel2Field is None:
             parser.error("missing value for curlevel2Field")
-        if None == options.curspeed3Field:
+        if options.curspeed3Field is None:
             parser.error("missing value for curspeed3Field")
-        if None == options.curdir3Field:
+        if options.curdir3Field is None:
             parser.error("missing value for curdir3Field")
-        if None == options.curlevel3Field:
+        if options.curlevel3Field is None:
             parser.error("missing value for curlevel3Field")
-        if None == options.sigwaveheightField:
+        if options.sigwaveheightField is None:
             parser.error("missing value for sigwaveheightField")
-        if None == options.waveperiodField:
+        if options.waveperiodField is None:
             parser.error("missing value for waveperiodField")
-        if None == options.wavedirField:
+        if options.wavedirField is None:
             parser.error("missing value for wavedirField")
-        if None == options.swellheightField:
+        if options.swellheightField is None:
             parser.error("missing value for swellheightField")
-        if None == options.swellperiodField:
+        if options.swellperiodField is None:
             parser.error("missing value for swellperiodField")
-        if None == options.swelldirField:
+        if options.swelldirField is None:
             parser.error("missing value for swelldirField")
-        if None == options.seastateField:
+        if options.seastateField is None:
             parser.error("missing value for seastateField")
-        if None == options.watertempField:
+        if options.watertempField is None:
             parser.error("missing value for watertempField")
-        if None == options.preciptypeField:
+        if options.preciptypeField is None:
             parser.error("missing value for preciptypeField")
-        if None == options.salinityField:
+        if options.salinityField is None:
             parser.error("missing value for salinityField")
-        if None == options.iceField:
+        if options.iceField is None:
             parser.error("missing value for iceField")
         msgDict = {
             "MessageID": "8",
@@ -2713,9 +2700,9 @@ def main():
         }
 
         bits = encode(msgDict)
-        if "binary" == options.ioType:
+        if options.ioType == "binary":
             print(str(bits))
-        elif "nmeapayload" == options.ioType:
+        elif options.ioType == "nmeapayload":
             # FIX: figure out if this might be necessary at compile time
             # print "bitLen",len(bits)
             bitLen = len(bits)
@@ -2727,7 +2714,7 @@ def main():
             print(binary.bitvectoais6(bits)[0])
 
         # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-        elif "nmea" == options.ioType:
+        elif options.ioType == "nmea":
             nmea = uscg.create_nmea(bits)
             print(nmea)
         else:
@@ -2745,7 +2732,7 @@ def main():
 
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
-        if None == options.fieldList:
+        if options.fieldList is None:
             options.fieldList = fieldList
         import io
 

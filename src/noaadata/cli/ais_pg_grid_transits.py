@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 12605 $".split()[1]
-__date__ = "$Date: 2009-09-21 08:25:58 -0400 (Mon, 21 Sep 2009) $".split()[1]
+__version__ = ["$Revision:", "12605", "$"][1]
+__date__ = [
+    "$Date:",
+    "2009-09-21",
+    "08:25:58",
+    "-0400",
+    "(Mon,",
+    "21",
+    "Sep",
+    "2009)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = """
@@ -12,14 +22,14 @@ ais_pg_grid.py to allow arbitrary gridding of any set of transits
 @since: 2010-Mar-11
 """
 
-import math
-import sys
 import os
+import sys
+from optparse import OptionParser
 
-import aisutils.grid as grid
 import psycopg2 as psycopg
 from pyproj import Proj
-from optparse import OptionParser
+
+from aisutils import grid
 
 
 def get_parser():

@@ -26,15 +26,12 @@ VACUUM;
 """
 
 import datetime
-from decimal import Decimal
-import exceptions
-from optparse import OptionParser
-import io
 import sys
 import traceback
+from optparse import OptionParser
 
-import pysqlite2.dbapi2 as sqlite
 import pysqlite2.dbapi2
+import pysqlite2.dbapi2 as sqlite
 
 import ais.ais_msg_1_handcoded
 import ais.ais_msg_2_handcoded
@@ -43,11 +40,8 @@ import ais.ais_msg_4_handcoded
 import ais.ais_msg_5
 import ais.ais_msg_18
 import ais.ais_msg_19
-
-from aisutils.BitVector import BitVector
-from aisutils import binary
-
 import nmea.checksum
+from aisutils import binary
 
 
 class TrackDuplicates:
@@ -83,12 +77,11 @@ class TrackDuplicates:
 
         # ! found... add packet to queue
         self.queue.append(
-            dict(time_sec=time_sec, pkt_id=self.next_new_id, payload=payload)
+            {"time_sec": time_sec, "pkt_id": self.next_new_id, "payload": payload}
         )
         pkt_id = self.next_new_id
         self.next_new_id += 1
-        if self.newest_time_sec < time_sec:
-            self.newest_time_sec = time_sec
+        self.newest_time_sec = max(self.newest_time_sec, time_sec)
 
         # clean up queue wrt to length
         if self.lookback_length:
@@ -104,8 +97,7 @@ class TrackDuplicates:
         drop_list = []
 
         if self.lookback_time_sec and len(self.queue) > span:
-            if len(self.queue) > span:
-                span = len(self.queue)
+            span = max(span, len(self.queue))
             for i in range(span):
                 if self.queue[i]["time_sec"] < threshold_time:
                     drop_list.append(i)
@@ -178,7 +170,7 @@ def get_max_key(cx):
         "positionb",
         "b_pos_and_shipdata",
     ):
-        cu.execute("SELECT max(key) FROM %s;" % (table,))
+        cu.execute(f"SELECT max(key) FROM {table};")
         key = cu.fetchone()
         if key[0] is None:
             continue
@@ -187,8 +179,7 @@ def get_max_key(cx):
             max_key = int(key[0])
             continue
 
-        if max_key < int(key[0]):
-            max_key = int(key[0])
+        max_key = max(max_key, int(key[0]))
 
     return max_key
 
@@ -371,7 +362,7 @@ def load_data(cx, datafile=sys.stdin, verbose=False, uscg=True):
             cu.execute(str(ins))
         except pysqlite2.dbapi2.OperationalError as params:
             # except OperationalError,  params:
-            if -1 != params.message.find("no such table"):
+            if params.message.find("no such table") != -1:
                 print("ERROR:", params.message)
                 sys.exit("You probably need to run with --with-create")
             print("params", params)

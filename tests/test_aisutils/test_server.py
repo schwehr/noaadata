@@ -3,13 +3,12 @@
 import datetime
 import os
 import resource
-import time
 from unittest.mock import MagicMock, call, patch
 
 import pytest
-from aisutils import server
-from aisutils.server import LogFileWithRotate, SERIAL_SPEEDS, create_daemon
 
+from aisutils import server
+from aisutils.server import SERIAL_SPEEDS, LogFileWithRotate
 
 # -----------------------------------------------------------------------------
 # Tests for SERIAL_SPEEDS constant
@@ -34,7 +33,7 @@ def test_serial_speeds_constant() -> None:
         115200,
         230400,
     ]
-    assert SERIAL_SPEEDS == expected_speeds
+    assert expected_speeds == SERIAL_SPEEDS
     for speed in SERIAL_SPEEDS:
         assert isinstance(speed, int)
         assert speed > 0
@@ -209,7 +208,7 @@ def test_logfile_init_default(tmp_path: pytest.TempPathFactory) -> None:
     assert os.path.exists(logger.log_filename)
 
     logger.log_file.flush()
-    with open(logger.log_filename, "r") as f:
+    with open(logger.log_filename) as f:
         content = f.read()
     assert "# START LOGGING" in content
 
@@ -249,7 +248,7 @@ def test_logfile_write_uscg_format(
     if logger.log_file and not logger.log_file.closed:
         logger.log_file.close()
 
-    with open(logger.log_filename, "r") as f:
+    with open(logger.log_filename) as f:
         lines = f.readlines()
 
     assert len(lines) == 3
@@ -273,7 +272,7 @@ def test_logfile_write_uscg_format_carriage_return(
     if logger.log_file and not logger.log_file.closed:
         logger.log_file.close()
 
-    with open(logger.log_filename, "r") as f:
+    with open(logger.log_filename) as f:
         lines = f.readlines()
 
     assert lines[1] == "!AIVDM,1,1,,A,13u?&00P0000000,0*00,NYC,1700000000.0\n"
@@ -289,7 +288,7 @@ def test_logfile_write_non_uscg_format(tmp_path: pytest.TempPathFactory) -> None
     if logger.log_file and not logger.log_file.closed:
         logger.log_file.close()
 
-    with open(logger.log_filename, "r") as f:
+    with open(logger.log_filename) as f:
         lines = f.readlines()
 
     assert lines[1] == "Sample raw line\n"
@@ -335,7 +334,7 @@ def test_logfile_rotate_forced(tmp_path: pytest.TempPathFactory) -> None:
 
     logger.rotate(force=True)
 
-    with open(first_filename, "r") as f:
+    with open(first_filename) as f:
         content = f.read()
 
     assert "# STOP LOGGING" in content
@@ -376,7 +375,7 @@ def test_logfile_open_closes_previous(tmp_path: pytest.TempPathFactory) -> None:
 
     logger.open()
 
-    with open(first_filename, "r") as f:
+    with open(first_filename) as f:
         content = f.read()
 
     assert "# STOP LOGGING" in content

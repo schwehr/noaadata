@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 4799 $".split()[1]
+__version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-09-25 11:09:02 -0400 (Mon, 25 Sep 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 
@@ -24,7 +34,6 @@ batch of messages.
 @see: U{Sean Gillies How to lay out Python project code http://sgillies.net/blog/845/how-to-lay-out-python-project-code/}
 """
 import sys
-import os
 
 
 def remove_dups(in_file, outfile, lookback_dist=1000, pos_only=False, verbose=False):
@@ -40,7 +49,7 @@ def remove_dups(in_file, outfile, lookback_dist=1000, pos_only=False, verbose=Fa
             sys.stderr.write("line_num: %d dropped: %d\n" % (line_num, dropped))
 
         # Pass through non AIS traffic
-        if "!AIVD" != line[:5]:
+        if line[:5] != "!AIVD":
             o.write(line)
             continue
 

@@ -20,15 +20,11 @@ which should be packaged with the resulting files.
 
 import doctest
 import sys
-from decimal import Decimal
 import unittest
+from decimal import Decimal
 
+from aisutils import aisstring, binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
-
-from aisutils import aisstring
-from aisutils import binary
-from aisutils import sqlhelp
-from aisutils import uscg
 
 # FIX: check to see if these will be needed
 TrueBV = BitVector(bitstring="1")
@@ -260,7 +256,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("sls_lockschedule:\n")
         if "vessel" in params:
             out.write("    vessel:     " + str(params["vessel"]) + "\n")
@@ -276,8 +272,8 @@ def printFields(
             out.write("    ETA_min:    " + str(params["ETA_min"]) + "\n")
         if "reserved" in params:
             out.write("    reserved:   " + str(params["reserved"]) + "\n")
-        elif "csv" == format:
-            if None == options.fieldList:
+        elif format == "csv":
+            if options.fieldList is None:
                 options.fieldList = fieldList
             needComma = False
             for field in fieldList:
@@ -288,15 +284,13 @@ def printFields(
                     out.write(str(params[field]))
                 # else: leave it empty
             out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 directionEncodeLut = {
@@ -431,23 +425,22 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
                     i.add(key, float(params[key]))
                 else:
                     i.add(key, params[key])
+            elif key in fromPgFields:
+                val = params[key]
+                # Had better be a WKT type like POINT(-88.1 30.321)
+                i.addPostGIS(key, val)
+                finished.append(key)
             else:
-                if key in fromPgFields:
-                    val = params[key]
-                    # Had better be a WKT type like POINT(-88.1 30.321)
-                    i.addPostGIS(key, val)
-                    finished.append(key)
-                else:
-                    # Need to construct the type.
-                    pgName = toPgFields[key]
-                    # valStr='GeomFromText(\''+pgTypes[pgName]+'('
-                    valStr = pgTypes[pgName] + "("
-                    vals = []
-                    for nonPgKey in fromPgFields[pgName]:
-                        vals.append(str(params[nonPgKey]))
-                        finished.append(nonPgKey)
-                    valStr += " ".join(vals) + ")"
-                    i.addPostGIS(pgName, valStr)
+                # Need to construct the type.
+                pgName = toPgFields[key]
+                # valStr='GeomFromText(\''+pgTypes[pgName]+'('
+                valStr = pgTypes[pgName] + "("
+                vals = []
+                for nonPgKey in fromPgFields[pgName]:
+                    vals.append(str(params[nonPgKey]))
+                    finished.append(nonPgKey)
+                valStr += " ".join(vals) + ")"
+                i.addPostGIS(pgName, valStr)
     else:
         for key in params:
             if type(params[key]) == Decimal:
@@ -455,7 +448,7 @@ def sqlInsert(params, extraParams=None, dbType="postgres"):
             else:
                 i.add(key, params[key])
 
-    if None != extraParams:
+    if extraParams is not None:
         for key in extraParams:
             i.add(key, extraParams[key])
 
@@ -485,12 +478,12 @@ def latexDefinitionTable(outfile=sys.stdout):
 \\hline
 Parameter & Number of bits & Description
 \\\\  \\hline\\hline
-vessel & 90 & Vessel Name \\\\ \hline
-direction & 1 & Up bound/Down bound \\\\ \hline
-ETA\_month & 4 & Estimated time of arrival  month 1..12 \\\\ \hline
-ETA\_day & 5 & Estimated time of arrival  day of the month 1..31 \\\\ \hline
-ETA\_hour & 5 & Estimated time of arrival  UTC hours 0..23 \\\\ \hline
-ETA\_min & 6 & Estimated time of arrival  minutes \\\\ \hline
+vessel & 90 & Vessel Name \\\\ \\hline
+direction & 1 & Up bound/Down bound \\\\ \\hline
+ETA\\_month & 4 & Estimated time of arrival  month 1..12 \\\\ \\hline
+ETA\\_day & 5 & Estimated time of arrival  day of the month 1..31 \\\\ \\hline
+ETA\\_hour & 5 & Estimated time of arrival  UTC hours 0..23 \\\\ \\hline
+ETA\\_min & 6 & Estimated time of arrival  minutes \\\\ \\hline
 reserved & 19 & Reserved bits for future use\\\\ \\hline \\hline
 Total bits & 130 & Appears to take 1 slot with 38 pad bits to fill the last slot \\\\ \\hline
 \\end{tabular}
@@ -594,13 +587,13 @@ class Testsls_lockschedule(unittest.TestCase):
         r = decode(bits)
 
         # Check that each parameter came through ok.
-        self.assertEqual(r["vessel"], params["vessel"])
-        self.assertEqual(r["direction"], params["direction"])
-        self.assertEqual(r["ETA_month"], params["ETA_month"])
-        self.assertEqual(r["ETA_day"], params["ETA_day"])
-        self.assertEqual(r["ETA_hour"], params["ETA_hour"])
-        self.assertEqual(r["ETA_min"], params["ETA_min"])
-        self.assertEqual(r["reserved"], params["reserved"])
+        assert r["vessel"] == params["vessel"]
+        assert r["direction"] == params["direction"]
+        assert r["ETA_month"] == params["ETA_month"]
+        assert r["ETA_day"] == params["ETA_day"]
+        assert r["ETA_hour"] == params["ETA_hour"]
+        assert r["ETA_min"] == params["ETA_min"]
+        assert r["reserved"] == params["reserved"]
 
 
 def addMsgOptions(parser):
@@ -809,7 +802,7 @@ def main():
         if options.verbose:
             sys.argv.append("-v")
 
-        numfail, numtests = doctest.testmod()
+        numfail, _numtests = doctest.testmod()
         if not numfail:
             print("ok")
         else:
@@ -827,22 +820,22 @@ def main():
         unittest.main()
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # Make sure all non required options are specified.
-        if None == options.vesselField:
+        if options.vesselField is None:
             parser.error("missing value for vesselField")
-        if None == options.directionField:
+        if options.directionField is None:
             parser.error("missing value for directionField")
-        if None == options.ETA_monthField:
+        if options.ETA_monthField is None:
             parser.error("missing value for ETA_monthField")
-        if None == options.ETA_dayField:
+        if options.ETA_dayField is None:
             parser.error("missing value for ETA_dayField")
-        if None == options.ETA_hourField:
+        if options.ETA_hourField is None:
             parser.error("missing value for ETA_hourField")
-        if None == options.ETA_minField:
+        if options.ETA_minField is None:
             parser.error("missing value for ETA_minField")
     msgDict = {
         "vessel": options.vesselField,
@@ -855,9 +848,9 @@ def main():
     }
 
     bits = encode(msgDict)
-    if "binary" == options.ioType:
+    if options.ioType == "binary":
         print(str(bits))
-    elif "nmeapayload" == options.ioType:
+    elif options.ioType == "nmeapayload":
         # FIX: figure out if this might be necessary at compile time
         bitLen = len(bits)
         if bitLen % 6 != 0:
@@ -865,7 +858,7 @@ def main():
         print(binary.bitvectoais6(bits)[0])
 
     # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-    elif "nmea" == options.ioType:
+    elif options.ioType == "nmea":
         nmea = uscg.create_nmea(bits)
         print(nmea)
     else:
@@ -883,7 +876,7 @@ def main():
 
         if options.printCsvfieldList:
             # Make a csv separated list of fields that will be displayed for csv
-            if None == options.fieldList:
+            if options.fieldList is None:
                 options.fieldList = fieldList
             import io
 

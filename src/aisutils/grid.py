@@ -1,6 +1,16 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 13270 $".split()[1]
-__date__ = "$Date: 2010-03-11 14:50:30 -0500 (Thu, 11 Mar 2010) $".split()[1]
+__version__ = ["$Revision:", "13270", "$"][1]
+__date__ = [
+    "$Date:",
+    "2010-03-11",
+    "14:50:30",
+    "-0500",
+    "(Thu,",
+    "11",
+    "Mar",
+    "2010)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 __doc__ = (
     """
@@ -25,9 +35,10 @@ Privide a class to allow laying ship tracks down into a grid.
 """
 )
 
-from math import *
 import sys
 import traceback
+from math import *
+
 import numpy
 
 
@@ -40,18 +51,14 @@ def distancePt(p1, p2):
 
 
 def almostEqual(a, b, epsilon=0.000001):
-    if (a < b + epsilon) and (a > b - epsilon):
-        return True
-    return False
+    return bool(a < b + epsilon and a > b - epsilon)
 
 
 def inRange(value, a, b):
     assert a < b
     if value < a:
         return False
-    if value > b:
-        return False
-    return True
+    return not value > b
 
 
 def inBoundingBox(x, y, x0, y0, x1, y1):
@@ -62,9 +69,7 @@ def inBoundingBox(x, y, x0, y0, x1, y1):
     assert y0 <= y1
     if x < x0 or x > x1:
         return False
-    if y < y0 or y > y1:
-        return False
-    return True
+    return not (y < y0 or y > y1)
 
 
 def wktLine2list(track):
@@ -93,7 +98,7 @@ def writeMultisegline2Gnuplot(outfile, multisegLine, name=None):
     if name is not None:
         o.write("# " + name + "\n")
     for seg in multisegLine:
-        for axis in seg:
+        for _axis in seg:
             o.write(str(seg[0]) + " " + str(seg[1]) + " 0.\n")
         o.write("\n")
     # o.write('\n')
@@ -205,8 +210,7 @@ class Grid:
     def describe(self):
         print(" === GRID === ")
         print(
-            "   Bounds   ... (%.2f,%.2f) -> (%.2f,%.2f)"
-            % (self.minx, self.miny, self.maxx, self.maxy)
+            f"   Bounds   ... ({self.minx:.2f},{self.miny:.2f}) -> ({self.maxx:.2f},{self.maxy:.2f})"
         )
         print("   Width    ...", self.xNumCells)
         print("   Height   ...", self.yNumCells)
@@ -279,15 +283,11 @@ class Grid:
 
         stepSize = self.stepSize
         minx = self.minx
-        maxx = self.maxx
         miny = self.miny
-        maxy = self.maxy
 
-        flippedY = False
         if y0 > y1:
             if verbose:
                 print("flipping Y")
-            flippedY = True
             y0, y1 = y1, y0
         y_first_ycrossing = miny + ceil((y0 - miny) / stepSize) * stepSize
         y_last_ycrossing = miny + floor((y1 - miny) / stepSize) * stepSize
@@ -414,14 +414,14 @@ class Grid:
         ):
             if verbose:
                 print("chomp front")
-            assert False  # need to also remove from the fractions
+            raise AssertionError()  # need to also remove from the fractions
             cells = cells[1:]
         if not inBoundingBox(
             cells[-1][0], cells[-1][1], minCellX, minCellY, maxCellX, maxCellY
         ):
             if verbose:
                 print("chomp tail")
-            assert False  # need to also remove from the fractions
+            raise AssertionError()  # need to also remove from the fractions
             cells = cells[:-1]
 
         # c = cells[0]
@@ -511,15 +511,11 @@ class Grid:
 
         stepSize = self.stepSize
         minx = self.minx
-        maxx = self.maxx
         miny = self.miny
-        maxy = self.maxy
 
-        flippedY = False
         if y0 > y1:
             if verbose:
                 print("flipping Y")
-            flippedY = True
             y0, y1 = y1, y0
         y_first_ycrossing = miny + ceil((y0 - miny) / stepSize) * stepSize
         y_last_ycrossing = miny + floor((y1 - miny) / stepSize) * stepSize
@@ -651,7 +647,7 @@ class Grid:
                 print("ACK... must have at least one cell!!! ERROR fail death")
                 print("     ", i, multiSegLine[i], multiSegLine[i + 1])
                 print("     ", newCells)
-                assert False
+                raise AssertionError()
             if newCells[0] == cells[-1]:
                 cells += newCells[1:]
             else:
@@ -703,7 +699,7 @@ class Grid:
                 "addMultiSegLine cell inserts: (using type " + self.gridType + ")\n"
             )
 
-        if "occurrence" == self.gridType:
+        if self.gridType == "occurrence":
             cells = self.getMultiSegLineCells(multiSegLine)
             for cell in cells:
                 try:
@@ -718,8 +714,8 @@ class Grid:
                     print("error on grid cell inc:", str(multiSegLine)[:40], "...")
                     print("CRAP... grid failure")
                     print("  ", cell, self.xNumCells, self.yNumCells)
-                    assert False
-        elif "distance" == self.gridType:
+                    raise AssertionError()
+        elif self.gridType == "distance":
             result = self.getMultiSegLineCellsWithCrossings(multiSegLine)
             if verbose:
                 sys.stderr.write(str(result) + "\n")
@@ -730,22 +726,22 @@ class Grid:
                 print("adding:", cell, dist)
                 grid[cell[0], cell[1]] += dist
             print(grid)
-        elif "distanceWeightedSpeed" == self.gridType:
-            assert False
+        elif self.gridType == "distanceWeightedSpeed":
+            raise AssertionError()
         else:
-            assert False
+            raise AssertionError()
 
     def writeCellsGnuplot(self, filename, useSquares=False):
         """
         @param useSquares: if true then write out the height of each cell as a square.  False then it writes a point
         """
-        assert useSquares == False  # FIX: implement this feature
+        assert not useSquares  # FIX: implement this feature
         grid = self.grid
         o = open(filename, "w")
         for i in range(grid.shape[0]):
             for j in range(grid.shape[1]):
                 x, y = self.getCellCenter(i, j)
-                o.write("%f %f %f\n" % (x, y, grid[i, j]))
+                o.write(f"{x:f} {y:f} {grid[i, j]:f}\n")
 
     def writeArcAsciiGrid(self, filename):
         g = self.grid
@@ -819,6 +815,7 @@ if __name__ == "__main__":
         if options.verbose:
             sys.argv.append("-v")
         import unittest
+
         from grid_tests import *
 
         unittest.main()

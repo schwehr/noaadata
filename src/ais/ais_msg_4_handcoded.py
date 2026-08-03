@@ -5,20 +5,15 @@
 Adds commstate to the msg 4 definition.
 """
 
+import io
+import sys
 from decimal import Decimal
 from optparse import OptionParser
-import os
-import sys
-import io
-import unittest
 
-from aisutils import uscg
+from aisutils import binary, sqlhelp, uscg
 from aisutils.BitVector import BitVector
 
-from aisutils import aisstring
-from aisutils import binary
 from . import commstate
-from aisutils import sqlhelp
 
 # TODO(schwehr): from ais_msg_4 import *.
 
@@ -39,7 +34,8 @@ fieldList = (
     "fixtype",
     "Spare",
     "RAIM",
-) + commstate.sotdma_fields
+    *commstate.sotdma_fields,
+)
 
 
 def decode_aivdm(msg):
@@ -139,12 +135,10 @@ def sqlCreate(
         c.addInt("Time_sec")
     if "PositionAccuracy" in fields:
         c.addInt("PositionAccuracy")
-    if dbType != "postgres":
-        if "Position_longitude" in fields:
-            c.addDecimal("Position_longitude", 8, 5)
-    if dbType != "postgres":
-        if "Position_latitude" in fields:
-            c.addDecimal("Position_latitude", 8, 5)
+    if dbType != "postgres" and "Position_longitude" in fields:
+        c.addDecimal("Position_longitude", 8, 5)
+    if dbType != "postgres" and "Position_latitude" in fields:
+        c.addDecimal("Position_latitude", 8, 5)
     if "fixtype" in fields:
         c.addInt("fixtype")
     if "Spare" in fields:
@@ -207,7 +201,7 @@ def printFields(
     @return: text to out
     """
 
-    if "std" == format:
+    if format == "std":
         out.write("bsreport:\n")
         if "MessageID" in params:
             out.write("    MessageID:           " + str(params["MessageID"]) + "\n")
@@ -253,8 +247,8 @@ def printFields(
                 out.write(fieldname + str(params[field]) + "\n")
             else:
                 out.write(fieldname + "n/a\n")
-    elif "csv" == format:
-        if None == options.fieldList:
+    elif format == "csv":
+        if options.fieldList is None:
             options.fieldList = fieldList
         needComma = False
         for field in fieldList:
@@ -265,13 +259,13 @@ def printFields(
                 out.write(str(params[field]))
             # else: leave it empty
         out.write("\n")
-    elif "html" == format:
+    elif format == "html":
         printHtml(params, out)
-    elif "sql" == format:
+    elif format == "sql":
         sqlInsertStr(params, out, dbType=dbType)
-    elif "kml" == format:
+    elif format == "kml":
         printKml(params, out)
-    elif "kml-full" == format:
+    elif format == "kml-full":
         out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         out.write('<kml xmlns="http://earth.google.com/kml/2.1">\n')
         out.write("<Document>\n")
@@ -281,9 +275,7 @@ def printFields(
         out.write("</kml>\n")
     else:
         print("ERROR: unknown format:", format)
-        assert False
-
-    return  # Nothing to return
+        raise AssertionError()
 
 
 def main():
@@ -409,45 +401,44 @@ def main():
     addMsgOptions(parser)
 
     options, args = parser.parse_args()
-    success = True
 
     outfile = sys.stdout
-    if None != options.outputFileName:
+    if options.outputFileName is not None:
         outfile = file(options.outputFileName, "w")
 
     if options.doEncode:
         # First make sure all non required options are specified
-        if None == options.RepeatIndicatorField:
+        if options.RepeatIndicatorField is None:
             parser.error("missing value for RepeatIndicatorField")
-        if None == options.UserIDField:
+        if options.UserIDField is None:
             parser.error("missing value for UserIDField")
-        if None == options.Time_yearField:
+        if options.Time_yearField is None:
             parser.error("missing value for Time_yearField")
-        if None == options.Time_monthField:
+        if options.Time_monthField is None:
             parser.error("missing value for Time_monthField")
-        if None == options.Time_dayField:
+        if options.Time_dayField is None:
             parser.error("missing value for Time_dayField")
-        if None == options.Time_hourField:
+        if options.Time_hourField is None:
             parser.error("missing value for Time_hourField")
-        if None == options.Time_minField:
+        if options.Time_minField is None:
             parser.error("missing value for Time_minField")
-        if None == options.Time_secField:
+        if options.Time_secField is None:
             parser.error("missing value for Time_secField")
-        if None == options.PositionAccuracyField:
+        if options.PositionAccuracyField is None:
             parser.error("missing value for PositionAccuracyField")
-        if None == options.Position_longitudeField:
+        if options.Position_longitudeField is None:
             parser.error("missing value for Position_longitudeField")
-        if None == options.Position_latitudeField:
+        if options.Position_latitudeField is None:
             parser.error("missing value for Position_latitudeField")
-        if None == options.fixtypeField:
+        if options.fixtypeField is None:
             parser.error("missing value for fixtypeField")
-        if None == options.RAIMField:
+        if options.RAIMField is None:
             parser.error("missing value for RAIMField")
-        if None == options.state_syncstateField:
+        if options.state_syncstateField is None:
             parser.error("missing value for state_syncstateField")
-        if None == options.state_slottimeoutField:
+        if options.state_slottimeoutField is None:
             parser.error("missing value for state_slottimeoutField")
-        if None == options.state_slotoffsetField:
+        if options.state_slotoffsetField is None:
             parser.error("missing value for state_slotoffsetField")
         msgDict = {
             "MessageID": "4",
@@ -471,9 +462,9 @@ def main():
         }
 
         bits = encode(msgDict)
-        if "binary" == options.ioType:
+        if options.ioType == "binary":
             print(str(bits))
-        elif "nmeapayload" == options.ioType:
+        elif options.ioType == "nmeapayload":
             bitLen = len(bits)
             if bitLen % 6 != 0:
                 bits = bits + BitVector(
@@ -482,7 +473,7 @@ def main():
             print(binary.bitvectoais6(bits)[0])
 
         # FIX: Do not emit this option for the binary message payloads.  Does not make sense.
-        elif "nmea" == options.ioType:
+        elif options.ioType == "nmea":
             nmea = uscg.create_nmea(bits)
             print(nmea)
         else:
@@ -500,7 +491,7 @@ def main():
 
     if options.printCsvfieldList:
         # Make a csv separated list of fields that will be displayed for csv
-        if None == options.fieldList:
+        if options.fieldList is None:
             options.fieldList = fieldList
         buf = io.StringIO()
         for field in options.fieldList:

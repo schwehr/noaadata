@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
-__version__ = "$Revision: 13395 $".split()[1]
-__date__ = "$Date: 2010-04-06 11:11:59 -0400 (Tue, 06 Apr 2010) $".split()[1]
+__version__ = ["$Revision:", "13395", "$"][1]
+__date__ = [
+    "$Date:",
+    "2010-04-06",
+    "11:11:59",
+    "-0400",
+    "(Tue,",
+    "06",
+    "Apr",
+    "2010)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = """
@@ -14,12 +24,11 @@ Handle creation and extraction of NMEA strings.  Maybe need a separate VDM class
 per line that is required in the NMEA specification.
 """
 
-import time, sys
+import re
+import sys
 
 # Local Modules
 from . import binary
-
-import re
 
 EOL = "\x0d\x0a"
 """
@@ -62,17 +71,14 @@ def checksumStr(data, verbose=False):
     start = 0
     if data[0] in ("$", "!"):
         start = 1
-    if -1 != end:
-        data = data[start:end]
-    else:
-        data = data[start:]
+    data = data[start:end] if end != -1 else data[start:]
     if verbose:
         print("checking on:", start, end, data)
     # FIX: rename sum to not shadow builting function
     sum = 0
     for c in data:
         sum = sum ^ ord(c)
-    sumHex = "%x" % sum
+    sumHex = f"{sum:x}"
     if len(sumHex) == 1:
         sumHex = "0" + sumHex
     return sumHex.upper()
@@ -145,7 +151,7 @@ def buildNmea(
     """
 
     rList = [prefix, serviceType, msgType, ",1,1,"]
-    if None != channelSeq:
+    if channelSeq is not None:
         rList.append(str(channelSeq))
     rList.append(",")
     rList.append(channel)
@@ -254,19 +260,19 @@ def cabDecode(msg, validate=True):
 
     # FIX: for validate... make sure that the other case from 1 is an empty string
     r = {}
-    if "1" == fields[1]:
+    if fields[1] == "1":
         r["TransA"] = True
     else:
         r["TransA"] = False
-    if "1" == fields[2]:
+    if fields[2] == "1":
         r["TransB"] = True
     else:
         r["TransB"] = False
-    if "1" == fields[3]:
+    if fields[3] == "1":
         r["Restart"] = True
     else:
         r["Restart"] = False
-    if "1" == fields[4]:
+    if fields[4] == "1":
         r["Reset"] = True
     else:
         r["Reset"] = False
@@ -443,29 +449,31 @@ def acaEncode(
     @type validate: bool
     """
     if validate:
-        if "" != seqnum:
+        if seqnum != "":
             assert int(seqnum) in range(10)
-        if "" != north:
-            assert float(north) >= -90.0 and float(north <= 90.0)
-        if "" != south:
-            assert float(south) >= -90.0 and float(south <= 90.0)
-        if "" != east:
-            assert float(east) >= -180.0 and float(east <= 180.0)
-        if "" != west:
-            assert float(west) >= -180.0 and float(west <= 180.0)
+        if north != "":
+            assert float(north) >= -90.0
+            assert float(north <= 90.0)
+        if south != "":
+            assert float(south) >= -90.0
+            assert float(south <= 90.0)
+        if east != "":
+            assert float(east) >= -180.0
+            assert float(east <= 180.0)
+        if west != "":
+            assert float(west) >= -180.0
+            assert float(west <= 180.0)
 
         if transitionSize != "":
             assert int(transitionSize) in range(1, 9)
         if chanA != "":
-            assert (
-                int(chanA) > 2000 and int(chanA) <= 2290
-            )  # FIX: what is the real range or is this it?
+            assert int(chanA) > 2000
+            assert int(chanA) <= 2290
         if chanAbandwidth != "":
             assert int(chanAbandwidth) in (0, 1)
         if chanB != "":
-            assert (
-                int(chanB) > 2000 and int(chanB) <= 2290
-            )  # FIX: what is the real range or is this it?
+            assert int(chanB) > 2000
+            assert int(chanB) <= 2290
         if chanBbandwidth != "":
             assert int(chanBbandwidth) in (0, 1)
 
@@ -483,7 +491,8 @@ def acaEncode(
             )  # Sorry L-3, but I does not appear to be valid
         if timeinuse != "":
             v = float(timeinuse)
-            assert v >= 0.0 and v < 24.0
+            assert v >= 0.0
+            assert v < 24.0
 
     r = [
         "$" + prefix + "ACA",
@@ -569,7 +578,7 @@ def acaDecode(msg, validate=True):
         lon = float(fields[8])  # FIX: what format is this??
         assert len(fields[9]) == 1
         if fields[9] == "W":
-            lat = -1 * lat
+            -1 * lat
     else:
         lon = None  # empty string
     r["west"] = lon
@@ -779,12 +788,15 @@ def bbmEncode(
     if validate:
         # obsesive error checking follows
         tot = int(totSent)
-        assert 0 < tot and tot <= 9
+        assert tot > 0
+        assert tot <= 9
         num = int(sentNum)
-        assert 0 < num and num <= 9
+        assert num > 0
+        assert num <= 9
         assert num <= tot
         seq = int(seqId)
-        assert 0 <= seq and seq <= 9
+        assert seq >= 0
+        assert seq <= 9
         assert int(aisChan) in range(0, 5)
         assert int(msgId) in (8, 14)
         # if num==1: assert(len(data)<=58)
@@ -909,7 +921,7 @@ def bcfDecode(msg, validate=True):
         r["lat"] = ""
     else:
         lat = float(lat)
-        if "S" == latNS:
+        if latNS == "S":
             lat = -lat
         r["lat"] = lat
 
@@ -921,7 +933,7 @@ def bcfDecode(msg, validate=True):
         r["lon"] = ""
     else:
         lon = float(lon)
-        if "W" == lonEW:
+        if lonEW == "W":
             lon = -lon
         r["lon"] = lon
 

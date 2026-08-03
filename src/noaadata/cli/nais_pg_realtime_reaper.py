@@ -1,21 +1,28 @@
 #!/usr/bin/env python
 __author__ = "Kurt Schwehr"
-__version__ = "$Revision: 2275 $".split()[1]
+__version__ = ["$Revision:", "2275", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = "$Date: 2006-07-10 16:22:35 -0400 (Mon, 10 Jul 2006) $".split()[1]
+__date__ = [
+    "$Date:",
+    "2006-07-10",
+    "16:22:35",
+    "-0400",
+    "(Mon,",
+    "10",
+    "Jul",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2009"
 __license__ = "Apache 2.0"
 
 __doc__ = """
 @since: 2009-May-10
 """
-import traceback
-import sys
-import exceptions  # For KeyboardInterupt pychecker complaint
-import logging  # Python's logger module for tracking progress
-
-import time
 import datetime
+import logging  # Python's logger module for tracking progress
+import sys
+import time
 
 import magicdate
 import pytz
@@ -172,7 +179,7 @@ def main():
         help="Log level for tracing.  Defaults to all [default: %default]",
     )
 
-    (options, args) = parser.parse_args()
+    (options, _args) = parser.parse_args()
     v = options.verbose
     if v:
         sys.stderr.write(
