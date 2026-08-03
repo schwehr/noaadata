@@ -229,11 +229,11 @@ ______________________________________________________________________
 
 ## Phase 6: Idiomatic API & Architectural Refactoring
 
-- [ ] **6.0 Switch to using bitvector-modern**
+- [x] **6.0 Switch to using bitvector-modern**
 
-  - [ ] Verify that all python files using BitVector have more than 95% test
+  - [x] Verify that all python files using BitVector have more than 95% test
     coverages.
-  - [ ] Switch from Avi KaK's BitVector to
+  - [x] Switch from Avi KaK's BitVector to
     https://github.com/schwehr/bitvector-modern
 
 - [ ] **6.1 Implement Python Dunder Methods (Data Model Protocols)**

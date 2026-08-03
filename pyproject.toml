@@ -25,6 +25,7 @@ classifiers = [
     "Topic :: System :: Networking",
 ]
 dependencies = [
+    "bitvector-modern>=0.0.7",
     "numpy>=1.26.0",
 ]
 

@@ -116,6 +116,15 @@ wheels = [
 ]
 
 [[package]]
+name = "bitvector-modern"
+version = "0.0.7"
+source = { registry = "https://us-python.pkg.dev/artifact-foundry-prod/ah-3p-staging-python/simple/" }
+sdist = { url = "https://us-python.pkg.dev/artifact-foundry-prod/ah-3p-staging-python/bitvector-modern/bitvector_modern-0.0.7.tar.gz", hash = "sha256:636d61ee7b4ef847fc6cf6a6fcf8540f9e58437d0deb3ffdb26c787ac2f5a7c9" }
+wheels = [
+    { url = "https://us-python.pkg.dev/artifact-foundry-prod/ah-3p-staging-python/bitvector-modern/bitvector_modern-0.0.7-py3-none-any.whl", hash = "sha256:8cc6b8970c58a47a570f4d7e17e2a3286baa09b7753ba0b5972462a66e93c8ae" },
+]
+
+[[package]]
 name = "black"
 version = "26.5.1"
 source = { registry = "https://us-python.pkg.dev/artifact-foundry-prod/ah-3p-staging-python/simple/" }
@@ -1231,6 +1240,7 @@ name = "noaadata"
 version = "0.46"
 source = { editable = "." }
 dependencies = [
+    { name = "bitvector-modern" },
     { name = "numpy" },
 ]
 
@@ -1265,6 +1275,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "bitvector-modern", specifier = ">=0.0.7" },
     { name = "lxml", marker = "extra == 'gis'", specifier = ">=5.0" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "psycopg2-binary", marker = "extra == 'db'", specifier = ">=2.9" },
