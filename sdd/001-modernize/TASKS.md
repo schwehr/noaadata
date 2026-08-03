@@ -179,15 +179,15 @@ ______________________________________________________________________
     structured **Google Python Docstring Style** (`Args:`, `Returns:`,
     `Raises:`, `Attributes:`).
 
-- [ ] **4.4 Standard Library & Control Flow Modernization**
+- [x] **4.4 Standard Library & Control Flow Modernization**
 
-  - [ ] Replace legacy pseudo-random generator calls (`random`) with `secrets`
+  - [x] Replace legacy pseudo-random generator calls (`random`) with `secrets`
     where security-sensitive or modern RNG generation applies.
-  - [ ] Convert eager list transformations (`list(map(...))`,
+  - [x] Convert eager list transformations (`list(map(...))`,
     `list(filter(...))`) to generator expressions or comprehensions.
-  - [ ] Ensure all file, socket, and database stream I/O operations use `with`
+  - [x] Ensure all file, socket, and database stream I/O operations use `with`
     context managers.
-  - [ ] Verification command: `uv run pytest`
+  - [x] Verification command: `uv run pytest`
 
 ______________________________________________________________________
 

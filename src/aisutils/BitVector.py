@@ -1315,9 +1315,9 @@ class BitVector:
         bit.  If you only want to set the most significant bit, comment out
         the statement in line (pr29).
         """
-        import random
+        import secrets
 
-        candidate = random.getrandbits(width)
+        candidate = secrets.randbits(width)
         candidate |= 1
         candidate |= 1 << width - 1
         candidate |= 2 << width - 3

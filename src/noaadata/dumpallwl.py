@@ -248,9 +248,10 @@ if __name__ == "__main__":
     stationId = options.station
     mmsi = options.mmsi
 
-    o = sys.stdout
     if options.outputFileName:
         o = open(options.outputFileName, "w")
+    else:
+        o = sys.stdout
 
     server = SOAPProxy(url, namespace)
 

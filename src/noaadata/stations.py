@@ -243,12 +243,14 @@ class ActiveStations:
             # FIX: is there a __path__ like thing that I can use like ais-py/ais/__init__.py?
             # FIX: this will not work on Windows!!!
             localDir = __file__[: __file__.rfind("/") + 1]
-            xml = open(localDir + "stations-soap.xml").read()
+            with open(localDir + "stations-soap.xml") as f:
+                xml = f.read()
         elif allowCache:
             try:
                 xml = self.getStationXmlFromSoap()
             except:
-                xml = open("stations-soap.xml").read()
+                with open("stations-soap.xml") as f:
+                    xml = f.read()
         else:
             xml = self.getStationXmlFromSoap()
 
