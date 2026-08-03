@@ -21,9 +21,11 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
     "Topic :: Communications",
     "Topic :: Database",
-    "Topic :: Scientific/Engineering :: GIS",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Topic :: System :: Networking",
+]
+dependencies = [
+    "numpy>=1.26.0",
 ]
 
 [project.optional-dependencies]
@@ -128,3 +130,7 @@ xy-pos-filter = "noaadata.cli.xy_pos_filter:main"
 xy2kml = "noaadata.cli.xy2kml:main"
 xy2kmlline = "noaadata.cli.xy2kmlline:main"
 xymt2kml = "noaadata.cli.xymt2kml:main"
+
+[tool.pytest.ini_options]
+testpaths = ["test", "tests", "src"]
+python_files = ["test*.py", "*_test.py", "*_tests.py"]

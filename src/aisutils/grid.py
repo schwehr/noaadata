@@ -568,7 +568,7 @@ class Grid:
 
     def writeLayoutGnuplot(self,filename):
         'Write out the grid lines as gnuplot dat file'
-        o = file(filename,'w')
+        o = open(filename,'w')
         # Horizonal lines
         minxStr = str(self.minx)+' '
         maxxStr = str(self.maxx)+' '
@@ -627,7 +627,7 @@ class Grid:
         '''
         assert useSquares==False # FIX: implement this feature
         grid = self.grid
-        o = file(filename,'w')
+        o = open(filename,'w')
         for i in range(grid.shape[0]):
             for j in range(grid.shape[1]):
                 x,y = self.getCellCenter(i,j)
@@ -636,7 +636,7 @@ class Grid:
 
     def writeArcAsciiGrid(self,filename):
         g = self.grid
-        o = file(filename,'w')
+        o = open(filename,'w')
         o.write('ncols        '+str(self.xNumCells)+'\n')
         o.write('nrows        '+str(self.yNumCells)+'\n')
         o.write('xllcorner    '+str(self.minx)+'\n')

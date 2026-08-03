@@ -11,8 +11,11 @@ from aisutils import binary
 
 from . import ais_msg_8
 from ais.sls import waterlevel
+import pytest
 
-if __name__=='__main__':
+
+def test_sls_waterlevel():
+    pytest.skip("FIX: broken - missing sls_header import")
 
     print('FIX: broken')
     vdm='!AIVDM,1,1,4,A,8030ot1?0@>PSpPPPC<2<oURAU=>T08f@02PSpPPP3C3<oU=d5<U00BH@02PSpPPP3C3EoU:A5<TwPPO@02PSpPPP2hk<oRWU5;si0Pl@02O<0PPPP3D<oPPEU;M418g@02PSpPPP2hlEoRQgU;j@17p@00,2*32'

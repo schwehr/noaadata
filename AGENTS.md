@@ -78,14 +78,13 @@ uv sync
 # Verify core package imports
 uv run python -c "import noaadata, ais, aisutils, nmea; print('Import OK')"
 
-# Run legacy test script in uv environment
-uv run python test/grid_tests.py
+# Run pytest unit test suite
+uv run pytest
 ```
 
-> **Note**: Packaging has transitioned from legacy `setup.py` to
-> `pyproject.toml` and `uv` (Phase 1.3 complete). As Phase 2 completes, test
-> commands will transition to `uv run pytest`, `uv run ruff check`, and
-> `uv run ty check`.
+> **Note**: Packaging has transitioned from legacy `setup.py` to `pyproject.toml`
+> and `uv` (Phase 1 complete), and `pytest` discovery is active (Task 2.0
+> complete).
 
 ______________________________________________________________________
 

@@ -25,7 +25,6 @@ import _thread
 import select
 
 import traceback
-import exceptions
 
 
 class DataServer:
