@@ -20,7 +20,7 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -124,19 +124,19 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=22), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(22), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ChanA"]), 12))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ChanB"]), 12))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["TxRxMode"]), 4))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["power"]), 1))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ChanA"]), 12))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ChanB"]), 12))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["TxRxMode"]), 4))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["power"]), 1))
     if "corner1_lon" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -169,15 +169,15 @@ def encode(params, validate=False):
         )
     else:
         bvList.append(binary.bvFromSignedInt(108600, 17))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["IndicatorType"]), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["IndicatorType"]), 1))
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["ChanABandwidth"]), 1)
+        binary.setBitVectorSize(BitVector.from_int(params["ChanABandwidth"]), 1)
     )
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["ChanBBandwidth"]), 1)
+        binary.setBitVectorSize(BitVector.from_int(params["ChanBBandwidth"]), 1)
     )
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["TransZoneSize"]), 3))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 23))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["TransZoneSize"]), 3))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 23))
 
     return binary.joinBV(bvList)
 
@@ -1450,7 +1450,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

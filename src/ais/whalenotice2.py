@@ -23,12 +23,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -188,33 +188,33 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=8), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(8), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=366), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=63), 6))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=1), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(366), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(63), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(1), 12))
     if "numreports" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["numreports"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["numreports"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     if "stationid1" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["stationid1"]), 8)
+            binary.setBitVectorSize(BitVector.from_int(params["stationid1"]), 8)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time1_day"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time1_hour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time1_min"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 8))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time1_day"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time1_hour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time1_min"]), 6))
     if "center1_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -233,23 +233,23 @@ def encode(params, validate=False):
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "timetoexpire1" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["timetoexpire1"]), 16)
+            binary.setBitVectorSize(BitVector.from_int(params["timetoexpire1"]), 16)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65535), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["radius1"]), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius1"]), 16))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65534), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
     if "stationid2" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["stationid2"]), 8)
+            binary.setBitVectorSize(BitVector.from_int(params["stationid2"]), 8)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time2_day"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time2_hour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time2_min"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 8))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time2_day"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time2_hour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time2_min"]), 6))
     if "center2_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -268,23 +268,23 @@ def encode(params, validate=False):
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "timetoexpire2" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["timetoexpire2"]), 16)
+            binary.setBitVectorSize(BitVector.from_int(params["timetoexpire2"]), 16)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65535), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["radius2"]), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius2"]), 16))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65534), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
     if "stationid3" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["stationid3"]), 8)
+            binary.setBitVectorSize(BitVector.from_int(params["stationid3"]), 8)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time3_day"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time3_hour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time3_min"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 8))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time3_day"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time3_hour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time3_min"]), 6))
     if "center3_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -303,15 +303,15 @@ def encode(params, validate=False):
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "timetoexpire3" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["timetoexpire3"]), 16)
+            binary.setBitVectorSize(BitVector.from_int(params["timetoexpire3"]), 16)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65535), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65535), 16))
     if "radius3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["radius3"]), 16))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius3"]), 16))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=65534), 16))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 21))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(65534), 16))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 21))
 
     return binary.joinBV(bvList)
 
@@ -2166,7 +2166,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

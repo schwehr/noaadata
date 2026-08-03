@@ -20,7 +20,7 @@ import unittest
 from decimal import Decimal
 
 from aisutils import aisstring, binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -121,26 +121,26 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=5), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(5), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
     if "AISversion" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["AISversion"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["AISversion"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     if "IMOnumber" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["IMOnumber"]), 30)
+            binary.setBitVectorSize(BitVector.from_int(params["IMOnumber"]), 30)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 30))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 30))
     if "callsign" in params:
         bvList.append(aisstring.encode(params["callsign"], 42))
     else:
@@ -151,60 +151,60 @@ def encode(params, validate=False):
         bvList.append(aisstring.encode("@@@@@@@@@@@@@@@@@@@@", 120))
     if "shipandcargo" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["shipandcargo"]), 8)
+            binary.setBitVectorSize(BitVector.from_int(params["shipandcargo"]), 8)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 8))
     if "dimA" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dimA"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dimA"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 9))
     if "dimB" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dimB"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dimB"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 9))
     if "dimC" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dimC"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dimC"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 6))
     if "dimD" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dimD"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dimD"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 6))
     if "fixtype" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fixtype"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fixtype"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "ETAmonth" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ETAmonth"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAmonth"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "ETAday" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ETAday"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAday"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 5))
     if "ETAhour" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ETAhour"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAhour"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "ETAminute" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ETAminute"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ETAminute"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "draught" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["draught"]) * Decimal("10"))), 8
+                BitVector.from_int(int(Decimal(params["draught"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 8))
     if "destination" in params:
         bvList.append(aisstring.encode(params["destination"], 120))
     else:
         bvList.append(aisstring.encode("@@@@@@@@@@@@@@@@@@@@", 120))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dte"]), 1))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dte"]), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 1))
 
     return binary.joinBV(bvList)
 
@@ -1776,7 +1776,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

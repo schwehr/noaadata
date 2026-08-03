@@ -31,7 +31,7 @@ import sys
 from decimal import Decimal
 
 from aisutils import aisstring, binary, sqlhelp
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 from . import ais_msg_5
 
@@ -82,14 +82,14 @@ def encode(params, validate=False):
     @note: The returned bits may not be 6 bit aligned.  It is up to you to pad out the bits.
     """
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=19), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(19), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
 
     raise AssertionError()
 
@@ -553,7 +553,7 @@ if __name__ == "__main__":
                         binaryMsg = False
                         break
                 if binaryMsg:
-                    bv = BitVector(bitstring=msg)
+                    bv = BitVector.from_bitstring(msg)
                 else:  # nmeapayload
                     bv = binary.ais6tobitvec(msg)
 

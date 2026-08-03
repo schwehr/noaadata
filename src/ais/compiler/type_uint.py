@@ -48,7 +48,7 @@ def encode(
             print("  required:", required)
         required = int(required)
         o.write(
-            "\tbvList.append(binary.setBitVectorSize(BitVector(intVal="
+            "\tbvList.append(binary.setBitVectorSize(BitVector.from_int("
             + str(required)
             + "),"
             + str(numbits)
@@ -60,7 +60,7 @@ def encode(
 
     if unavailable is None:
         o.write(
-            "\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params['"
+            "\tbvList.append(binary.setBitVectorSize(BitVector.from_int(params['"
             + name
             + "']),"
             + str(numbits)
@@ -71,7 +71,7 @@ def encode(
         int(unavailable)  # Make sure unavailable is a number object
         o.write("\tif '" + name + "' in params:\n")
         o.write(
-            "\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal=params['"
+            "\t\tbvList.append(binary.setBitVectorSize(BitVector.from_int(params['"
             + name
             + "']"
             + "),"
@@ -80,7 +80,7 @@ def encode(
         )
         o.write("\telse:\n")
         o.write(
-            "\t\tbvList.append(binary.setBitVectorSize(BitVector(intVal="
+            "\t\tbvList.append(binary.setBitVectorSize(BitVector.from_int("
             + str(unavailable)
             + "),"
             + str(numbits)

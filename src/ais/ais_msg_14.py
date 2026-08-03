@@ -23,7 +23,7 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -73,15 +73,15 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=14), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(14), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 1))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 1))
 
     return binary.joinBV(bvList)
 
@@ -761,7 +761,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

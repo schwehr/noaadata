@@ -56,7 +56,7 @@ import struct
 import sys
 
 # Outside modules
-from .BitVector import BitVector
+from BitVector import BitVector
 
 
 def float2bitvec(floatval):
@@ -78,14 +78,14 @@ def float2bitvec(floatval):
     )  # FIX: Is this the right bight order?  Could easily be wrong!!!!
     i = struct.unpack("!I", s)[0]
     # print 'unpacked:',i
-    # return setBitVectorSize(BitVector(intVal=i),32)
+    # return setBitVectorSize(BitVector.from_int(i),32)
 
     # Old way...  since BitVector can't encode large intVals (>2^31)
     # FIX: make this go in one step now that bitvector 1.3 is out.
     bvList = []
     for i in range(4):
-        bv1 = setBitVectorSize(BitVector(intVal=ord(s[i])), 8)
-        # bv2 = BitVector(intVal=ord(s[i]),size=8)
+        bv1 = setBitVectorSize(BitVector.from_int(ord(s[i])), 8)
+        # bv2 = BitVector.from_int(ord(s[i]),size=8)
         bvList.append(bv1)
     return joinBV(bvList)
 
@@ -137,9 +137,8 @@ def setBitVectorSize(bv, size=8):
 
     @todo: What to do if the vector is larger than size?
     """
-    pad = BitVector(bitlist=[0])
-    while len(bv) < size:
-        bv = pad + bv
+    if len(bv) < size:
+        bv = BitVector(size=size - len(bv)) + bv
     return bv
 
 
@@ -205,9 +204,9 @@ def bvFromSignedInt(intVal, bitSize=None):
     """
     bv = None
     if bitSize is None:
-        bv = BitVector(intVal=abs(intVal))
+        bv = BitVector.from_int(abs(intVal))
     else:
-        bv = setBitVectorSize(BitVector(intVal=abs(intVal)), bitSize - 1)
+        bv = setBitVectorSize(BitVector.from_int(abs(intVal)), bitSize - 1)
         if bitSize - 1 != len(bv) and bv[0] != 1 and bv[-1] != 0:
             print("ERROR: bitsize not right")
             print("  ", bitSize - 1, len(bv))
@@ -215,11 +214,11 @@ def bvFromSignedInt(intVal, bitSize=None):
         if len(bv) == bitSize and bv[0] == 1:
             return bv
     if intVal >= 0:
-        bv = BitVector(intVal=0) + bv
+        bv = BitVector.from_int(0) + bv
     else:
         bv = subone(bv)
         bv = ~bv
-        bv = BitVector(intVal=1) + bv
+        bv = BitVector.from_int(1) + bv
     return bv
 
 
@@ -277,7 +276,7 @@ def ais6chartobitvec(char6):
         val -= 8
     if val == 0:
         return BitVector(size=6)
-    return setBitVectorSize(BitVector(intVal=val), 6)
+    return setBitVectorSize(BitVector.from_int(val), 6)
 
 
 def ais6tobitvecSLOW(str6):
@@ -312,8 +311,8 @@ def ais6tobitvecSLOW(str6):
         if val == 0:
             bv = BitVector(size=6)
         else:
-            bv = setBitVectorSize(BitVector(intVal=val), 6)
-            # bv = BitVector(intVal=val,size=6)  # FIX: I thought this would work, but it is more than 6 bits?
+            bv = setBitVectorSize(BitVector.from_int(val), 6)
+            # bv = BitVector.from_int(val, size=6)  # FIX: I thought this would work, but it is more than 6 bits?
         bvtotal += bv
     return bvtotal
 

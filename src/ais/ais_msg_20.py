@@ -20,7 +20,7 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -121,88 +121,88 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=20), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(20), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     if "offset1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["offset1"]), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["offset1"]), 12))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 12))
     if "numslots1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["numslots1"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["numslots1"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "timeout1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["timeout1"]), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["timeout1"]), 3))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 3))
     if "increment1" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["increment1"]), 11)
+            binary.setBitVectorSize(BitVector.from_int(params["increment1"]), 11)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 11))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 11))
     if "offset2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["offset2"]), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["offset2"]), 12))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 12))
     if "numslots2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["numslots2"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["numslots2"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "timeout2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["timeout2"]), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["timeout2"]), 3))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 3))
     if "increment2" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["increment2"]), 11)
+            binary.setBitVectorSize(BitVector.from_int(params["increment2"]), 11)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 11))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 11))
     if "offset3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["offset3"]), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["offset3"]), 12))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 12))
     if "numslots3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["numslots3"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["numslots3"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "timeout3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["timeout3"]), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["timeout3"]), 3))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 3))
     if "increment3" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["increment3"]), 11)
+            binary.setBitVectorSize(BitVector.from_int(params["increment3"]), 11)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 11))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 11))
     if "offset4" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["offset4"]), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["offset4"]), 12))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 12))
     if "numslots4" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["numslots4"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["numslots4"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "timeout4" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["timeout4"]), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["timeout4"]), 3))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 3))
     if "increment4" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["increment4"]), 11)
+            binary.setBitVectorSize(BitVector.from_int(params["increment4"]), 11)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 11))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 11))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 6))
 
     return binary.joinBV(bvList)
 
@@ -1528,7 +1528,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

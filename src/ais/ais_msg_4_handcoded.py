@@ -11,7 +11,7 @@ from decimal import Decimal
 from optparse import OptionParser
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 from . import commstate
 
@@ -524,7 +524,7 @@ def main():
                         binaryMsg = False
                         break
                 if binaryMsg:
-                    bv = BitVector(bitstring=msg)
+                    bv = BitVector.from_bitstring(msg)
                 else:  # nmeapayload
                     bv = binary.ais6tobitvec(msg)
 

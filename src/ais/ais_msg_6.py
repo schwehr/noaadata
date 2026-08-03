@@ -22,10 +22,10 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
-TrueBV = BitVector(bitstring="1")
-FalseBV = BitVector(bitstring="0")
+TrueBV = BitVector.from_bitstring("1")
+FalseBV = BitVector.from_bitstring("0")
 
 
 fieldList = (
@@ -94,25 +94,25 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=6), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(6), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["SeqNum"]), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["SeqNum"]), 2))
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["DestinationID"]), 30)
+        binary.setBitVectorSize(BitVector.from_int(params["DestinationID"]), 30)
     )
     if params["RetransmitFlag"]:
         bvList.append(TrueBV)
     else:
         bvList.append(FalseBV)
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 1))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["dac"]), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fi"]), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["dac"]), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fi"]), 6))
     bvList.append(params["BinaryData"])
 
     return binary.joinBV(bvList)
@@ -1017,7 +1017,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

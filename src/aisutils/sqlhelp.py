@@ -15,7 +15,7 @@ import os
 import sys
 from optparse import OptionParser
 
-from .BitVector import BitVector
+from BitVector import BitVector
 
 BOMBASTIC = 4
 VERBOSE = 3

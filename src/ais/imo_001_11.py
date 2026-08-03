@@ -23,12 +23,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -206,17 +206,17 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=8), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(8), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=1), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=11), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(1), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(11), 6))
     if "latitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -233,33 +233,33 @@ def encode(params, validate=False):
         )
     else:
         bvList.append(binary.bvFromSignedInt(10860000, 25))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["day"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["day"]), 5))
     if "hour" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["hour"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["hour"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=31), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 5))
     if "min" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["min"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["min"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=63), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(63), 6))
     if "avewind" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["avewind"]), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["avewind"]), 7))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "windgust" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["windgust"]), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["windgust"]), 7))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "winddir" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["winddir"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["winddir"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "windgustdir" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["windgustdir"]), 9)
+            binary.setBitVectorSize(BitVector.from_int(params["windgustdir"]), 9)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "airtemp" in params:
         bvList.append(
             binary.bvFromSignedInt(int(Decimal(params["airtemp"]) * Decimal("10")), 11)
@@ -267,9 +267,9 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(1023, 11))
     if "relhumid" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["relhumid"]), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["relhumid"]), 7))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "dewpoint" in params:
         bvList.append(
             binary.bvFromSignedInt(int(Decimal(params["dewpoint"]) * Decimal("10")), 10)
@@ -286,119 +286,119 @@ def encode(params, validate=False):
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=1311), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(1311), 9))
     if "airpressuretrend" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["airpressuretrend"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["airpressuretrend"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 2))
     if "horizvis" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["horizvis"]) * Decimal("10"))), 8
+                BitVector.from_int(int(Decimal(params["horizvis"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     bvList.append(
         binary.bvFromSignedInt(int(Decimal(params["waterlevel"]) * Decimal("10")), 9)
     )
     if "waterleveltrend" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["waterleveltrend"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["waterleveltrend"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 2))
     if "surfcurspeed" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["surfcurspeed"]) * Decimal("10"))),
+                BitVector.from_int(int(Decimal(params["surfcurspeed"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     if "surfcurdir" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["surfcurdir"]), 9)
+            binary.setBitVectorSize(BitVector.from_int(params["surfcurdir"]), 9)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "curspeed2" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["curspeed2"]) * Decimal("10"))), 8
+                BitVector.from_int(int(Decimal(params["curspeed2"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     if "curdir2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir2"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curdir2"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "curlevel2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curlevel2"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curlevel2"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=31), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 5))
     if "curspeed3" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["curspeed3"]) * Decimal("10"))), 8
+                BitVector.from_int(int(Decimal(params["curspeed3"]) * Decimal("10"))), 8
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     if "curdir3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir3"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curdir3"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "curlevel3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curlevel3"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curlevel3"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=31), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 5))
     if "sigwaveheight" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["sigwaveheight"]) * Decimal("10"))),
+                BitVector.from_int(int(Decimal(params["sigwaveheight"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     if "waveperiod" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["waveperiod"]), 6)
+            binary.setBitVectorSize(BitVector.from_int(params["waveperiod"]), 6)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=63), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(63), 6))
     if "wavedir" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["wavedir"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["wavedir"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "swellheight" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["swellheight"]) * Decimal("10"))),
+                BitVector.from_int(int(Decimal(params["swellheight"]) * Decimal("10"))),
                 8,
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=255), 8))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(255), 8))
     if "swellperiod" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["swellperiod"]), 6)
+            binary.setBitVectorSize(BitVector.from_int(params["swellperiod"]), 6)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=63), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(63), 6))
     if "swelldir" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["swelldir"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["swelldir"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "seastate" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["seastate"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["seastate"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=15), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(15), 4))
     if "watertemp" in params:
         bvList.append(
             binary.setBitVectorSize(
@@ -409,13 +409,13 @@ def encode(params, validate=False):
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=923), 10))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(923), 10))
     if "preciptype" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["preciptype"]), 3)
+            binary.setBitVectorSize(BitVector.from_int(params["preciptype"]), 3)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=7), 3))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(7), 3))
     if "salinity" in params:
         bvList.append(
             binary.bvFromSignedInt(int(Decimal(params["salinity"]) * Decimal("10")), 9)
@@ -423,10 +423,10 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(923, 9))
     if "ice" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["ice"]), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["ice"]), 2))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 6))
 
     return binary.joinBV(bvList)
 
@@ -2739,7 +2739,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

@@ -15,7 +15,7 @@ import time
 import unittest
 
 from . import binary, nmea, sqlhelp
-from .BitVector import BitVector
+from BitVector import BitVector
 
 ######################################################################
 # NEW Regular Expression Parsing Style
@@ -381,7 +381,7 @@ def create_nmea(
 
     e.g. !AIVDM,1,1,,B,13UIAT001mmL=vhP1Sa:?8>l06A<,0*37,s24467,rNDBC46001,1202235568
 
-    >>> bv=BitVector(bitstring='0010000001010000100110000110000011001100010110'
+    >>> bv=BitVector.from_bitstring('0010000001010000100110000110000011001100010110'
                                '1110111111001100101011000101101101011110011111'
                                '0010001100110011000001110100011001000000000000'
                                '000000000000111001111000000000')

@@ -5,7 +5,7 @@ from decimal import Decimal
 from optparse import OptionParser
 
 from aisutils import aisstring, binary
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 encode = {}
 """use this table to get the functions to go from usable values in python to bitvectors"""
@@ -18,7 +18,7 @@ decode = {}
 
 def unsigned_int_enc(val, bitSize):
     """@rtype: BitVector"""
-    bv = BitVector(intVal=val)
+    bv = BitVector.from_int(val)
     return binary.setBitVectorSize(bv, bitSize)
 
 
@@ -66,7 +66,7 @@ decode["bool"] = bool_dec
 def unsigned_decimal_enc(val, bitSize):
     """@rtype: BitVector"""
     # FIX: make sure there is no remainder
-    bv = BitVector(intVal=int(val))
+    bv = BitVector.from_int(int(val))
     return binary.setBitVectorSize(bv, bitSize)
 
 

@@ -125,7 +125,7 @@ import sys
 from decimal import Decimal
 import unittest
 
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 from aisutils import aisstring
 from aisutils import binary
@@ -133,9 +133,9 @@ from aisutils import sqlhelp
 from aisutils import uscg
 
 # FIX: check to see if these will be needed
-TrueBV  = BitVector(bitstring="1")
+TrueBV  = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -1340,7 +1340,7 @@ def encodeUInt(
             print("  required:", required)
         required = int(required)
         o.write(
-            "    bvList.append(binary.setBitVectorSize(BitVector(intVal="
+            "    bvList.append(binary.setBitVectorSize(BitVector.from_int("
             + str(required)
             + "),"
             + str(numbits)
@@ -1352,7 +1352,7 @@ def encodeUInt(
 
     if not unavailable:
         o.write(
-            "    bvList.append(binary.setBitVectorSize(BitVector(intVal=params['"
+            "    bvList.append(binary.setBitVectorSize(BitVector.from_int(params['"
             + name
             + "']),"
             + str(numbits)
@@ -1362,7 +1362,7 @@ def encodeUInt(
         int(unavailable)  # Make sure unavailable is a number object
         o.write("    if '" + name + "' in params:\n")
         o.write(
-            "        bvList.append(binary.setBitVectorSize(BitVector(intVal=params['"
+            "        bvList.append(binary.setBitVectorSize(BitVector.from_int(params['"
             + name
             + "']"
             + "),"
@@ -1371,7 +1371,7 @@ def encodeUInt(
         )
         o.write("    else:\n")
         o.write(
-            "        bvList.append(binary.setBitVectorSize(BitVector(intVal="
+            "        bvList.append(binary.setBitVectorSize(BitVector.from_int("
             + str(unavailable)
             + "),"
             + str(numbits)
@@ -1831,7 +1831,7 @@ def encodeUDecimal(
         required = int(required)
         assert required >= 0
         o.write(
-            "    bvList.append(binary.setBitVectorSize(BitVector(intVal="
+            "    bvList.append(binary.setBitVectorSize(BitVector.from_int("
             + str(int(Decimal(required) * Decimal(scale)))
             + "),"
             + str(numbits)
@@ -1848,7 +1848,7 @@ def encodeUDecimal(
     # FIX: can I get rid of the Decimal around params?
     if not unavailable:
         o.write(
-            "    bvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params['"
+            "    bvList.append(binary.setBitVectorSize(BitVector.from_int(int((Decimal(params['"
             + name
             + "']"
             + offsetStr
@@ -1861,7 +1861,7 @@ def encodeUDecimal(
     else:  # Have a default value that can be filled in
         o.write("    if '" + name + "' in params:\n")
         o.write(
-            "        bvList.append(binary.setBitVectorSize(BitVector(intVal=int((Decimal(params['"
+            "        bvList.append(binary.setBitVectorSize(BitVector.from_int(int((Decimal(params['"
             + name
             + "']"
             + offsetStr
@@ -1873,7 +1873,7 @@ def encodeUDecimal(
         )
         o.write("    else:\n")
         o.write(
-            "        bvList.append(binary.setBitVectorSize(BitVector(intVal=int("
+            "        bvList.append(binary.setBitVectorSize(BitVector.from_int(int("
             + str(int(Decimal(unavailable) * Decimal(scale)))
             + ")),"
             + str(numbits)
@@ -2708,7 +2708,7 @@ def buildTestParamFunc(o, msgET, verbose=False, prefixName=False):
         elif type in ("aisstr6"):
             o.write("'" + val + "'")
         elif type in ("binary"):
-            o.write("BitVector(bitstring='" + val + "')")
+            o.write("BitVector.from_bitstring('" + val + "')")
         else:
             print(
                 "ERROR: type not handled ...",
@@ -3662,7 +3662,7 @@ def main():
                                                 binaryMsg=False
                                                 break
                                 if binaryMsg:
-                                        bv = BitVector(bitstring=msg)
+                                        bv = BitVector.from_bitstring(msg)
                                 else: # nmeapayload
                                         bv = binary.ais6tobitvec(msg)
 

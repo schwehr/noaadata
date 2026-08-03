@@ -2,7 +2,7 @@
 
 from typing import Any, Protocol, runtime_checkable
 
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 
 @runtime_checkable

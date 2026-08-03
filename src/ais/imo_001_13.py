@@ -23,12 +23,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import aisstring, binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -128,17 +128,17 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=8), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(8), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=1), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=11), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(1), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(11), 6))
     if "reason" in params:
         bvList.append(aisstring.encode(params["reason"], 120))
     else:
@@ -152,19 +152,19 @@ def encode(params, validate=False):
     else:
         bvList.append(aisstring.encode("@@@@@@@@@@@@@@@@@@@@", 120))
     if "radius" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["radius"]), 10))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["radius"]), 10))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=1001), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["unit"]), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["closingday"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["closingmonth"]), 4))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fromhour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["frommin"]), 6))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["today"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tomonth"]), 4))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tohour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tomin"]), 6))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(1001), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["unit"]), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["closingday"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["closingmonth"]), 4))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin"]), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["today"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tomonth"]), 4))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tohour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tomin"]), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
 
     return binary.joinBV(bvList)
 
@@ -1431,7 +1431,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

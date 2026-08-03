@@ -19,7 +19,7 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 fieldList = (
     "MessageID",
@@ -81,15 +81,15 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=17), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(17), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
     if "x" in params:
         bvList.append(
             binary.bvFromSignedInt(int(Decimal(params["x"]) * Decimal("600")), 18)
@@ -102,7 +102,7 @@ def encode(params, validate=False):
         )
     else:
         bvList.append(binary.bvFromSignedInt(54600, 17))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 5))
     bvList.append(params["BinaryData"])
 
     return binary.joinBV(bvList)
@@ -927,7 +927,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 from aisutils.uscg import (
     UscgNmea,
     create_nmea,
@@ -190,8 +190,8 @@ def test_uscg_nmea_build_nmea_no_seq_id() -> None:
 
 
 def test_create_nmea_basic() -> None:
-    bv = BitVector(
-        bitstring=(
+    bv = BitVector.from_bitstring(
+        (
             "0010000001010000100110000110000011001100010110"
             "1110111111001100101011000101101101011110011111"
             "0010001100110011000001110100011001000000000000"
@@ -205,7 +205,7 @@ def test_create_nmea_basic() -> None:
 
 
 def test_create_nmea_custom_params() -> None:
-    bv = BitVector(bitstring="001000000101")
+    bv = BitVector.from_bitstring("001000000101")
     nmea_str = create_nmea(
         bv,
         nmeaType="!AIVDO",
@@ -222,7 +222,7 @@ def test_create_nmea_custom_params() -> None:
 
 
 def test_create_nmea_default_time() -> None:
-    bv = BitVector(bitstring="001000")
+    bv = BitVector.from_bitstring("001000")
     t_before = time.time()
     nmea_str = create_nmea(bv)
     t_after = time.time()

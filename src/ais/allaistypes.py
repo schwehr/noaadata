@@ -23,12 +23,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import aisstring, binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -98,15 +98,15 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=366), 16))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(366), 16))
     bvList.append(binary.bvFromSignedInt(122, 8))
     if "unavail_uint" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["unavail_uint"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["unavail_uint"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["anUInt"]), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["anUInt"]), 2))
     bvList.append(binary.bvFromSignedInt(params["anInt"], 3))
     if params["aBool"]:
         bvList.append(TrueBV)
@@ -115,7 +115,7 @@ def encode(params, validate=False):
     bvList.append(aisstring.encode(params["aStr"], 30))
     bvList.append(
         binary.setBitVectorSize(
-            BitVector(intVal=int(Decimal(params["anUDecimal"]) * Decimal("10"))), 16
+            BitVector.from_int(int(Decimal(params["anUDecimal"]) * Decimal("10"))), 16
         )
     )
     bvList.append(
@@ -1006,7 +1006,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

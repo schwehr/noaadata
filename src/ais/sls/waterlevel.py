@@ -24,12 +24,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import aisstring, binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -111,10 +111,10 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time_month"]), 4))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time_day"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time_hour"]), 5))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["time_min"]), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time_month"]), 4))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time_day"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time_hour"]), 5))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["time_min"]), 6))
     if "stationid" in params:
         bvList.append(aisstring.encode(params["stationid"], 42))
     else:
@@ -135,16 +135,16 @@ def encode(params, validate=False):
         )
     else:
         bvList.append(binary.bvFromSignedInt(5460000, 24))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["type"]), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["type"]), 1))
     if "waterlevel" in params:
         bvList.append(binary.bvFromSignedInt(params["waterlevel"], 16))
     else:
         bvList.append(binary.bvFromSignedInt(-32768, 16))
     if "datum" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["datum"]), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["datum"]), 2))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=31), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 14))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(31), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 14))
 
     return binary.joinBV(bvList)
 
@@ -1178,7 +1178,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

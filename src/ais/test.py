@@ -5,7 +5,7 @@
 """
 
 from aisutils import binary
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 from . import ais_msg_1, ais_msg_8
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     # SLS try for waterlevel
     if True:
         bvStr = "010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000000000001000000100000000000000"
-        bv = BitVector(bitstring=bvStr)
+        bv = BitVector.from_bitstring(bvStr)
         print(type(bv))
         msgDict = sls.waterlevel.decode(bv)
         sls.waterlevel.printFields(msgDict)

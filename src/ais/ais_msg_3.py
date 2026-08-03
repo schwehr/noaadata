@@ -20,10 +20,10 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
-TrueBV = BitVector(bitstring="1")
-FalseBV = BitVector(bitstring="0")
+TrueBV = BitVector.from_bitstring("1")
+FalseBV = BitVector.from_bitstring("0")
 
 
 fieldList = (
@@ -125,20 +125,20 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=3), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(3), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
     if "NavigationStatus" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["NavigationStatus"]), 4)
+            binary.setBitVectorSize(BitVector.from_int(params["NavigationStatus"]), 4)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=15), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(15), 4))
     if "ROT" in params:
         bvList.append(binary.bvFromSignedInt(params["ROT"], 8))
     else:
@@ -146,13 +146,13 @@ def encode(params, validate=False):
     if "SOG" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["SOG"]) * Decimal("10"))), 10
+                BitVector.from_int(int(Decimal(params["SOG"]) * Decimal("10"))), 10
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=1023), 10))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(1023), 10))
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["PositionAccuracy"]), 1)
+        binary.setBitVectorSize(BitVector.from_int(params["PositionAccuracy"]), 1)
     )
     if "longitude" in params:
         bvList.append(
@@ -173,35 +173,35 @@ def encode(params, validate=False):
     if "COG" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["COG"]) * Decimal("10"))), 12
+                BitVector.from_int(int(Decimal(params["COG"]) * Decimal("10"))), 12
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=3600), 12))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(3600), 12))
     if "TrueHeading" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["TrueHeading"]), 9)
+            binary.setBitVectorSize(BitVector.from_int(params["TrueHeading"]), 9)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=511), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(511), 9))
     if "TimeStamp" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["TimeStamp"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["TimeStamp"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 1))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 1))
     if params["RAIM"]:
         bvList.append(TrueBV)
     else:
         bvList.append(FalseBV)
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["state_syncstate"]), 2)
+        binary.setBitVectorSize(BitVector.from_int(params["state_syncstate"]), 2)
     )
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["state_slottimeout"]), 3)
+        binary.setBitVectorSize(BitVector.from_int(params["state_slottimeout"]), 3)
     )
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["state_slotoffset"]), 14)
+        binary.setBitVectorSize(BitVector.from_int(params["state_slotoffset"]), 14)
     )
 
     return binary.joinBV(bvList)
@@ -1613,7 +1613,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

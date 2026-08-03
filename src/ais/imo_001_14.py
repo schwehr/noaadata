@@ -23,12 +23,12 @@ import unittest
 from decimal import Decimal
 
 from aisutils import binary, sqlhelp, uscg
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 # FIX: check to see if these will be needed
-TrueBV = BitVector(bitstring="1")
+TrueBV = BitVector.from_bitstring("1")
 "Why always rebuild the True bit?  This should speed things up a bunch"
-FalseBV = BitVector(bitstring="0")
+FalseBV = BitVector.from_bitstring("0")
 "Why always rebuild the False bit?  This should speed things up a bunch"
 
 
@@ -194,33 +194,33 @@ def encode(params, validate=False):
     """
 
     bvList = []
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=6), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(6), 6))
     if "RepeatIndicator" in params:
         bvList.append(
-            binary.setBitVectorSize(BitVector(intVal=params["RepeatIndicator"]), 2)
+            binary.setBitVectorSize(BitVector.from_int(params["RepeatIndicator"]), 2)
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 2))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["UserID"]), 30))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=params["SeqNum"]), 2))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 2))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["UserID"]), 30))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(params["SeqNum"]), 2))
     bvList.append(
-        binary.setBitVectorSize(BitVector(intVal=params["DestinationID"]), 30)
+        binary.setBitVectorSize(BitVector.from_int(params["DestinationID"]), 30)
     )
     if params["RetransmitFlag"]:
         bvList.append(TrueBV)
     else:
         bvList.append(FalseBV)
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 1))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=1), 10))
-    bvList.append(binary.setBitVectorSize(BitVector(intVal=11), 6))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 1))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(1), 10))
+    bvList.append(binary.setBitVectorSize(BitVector.from_int(11), 6))
     if "month" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["month"]), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["month"]), 4))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 4))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 4))
     if "day" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["day"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["day"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=0), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(0), 5))
     if "window1_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -238,33 +238,33 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fromhour1"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour1"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["frommin1"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin1"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tohour1"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tohour1"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "tomin1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tomin1"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tomin1"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "curdir1" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir1"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curdir1"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=360), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(360), 9))
     if "curspeed1" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["curspeed1"]) * Decimal("10"))), 7
+                BitVector.from_int(int(Decimal(params["curspeed1"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "window2_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -282,33 +282,33 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fromhour2"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour2"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["frommin2"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin2"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tohour2"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tohour2"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "tomin2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tomin2"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tomin2"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "curdir2" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir2"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curdir2"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=360), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(360), 9))
     if "curspeed2" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["curspeed2"]) * Decimal("10"))), 7
+                BitVector.from_int(int(Decimal(params["curspeed2"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
     if "window3_longitude" in params:
         bvList.append(
             binary.bvFromSignedInt(
@@ -326,33 +326,33 @@ def encode(params, validate=False):
     else:
         bvList.append(binary.bvFromSignedInt(54600000, 27))
     if "fromhour3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["fromhour3"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["fromhour3"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "frommin3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["frommin3"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["frommin3"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "tohour3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tohour3"]), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tohour3"]), 5))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=24), 5))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(24), 5))
     if "tomin3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["tomin3"]), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["tomin3"]), 6))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=60), 6))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(60), 6))
     if "curdir3" in params:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=params["curdir3"]), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(params["curdir3"]), 9))
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=360), 9))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(360), 9))
     if "curspeed3" in params:
         bvList.append(
             binary.setBitVectorSize(
-                BitVector(intVal=int(Decimal(params["curspeed3"]) * Decimal("10"))), 7
+                BitVector.from_int(int(Decimal(params["curspeed3"]) * Decimal("10"))), 7
             )
         )
     else:
-        bvList.append(binary.setBitVectorSize(BitVector(intVal=127), 7))
+        bvList.append(binary.setBitVectorSize(BitVector.from_int(127), 7))
 
     return binary.joinBV(bvList)
 
@@ -2299,7 +2299,7 @@ def main():
                             binaryMsg = False
                             break
                     if binaryMsg:
-                        bv = BitVector(bitstring=msg)
+                        bv = BitVector.from_bitstring(msg)
                     else:  # nmeapayload
                         bv = binary.ais6tobitvec(msg)
 

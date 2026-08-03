@@ -9,7 +9,7 @@ import sys
 from optparse import OptionParser
 
 from aisutils import binary
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 
 def main():
@@ -112,7 +112,7 @@ def main():
     bv = None
     for msg in args:
         if options.inputType == "binary":
-            bv = BitVector(bitstring=msg)
+            bv = BitVector.from_bitstring(msg)
         elif options.inputType == "nmeapayload":
             bv = binary.ais6tobitvec(msg)
         elif options.inputType == "nmea":

@@ -1,7 +1,7 @@
 """Unit tests for binary AIS bitvector conversions and bit manipulations."""
 
 from aisutils import binary
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 
 def test_ais6tobitvec() -> None:
@@ -12,10 +12,10 @@ def test_ais6tobitvec() -> None:
 
 
 def test_set_bit_vector_size() -> None:
-    bv = BitVector(intVal=5)
+    bv = BitVector.from_int(5)
     padded = binary.setBitVectorSize(bv, 8)
     assert len(padded) == 8
-    assert padded.intValue() == 5
+    assert int(padded) == 5
 
 
 def test_bv_from_signed_int() -> None:

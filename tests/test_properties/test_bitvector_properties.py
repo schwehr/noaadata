@@ -4,7 +4,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from aisutils import binary
-from aisutils.BitVector import BitVector
+from BitVector import BitVector
 
 
 # Custom strategy to generate random BitVectors (min_size >= 1 for legacy BitVector compatibility)
