@@ -236,12 +236,12 @@ ______________________________________________________________________
   - [x] Switch from Avi KaK's BitVector to
     https://github.com/schwehr/bitvector-modern
 
-- [ ] **6.1 Implement Python Dunder Methods (Data Model Protocols)**
+- [x] **6.1 Implement Python Dunder Methods (Data Model Protocols)**
 
-  - [ ] Refactor \[`BitVector.py`\](noaadata/aisutils/BitVector.py) and AIS
+  - [x] Refactor \[`BitVector.py`\](noaadata/aisutils/BitVector.py) and AIS
     message classes to implement standard dunders (`__getitem__`, `__setitem__`,
     `__len__`, `__iter__`, `__reversed__`, `__eq__`, `__int__`, `__format__`).
-  - [ ] Implement bitwise operator overloading (`&`, `|`, `^`, `~`, `<<`, `>>`)
+  - [x] Implement bitwise operator overloading (`&`, `|`, `^`, `~`, `<<`, `>>`)
     on `BitVector` with clean immutability semantics.
 
 - [ ] **6.2 Adopt Clean Constructor & Factory Patterns**
