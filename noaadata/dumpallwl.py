@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 # License: Apache 2.0
 
 """Create AIS NMEA strings for NOAA CO-OPS tide data.
@@ -226,4 +226,3 @@ if __name__=='__main__':
             if verbose:
                 print(wlStr)
             o.write( wlStr + '\n' )
-

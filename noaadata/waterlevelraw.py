@@ -1,10 +1,10 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 __version__ = '$Revision: 4762 $'.split()[1]
 __date__ = '$Date: 2006-09-19 14:56:22 -0400 (Tue, 19 Sep 2006) $'.split()[1]
 __author__ = 'Kurt Schwehr'
 
 __doc__='''
-Handling code for noaa tide station data. 
+Handling code for noaa tide station data.
 
 The Web Services Description Language (WSDL) definition for the
 query/response from the NOAA Axis server.
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         import doctest
         numfail,numtests=doctest.testmod()
         if numfail==0: print('ok')
-        else: 
+        else:
             print('FAILED')
             success=False
 
@@ -92,4 +92,3 @@ if __name__ == '__main__':
 
     if not success:
         sys.exit('Something Failed')
-
