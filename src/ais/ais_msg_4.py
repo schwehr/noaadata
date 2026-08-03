@@ -1134,7 +1134,6 @@ class Testbsreport(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the bsreport message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

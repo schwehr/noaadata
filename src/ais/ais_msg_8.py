@@ -574,7 +574,6 @@ class Testbin_broadcast(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the bin_broadcast message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

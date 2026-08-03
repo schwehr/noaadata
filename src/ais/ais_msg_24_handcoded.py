@@ -392,7 +392,6 @@ class Testb_staticdata(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the b_staticdata message"""
 
     def testEncodeDecode(self):
-
         pass
 
 

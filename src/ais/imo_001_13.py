@@ -1003,7 +1003,6 @@ class Testimo_fairway_closed(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the imo_fairway_closed message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

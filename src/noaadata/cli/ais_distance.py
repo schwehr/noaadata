@@ -104,7 +104,6 @@ def distance_m_unit_sphere(lat1, long1, lat2, long2):
 
 
 def build_dist_database(database_filename, log_files, verbose=False):
-
     cx = sqlite3.connect(database_filename)
 
     print("WARNING: not saving the station name")

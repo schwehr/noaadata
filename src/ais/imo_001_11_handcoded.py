@@ -2068,7 +2068,6 @@ class Testimo_met_hydro(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the imo_met_hydro message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

@@ -1675,7 +1675,6 @@ class Testimo_tidal_window(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the imo_tidal_window message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

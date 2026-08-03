@@ -16,7 +16,6 @@ from aisutils.uscg import uscg_ais_nmea_regex
 
 ######################################################################
 def main():
-
     parser = OptionParser(usage="%prog [options] file1 [file2 ...]", version="%prog ")
     parser.add_option(
         "-o",

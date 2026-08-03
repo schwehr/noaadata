@@ -581,7 +581,6 @@ class Testsls_lockschedule(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the sls_lockschedule message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

@@ -1442,7 +1442,6 @@ class Testb_pos_and_shipdata(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the b_pos_and_shipdata message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

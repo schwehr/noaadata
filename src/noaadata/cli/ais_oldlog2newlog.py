@@ -32,7 +32,6 @@ import nmea.zda
 
 
 def main():
-
     from optparse import OptionParser
 
     parser = OptionParser(usage="%prog [options]", version="%prog " + __version__)

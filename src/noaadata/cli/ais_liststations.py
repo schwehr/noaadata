@@ -36,7 +36,6 @@ def getStation(line, withR=False):
 
 
 def main():
-
     from optparse import OptionParser
 
     parser = OptionParser(

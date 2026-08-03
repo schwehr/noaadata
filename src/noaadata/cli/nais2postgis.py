@@ -71,7 +71,6 @@ def rebuild_track_line(cu, userid, name, start_time=None, point_limit=50):
 
 
 def rebuild_b_track_line(cu, userid, name, start_time=None, point_limit=50):
-
     q = "SELECT AsText(position) FROM positionb WHERE userid=%s ORDER BY cg_sec DESC LIMIT %s;"
 
     cu.execute(q, (userid, point_limit))

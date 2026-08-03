@@ -146,7 +146,6 @@ def sqlCreate(
 def printFields(
     params, out=sys.stdout, format="std", fieldList=None, dbType="postgres"
 ):
-
     if format == "std":
         out.write("position:\n")
         if "MessageID" in params:
@@ -227,7 +226,6 @@ def printFields(
 
 
 def main():
-
     parser = OptionParser(usage="%prog [options]")
 
     parser.add_option(

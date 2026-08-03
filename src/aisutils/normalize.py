@@ -75,7 +75,6 @@ class Normalize(queue.Queue):
         pass
 
     def put(self, uscgNmeaStr, block=True, timeout=None):
-
         cgMsg = uscg.UscgNmea(uscgNmeaStr)
         self.mostRecentTime = max(self.mostRecentTime, cgMsg.cg_sec)
 

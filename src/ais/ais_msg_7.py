@@ -723,7 +723,6 @@ class Testbinack(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the binack message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

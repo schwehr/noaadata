@@ -616,7 +616,6 @@ class Testgnss_correction(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the gnss_correction message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

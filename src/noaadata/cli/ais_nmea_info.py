@@ -65,7 +65,6 @@ def nmea_summary(filename):
 
 
 def main():
-
     parser = OptionParser(
         usage="%prog [options] file1.ais [file2.ais ...]",
         version="%prog " + __version__,

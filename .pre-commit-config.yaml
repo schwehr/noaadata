@@ -4,8 +4,60 @@ repos:
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
+
   - repo: https://github.com/executablebooks/mdformat
     rev: 1.0.0
     hooks:
       - id: mdformat
         args: ["--wrap", "80"]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.1
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        args: ["--skip", "*.bib,*.html,*.lock,*.ais,doc/*,scraps/*,contrib/*,test/*", "-L", "mmsi,sog,cog,nmea,co-ops,rtcm,ser,inport,inPort,startd,startD,unparseable,unparse,teather,thos,pring,preceeding,happenin,wieghted,builting,hight,keyworks,toke"]
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy static type checker
+        entry: bash -c 'uv run mypy src/ --ignore-missing-imports || true'
+        language: system
+        types: [python]
+        files: ^src/
+        pass_filenames: false
+
+      - id: ty
+        name: ty type checker
+        entry: bash -c 'uv run ty check src/ || true'
+        language: system
+        types: [python]
+        files: ^src/
+        pass_filenames: false
+
+      - id: bandit
+        name: bandit security scanner
+        entry: uv run bandit -r src/ -s B101,B103,B104,B110,B112,B311,B605,B607,B608
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: semgrep
+        name: semgrep security scanner
+        entry: bash -c 'uv run semgrep scan --config=auto --quiet --severity=ERROR src/ || true'
+        language: system
+        types: [python]
+        pass_filenames: false
+
+      - id: zizmor
+        name: zizmor github workflows scanner
+        entry: bash -c 'if [ -d .github/workflows ]; then uv run zizmor .github/workflows; else echo "No GitHub workflows directory to scan"; fi'
+        language: system
+        pass_filenames: false

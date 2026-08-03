@@ -900,7 +900,6 @@ class Testwaterlevel(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the waterlevel message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)

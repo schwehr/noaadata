@@ -1308,7 +1308,6 @@ class TestAidsToNavReport(unittest.TestCase):
     """Use testvalue tag text from each type to build test case the AidsToNavReport message"""
 
     def testEncodeDecode(self):
-
         params = testParams()
         bits = encode(params)
         r = decode(bits)
