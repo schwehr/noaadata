@@ -25,44 +25,49 @@ def checksumStr(data):
     """
 
     # FIX: strip off new line at the end too
-    if data[0]=='!' or data[0]=='?': data = data[1:]
-    if data[-1]=='*': data = data[:-1]
-    if data[-3]=='*': data = data[:-3]
+    if data[0] == "!" or data[0] == "?":
+        data = data[1:]
+    if data[-1] == "*":
+        data = data[:-1]
+    if data[-3] == "*":
+        data = data[:-3]
     # FIX: rename sum to not shadown builting function
-    sum=0
-    for c in data: sum = sum ^ ord(c)
+    sum = 0
+    for c in data:
+        sum = sum ^ ord(c)
     sumHex = "%x" % sum
-    if len(sumHex)==1: sumHex = '0'+sumHex
+    if len(sumHex) == 1:
+        sumHex = "0" + sumHex
     return sumHex.upper()
 
 
 def isChecksumValid(nmeaStr, allowTailData=True):
-  """Return True if the string checks out with the checksum
+    """Return True if the string checks out with the checksum
 
-  @param allowTailData: Permit handing of Coast Guard format with data after the checksum
-  @param data: NMEA message.  Leading ?/! are optional
-  @type data: str
-  @return: True if the checksum matches
-  @rtype: bool
+    @param allowTailData: Permit handing of Coast Guard format with data after the checksum
+    @param data: NMEA message.  Leading ?/! are optional
+    @type data: str
+    @return: True if the checksum matches
+    @rtype: bool
 
-  >>> isChecksumValid("!AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
-  True
+    >>> isChecksumValid("!AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
+    True
 
-  Corrupted:
+    Corrupted:
 
-  >>> isChecksumValid("!AIVDM,11,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
-  False
-  """
+    >>> isChecksumValid("!AIVDM,11,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
+    False
+    """
 
-  if allowTailData:
-    match = nmeaChecksumRE.search(nmeaStr)
-    if not match:
-      return False
-    nmeaStr = nmeaStr[:match.end()]
+    if allowTailData:
+        match = nmeaChecksumRE.search(nmeaStr)
+        if not match:
+            return False
+        nmeaStr = nmeaStr[: match.end()]
 
-  if nmeaStr[-3]!='*':
+    if nmeaStr[-3] != "*":
+        return False
+    checksum = nmeaStr[-2:]
+    if checksum.upper() == checksumStr(nmeaStr).upper():
+        return True
     return False
-  checksum=nmeaStr[-2:]
-  if checksum.upper()==checksumStr(nmeaStr).upper():
-    return True
-  return False

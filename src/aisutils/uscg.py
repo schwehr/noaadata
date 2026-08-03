@@ -6,6 +6,7 @@ Filter to a list of AIS receivers/basestations.
 
 TODO: For speed, provide functions that only parse the timestamp, station, etc.
 """
+
 import doctest
 import datetime
 import re
@@ -23,7 +24,7 @@ from . import nmea
 ######################################################################
 # NEW Regular Expression Parsing Style
 
-#FIX: make the field names be name1_name2 rather than camel case
+# FIX: make the field names be name1_name2 rather than camel case
 
 # USCG has some receivers that emit corrupted fields, so loosen from this
 #  | (,s(?P<s_rssi>\d*))
@@ -71,35 +72,45 @@ Regular expression for parsing a USCG.
 @bug: make this conform to the python coding style guides... time_stamp
 """
 
-uscg_ais_nmea_regex = re.compile(uscg_ais_nmea_regex_str,  re.VERBOSE)
+uscg_ais_nmea_regex = re.compile(uscg_ais_nmea_regex_str, re.VERBOSE)
 """Use this regex to parse USCG NMEA strings fields after the checksum."""
 
-def write_uscg_nmea_fields(nmea_str,out=sys.stdout,indent='\t'):
+
+def write_uscg_nmea_fields(nmea_str, out=sys.stdout, indent="\t"):
     """Write out the fields of a USCG nmea string.
 
     @param nmea_str: USCG style nmea string
     @param out: stream object to write to
-    @param separator: string to put between each field
     @param indent: how to indent each field
     """
     match_obj = uscg_ais_nmea_regex.search(nmea_str)
-    write(out,indent+'         prefix = '+match_obj.group('prefix')+'\n')
-    write(out,indent+'     stringType = '+match_obj.group('stringType')+'\n')
-    write(out,indent+'          total = '+match_obj.group('total')+'\n')
-    write(out,indent+'         senNum = '+match_obj.group('senNum')+'\n')
-    write(out,indent+'          seqId = '+match_obj.group('seqId')+'\n')
-    write(out,indent+'           chan = '+match_obj.group('chan')+'\n')
-    write(out,indent+'           body = '+match_obj.group('body')+'\n')
-    write(out,indent+'       fillBits = '+match_obj.group('fillBits')+'\n')
-    write(out,indent+'       checksum = '+match_obj.group('checksum')+'\n')
-    write(out,indent+'           slot = '+match_obj.group('slot')+'\n')
-    write(out,indent+'              s = '+match_obj.group('s')+'\n')
-    write(out,indent+'signal_strength = '+match_obj.group('signal_strength')+'\n')
-    write(out,indent+'time_of_arrival = '+match_obj.group('time_of_arrival')+'\n')
-    write(out,indent+'              x = '+match_obj.group('x')+'\n')
-    write(out,indent+'        station = '+match_obj.group('station')+'\n')
-    write(out,indent+'   station_type = '+match_obj.group('station_type')+'\n')
-    write(out,indent+'      timeStamp = '+match_obj.group('timeStamp')+'\n')
+    if not match_obj:
+        return
+    out.write(indent + "         prefix = " + str(match_obj.group("talker")) + "\n")
+    out.write(indent + "     stringType = " + str(match_obj.group("stringType")) + "\n")
+    out.write(indent + "          total = " + str(match_obj.group("total")) + "\n")
+    out.write(indent + "         senNum = " + str(match_obj.group("senNum")) + "\n")
+    out.write(indent + "          seqId = " + str(match_obj.group("seqId")) + "\n")
+    out.write(indent + "           chan = " + str(match_obj.group("chan")) + "\n")
+    out.write(indent + "           body = " + str(match_obj.group("body")) + "\n")
+    out.write(indent + "       fillBits = " + str(match_obj.group("fillBits")) + "\n")
+    out.write(indent + "       checksum = " + str(match_obj.group("checksum")) + "\n")
+    out.write(indent + "           slot = " + str(match_obj.group("slot")) + "\n")
+    out.write(indent + "              s = " + str(match_obj.group("s_rssi")) + "\n")
+    out.write(
+        indent + "signal_strength = " + str(match_obj.group("signal_strength")) + "\n"
+    )
+    out.write(
+        indent + "time_of_arrival = " + str(match_obj.group("time_of_arrival")) + "\n"
+    )
+    out.write(
+        indent + "              x = " + str(match_obj.group("x_station_counter")) + "\n"
+    )
+    out.write(indent + "        station = " + str(match_obj.group("station")) + "\n")
+    out.write(
+        indent + "   station_type = " + str(match_obj.group("station_type")) + "\n"
+    )
+    out.write(indent + "      timeStamp = " + str(match_obj.group("timeStamp")) + "\n")
 
 
 ######################################################################
@@ -108,22 +119,24 @@ def write_uscg_nmea_fields(nmea_str,out=sys.stdout,indent='\t'):
 
 def get_station(nmeaStr):
     """Return the station without doing anything else.  Try to be fast"""
-    fields = nmeaStr.split(',')
+    fields = nmeaStr.split(",")
     station = None
-    for i in range(len(fields)-1,5,-1):
-        if len(fields[i])==0:
-            continue # maybe it should throw a parse exception instead?
-        if fields[i][0] in ('b','r'):
+    for i in range(len(fields) - 1, 5, -1):
+        if len(fields[i]) == 0:
+            continue  # maybe it should throw a parse exception instead?
+        if fields[i][0] in ("b", "r"):
             station = fields[i]
             continue
     return station
 
+
 def get_contents(nmeaStr):
     """Return the AIS msg string.  AIS goo"""
-    return nmeaStr.split(',')[5]
+    return nmeaStr.split(",")[5]
+
 
 class UscgNmea:
-    def __init__(self,nmeaStr=None):
+    def __init__(self, nmeaStr=None):
         """
         Fields:
          - rssi ('s'): relative signal strength indicator
@@ -143,13 +156,13 @@ class UscgNmea:
               61162-1 for the UAIS. (80_330e_PAS) Draft...
 
         """
-        if None!=nmeaStr:
-            fields = nmeaStr.split(',')
-            self.cg_sec=float(fields[-1])
+        if None != nmeaStr:
+            fields = nmeaStr.split(",")
+            self.cg_sec = float(fields[-1])
             self.timestamp = datetime.datetime.utcfromtimestamp(self.cg_sec)
-            self.sqlTimestampStr = ais.sqlhelp.sec2timestamp(self.cg_sec)
+            self.sqlTimestampStr = sqlhelp.sec2timestamp(self.cg_sec)
             # See 80_330e_PAS
-            self.nmeaType=fields[0][1:]
+            self.nmeaType = fields[0][1:]
             self.totalSentences = int(fields[1])
             self.sentenceNum = int(fields[2])
             tmp = fields[3]
@@ -158,69 +171,83 @@ class UscgNmea:
             else:
                 self.sequentialMsgId = None
             # FIX: make an int if the above is set
-            self.aisChannel = fields[4] # 'A' or 'B'
+            self.aisChannel = fields[4]  # 'A' or 'B'
             self.contents = fields[5]
-            self.fillbits = int(fields[6].split('*')[0])
-            self.checksumStr = fields[6].split('*')[1] # FIX: this is a hex string.  Convert?
+            self.fillbits = int(fields[6].split("*")[0])
+            self.checksumStr = fields[6].split("*")[
+                1
+            ]  # FIX: this is a hex string.  Convert?
 
-            if self.sentenceNum==1:
-                self.msgTypeChar=fields[5][0]
+            if self.sentenceNum == 1:
+                self.msgTypeChar = fields[5][0]
             else:
-                self.msgTypeChar=None
+                self.msgTypeChar = None
 
-            for i in range(len(fields)-1,5,-1):
-                if len(fields[i])==0:
-                    continue # maybe it should throw a parse exception instead?
+            for i in range(len(fields) - 1, 5, -1):
+                if len(fields[i]) == 0:
+                    continue  # maybe it should throw a parse exception instead?
                 f = fields[i]
-                c = f[0] # first charater determines what the field is
-                if c in ('b','r','B','R'):
-                    self.station = f # FIX: think we want to keep the code in the first char
+                c = f[0]  # first charater determines what the field is
+                if c in ("b", "r", "B", "R"):
+                    self.station = (
+                        f  # FIX: think we want to keep the code in the first char
+                    )
                     self.stationTypeCode = self.station[0]
                     continue
-                    #break # Found it so ditch the for loop
-                if c == 's':
-                    self.rssi=int(f[1:])
+                    # break # Found it so ditch the for loop
+                if c == "s":
+                    self.rssi = int(f[1:])
                     continue
-                if c == 'd':
+                if c == "d":
                     self.signalStrength = int(f[1:])
                     continue
-                if c == 'T':
+                if c == "T":
                     try:
                         self.timeOfArrival = float(f[1:])
                     except:
-                        #print 'warning: bogus time of arrival: %s' % (f[1:],)
+                        # print 'warning: bogus time of arrival: %s' % (f[1:],)
                         pass
                     continue
-                if c == 'S':
+                if c == "S":
                     self.slotNumber = int(f[1:])
                     continue
-                if c == 'x':
+                if c == "x":
                     # I don't know what x is
                     self.x = int(f[1:])
                     continue
+
     def getBitVector(self):
         """
         @return: bits for the payload (even if this is a multipart)
         @rtype: BitVector
         """
-        return ais.binary.ais6tobitvec(self.contents)
+        return binary.ais6tobitvec(self.contents)
 
-    def __eq__(self,other):
+    def __eq__(self, other):
         # Try to be smart for speed
-        if self.cg_sec != other.cg_sec: return False
-        if self.sentenceNum != other.sentenceNum: return False
-        if self.totalSentences != other.totalSentences: return False
-        if self.sequentialMsgId != other.sequentialMsgId: return False
-        if self.aisChannel != other.aisChannel: return False
-        if self.checksumStr != other.checksumStr: return False
-        if self.fillbits != other.fillbits: return False
-        if self.station != other.station: return False
-        if self.contents != other.contents: return False
+        if self.cg_sec != other.cg_sec:
+            return False
+        if self.sentenceNum != other.sentenceNum:
+            return False
+        if self.totalSentences != other.totalSentences:
+            return False
+        if self.sequentialMsgId != other.sequentialMsgId:
+            return False
+        if self.aisChannel != other.aisChannel:
+            return False
+        if self.checksumStr != other.checksumStr:
+            return False
+        if self.fillbits != other.fillbits:
+            return False
+        if self.station != other.station:
+            return False
+        if self.contents != other.contents:
+            return False
 
         # FIX: probably should check for the existance of rssi, signalStrength, etc
         return True
 
-    def __ne__(self,other):
+    def __ne__(self, other):
         return not self.__eq__(other)
 
     def __str__(self):
@@ -229,98 +256,129 @@ class UscgNmea:
     def buildNmea(self):
         """Use the values in this message to reconstruct a single line nmea string"""
 
-        parts=['!'+self.nmeaType,str(self.totalSentences),str(self.sentenceNum)]
+        parts = ["!" + self.nmeaType, str(self.totalSentences), str(self.sentenceNum)]
         if self.sequentialMsgId is None:
-            parts.append('')
+            parts.append("")
         else:
             parts.append(str(self.sequentialMsgId))
         parts.append(self.aisChannel)
         parts.append(self.contents)
-        parts.append(str(self.fillbits)+'*'+self.checksumStr)
+        parts.append(str(self.fillbits) + "*" + self.checksumStr)
 
-        if 'rssi' in self.__dict__: parts.append('s'+str(self.rssi))
-        if 'signalStrength' in self.__dict__: parts.append('d'+str(self.signalStrength))
-        if 'timeOfArrival' in self.__dict__: parts.append('T'+str(self.timeOfArrival))
-        if 'slotNumber' in self.__dict__: parts.append('S'+str(self.slotNumber))
-        if 'x' in self.__dict__: parts.append('x'+str(self.x))
+        if "rssi" in self.__dict__:
+            parts.append("s" + str(self.rssi))
+        if "signalStrength" in self.__dict__:
+            parts.append("d" + str(self.signalStrength))
+        if "timeOfArrival" in self.__dict__:
+            parts.append("T" + str(self.timeOfArrival))
+        if "slotNumber" in self.__dict__:
+            parts.append("S" + str(self.slotNumber))
+        if "x" in self.__dict__:
+            parts.append("x" + str(self.x))
 
-        if self.station: parts.append(self.station)
-        parts.append(str(self.cg_sec)) # Always last
-        return ','.join(parts)
+        if self.station:
+            parts.append(self.station)
+        parts.append(str(self.cg_sec))  # Always last
+        return ",".join(parts)
+
 
 #    def getDriver(self):
 #        """
 #        Return the python module that handles this message type
 #        """
-        # FIX: where did I do this nicely?
+# FIX: where did I do this nicely?
+
 
 class TestUscgNmea(unittest.TestCase):
     def testUscgNmea(self):
-        un = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
+        un = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
 
-        self.assertEqual(un.nmeaType,'AIVDM')
-        self.assertEqual(un.totalSentences,1)
-        self.assertEqual(un.sentenceNum,1)
-        self.assertEqual(un.sequentialMsgId,None)
-        self.assertEqual(un.aisChannel,'B')
-        self.assertEqual(un.fillbits,0)
-        self.assertEqual(un.checksumStr,'63')
+        self.assertEqual(un.nmeaType, "AIVDM")
+        self.assertEqual(un.totalSentences, 1)
+        self.assertEqual(un.sentenceNum, 1)
+        self.assertEqual(un.sequentialMsgId, None)
+        self.assertEqual(un.aisChannel, "B")
+        self.assertEqual(un.fillbits, 0)
+        self.assertEqual(un.checksumStr, "63")
 
-        self.assertEqual(un.rssi,1234)
-        self.assertEqual(un.signalStrength,-119)
-        self.assertEqual(un.timeOfArrival,12.34567123)
-        self.assertEqual(un.slotNumber,4321)
-        self.assertEqual(un.station,'r003669958')
-        self.assertEqual(un.stationTypeCode,'r')
-        self.assertEqual(un.cg_sec,float(1085889680))
+        self.assertEqual(un.rssi, 1234)
+        self.assertEqual(un.signalStrength, -119)
+        self.assertEqual(un.timeOfArrival, 12.34567123)
+        self.assertEqual(un.slotNumber, 4321)
+        self.assertEqual(un.station, "r003669958")
+        self.assertEqual(un.stationTypeCode, "r")
+        self.assertEqual(un.cg_sec, float(1085889680))
         print(un.timestamp)
         print(un.sqlTimestampStr)  # Hmmm... they look the same
 
-
     def testEquality(self):
-        m1 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m1same = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
+        m1 = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m1same = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
         # A whole bunch of mangled fields
-        m2 = UscgNmea('!AIVDM,2,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m3 = UscgNmea('!AIVDM,1,2,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m4 = UscgNmea('!AIVDM,1,1,7,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m5 = UscgNmea('!AIVDM,1,1,,A,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m6 = UscgNmea('!AIVDM,1,1,,B,25Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m7 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,1*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        m8 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*64,s1234,d-119,T12.34567123,r003669958,S4321,1085889680')
-        #m9 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s123,d-119,T12.34567123,r003669958,S4321,1085889680')
-        #m10 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-120,T12.34567123,r003669958,S4321,1085889680')
-        #m11 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T11.34567123,r003669958,S4321,1085889680')
-        m12 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669959,S4321,1085889680')
-        #m13 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S432,1085889680')
-        m14 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889681')
-        self.assertTrue(m1==m1)
-        self.assertTrue(m1==m1same)
-        self.assertTrue(m1!=m2)
-        self.assertTrue(m1!=m3)
-        self.assertTrue(m1!=m4)
-        self.assertTrue(m1!=m5)
-        self.assertTrue(m1!=m6)
-        self.assertTrue(m1!=m7)
-        self.assertTrue(m1!=m8)
-        #self.failUnless(m1!=m9)
-        #self.failUnless(m1!=m10)
-        #self.failUnless(m1!=m11)
-        self.assertTrue(m1!=m12)
-        #self.failUnless(m1!=m13)
-        self.assertTrue(m1!=m14)
+        m2 = UscgNmea(
+            "!AIVDM,2,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m3 = UscgNmea(
+            "!AIVDM,1,2,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m4 = UscgNmea(
+            "!AIVDM,1,1,7,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m5 = UscgNmea(
+            "!AIVDM,1,1,,A,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m6 = UscgNmea(
+            "!AIVDM,1,1,,B,25Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m7 = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,1*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        m8 = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*64,s1234,d-119,T12.34567123,r003669958,S4321,1085889680"
+        )
+        # m9 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s123,d-119,T12.34567123,r003669958,S4321,1085889680')
+        # m10 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-120,T12.34567123,r003669958,S4321,1085889680')
+        # m11 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T11.34567123,r003669958,S4321,1085889680')
+        m12 = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669959,S4321,1085889680"
+        )
+        # m13 = UscgNmea('!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S432,1085889680')
+        m14 = UscgNmea(
+            "!AIVDM,1,1,,B,15Cjtd0Oj;Jp7ilG7=UkKBoB0<06,0*63,s1234,d-119,T12.34567123,r003669958,S4321,1085889681"
+        )
+        self.assertTrue(m1 == m1)
+        self.assertTrue(m1 == m1same)
+        self.assertTrue(m1 != m2)
+        self.assertTrue(m1 != m3)
+        self.assertTrue(m1 != m4)
+        self.assertTrue(m1 != m5)
+        self.assertTrue(m1 != m6)
+        self.assertTrue(m1 != m7)
+        self.assertTrue(m1 != m8)
+        # self.failUnless(m1!=m9)
+        # self.failUnless(m1!=m10)
+        # self.failUnless(m1!=m11)
+        self.assertTrue(m1 != m12)
+        # self.failUnless(m1!=m13)
+        self.assertTrue(m1 != m14)
 
 
-
-
-def create_nmea(bits,
-                nmeaType='!AIVDM',  # Could also use $.
-                totalSentences=None,
-                sentenceNum=None,
-                sequentialMsgId=None,
-                aisChannel='A',
-                station='runknown',
-                cg_sec=None):
+def create_nmea(
+    bits,
+    nmeaType="!AIVDM",  # Could also use $.
+    totalSentences=None,
+    sentenceNum=None,
+    sequentialMsgId=None,
+    aisChannel="A",
+    station="runknown",
+    cg_sec=None,
+):
     """Build a NMEA string for an AIS binary message payload.
 
     e.g. !AIVDM,1,1,,B,13UIAT001mmL=vhP1Sa:?8>l06A<,0*37,s24467,rNDBC46001,1202235568
@@ -350,56 +408,60 @@ def create_nmea(bits,
 
     if totalSentences is not None:
         # FIX: what is the right max number for a 5 slot message?
-        assert(totalSentences < 5)
+        assert totalSentences < 5
     else:
         # FIX: for multi-line, calculate this
         totalSentences = 1
     if sentenceNum is not None:
         # FIX: should not be done here for multi-line
-        assert(sentenceNum < totalSentences)
+        assert sentenceNum < totalSentences
     else:
-        sentenceNum=1
+        sentenceNum = 1
 
     if sequentialMsgId is not None:
-        assert (sequentialMsgId<10)
+        assert sequentialMsgId < 10
         sequentialMsgId = str(sequentialMsgId)
     else:
-        sequentialMsgId = ''
+        sequentialMsgId = ""
 
-    pad = 6 - (bitLen%6)
+    pad = 6 - (bitLen % 6)
     if 6 == pad:
         pad = 0
     if pad:
         # Pad out to multiple of 6
-        bits = bits + BitVector(size=(6 - (bitLen%6)))
-    payload = ais.binary.bitvectoais6(bits)[0]
+        bits = bits + BitVector(size=(6 - (bitLen % 6)))
+    payload = binary.bitvectoais6(bits)[0]
 
-    fields = [nmeaType,]
+    fields = [
+        nmeaType,
+    ]
     fields.append(str(totalSentences))
     fields.append(str(sentenceNum))
     fields.append(sequentialMsgId)
     fields.append(aisChannel)
     fields.append(payload)
     fields.append(str(pad))
-    firstStr = ','.join(fields)
-    checksum = ais.nmea.checksumStr(firstStr)
-    fields = [firstStr+'*'+checksum,]
+    firstStr = ",".join(fields)
+    checksum = nmea.checksumStr(firstStr)
+    fields = [
+        firstStr + "*" + checksum,
+    ]
     fields.append(station)
     if cg_sec is None:
         cg_sec = time.time()
     fields.append(str(cg_sec))
 
-    return ','.join(fields)
+    return ",".join(fields)
 
 
 def test():
-    print('doctests ...')
+    print("doctests ...")
     numfail, _ = doctest.testmod()
     if not numfail:
-        print('ok')
+        print("ok")
     else:
-        print('FAILED')
+        print("FAILED")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test()

@@ -1,6 +1,6 @@
-__docformat__ = 'epytext en'
+__docformat__ = "epytext en"
 
-__doc__='''
+__doc__ = """
 European river Information System messages
 
 @see: NMEA strings at U{http://gpsd.berlios.de/NMEA.txt}
@@ -8,4 +8,4 @@ European river Information System messages
 
 @license: Apache 2.0
 @copyright: (C) 2006
-'''
+"""

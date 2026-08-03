@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-__author__ = 'Kurt Schwehr'
-__version__ = '$Revision: 8545 $'.split()[1]
-__revision__  = __version__ # For pylint
-__date__ = '$Date: 2008-02-06 17:37:24 -0500 (Wed, 06 Feb 2008) $'.split()[1]
-__copyright__ = '2008'
-__license__   = 'Apache 2.0'
+__author__ = "Kurt Schwehr"
+__version__ = "$Revision: 8545 $".split()[1]
+__revision__ = __version__  # For pylint
+__date__ = "$Date: 2008-02-06 17:37:24 -0500 (Wed, 06 Feb 2008) $".split()[1]
+__copyright__ = "2008"
+__license__ = "Apache 2.0"
 
-__doc__='''
+__doc__ = """
 AIS database utilities.
 
 @status: under development
@@ -16,32 +16,37 @@ AIS database utilities.
 @requires: U{GeoTypes<http://www.initd.org/tracker/psycopg/wiki/GeoTypes>} >= 0.7.0
 
 @todo: Switch to GeoDjango so that this becomes irrelevant
-'''
+"""
 
-#@requires: U{psycopg2<http://http://initd.org/projects/psycopg2/>} >= 2.0.6
-#import psycopg2
-#import psycopg2.extensions
-import GeoTypes
+# @requires: U{psycopg2<http://http://initd.org/projects/psycopg2/>} >= 2.0.6
+# import psycopg2
+# import psycopg2.extensions
+try:
+    import GeoTypes
+except ImportError:
+    GeoTypes = None
+
 
 class convert:
-    '''
-    Simple wrapper to make decoding WKB Hex a lot simpler
-    '''
+    """Simple wrapper to make decoding WKB Hex a lot simpler."""
+
     def __init__(self):
+        if GeoTypes is None:
+            raise ImportError("GeoTypes module is not available")
         self.factory = GeoTypes.OGGeoTypeFactory()
-        self.parser = GeoTypes.HEXEWKBParser(factory)
-    def decode(wkbhex):
-        '''
-        Convert a WKB Hex string to an object.  This is a factory, no?
+        self.parser = GeoTypes.HEXEWKBParser(self.factory)
 
-        c = convert()
-        c.decode("0020000001000010E6C051D30925D1DA0B4044A79AE924F228")
+    def decode(self, wkbhex):
+        """Convert a WKB Hex string to an object.
 
-        @param wkbhex: HEX geometry
-        @type wkbhex: str
-        @return: Different geometry objects depending on what you give it.  e.g.
-        @rtype: Geotypes object
-        '''
-        parser.parseGeometry(wkbhex)
-        geom = factory.getGeometry()
+        Args:
+            wkbhex: HEX geometry string.
+
+        Returns:
+            Geometry object parsed from WKB Hex string.
+        """
+        if GeoTypes is None:
+            raise ImportError("GeoTypes module is not available")
+        self.parser.parseGeometry(wkbhex)
+        geom = self.factory.getGeometry()
         return geom

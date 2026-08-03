@@ -16,57 +16,74 @@ import traceback
 
 import select
 
+
 def main():
-    host_name = 'localhost'
+    host_name = "localhost"
     port_num = 31414
     connected = False
-    o = open('aisuser-rate.log','w')
+    o = open("aisuser-rate.log", "w")
     start_time = time.time()
     while True:
         count = 0
 
-        if count != 0: time.sleep(.25)
+        if count != 0:
+            time.sleep(0.25)
         try:
             soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             soc.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             soc.connect((host_name, port_num))
         except socket.error as inst:
-            print ('soc connect failed:', str(inst))
+            print("soc connect failed:", str(inst))
         else:
             connected = True
-            print ('CONNECT to ',host_name, port_num)
+            print("CONNECT to ", host_name, port_num)
 
-        buf = ''
+        buf = ""
 
         prev_time = time.time()
         rcv_count = 0
         while connected:
             count += 1
             if count % 10000 == 0:
-                print ('inner_ListenThread:',count,datetime.datetime.now().strftime('%dT%H:%M:%S'), 'EST\tconnected:',connected )
+                print(
+                    "inner_ListenThread:",
+                    count,
+                    datetime.datetime.now().strftime("%dT%H:%M:%S"),
+                    "EST\tconnected:",
+                    connected,
+                )
             if count % 100 == 0:
                 time.sleep(0.01)
-            readersready,outputready,exceptready = select.select([soc,],[],[],.1)
-            if len(readersready) == 0: continue
+            readersready, outputready, exceptready = select.select(
+                [
+                    soc,
+                ],
+                [],
+                [],
+                0.1,
+            )
+            if len(readersready) == 0:
+                continue
             data = soc.recv(640)
             if len(data) == 0:
                 connected = False
-                print ('DISCONNECT')
+                print("DISCONNECT")
                 break
 
             now = time.time()
             dt = now - prev_time
-            rcv_count += data.count('\r')
+            rcv_count += data.count("\r")
 
-            if dt >= 1.:
+            if dt >= 1.0:
                 rate = rcv_count / dt
                 offset = now - start_time
-                o.write('{offset} {rate} {rcv_count} {now} {dt}\n'.format(**locals()))
+                o.write("{offset} {rate} {rcv_count} {now} {dt}\n".format(**locals()))
                 o.flush()
                 if count % 5 == 0:
-                    print('{offset} {rate} {rcv_count} {now}'.format(**locals()))
+                    print("{offset} {rate} {rcv_count} {now}".format(**locals()))
                 rcv_count = 0
                 prev_time = now
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

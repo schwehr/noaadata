@@ -11,11 +11,11 @@ import nmea
 import calendar
 
 # List of the valide clock sources.
-timekeepers={
-    'ZA': 'atomic clock',
-    'ZC': 'chronometer',
-    'ZQ': 'quartz',
-    'ZV': 'radio update'
+timekeepers = {
+    "ZA": "atomic clock",
+    "ZC": "chronometer",
+    "ZQ": "quartz",
+    "ZV": "radio update",
 }
 
 
@@ -27,9 +27,9 @@ def zdaEpochSeconds(nmeaStr):
     @rtype: float
     """
     z = zdaDecode(nmeaStr)
-    return calendar.timegm((
-        z['year'], z['mon'], z['day'],
-        z['hour'], z['min'], z['decimalsec']))
+    return calendar.timegm(
+        (z["year"], z["mon"], z["day"], z["hour"], z["min"], z["decimalsec"])
+    )
 
 
 def zdaDecode(nmeaStr):
@@ -44,72 +44,75 @@ def zdaDecode(nmeaStr):
     @rtype: dict
     @return: name value pairs for the GMT time of the message
     """
-    assert(len(nmeaStr)>20)
-    assert(nmeaStr[0] in ('$','!'))
-    assert(nmeaStr[3:6]=='ZDA')
-    #print nmeaStr, nmea.isChecksumValid(nmeaStr)
-    #assert(nmea.isChecksumValid(nmeaStr))
-    fields = nmeaStr.split(',')
-    val={}
-    val['timekeeper']=fields[0][1:3]
-    val['hour']=int(fields[1][0:2])
-    val['min']=int(fields[1][2:4])
-    val['sec']=int(fields[1][4:6])
-    val['decimalsec']=float(fields[1][4:9])
-    assert(fields[1][6]=='.')
-    val['hsec']=int(fields[1][7:9]) # hundredths of seconds
-    val['day']=int(fields[2])
-    val['mon']=int(fields[3])
-    val['year']=int(fields[4])
-    val['localzonehour']=int(fields[5])
-    val['localzonemin']=int(fields[6][0:2])
+    assert len(nmeaStr) > 20
+    assert nmeaStr[0] in ("$", "!")
+    assert nmeaStr[3:6] == "ZDA"
+    # print nmeaStr, nmea.isChecksumValid(nmeaStr)
+    # assert(nmea.isChecksumValid(nmeaStr))
+    fields = nmeaStr.split(",")
+    val = {}
+    val["timekeeper"] = fields[0][1:3]
+    val["hour"] = int(fields[1][0:2])
+    val["min"] = int(fields[1][2:4])
+    val["sec"] = int(fields[1][4:6])
+    val["decimalsec"] = float(fields[1][4:9])
+    assert fields[1][6] == "."
+    val["hsec"] = int(fields[1][7:9])  # hundredths of seconds
+    val["day"] = int(fields[2])
+    val["mon"] = int(fields[3])
+    val["year"] = int(fields[4])
+    val["localzonehour"] = int(fields[5])
+    val["localzonemin"] = int(fields[6][0:2])
 
     return val
 
 
-def ggaDecode(nmeaStr,validate=False):
-  """
-  Decode NMEA GPS FIX data
+def ggaDecode(nmeaStr, validate=False):
+    """
+    Decode NMEA GPS FIX data
 
-  $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
+    $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 
-  @param nmeaStr: nmea string to decode
-  """
-  if validate:
-      assert(len(nmeaStr)>=71)
-      assert(len(nmeaStr)<=78)
-      assert(nmeaStr[0] in ('$','!'))
-      assert(nmeaStr[3:6]=='GGA')
-      #assert(nmea.isChecksumValid(nmeaStr))
-  fields = nmeaStr.split(',')
-  r = {}  # Results dict to be returned.
-  r['hour'] = fields[1][0:2]
-  r['min'] = fields[1][2:4]
-  r['sec'] = fields[1][4:6]
-  r['hsec'] = fields[1][7:9]  # Hundreths of seconds.
-  r['lat'] = float(fields[2][0:2]) + float(fields[2][2:])/60.
-  if fields[3] == 'S':
-    r['lat']=-r['lat']
+    @param nmeaStr: nmea string to decode
+    """
+    if validate:
+        assert len(nmeaStr) >= 71
+        assert len(nmeaStr) <= 78
+        assert nmeaStr[0] in ("$", "!")
+        assert nmeaStr[3:6] == "GGA"
+        # assert(nmea.isChecksumValid(nmeaStr))
+    fields = nmeaStr.split(",")
+    r = {}  # Results dict to be returned.
+    r["hour"] = fields[1][0:2]
+    r["min"] = fields[1][2:4]
+    r["sec"] = fields[1][4:6]
+    r["hsec"] = fields[1][7:9]  # Hundreths of seconds.
+    r["lat"] = float(fields[2][0:2]) + float(fields[2][2:]) / 60.0
+    if fields[3] == "S":
+        r["lat"] = -r["lat"]
 
-  # FIX: lon probably will fail for
-  lon = fields[4][:3]
-  if lon[0]=='0': lon = lon[1:]
-  r['lon']=float(lon) + float(fields[4][3:])/60.
-  if fields[5] == 'W':
-    r['lon'] =- r['lon']
-  r['qual'] = int(fields[6])
-  r['sats'] = int(fields[7])
-  r['horz_dilution'] = float(fields[8])  # Meters.
-  r['alt'] = float(fields[9])  # Altitude in meters above the geoid, meters.
-  r['alt_units'] = fields[10]
-  r['geoidal_sep'] = float(fields[11])
-  r['geoidal_sep_units'] = fields[12]
-  try:
-    r['age'] = float(fields[13])
-  except:
-    r['age'] = None
-  r['diff_ref_station'] = fields[14]
-  return r
+    # FIX: lon probably will fail for
+    lon = fields[4][:3]
+    if lon[0] == "0":
+        lon = lon[1:]
+    r["lon"] = float(lon) + float(fields[4][3:]) / 60.0
+    if fields[5] == "W":
+        r["lon"] = -r["lon"]
+    r["qual"] = int(fields[6])
+    r["sats"] = int(fields[7])
+    r["horz_dilution"] = float(fields[8])  # Meters.
+    r["alt"] = float(fields[9])  # Altitude in meters above the geoid, meters.
+    r["alt_units"] = fields[10]
+    r["geoidal_sep"] = float(fields[11])
+    r["geoidal_sep_units"] = fields[12]
+    try:
+        r["age"] = float(fields[13])
+    except:
+        r["age"] = None
+    r["diff_ref_station"] = fields[14]
+    return r
+
+
 """
 GGA - Global Positioning System Fix Data
 Time, Position and fix related data for a GPS receiver.
@@ -151,6 +154,7 @@ Time, Position and fix related data for a GPS receiver.
 $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 """
 
+
 def zdaDict2TIMESTAMP(zdaDict):
     """
     Make an SQL TIMESTAMP from the results of a zdaDecode
@@ -163,11 +167,11 @@ def zdaDict2TIMESTAMP(zdaDict):
     @return: TIMESTAMP
     @rtype: str
     """
-    s = ''
-    s += str(zdaDict['year'])
-    s += '-' + ('%02d' % zdaDict['mon'])
-    s += '-' + ('%02d' % zdaDict['day'])
-    s += ' ' + ('%02d' % zdaDict['hour'])
-    s += ':' + ('%02d' % zdaDict['min'])
-    s += ':' + ('%02d' % zdaDict['sec'])
+    s = ""
+    s += str(zdaDict["year"])
+    s += "-" + ("%02d" % zdaDict["mon"])
+    s += "-" + ("%02d" % zdaDict["day"])
+    s += " " + ("%02d" % zdaDict["hour"])
+    s += ":" + ("%02d" % zdaDict["min"])
+    s += ":" + ("%02d" % zdaDict["sec"])
     return s

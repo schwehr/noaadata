@@ -1,20 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-'Created Fall 2009 by Chaoyi Yin for Kurt Schwehr'
+"Created Fall 2009 by Chaoyi Yin for Kurt Schwehr"
 
-import os,sys,time
+import os, sys, time
 import logging
 from logging.handlers import BaseRotatingHandler
 import socket
 import _thread
 import queue
 
+
 class MidnightRotatingFileHandler(BaseRotatingHandler):
     """
     Handler for logging to a file, rotating the log file every midnight.
     """
-    def __init__(self, filename, delay=0, symlink=True, prologue=None, epilogue=None, rollover=None):
+
+    def __init__(
+        self,
+        filename,
+        delay=0,
+        symlink=True,
+        prologue=None,
+        epilogue=None,
+        rollover=None,
+    ):
         self.prefix = filename + "-"
         self.suffix = "%Y-%m-%d"
         self.prologue = prologue
@@ -26,11 +36,10 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
         if symlink:
             self._symlinkPointToToday(filename)
 
-        BaseRotatingHandler.__init__(self, filename, 'a', None, delay)
+        BaseRotatingHandler.__init__(self, filename, "a", None, delay)
         # print "Will rollover at %d, %d seconds from now" % (self.rolloverAt, self.rolloverAt - currentTime)
         if self.prologue:
             self.stream.write(self.prologue % self._getParameter())
-
 
     def _symlinkPointToToday(self, filename):
         timeTuple = time.gmtime(time.time())
@@ -41,7 +50,6 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
             if detail.errno != 2:
                 raise
         os.symlink(dfn, filename)
-
 
     def computeRollover(self, currentTime):
         """
@@ -66,7 +74,7 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
         t = int(time.time())
         if t >= self.rolloverAt:
             return 1
-        #print "No need to rollover: %d, %d" % (t, self.rolloverAt)
+        # print "No need to rollover: %d, %d" % (t, self.rolloverAt)
         return 0
 
     def doRollover(self):
@@ -89,7 +97,7 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
 
         self._doRollover()
 
-        self.mode = 'w'
+        self.mode = "w"
         self.stream = self._open()
         currentTime = int(time.time())
         newRolloverAt = self.computeRollover(currentTime)
@@ -98,7 +106,6 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
         self.rolloverAt = newRolloverAt
         if self.prologue:
             self.stream.write(self.prologue % self._getParameter())
-
 
     def _doRollover(self):
         if self.symlink:
@@ -112,7 +119,7 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
             if os.path.exists(dfn):
                 os.remove(dfn)
                 os.rename(self.baseFilename, dfn)
-            #print "%s -> %s" % (self.baseFilename, dfn)
+            # print "%s -> %s" % (self.baseFilename, dfn)
 
     def _getParameter(self):
         d = {}
@@ -121,17 +128,18 @@ class MidnightRotatingFileHandler(BaseRotatingHandler):
 
 
 class PassThroughServerHandler(logging.Handler):
-    '''Receive data from a socket and write the data to all clients that
+    """Receive data from a socket and write the data to all clients that
     are connected.  Starts two threads and returns to the caller.
 
     Ripped out of port_server, but without the log file support
-    '''
-    def __init__(self,options):
+    """
+
+    def __init__(self, options):
         logging.Handler.__init__(self)
-        self.clients=[]
+        self.clients = []
         self.options = options
         self.q = queue.Queue()
-        self.count=0
+        self.count = 0
         self.v = options.verbose
         self.start()
 
@@ -140,47 +148,49 @@ class PassThroughServerHandler(logging.Handler):
         self.put("%s\n" % msg)
 
     def start(self):
-        print('starting threads')
-        _thread.start_new_thread(self.passdata,(self,))
-        _thread.start_new_thread(self.connection_handler,(self,))
+        print("starting threads")
+        _thread.start_new_thread(self.passdata, (self,))
+        _thread.start_new_thread(self.connection_handler, (self,))
         return
 
-    def put(self,nmea_str):
+    def put(self, nmea_str):
         self.q.put(nmea_str)
 
-    def passdata(self,unused=None):
-        '''Do not use this.  Call start() instead.
+    def passdata(self, unused=None):
+        """Do not use this.  Call start() instead.
 
         @bug: how can I get rid of unused?
-        '''
-        print('starting passthrough server')
+        """
+        print("starting passthrough server")
 
         while 1:
-            time.sleep(.001) # Replace with select
+            time.sleep(0.001)  # Replace with select
             m = self.q.get()
             if len(m) == 0:
-                sys.stderr.write('No data in queue get\n')
+                sys.stderr.write("No data in queue get\n")
                 continue
             for c in self.clients:
                 try:
                     if self.v:
-                        sys.stderr.write('sending message %s' % m)
-                        if m[-1] != '\n':
-                            sys.stderr.write('\n')
+                        sys.stderr.write("sending message %s" % m)
+                        if m[-1] != "\n":
+                            sys.stderr.write("\n")
                     c.send(m)
                 except socket.error:
-                    sys.stderr.write('Client Disconnect\n')
+                    sys.stderr.write("Client Disconnect\n")
                     self.clients.remove(c)
 
-    def connection_handler(self,unused=None):
-        '''Do not use this.  Call start() instead.  This listens for
+    def connection_handler(self, unused=None):
+        """Do not use this.  Call start() instead.  This listens for
         connections and adds the new socket to the clients list.
 
         @bug: how can I get rid of unused?
-        '''
-        sys.stderr.write('starting incoming connection receiver\n')
-        sys.stderr.write('  listening for connections at %s:%s\n' % (self.options.outHost, self.options.outPort))
-
+        """
+        sys.stderr.write("starting incoming connection receiver\n")
+        sys.stderr.write(
+            "  listening for connections at %s:%s\n"
+            % (self.options.outHost, self.options.outPort)
+        )
 
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -189,7 +199,7 @@ class PassThroughServerHandler(logging.Handler):
 
         while 1:
             (clientsocket, address) = serversocket.accept()
-            sys.stderr.write('connect from %s\n' % (address,))
+            sys.stderr.write("connect from %s\n" % (address,))
             self.clients.append(clientsocket)
 
 

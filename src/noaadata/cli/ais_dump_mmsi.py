@@ -17,40 +17,49 @@ from aisutils.BitVector import BitVector
 
 def main():
 
-    parser = OptionParser(usage="%prog [options] file1 [file2 ...]",
-                          version="%prog ")
+    parser = OptionParser(usage="%prog [options] file1 [file2 ...]", version="%prog ")
 
     parser.add_option(
-        '-d','--dump-line',dest='dumpLine',default=False,
-        action='store_true',
-        help='Append the nmea string after the line [default: do not print the line]')
+        "-d",
+        "--dump-line",
+        dest="dumpLine",
+        default=False,
+        action="store_true",
+        help="Append the nmea string after the line [default: do not print the line]",
+    )
 
-    parser.add_option('-o','--output',dest='outputFilename',default=None,
-                      help='Name of the file to write [default: stdout]')
+    parser.add_option(
+        "-o",
+        "--output",
+        dest="outputFilename",
+        default=None,
+        help="Name of the file to write [default: stdout]",
+    )
 
-    (options,args) = parser.parse_args()
+    (options, args) = parser.parse_args()
     o = sys.stdout
-    if None != options.outputFilename: o = open(options.outFilename,'w')
-
+    if None != options.outputFilename:
+        o = open(options.outFilename, "w")
 
     print(args)
     for filename in args:
         print(filename)
         for line in file(filename):
-            if line[0]=='#':
+            if line[0] == "#":
                 continue
-            fields = line.split(',')[:6]
-            if '1'!=fields[2]: # Must be the start of a sequence
+            fields = line.split(",")[:6]
+            if "1" != fields[2]:  # Must be the start of a sequence
                 continue
-            if len(fields[5])<7: continue
-            bv = binary.ais6tobitvec(fields[5][:7]) # Hacked for speed
+            if len(fields[5]) < 7:
+                continue
+            bv = binary.ais6tobitvec(fields[5][:7])  # Hacked for speed
             int(bv[8:38])
             mmsi = str(int(bv[8:38]))
-            o.write (mmsi)
+            o.write(mmsi)
             if options.dumpLine:
-                o.write(' '+line.strip())
-            o.write ('\n')
+                o.write(" " + line.strip())
+            o.write("\n")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

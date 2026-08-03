@@ -3,28 +3,30 @@
 import socket
 import time
 
+
 def main():
-    host='0.0.0.0'  # All interfaces.
-    port=4000
+    host = "0.0.0.0"  # All interfaces.
+    port = 4000
     buffer = 10000
 
-    sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-    sock.bind((host,port))
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind((host, port))
 
     import aisutils.server
-    log = aisutils.server.LogFileWithRotate('log-ccom-wx-','rnhccom',True,True)
+
+    log = aisutils.server.LogFileWithRotate("log-ccom-wx-", "rnhccom", True, True)
 
     while 1:
-        data,addr = sock.recvfrom(buffer)
+        data, addr = sock.recvfrom(buffer)
 
         if not data:
             log.write("NO DATA")
             break
         else:
             timestamp = time.time()
-        log_str = '%s,%s' % (data.strip(),addr[0])
-        log.write(log_str,verbose=True)
+        log_str = "%s,%s" % (data.strip(), addr[0])
+        log.write(log_str, verbose=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

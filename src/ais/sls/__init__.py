@@ -1,6 +1,6 @@
-__docformat__ = 'epytext en'
+__docformat__ = "epytext en"
 
-__doc__='''
+__doc__ = """
 St. Lawrence Seaway (SLS) messages
 
 @see: NMEA strings at U{http://gpsd.berlios.de/NMEA.txt}
@@ -12,4 +12,4 @@ St. Lawrence Seaway (SLS) messages
 @undocumented: __doc__
 @undocumented: __version__ __author__ __url__
 
-'''
+"""

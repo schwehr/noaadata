@@ -36,16 +36,19 @@ import aisutils.uscg
 
 class DatabaseHandler:
     """Queue handling for the database."""
-    def __init__(self,
-                 connection,
-                 dbUpdateInterval=5.0,
-                 threshold=1,
-                 verbose=False,
-                 skipDB=False,
-                 limitPoints=10,
-                 track_start_time_limit=None,  # 1 hour ago
-                 last_position_time_limit=None,  # 6 hours ago
-                 cleanTime=30):
+
+    def __init__(
+        self,
+        connection,
+        dbUpdateInterval=5.0,
+        threshold=1,
+        verbose=False,
+        skipDB=False,
+        limitPoints=10,
+        track_start_time_limit=None,  # 1 hour ago
+        last_position_time_limit=None,  # 6 hours ago
+        cleanTime=30,
+    ):
         """
         @param connection: database connection
         @param dbUpdateInterval: how many seconds between database updates
@@ -63,6 +66,7 @@ class DatabaseHandler:
             self.cx = None
             self.cu = None
         import Queue
+
         self.q = Queue.Queue()
         self.running = True
         self.dbUpdateInterval = dbUpdateInterval
@@ -77,14 +81,14 @@ class DatabaseHandler:
         self.last_position_time_limit = last_position_time_limit
         self.cleanTime = cleanTime
         if self.verbose:
-            logging.info('Database handler init.')
-            logging.info('  track_start: %s', self.track_start_time_limit)
-            logging.info('  last_position: %s', self.last_position_time_limit)
+            logging.info("Database handler init.")
+            logging.info("  track_start: %s", self.track_start_time_limit)
+            logging.info("  last_position: %s", self.last_position_time_limit)
 
     def stop(self):
         self.running = False
         if self.verbose:
-            logging.info('Database handler stop scheduled')
+            logging.info("Database handler stop scheduled")
 
     def commit(self):
         """Slow loop that commits groups of position reports to the database.
@@ -103,54 +107,62 @@ class DatabaseHandler:
         if size >= self.threshold:
             # Don't try to flush incoming messages.
             if self.verbose:
-                logging.info('Pulling from queue.  size: %d', size)
+                logging.info("Pulling from queue.  size: %d", size)
             for i in range(size):
                 sqlStr, vessel = q.get()
                 if vessel is not None:
                     vesselsSeen.add(vessel)
                 if self.verbose:
-                    logging.info('exec in commit: %d %s', i, sqlStr)
+                    logging.info("exec in commit: %d %s", i, sqlStr)
                 if not skipDB:
                     try:
                         cu.execute(sqlStr)
                     except Exception, e:
-                        logging.error('Exception on sql: %s, ', sqlStr)
-                        logging.error('   Exception: %s', type(Exception))
-                        logging.error('   Exception args: %s', e)
+                        logging.error("Exception on sql: %s, ", sqlStr)
+                        logging.error("   Exception: %s", type(Exception))
+                        logging.error("   Exception args: %s", e)
                         traceback.print_exc(file=sys.stderr)
                         continue
             if skipDB:
-                logging.info('Skipping commit.')
+                logging.info("Skipping commit.")
             else:
                 if self.verbose:
-                    logging.info('Committing.')
+                    logging.info("Committing.")
                 cx.commit()
                 if self.verbose:
-                    logging.info('Recalculate ship tracks vessels seen.')
-                    logging.info('  '+str(vesselsSeen)+'\n')
+                    logging.info("Recalculate ship tracks vessels seen.")
+                    logging.info("  " + str(vesselsSeen) + "\n")
                 if len(vesselsSeen) > 0:
                     # Always work in UTC.  Magicdate is local.
                     tzoffset = datetime.timedelta(seconds=time.timezone)
 
-                    track_start_time = magicdate.magicdate(
-                        self.track_start_time_limit) + tzoffset
+                    track_start_time = (
+                        magicdate.magicdate(self.track_start_time_limit) + tzoffset
+                    )
                     aisutils.database.rebuild_track_lines(
-                        cx, vessels=vesselsSeen, startTime=track_start_time,
-                        verbose=self.verbose)
+                        cx,
+                        vessels=vesselsSeen,
+                        startTime=track_start_time,
+                        verbose=self.verbose,
+                    )
 
-                    last_pos_start_time = magicdate.magicdate(
-                        self.last_position_time_limit) + tzoffset
+                    last_pos_start_time = (
+                        magicdate.magicdate(self.last_position_time_limit) + tzoffset
+                    )
                     aisutils.database.rebuild_last_position(
                         cx,
                         vesselsClassA=vesselsSeen,
                         startTime=last_pos_start_time,
-                        verbose=self.verbose)
+                        verbose=self.verbose,
+                    )
 
     def clean(self):
         """Run through the vessel list so that aging works."""
 
-        if (self.track_start_time_limit is None
-            and self.last_position_time_limit is None):
+        if (
+            self.track_start_time_limit is None
+            and self.last_position_time_limit is None
+        ):
             # No time expirations, so don't clean.
             return
 
@@ -158,34 +170,39 @@ class DatabaseHandler:
         tzoffset = datetime.timedelta(seconds=time.timezone)
 
         if self.verbose:
-            logging.info('Cleaning.  utcnow: %s', datetime.datetime.utcnow())
+            logging.info("Cleaning.  utcnow: %s", datetime.datetime.utcnow())
 
         if self.track_start_time_limit:
-            startTime = magicdate.magicdate(
-                self.track_start_time_limit) + tzoffset
+            startTime = magicdate.magicdate(self.track_start_time_limit) + tzoffset
             if self.verbose:
-                logging.info('Cleaning track_start %s (%s)',
-                             startTime, self.track_start_time_limit)
+                logging.info(
+                    "Cleaning track_start %s (%s)",
+                    startTime,
+                    self.track_start_time_limit,
+                )
 
-            aisutils.database.rebuild_track_lines(self.cx,
-                                                  startTime=startTime,
-                                                  verbose=self.verbose)
-            logging.info('Done cleaning track_start.')
+            aisutils.database.rebuild_track_lines(
+                self.cx, startTime=startTime, verbose=self.verbose
+            )
+            logging.info("Done cleaning track_start.")
 
         if self.last_position_time_limit:
-            startTime = magicdate.magicdate(
-                self.last_position_time_limit) + tzoffset
+            startTime = magicdate.magicdate(self.last_position_time_limit) + tzoffset
             if self.verbose:
-                logging.info('Clean last_position %s (%s)',
-                             startTime, self.last_position_time_limit)
+                logging.info(
+                    "Clean last_position %s (%s)",
+                    startTime,
+                    self.last_position_time_limit,
+                )
             aisutils.database.rebuild_last_position(
-                self.cx, startTime=startTime, verbose=self.verbose)
+                self.cx, startTime=startTime, verbose=self.verbose
+            )
         if self.verbose:
-            logging.info('Done cleaning.')
+            logging.info("Done cleaning.")
 
     def handler(self, unused=None):
         """Top level loop thread."""
-         # Do an immediate clean
+        # Do an immediate clean
         nextClean = datetime.datetime.utcnow()
 
         while self.running:
@@ -193,17 +210,17 @@ class DatabaseHandler:
             try:
                 self.commit()
             except Exception as e:
-                logging.info('Exception args: %s', e)
+                logging.info("Exception args: %s", e)
                 traceback.print_exc(file=sys.stderr)
                 continue
 
             if datetime.datetime.utcnow() > nextClean:
                 self.clean()
-                nextClean = (
-                    datetime.datetime.utcnow() +
-                    datetime.timedelta(seconds=self.cleanTime))
+                nextClean = datetime.datetime.utcnow() + datetime.timedelta(
+                    seconds=self.cleanTime
+                )
 
-        logging.info('Database handler stopping. Begin final commit.')
+        logging.info("Database handler stopping. Begin final commit.")
         self.commit()
         self.stopped = True
 
@@ -211,12 +228,12 @@ class DatabaseHandler:
 class HandleAisConnection:
     """Handles the incoming socket."""
 
-    def __init__(self, dataSocket, dbQueue, options, dbType='postgres'):
+    def __init__(self, dataSocket, dbQueue, options, dbType="postgres"):
         """
         @param dbQueue: Queue object to push SQL messages onto
         """
         self.options = options
-        logging.info('hack options in __init__: %s', self.options)
+        logging.info("hack options in __init__: %s", self.options)
         self.dataSocket = dataSocket
         self.running = True
         self.dbQueue = dbQueue
@@ -224,33 +241,40 @@ class HandleAisConnection:
         try:
             self.timeout = options.timeout
         except:
-            self.timeout = 1.
+            self.timeout = 1.0
         self.buf = None
 
     def handler(self, unused=None):
         v = self.options.verbose
         if v:
-            logging.info('Handler started.')
+            logging.info("Handler started.")
 
         while self.running:
-            readersready, outputready, exceptready = select.select([self.dataSocket,],[],[],self.timeout)
+            readersready, outputready, exceptready = select.select(
+                [
+                    self.dataSocket,
+                ],
+                [],
+                [],
+                self.timeout,
+            )
             for sock in readersready:
                 data = sock.recv(1024)
 
                 if len(data) == 0:
                     # Socket is closed.
                     if v:
-                        logging.info('Shutting down ais connection handler\n')
+                        logging.info("Shutting down ais connection handler\n")
                     self.running = False
                     continue
 
                 if self.buf is not None:
                     data = self.buf + data
                     if v:
-                        logging.info('new buf: %s', data)
+                        logging.info("new buf: %s", data)
                     self.buf = None
-                nmeaStrs = data.split('\n')
-                if data[-1] not in ('\n','\r'):
+                nmeaStrs = data.split("\n")
+                if data[-1] not in ("\n", "\r"):
                     self.buf = nmeaStrs.pop()
 
                 if len(data) == 0:
@@ -259,34 +283,33 @@ class HandleAisConnection:
                 for msg in nmeaStrs:
                     if len(msg) == 0:
                         continue
-                    if not msg.startswith('!AIVDM'):
+                    if not msg.startswith("!AIVDM"):
                         if v:
-                            logging.info('Skipping non ais message "'+msg+'"\n')
+                            logging.info('Skipping non ais message "' + msg + '"\n')
                         continue
                     else:
                         if v:
-                            logging.info('processing ais message ... '+msg+'\n')
+                            logging.info("processing ais message ... " + msg + "\n")
                         pass
 
                     uscgMsg = aisutils.uscg.UscgNmea(msg)
 
                     if uscgMsg.totalSentences != 1:
                         if v:
-                            logging.info('Skip un-normalized messages.')
-                            logging.info('  msg: %s', msg)
+                            logging.info("Skip un-normalized messages.")
+                            logging.info("  msg: %s", msg)
                         continue
 
                     if uscgMsg.msgTypeChar not in ais.msgModByFirstChar:
                         if v:
-                            logging.info('Unhandled message: %s',
-                                         uscgMsg.msgTypeChar)
+                            logging.info("Unhandled message: %s", uscgMsg.msgTypeChar)
                         continue
                     aismsg = ais.msgModByFirstChar[uscgMsg.msgTypeChar]
                     bv = ais.binary.ais6tobitvec(uscgMsg.contents)
                     try:
                         msgDict = aismsg.decode(bv)
                     except Exception as e:
-                        logging.info('   Dropping bad msg: %s', e)
+                        logging.info("   Dropping bad msg: %s", e)
                         continue
 
                     ins = aismsg.sqlInsert(msgDict, dbType=self.dbType)
@@ -296,16 +319,16 @@ class HandleAisConnection:
                     cg_station = uscgMsg.station
 
                     if cg_sec is not None:
-                        ins.add('cg_sec', cg_sec)
+                        ins.add("cg_sec", cg_sec)
                     if cg_timestamp is not None:
-                        ins.add('cg_timestamp', cg_timestamp)
+                        ins.add("cg_timestamp", cg_timestamp)
                     if cg_station is not None:
-                        ins.add('cg_r', cg_station)
+                        ins.add("cg_r", cg_station)
 
                     # Figure out if the vessel track needs to be updated
                     vessel = None
-                    if aismsg.dbTableName in ['position']:
-                        vessel = msgDict['UserID']
+                    if aismsg.dbTableName in ["position"]:
+                        vessel = msgDict["UserID"]
                     self.dbQueue.put((str(ins), vessel))
 
 
@@ -314,8 +337,10 @@ class PassThroughServer:
 
     Starts two threads and returns to the caller.
     """
-     # Indexed by socket. Handles if we have partial text.
+
+    # Indexed by socket. Handles if we have partial text.
     nmeaInputs = {}
+
     def __init__(self, options, dbHandler):
         """
         @param options: understands timeout (float in seconds)
@@ -326,7 +351,7 @@ class PassThroughServer:
         try:
             self.timeout = options.timeout
         except:
-            self.timeout = 1.
+            self.timeout = 1.0
         try:
             self.hosts_allow = options.hosts_allow
         except:
@@ -340,11 +365,10 @@ class PassThroughServer:
 
         TODO(schwehr): Cleanup and use verbose flag.
         """
-        logging.info('Starting threads.\n')
+        logging.info("Starting threads.\n")
         thread.start_new_thread(self._connection_handler, (self,))
-        logging.info('connection_handler started\n')
+        logging.info("connection_handler started\n")
         return
-
 
     def _connection_handler(self, unused=None):
         """Listen for connections and add to clients.
@@ -355,7 +379,7 @@ class PassThroughServer:
         """
         inHost = self.options.inHost
         inPort = self.options.inPort
-        logging.info('Starting connection receiver: %s:%s', inHost, inPort)
+        logging.info("Starting connection receiver: %s:%s", inHost, inPort)
 
         serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -364,18 +388,16 @@ class PassThroughServer:
 
         while self.running:
             (clientsocket, address) = serversocket.accept()
-            logging.info('connect from %s %s', clientsocket, address)
-            if (self.hosts_allow is not None
-                and address[0] not in self.hosts_allow):
-                logging.info('Dropping connection from: %s', address)
+            logging.info("connect from %s %s", clientsocket, address)
+            if self.hosts_allow is not None and address[0] not in self.hosts_allow:
+                logging.info("Dropping connection from: %s", address)
                 continue
             else:
-                logging.info('Creating handler.')
-                hac = HandleAisConnection(clientsocket,
-                                          self.dbHandler.q,
-                                          self.options,
-                                          self.options.dbType)
-                logging.info('Creating thread')
+                logging.info("Creating handler.")
+                hac = HandleAisConnection(
+                    clientsocket, self.dbHandler.q, self.options, self.options.dbType
+                )
+                logging.info("Creating thread")
                 thread.start_new_thread(hac.handler, (self,))
                 self.hacs.append(hac)
 
@@ -386,101 +408,117 @@ class PassThroughServer:
     def stop(self):
         self.running = False
 
+
 def main():
     from optparse import OptionParser
 
-    parser = OptionParser(
-        usage='%prog [options]',
-        version='%prog')
+    parser = OptionParser(usage="%prog [options]", version="%prog")
 
     parser.add_option(
-        '-i', '--in-port',
-        dest='inPort',
-        type='int',
+        "-i",
+        "--in-port",
+        dest="inPort",
+        type="int",
         default=31402,
-        help='Where the data comes from [default: %default]')
+        help="Where the data comes from [default: %default]",
+    )
 
     parser.add_option(
-        '-I', '--in-host',
-        dest='inHost',
-        type='string',
-        default='localhost',
-        help='What host to read data from [default: %default]')
+        "-I",
+        "--in-host",
+        dest="inHost",
+        type="string",
+        default="localhost",
+        help="What host to read data from [default: %default]",
+    )
 
     parser.add_option(
-        '--in-gethostname',
-        dest='inHostname',
-        action='store_true',
+        "--in-gethostname",
+        dest="inHostname",
+        action="store_true",
         default=False,
-        help='Where the data comes from [default: %default]')
+        help="Where the data comes from [default: %default]",
+    )
 
     parser.add_option(
-        '-a', '--allow',
-        action='append',
-        dest='hosts_allow',
-        help='Add hosts to a list that are allowed to connect [default: all]')
+        "-a",
+        "--allow",
+        action="append",
+        dest="hosts_allow",
+        help="Add hosts to a list that are allowed to connect [default: all]",
+    )
 
     parser.add_option(
-        '-t', '--timeout',
-        dest='timeout',
-        type='float',
-        default='300',
-        help='Number of seconds to timeout if no data [default: %default]')
+        "-t",
+        "--timeout",
+        dest="timeout",
+        type="float",
+        default="300",
+        help="Number of seconds to timeout if no data [default: %default]",
+    )
 
-    aisutils.database.stdCmdlineOptions(parser, 'postgres')
+    aisutils.database.stdCmdlineOptions(parser, "postgres")
 
     parser.add_option(
-        '-v', '--verbose',
-        dest='verbose',
+        "-v",
+        "--verbose",
+        dest="verbose",
         default=False,
-        action='store_true',
-        help='Make the test output verbose')
+        action="store_true",
+        help="Make the test output verbose",
+    )
 
     parser.add_option(
-        '--dummy-db',
-        dest='skipDB',
+        "--dummy-db",
+        dest="skipDB",
         default=False,
-        action='store_true',
-        help='Do not actually talk to database')
+        action="store_true",
+        help="Do not actually talk to database",
+    )
 
     parser.add_option(
-        '--time-limit-all',
-        dest='timeLimitAll',
-        type='str',
+        "--time-limit-all",
+        dest="timeLimitAll",
+        type="str",
         default=None,
         help='Limit all caches by one magic date time (e.g. "1 hour ago")'
-             '-s and -S override this [default %default]')
+        "-s and -S override this [default %default]",
+    )
 
     # These will get evaluated each time around the loop.
     parser.add_option(
-        '-s', '--track-start-time',
-        dest='track_start',
-        type='str',
+        "-s",
+        "--track-start-time",
+        dest="track_start",
+        type="str",
         default=None,
-        help='magicdate - Oldest allowable time for a track line '
-             '[default %default]')
+        help="magicdate - Oldest allowable time for a track line [default %default]",
+    )
 
     parser.add_option(
-        '-S', '--last-position-start-time',
-        dest='last_position_start',
-        type='str',
+        "-S",
+        "--last-position-start-time",
+        dest="last_position_start",
+        type="str",
         default=None,
-        help='magicdate - Oldest allowable time for a last position '
-             '[default %default]')
+        help="magicdate - Oldest allowable time for a last position [default %default]",
+    )
 
     parser.add_option(
-        '-c', '--clean-time',
-        dest='cleanTime',
-        type='float',
+        "-c",
+        "--clean-time",
+        dest="cleanTime",
+        type="float",
         default=30,
-        help='Time in seconds between database cleanup of the track lines '
-             '[default %default]')
+        help="Time in seconds between database cleanup of the track lines "
+        "[default %default]",
+    )
 
     options, args = parser.parse_args()
 
     v = options.verbose
     # TODO(schwehr): Don't force this.
-    options.dbType = 'postgres'
+    options.dbType = "postgres"
 
     if options.timeLimitAll is not None:
         if options.track_start is None:
@@ -492,37 +530,41 @@ def main():
         try:
             m = magicdate.magicdate(options.track_start)
         except Exception:
-            sys.exit('ERROR: track_start not a valid magic date: '
-                     + options.track_start)
+            sys.exit(
+                "ERROR: track_start not a valid magic date: " + options.track_start
+            )
         if m is None:
-            sys.exit('track_start is not a valid magic date: '
-                     + options.track_start)
+            sys.exit("track_start is not a valid magic date: " + options.track_start)
     if options.last_position_start is not None:
         try:
             m = magicdate.magicdate(options.last_position_start)
         except Exception:
-            sys.exit('PARSE ERROR: last_position_start not a valid magic date: '
-                     + options.last_position_start)
+            sys.exit(
+                "PARSE ERROR: last_position_start not a valid magic date: "
+                + options.last_position_start
+            )
         if m is None:
-            sys.exit('last_position_start not a valid magic date: '
-                     + options.last_position_start)
+            sys.exit(
+                "last_position_start not a valid magic date: "
+                + options.last_position_start
+            )
 
     cx = None
     if not options.skipDB:
         cx = aisutils.database.connect(options, dbType=options.dbType)
 
-
-    logging.info('Creating dbHandler verbosity = %s', v)
+    logging.info("Creating dbHandler verbosity = %s", v)
     dbHandler = DatabaseHandler(
         cx,
         track_start_time_limit=options.track_start,
         last_position_time_limit=options.last_position_start,
         verbose=v,
         skipDB=options.skipDB,
-        cleanTime=options.cleanTime)
+        cleanTime=options.cleanTime,
+    )
 
     if v:
-        logging.info('hosts allowed: %s ', options.hosts_allow)
+        logging.info("hosts allowed: %s ", options.hosts_allow)
 
     if options.inHostname:
         options.inHost = socket.gethostname()
@@ -531,7 +573,7 @@ def main():
     pts.start()
 
     # Now start up the thread to send the messages to
-    thread.start_new_thread(dbHandler.handler, (None, ))
+    thread.start_new_thread(dbHandler.handler, (None,))
 
     timeout = options.timeout
     i = 0
@@ -542,19 +584,19 @@ def main():
             i += 1
             time.sleep(timeout)
             if v:
-                logging.info('ping %d', i)
+                logging.info("ping %d", i)
     except KeyboardInterrupt:
         if v:
-            logging.info('Shutting down.')
+            logging.info("Shutting down.")
 
     # TODO(schwehr): Nuke all the connections?
 
     dbHandler.stop()
     while not dbHandler.stopped:
-        time.sleep(.1)
+        time.sleep(0.1)
     if v:
-        logging.info('Finished cleaning up.  Goodbye.')
+        logging.info("Finished cleaning up.  Goodbye.")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
