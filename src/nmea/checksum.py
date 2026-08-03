@@ -27,9 +27,7 @@ def checksumStr(data: str) -> str:
     # FIX: strip off new line at the end too
     if data[0] == "!" or data[0] == "?":
         data = data[1:]
-    if data[-1] == "*":
-        data = data[:-1]
-    if data[-3] == "*":
+    if len(data) >= 3 and data[-3] == "*":
         data = data[:-3]
     # FIX: rename sum to not shadown builting function
     sum = 0

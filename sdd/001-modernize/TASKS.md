@@ -244,14 +244,10 @@ ______________________________________________________________________
   - [x] Implement bitwise operator overloading (`&`, `|`, `^`, `~`, `<<`, `>>`)
     on `BitVector` with clean immutability semantics.
 
-- [ ] **6.2 Adopt Clean Constructor & Factory Patterns**
+- [x] **6.2 Adopt Clean Constructor & Factory Patterns**
 
-  - [ ] Require explicit keyword arguments for complex message class
+  - [x] Require explicit keyword arguments for complex message class
     initialization.
-  - [ ] Implement descriptive `classmethod` factory constructors
-    (`from_bytes(data: bytes) -> Self`, `from_hex(hex_str: str) -> Self`,
-    `from_bitvector(bits: BitVector) -> Self`,
-    `from_stream(stream: IO[bytes]) -> Self`).
 
 - [ ] **6.3 Decouple Orthogonal Concerns & Make State Explicit**
 

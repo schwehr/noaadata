@@ -133,28 +133,26 @@ def get_contents(nmeaStr):
 
 
 class UscgNmea:
-    def __init__(self, nmeaStr=None):
+    @classmethod
+    def from_nmea(cls, nmea_str: str) -> "UscgNmea":
+        """Factory constructor to instantiate UscgNmea from a sentence string."""
+        return cls(nmea_str=nmea_str)
+
+    def __init__(
+        self,
+        nmea_str: str | None = None,
+        *,
+        nmeaStr: str | None = None,
+    ):
+        """Initialize UscgNmea from sentence string.
+
+        Args:
+            nmea_str: Standard NMEA sentence string (positional or keyword).
+            nmeaStr: Legacy keyword alias for nmea_str.
         """
-        Fields:
-         - rssi ('s'): relative signal strength indicator
-         - signalStrength ('d') - signal strendth in dBm
-         - timeOfArrival ('T') - time of arrive from receiver - seconds within the minute
-         - slotNumber ('S') - Receive slot number
-         - station ('r' or 'b') - station name or id that received the message
-         - stationTypeCode - first letter of the station name indicating 'b'asestation or 'r'eceive only (I think)
-         - cg_sec - receive time of the message from the logging software.  Unix UTC second timestamp
-         - timestamp - python datetime object in UTC derived from the cg_sec
-
-        @todo: parse the other fields?
-
-        @see: Maritime navigation and radiocommunication equipment and
-              systems - Digital interfaces - Part 100: Single talker
-              and multiple listeners - Extra requirements to IEC
-              61162-1 for the UAIS. (80_330e_PAS) Draft...
-
-        """
-        if nmeaStr is not None:
-            fields = nmeaStr.split(",")
+        nmea_str = nmea_str or nmeaStr
+        if nmea_str is not None:
+            fields = nmea_str.split(",")
             self.cg_sec = float(fields[-1])
             self.timestamp = datetime.datetime.utcfromtimestamp(self.cg_sec)
             self.sqlTimestampStr = sqlhelp.sec2timestamp(self.cg_sec)
