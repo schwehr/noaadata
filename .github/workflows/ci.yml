@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-and-docs:
+    name: Linting & Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Check Python formatting (ruff)
+        run: uv run ruff format --check
+
+      - name: Lint Python code (ruff)
+        run: uv run ruff check
+
+      - name: Check Markdown formatting (mdformat)
+        run: uv run mdformat --check README docs/ sdd/
+
+      - name: Check spelling (codespell)
+        run: uv run codespell .
+
+      - name: Type checking (mypy & ty)
+        run: |
+          uv run mypy src/
+          uv run ty check src/
+
+      - name: Build documentation (mkdocs)
+        run: uv run mkdocs build
+
+  test-matrix:
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: ["3.13", "3.14"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run unit test suite & benchmarks
+        run: uv run pytest

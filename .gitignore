@@ -6,4 +6,5 @@ __pycache__/
 .coverage
 .pytest_cache/
 site/
+dist/
 *~

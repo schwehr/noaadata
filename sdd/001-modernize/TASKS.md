@@ -307,14 +307,14 @@ ______________________________________________________________________
     legacy `setup.py`.
   - [x] Verification command: `uv run mkdocs build --strict`
 
-- [ ] **8.2 Establish GitHub Actions CI/CD Pipelines**
+- [x] **8.2 Establish GitHub Actions CI/CD Pipelines**
 
-  - [ ] Create `.github/workflows/ci.yml` for automated matrix testing across
+  - [x] Create `.github/workflows/ci.yml` for automated matrix testing across
     Linux, macOS, and Windows on Python 3.13 and 3.14.
-  - [ ] Ensure CI runs formatting (`ruff format --check`, `mdformat --check`),
+  - [x] Ensure CI runs formatting (`ruff format --check`, `mdformat --check`),
     linting (`ruff check`), spell checking (`codespell`), typing (`ty`, `mypy`),
     tests with coverage (`--fail-under=95`), and benchmarks.
-  - [ ] Create `.github/workflows/release.yml` to automate package building
+  - [x] Create `.github/workflows/release.yml` to automate package building
     (`sdist`, `whl`) and publishing to PyPI via Trusted Publishing (OpenID
     Connect / OIDC).
 

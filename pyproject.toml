@@ -215,6 +215,12 @@ ignore = [
 skip = ".git,.venv,.uv,build,dist,site,*.lock,*.ais,scraps,contrib,doc,test,*.html"
 ignore-words-list = "mmsi,sog,cog,nmea,co-ops,rtcm,ser,inport,inPort,startd,startD,unparseable,unparse,teather,thos,pring,preceeding,happenin,wieghted,builting,hight,keyworks,toke"
 
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
 
 
 
