@@ -27,6 +27,7 @@ classifiers = [
 dependencies = [
     "bitvector-modern>=0.0.7",
     "numpy>=1.26.0",
+    "psycopg2-binary>=2.9",
 ]
 
 [project.optional-dependencies]

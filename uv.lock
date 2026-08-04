@@ -1242,6 +1242,7 @@ source = { editable = "." }
 dependencies = [
     { name = "bitvector-modern" },
     { name = "numpy" },
+    { name = "psycopg2-binary" },
 ]
 
 [package.optional-dependencies]
@@ -1278,6 +1279,7 @@ requires-dist = [
     { name = "bitvector-modern", specifier = ">=0.0.7" },
     { name = "lxml", marker = "extra == 'gis'", specifier = ">=5.0" },
     { name = "numpy", specifier = ">=1.26.0" },
+    { name = "psycopg2-binary", specifier = ">=2.9" },
     { name = "psycopg2-binary", marker = "extra == 'db'", specifier = ">=2.9" },
     { name = "sqlalchemy", marker = "extra == 'db'", specifier = ">=2.0" },
 ]
