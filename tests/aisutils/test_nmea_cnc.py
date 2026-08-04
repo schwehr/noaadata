@@ -1,1 +1,0 @@
-../test_aisutils/test_nmea_cnc.py

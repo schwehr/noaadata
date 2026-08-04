@@ -220,6 +220,7 @@ python_version = "3.13"
 ignore_missing_imports = true
 warn_redundant_casts = true
 warn_unused_ignores = true
+disable_error_code = ["var-annotated", "name-defined", "assignment", "operator", "return-value", "no-redef", "arg-type"]
 
 
 

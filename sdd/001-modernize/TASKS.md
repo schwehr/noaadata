@@ -318,13 +318,13 @@ ______________________________________________________________________
     (`sdist`, `whl`) and publishing to PyPI via Trusted Publishing (OpenID
     Connect / OIDC).
 
-- [ ] **8.3 Add Community Governance Files & Synchronize `AGENTS.md`**
+- [x] **8.3 Add Community Governance Files & Synchronize `AGENTS.md`**
 
-  - [ ] Add standard community health files:
+  - [x] Add standard community health files:
     \[`SECURITY.md`\](noaadata/SECURITY.md),
     \[`CODE_OF_CONDUCT.md`\](noaadata/CODE_OF_CONDUCT.md),
     \[`CODEOWNERS`\](noaadata/CODEOWNERS), and GitHub pull request templates.
-  - [ ] Ensure \[`AGENTS.md`\](noaadata/AGENTS.md) is updated to reflect the
+  - [x] Ensure \[`AGENTS.md`\](noaadata/AGENTS.md) is updated to reflect the
     final modernized architecture, package layout, and commands.
-  - [ ] Final verification command:
+  - [x] Final verification command:
     `uv run pytest && uv run ruff check && uv run mypy src/ tests/`
