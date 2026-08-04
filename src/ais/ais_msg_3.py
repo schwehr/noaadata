@@ -244,26 +244,38 @@ def decode(bv, validate=False):
     # Would be nice to check the bit count here..
     # if validate:
     #    assert (len(bv)==FIX: SOME NUMBER)
-    r = {}
-    r["MessageID"] = 3
-    r["RepeatIndicator"] = int(bv[6:8])
-    r["UserID"] = int(bv[8:38])
-    r["NavigationStatus"] = int(bv[38:42])
-    r["ROT"] = binary.signedIntFromBV(bv[42:50])
-    r["SOG"] = Decimal(int(bv[50:60])) / Decimal("10")
-    r["PositionAccuracy"] = int(bv[60:61])
-    r["longitude"] = Decimal(binary.signedIntFromBV(bv[61:89])) / Decimal("600000")
-    r["latitude"] = Decimal(binary.signedIntFromBV(bv[89:116])) / Decimal("600000")
-    r["COG"] = Decimal(int(bv[116:128])) / Decimal("10")
-    r["TrueHeading"] = int(bv[128:137])
-    r["TimeStamp"] = int(bv[137:143])
-    r["RegionalReserved"] = 0
-    r["Spare"] = 0
-    r["RAIM"] = bool(int(bv[148:149]))
-    r["state_syncstate"] = int(bv[149:151])
-    r["state_slottimeout"] = int(bv[151:154])
-    r["state_slotoffset"] = int(bv[154:168])
-    return r
+    L = len(bv)
+    v = int(bv)
+
+    rot_u = (v >> (L - 50)) & 0xFF
+    rot = rot_u - 256 if rot_u >= 128 else rot_u
+
+    lon_u = (v >> (L - 89)) & 0x0FFFFFFF
+    lon_s = lon_u - (1 << 28) if lon_u >= (1 << 27) else lon_u
+
+    lat_u = (v >> (L - 116)) & 0x07FFFFFF
+    lat_s = lat_u - (1 << 27) if lat_u >= (1 << 26) else lat_u
+
+    return {
+        "MessageID": 3,
+        "RepeatIndicator": (v >> (L - 8)) & 0x3,
+        "UserID": (v >> (L - 38)) & 0x3FFFFFFF,
+        "NavigationStatus": (v >> (L - 42)) & 0xF,
+        "ROT": rot,
+        "SOG": Decimal((v >> (L - 60)) & 0x3FF) / Decimal("10"),
+        "PositionAccuracy": (v >> (L - 61)) & 0x1,
+        "longitude": Decimal(lon_s) / Decimal("600000"),
+        "latitude": Decimal(lat_s) / Decimal("600000"),
+        "COG": Decimal((v >> (L - 128)) & 0xFFF) / Decimal("10"),
+        "TrueHeading": (v >> (L - 137)) & 0x1FF,
+        "TimeStamp": (v >> (L - 143)) & 0x3F,
+        "RegionalReserved": 0,
+        "Spare": 0,
+        "RAIM": bool((v >> (L - 149)) & 0x1),
+        "state_syncstate": (v >> (L - 151)) & 0x3,
+        "state_slottimeout": (v >> (L - 154)) & 0x7,
+        "state_slotoffset": (v >> (L - 168)) & 0x3FFF,
+    }
 
 
 def decodeMessageID(bv, validate=False):

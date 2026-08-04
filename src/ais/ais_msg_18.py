@@ -268,29 +268,38 @@ def decode(bv, validate=False):
     # Would be nice to check the bit count here..
     # if validate:
     #    assert (len(bv)==FIX: SOME NUMBER)
-    r = {}
-    r["MessageID"] = 18
-    r["RepeatIndicator"] = int(bv[6:8])
-    r["UserID"] = int(bv[8:38])
-    r["Reserved1"] = 0
-    r["SOG"] = Decimal(int(bv[46:56])) / Decimal("10")
-    r["PositionAccuracy"] = int(bv[56:57])
-    r["longitude"] = Decimal(binary.signedIntFromBV(bv[57:85])) / Decimal("600000")
-    r["latitude"] = Decimal(binary.signedIntFromBV(bv[85:112])) / Decimal("600000")
-    r["COG"] = Decimal(int(bv[112:124])) / Decimal("10")
-    r["TrueHeading"] = int(bv[124:133])
-    r["TimeStamp"] = int(bv[133:139])
-    r["Spare"] = 0
-    r["cs_unit"] = bool(int(bv[141:142]))
-    r["display_flag"] = bool(int(bv[142:143]))
-    r["dsc_flag"] = bool(int(bv[143:144]))
-    r["band_flag"] = bool(int(bv[144:145]))
-    r["msg22_flag"] = bool(int(bv[145:146]))
-    r["mode_flag"] = bool(int(bv[146:147]))
-    r["RAIM"] = bool(int(bv[147:148]))
-    r["CommStateSelector"] = int(bv[148:149])
-    r["CommState"] = int(bv[149:168])
-    return r
+    L = len(bv)
+    v = int(bv)
+
+    lon_u = (v >> (L - 85)) & 0x0FFFFFFF
+    lon_s = lon_u - (1 << 28) if lon_u >= (1 << 27) else lon_u
+
+    lat_u = (v >> (L - 112)) & 0x07FFFFFF
+    lat_s = lat_u - (1 << 27) if lat_u >= (1 << 26) else lat_u
+
+    return {
+        "MessageID": 18,
+        "RepeatIndicator": (v >> (L - 8)) & 0x3,
+        "UserID": (v >> (L - 38)) & 0x3FFFFFFF,
+        "Reserved1": 0,
+        "SOG": Decimal((v >> (L - 56)) & 0x3FF) / Decimal("10"),
+        "PositionAccuracy": (v >> (L - 57)) & 0x1,
+        "longitude": Decimal(lon_s) / Decimal("600000"),
+        "latitude": Decimal(lat_s) / Decimal("600000"),
+        "COG": Decimal((v >> (L - 124)) & 0xFFF) / Decimal("10"),
+        "TrueHeading": (v >> (L - 133)) & 0x1FF,
+        "TimeStamp": (v >> (L - 139)) & 0x3F,
+        "Spare": 0,
+        "cs_unit": bool((v >> (L - 142)) & 0x1),
+        "display_flag": bool((v >> (L - 143)) & 0x1),
+        "dsc_flag": bool((v >> (L - 144)) & 0x1),
+        "band_flag": bool((v >> (L - 145)) & 0x1),
+        "msg22_flag": bool((v >> (L - 146)) & 0x1),
+        "mode_flag": bool((v >> (L - 147)) & 0x1),
+        "RAIM": bool((v >> (L - 148)) & 0x1),
+        "CommStateSelector": (v >> (L - 149)) & 0x1,
+        "CommState": (v >> (L - 168)) & 0x7FFFF,
+    }
 
 
 def decodeMessageID(bv, validate=False):

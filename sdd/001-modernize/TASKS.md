@@ -282,15 +282,15 @@ ______________________________________________________________________
     `AISMsg2`, `AISMsg3`, `NMEA`, `Position`) to eliminate per-instance
     `__dict__` overhead.
 
-- [ ] **7.3 Word-Level Bitwise Processing & Allocation Minimization**
+- [x] **7.3 Word-Level Bitwise Processing & Allocation Minimization**
 
-  - [ ] Replace element-by-element bit iteration with block-level bitwise
+  - [x] Replace element-by-element bit iteration with block-level bitwise
     masking and bulk slice operations.
-  - [ ] Pre-allocate correctly sized containers before decoding multi-field AIS
+  - [x] Pre-allocate correctly sized containers before decoding multi-field AIS
     payloads.
-  - [ ] Eliminate redundant string/hex formatting conversions in hot decoding
+  - [x] Eliminate redundant string/hex formatting conversions in hot decoding
     loops.
-  - [ ] Verify speedups and ensure zero regressions against baseline:
+  - [x] Verify speedups and ensure zero regressions against baseline:
     `uv run pytest tests/benchmarks/ --benchmark-compare=baseline`
 
 ______________________________________________________________________

@@ -41,21 +41,26 @@ def sotdma_sql_fields(c):
 
 def sotdma_parse_bits(bv):
     assert len(bv) == 19
-    r = {}
-    r["sync_state"] = int(bv[:2])
-    r["slot_timeout"] = slottimeout = int(bv[2:5])
-    submessage = bv[-14:]
+    v = int(bv)
+    sync_state = (v >> 17) & 0x3
+    slot_timeout = (v >> 14) & 0x7
+    submessage = v & 0x3FFF
 
-    if slottimeout in (3, 5, 7):
-        r["received_stations"] = int(submessage)
-    elif slottimeout in (2, 4, 6):
-        r["slot_number"] = int(submessage)
-    elif slottimeout == 1:
-        r["commstate_utc_hour"] = int(submessage[0:5])
-        r["commstate_utc_min"] = int(submessage[5:12])
-        r["commstate_utc_spare"] = int(submessage[-2:])
-    elif slottimeout == 0:
-        r["slot_offset"] = int(submessage)
+    r = {
+        "sync_state": sync_state,
+        "slot_timeout": slot_timeout,
+    }
+
+    if slot_timeout in (3, 5, 7):
+        r["received_stations"] = submessage
+    elif slot_timeout in (2, 4, 6):
+        r["slot_number"] = submessage
+    elif slot_timeout == 1:
+        r["commstate_utc_hour"] = (submessage >> 9) & 0x1F
+        r["commstate_utc_min"] = (submessage >> 2) & 0x7F
+        r["commstate_utc_spare"] = submessage & 0x3
+    elif slot_timeout == 0:
+        r["slot_offset"] = submessage
     else:
         raise AssertionError()
 
@@ -78,12 +83,13 @@ def itdma_sql_fields(c):
 
 def itdma_parse_bits(bv):
     assert len(bv) == 19
-    r = {}
-    r["sync_state"] = int(bv[:2])
-    r["slot_increment"] = int(bv[2:15])
-    r["slots_to_allocate"] = int(bv[15:18])
-    r["keep_flag"] = int(bv[18])
-    return r
+    v = int(bv)
+    return {
+        "sync_state": (v >> 17) & 0x3,
+        "slot_increment": (v >> 4) & 0x1FFF,
+        "slots_to_allocate": (v >> 1) & 0x7,
+        "keep_flag": v & 0x1,
+    }
 
 
 def sql_fields(c):
