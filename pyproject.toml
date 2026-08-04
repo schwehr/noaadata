@@ -224,6 +224,11 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 disable_error_code = ["var-annotated", "name-defined", "assignment", "operator", "return-value", "no-redef", "arg-type"]
 
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
 
 
 
