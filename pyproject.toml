@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "noaadata"
 version = "0.46"
 description = "Encode/decode NOAA co-ops marine data and marine AIS"
-readme = { file = "README", content-type = "text/plain" }
+readme = "README.md"
 requires-python = ">=3.13"
 license = { text = "Apache-2.0" }
 authors = [

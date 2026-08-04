@@ -2,7 +2,7 @@
 
 This document provides operational guidance, repository architecture, build/test
 commands, and strict governance rules for developers and AI coding assistants
-working on **noaadata** ([`README`](README)).
+working on **noaadata** ([`README.md`](README.md)).
 
 > **IMPORTANT CONTINUOUS UPDATE MANDATE**: As `noaadata` undergoes Spec-Driven
 > Development (SDD) modernization from legacy packaging ([`setup.py`](setup.py))
@@ -95,7 +95,7 @@ uv run ruff format --check
 uv run ruff check
 
 # Check markdown formatting and spelling
-uv run mdformat --check README docs/ sdd/
+uv run mdformat --check README.md docs/ sdd/
 uv run codespell .
 
 # Static type checking

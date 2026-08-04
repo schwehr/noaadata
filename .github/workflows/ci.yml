@@ -33,7 +33,7 @@ jobs:
         run: uv run ruff check
 
       - name: Check Markdown formatting (mdformat)
-        run: uv run mdformat --check README docs/ sdd/
+        run: uv run mdformat --check README.md docs/ sdd/
 
       - name: Check spelling (codespell)
         run: uv run codespell .
