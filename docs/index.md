@@ -1,14 +1,22 @@
 # noaadata
 
-`noaadata` is a Python library for encoding, decoding, and processing NOAA CO-OPS marine water level data, Automatic Identification System (AIS) ship traffic binary messages, USCG N-AIS receive fields, and NMEA-0183 marine sentences.
+`noaadata` is a Python library for encoding, decoding, and processing NOAA
+CO-OPS marine water level data, Automatic Identification System (AIS) ship
+traffic binary messages, USCG N-AIS receive fields, and NMEA-0183 marine
+sentences.
 
 ## Key Features
 
-- **NOAA CO-OPS Client & Data Parsing**: Fetch and process SOAP and DAP water level data.
-- **Marine AIS Decoding**: Full support for AIS binary messages (messages 1–24, IMO binary messages, RIS/SLS messages).
-- **USCG N-AIS Extensions**: Parse and construct USCG N-AIS metadata sentences (`UscgNmea`).
-- **NMEA-0183 Sentence Handling**: Standard sentences (`GGA`, `RMC`, `ZDA`, `ZNT`) with high-performance XOR checksum validation.
-- **Database & GIS Bridges**: Exporters for PostgreSQL/PostGIS, SQLite3, and Google Earth KML.
+- **NOAA CO-OPS Client & Data Parsing**: Fetch and process SOAP and DAP water
+  level data.
+- **Marine AIS Decoding**: Full support for AIS binary messages (messages 1–24,
+  IMO binary messages, RIS/SLS messages).
+- **USCG N-AIS Extensions**: Parse and construct USCG N-AIS metadata sentences
+  (`UscgNmea`).
+- **NMEA-0183 Sentence Handling**: Standard sentences (`GGA`, `RMC`, `ZDA`,
+  `ZNT`) with high-performance XOR checksum validation.
+- **Database & GIS Bridges**: Exporters for PostgreSQL/PostGIS, SQLite3, and
+  Google Earth KML.
 
 ## Quick Start
 

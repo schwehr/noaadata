@@ -25,9 +25,9 @@ The project has completed a multi-phase Spec-Driven Development (SDD)
 modernization initiative outlined in [`PRD.md`](PRD.md), [`SPEC.md`](SPEC.md),
 and [`TASKS.md`](TASKS.md). Legacy `setup.py` setuptools packaging has been
 replaced with modern PEP 621 declarative packaging using `hatchling` and `uv`
-environment management. All 336 unit, property, and benchmark tests pass, code is
-formatted with `ruff` and `mdformat`, static typing is checked with `mypy`, and
-automated CI/CD pipelines run on GitHub Actions.
+environment management. All 336 unit, property, and benchmark tests pass, code
+is formatted with `ruff` and `mdformat`, static typing is checked with `mypy`,
+and automated CI/CD pipelines run on GitHub Actions.
 
 ______________________________________________________________________
 
@@ -65,8 +65,10 @@ ______________________________________________________________________
   [`.github/workflows/release.yml`](.github/workflows/release.yml)) and
   community governance ([`CODEOWNERS`](.github/CODEOWNERS),
   [`PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)).
-- [`tests/`](tests): Dedicated directory for `pytest` unit, property, and benchmark test suites.
-- [`SECURITY.md`](SECURITY.md) & [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md): Community governance policies.
+- [`tests/`](tests): Dedicated directory for `pytest` unit, property, and
+  benchmark test suites.
+- [`SECURITY.md`](SECURITY.md) & [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md):
+  Community governance policies.
 - [`pyproject.toml`](pyproject.toml): Modern PEP 621 declarative packaging
   configuration using `hatchling` as the PEP 517 build backend.
 - [`mkdocs.yml`](mkdocs.yml): MkDocs Material documentation configuration.
@@ -78,7 +80,8 @@ ______________________________________________________________________
 
 ### Environment Setup & Tool Commands (`uv`)
 
-`noaadata` uses `uv` and `pyproject.toml` for packaging and environment management:
+`noaadata` uses `uv` and `pyproject.toml` for packaging and environment
+management:
 
 ```bash
 # Sync environment and install package with dev dependencies

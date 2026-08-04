@@ -274,10 +274,9 @@ ______________________________________________________________________
 
 - [x] **7.2 Memory Layout & Packed Data Structures**
 
-  - [x] Refactor
-    \[`binary.py`\](noaadata/aisutils/binary.py) to store bit sequences using
-    compact contiguous storage (`bytearray`, `array.array('B')`, or fixed-width
-    integer words) instead of Python lists of integers.
+  - [x] Refactor \[`binary.py`\](noaadata/aisutils/binary.py) to store bit
+    sequences using compact contiguous storage (`bytearray`, `array.array('B')`,
+    or fixed-width integer words) instead of Python lists of integers.
   - [x] Define `__slots__` on high-instance AIS message classes (`AISMsg1`,
     `AISMsg2`, `AISMsg3`, `NMEA`, `Position`) to eliminate per-instance
     `__dict__` overhead.
