@@ -55,6 +55,7 @@ dev = [
     "pyrefly",
     "semgrep",
     "bandit",
+    "zizmor",
     "mkdocs-material",
     "mkdocstrings[python]",
 ]

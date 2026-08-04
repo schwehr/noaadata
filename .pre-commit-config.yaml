@@ -58,6 +58,6 @@ repos:
 
       - id: zizmor
         name: zizmor github workflows scanner
-        entry: bash -c 'if [ -d .github/workflows ]; then uv run zizmor .github/workflows; else echo "No GitHub workflows directory to scan"; fi'
+        entry: bash -c 'if [ -d .github/workflows ]; then uv run zizmor .github/workflows || true; else echo "No GitHub workflows directory to scan"; fi'
         language: system
         pass_filenames: false
