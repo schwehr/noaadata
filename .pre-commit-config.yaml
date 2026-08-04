@@ -43,6 +43,14 @@ repos:
         files: ^src/
         pass_filenames: false
 
+      - id: pyrefly
+        name: pyrefly type checker
+        entry: bash -c 'uv run pyrefly check src/ || true'
+        language: system
+        types: [python]
+        files: ^src/
+        pass_filenames: false
+
       - id: bandit
         name: bandit security scanner
         entry: uv run bandit -r src/ -s B101,B103,B104,B110,B112,B311,B605,B607,B608
