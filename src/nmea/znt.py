@@ -15,6 +15,8 @@ try:
 except ImportError:
     ntplib = None
 
+import functools
+import operator
 import optparse
 import re
 import time
@@ -26,20 +28,14 @@ class NmeaNotZnt(Exception):
     pass
 
 
-# TODO(schwehr): This should be in a library or already is.
 def checksum_str(data):
     end = data.rfind("*")
     if end == -1:
         end = len(data)
-    start = 1
-    sum = 0
-    for c in data[start:end]:
-        sum = sum ^ ord(c)
-    sum_hex = f"{sum:x}"
-    if len(sum_hex) == 1:
-        sum_hex = "0" + sum_hex
-    checksum = sum_hex.upper()
-    return checksum
+    start = 1 if data and data[0] in ("$", "!") else 0
+
+    chk = functools.reduce(operator.xor, data[start:end].encode("latin-1"), 0)
+    return f"{chk:02X}"
 
 
 def make_float(a_dict, key):
@@ -92,24 +88,13 @@ def print_response(response):
 
 
 class Znt:
-    """NMEA proprietary NTP status report.
+    """NMEA proprietary NTP status report."""
 
-    $NTZNT,1270379515.39,17.151.16.23,3,1270378814.66,7.41481781006e-05,-20,0.268142700195,0.0267639160156*33
-    $PNTZNT,1270567048.57,127.0.0.1,17.151.16.21,4,1270565749.41,0.000080,-20,0.117325,0.046249*14
-
-    Fields:
-    timestamp - UNIX UTC timestamp
-    host - IP address of the host that this report is about
-    ref_clock - remote host that this host is synchronized to
-    stratum - how far from the time source
-    last_update - how long since this host has heard from its ref clock
-    offset -
-    precision -
-    root_delay -
-    root_dispersion -
-    """
+    __slots__ = ("nmea_str", "params")
 
     def __init__(self, nmea_str=None, talker="NT", hostname="127.0.0.1"):
+        self.nmea_str = None
+        self.params = {}
         if nmea_str is not None:
             self.decode_znt(nmea_str)
             return
@@ -217,6 +202,18 @@ class Znt:
 
 
 class ZntLogger:
+    __slots__ = (
+        "always",
+        "cnt_since_last",
+        "enabled",
+        "last_write",
+        "max_cnt",
+        "max_sec",
+        "out_file",
+        "station",
+        "verbose",
+    )
+
     def __init__(
         self,
         out_file,

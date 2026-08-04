@@ -265,20 +265,20 @@ ______________________________________________________________________
 
 ## Phase 7: Performance & Memory Optimization
 
-- [ ] **7.1 Algorithmic & Built-In Acceleration**
+- [x] **7.1 Algorithmic & Built-In Acceleration**
 
-  - [ ] Replace custom Python bit-counting and parity loops with
+  - [x] Replace custom Python bit-counting and parity loops with
     `int.bit_count()` and standard C-backed Python built-ins.
-  - [ ] Use `int.from_bytes(..., byteorder="big")` and `int.to_bytes(...)` in
+  - [x] Use `int.from_bytes(..., byteorder="big")` and `int.to_bytes(...)` in
     high-frequency binary unpacking paths.
 
-- [ ] **7.2 Memory Layout & Packed Data Structures**
+- [x] **7.2 Memory Layout & Packed Data Structures**
 
-  - [ ] Refactor \[`BitVector.py`\](noaadata/aisutils/BitVector.py) and
+  - [x] Refactor
     \[`binary.py`\](noaadata/aisutils/binary.py) to store bit sequences using
     compact contiguous storage (`bytearray`, `array.array('B')`, or fixed-width
     integer words) instead of Python lists of integers.
-  - [ ] Define `__slots__` on high-instance AIS message classes (`AISMsg1`,
+  - [x] Define `__slots__` on high-instance AIS message classes (`AISMsg1`,
     `AISMsg2`, `AISMsg3`, `NMEA`, `Position`) to eliminate per-instance
     `__dict__` overhead.
 

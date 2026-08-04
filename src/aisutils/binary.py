@@ -63,48 +63,27 @@ def float2bitvec(floatval):
     """
     Get the IEEE floating point bits for a python float
 
-    @bug: May have bite order backwards
-    @type floatval: number
     Args:
         floatval: number to convert to bits
     Returns:
-        BitVector
-        32 bits
-    @todo: Is there a faster way to do this?
-    @see: U{struct module<http://www.python.org/doc/current/lib/module-struct.html>}
+        BitVector (32 bits)
     """
-    s = struct.pack(
-        "!f", floatval
-    )  # FIX: Is this the right bight order?  Could easily be wrong!!!!
-    i = struct.unpack("!I", s)[0]
-    # print 'unpacked:',i
-    # return setBitVectorSize(BitVector.from_int(i),32)
-
-    # Old way...  since BitVector can't encode large intVals (>2^31)
-    # FIX: make this go in one step now that bitvector 1.3 is out.
-    bvList = []
-    for i in range(4):
-        bv1 = setBitVectorSize(BitVector.from_int(ord(s[i])), 8)
-        # bv2 = BitVector.from_int(ord(s[i]),size=8)
-        bvList.append(bv1)
-    return joinBV(bvList)
+    s = struct.pack("!f", floatval)
+    i = int.from_bytes(s, byteorder="big")
+    return setBitVectorSize(BitVector.from_int(i), 32)
 
 
 def bitvec2float(bv):
     """
     Convert a 32 bit bitvector representing an IEEE float into a python float
-    @bug: May have bite order backwards
-    @type bv: BitVector
+
     Args:
         bv: 32 bits representing an IEEE float
     Returns:
-        float
-        the corresponding number
-    @see: U{struct module<http://www.python.org/doc/current/lib/module-struct.html>}
+        float corresponding number
     """
-    return struct.unpack(
-        "!f", chr(bv[0:8]) + chr(bv[8:16]) + chr(bv[16:24]) + chr(bv[24:32])
-    )[0]
+    raw_bytes = int(bv).to_bytes(4, byteorder="big")
+    return struct.unpack("!f", raw_bytes)[0]
 
 
 def joinBV(bvSeq):
@@ -143,113 +122,39 @@ def setBitVectorSize(bv, size=8):
 
 
 def addone(bv):
-    """
-    Add one bit to a bit vector.  Overflows are silently dropped.
-
-    Args:
-        bv: Add one to these bits
-    @type bv: BitVector
-    Returns:
-        Bits with one added
-        BitVector
-    """
-    new = bv
-    r = list(range(1, len(bv) + 1))
-    for i in r:
-        index = len(bv) - i
-        if bv[index] == 0:
-            new[index] = 1
-            break
-        new[index] = 0
-    return new
+    """Add one bit to a bit vector. Overflows are silently dropped."""
+    val = (int(bv) + 1) & ((1 << len(bv)) - 1)
+    return setBitVectorSize(BitVector.from_int(val), len(bv))
 
 
 def subone(bv):
-    """
-    Subtract one bit from a bit vector
-
-    Args:
-        bv: Bits to add one bit to the right side
-    @type bv: BitVector
-    Returns:
-        BitVector
-    """
-    new = bv
-    r = list(range(1, len(bv) + 1))
-    for i in r:
-        index = len(bv) - i
-        if bv[index] == 1:
-            new[index] = 0
-            break
-        new[index] = 1
-    return new
+    """Subtract one bit from a bit vector."""
+    val = (int(bv) - 1) & ((1 << len(bv)) - 1)
+    return setBitVectorSize(BitVector.from_int(val), len(bv))
 
 
 def bvFromSignedInt(intVal, bitSize=None):
-    """
-    Create a twos complement BitVector from a signed integer.  Not that 110 and 10 are both -2.
-
-    Positives must have a '0' in the left hand position.
-
-    Negative numbers must have a '1' in the left hand position.
-
-    Args:
-        intVal: integer value to turn into a bit vector
-    @type intVal: int
-        bitSize: optional size to flush out the number of bits
-    @type bitSize: int
-    Returns:
-        A Bit Vector flushed out to the right size
-        BitVector
-    """
-    bv = None
-    if bitSize is None:
-        bv = BitVector.from_int(abs(intVal))
-    else:
-        bv = setBitVectorSize(BitVector.from_int(abs(intVal)), bitSize - 1)
-        if bitSize - 1 != len(bv) and bv[0] != 1 and bv[-1] != 0:
-            print("ERROR: bitsize not right")
-            print("  ", bitSize - 1, len(bv))
-            raise ValueError("Invalid payload or state")
-        if len(bv) == bitSize and bv[0] == 1:
-            return bv
+    """Create a twos complement BitVector from a signed integer."""
     if intVal >= 0:
-        bv = BitVector.from_int(0) + bv
-    else:
-        bv = subone(bv)
-        bv = ~bv
-        bv = BitVector.from_int(1) + bv
-    return bv
+        if bitSize is None:
+            return BitVector.from_int(intVal)
+        return setBitVectorSize(BitVector.from_int(intVal), bitSize)
+
+    if bitSize is None:
+        bitSize = intVal.bit_length() + 1
+
+    unsigned_val = (1 << bitSize) + intVal
+    if unsigned_val < 0 or unsigned_val >= (1 << bitSize):
+        raise ValueError("intVal cannot fit into the specified bitSize")
+    return setBitVectorSize(BitVector.from_int(unsigned_val), bitSize)
 
 
 def signedIntFromBV(bv):
-    """
-    Interpret a bit vector as an signed integer.  int(BitVector)
-    defaults to treating the bits as an unsigned int.  Assumes twos
-    complement representation.
-
-    U{http://en.wikipedia.org/wiki/Twos_complement}
-
-    Positive values decode like so:
-
-    Here are some negative integer examples:
-
-    Args:
-        bv: Bits to treat as an signed int
-    @type bv: BitVector
-    Returns:
-        Signed integer
-        int
-
-    @note: Does not know the difference between byte orders.
-    """
-    if bv[0] == 0:
-        return int(bv)
-    # Nope, so it is negative
-    val = int(addone(~(bv[1:])))
-    if val != 0:
-        return -val
-    return -(int(bv))
+    """Interpret a bit vector as a signed integer using twos complement."""
+    val = int(bv)
+    if len(bv) > 0 and bv[0] == 1:
+        return val - (1 << len(bv))
+    return val
 
 
 # This is a better thing to no than the craziness in the slow
@@ -345,6 +250,8 @@ decode.pop("X")
 decode.pop("Y")
 decode.pop("Z")
 
+decode_int = {c: int(bv) for c, bv in decode.items()}
+
 encode = [chr(i + 48) for i in range(40)] + [chr(i + 96) for i in range(24)]
 """
 Lookup the character representation for in an ais AIVDM message from
@@ -392,29 +299,15 @@ def ais6tobitvec(str6):
     """Convert an ITU AIS 6 bit string into a bit vector.  Each character
     represents 6 bits.  This is the NMEA !AIVD[MO] message payload.
 
-    @note: If the original BitVector had ((len(bitvector) % 6 > 0),
-    then there will be pad bits in the str6.  This function has no way
-    to know how many pad bits there are.
-
-    @bug: Need to add pad bit handling
-
     Args:
         str6: ASCII that as it appears in the NMEA string
-    @type str6: string
     Returns:
-        decoded bits (not unstuffed... what do I mean by
-    unstuffed?).  There may be pad bits at the tail to make this 6 bit
-    aligned.
         BitVector
     """
-    bvtotal = BitVector(size=6 * len(str6))
-
-    for pos in range(len(str6)):
-        bv = decode[str6[pos]]
-        start = pos * 6
-        for i in range(6):
-            bvtotal[i + start] = bv[i]
-    return bvtotal
+    val = 0
+    for char in str6:
+        val = (val << 6) | decode_int[char]
+    return setBitVectorSize(BitVector.from_int(val), 6 * len(str6))
 
 
 def getPadding(bv):
@@ -432,46 +325,44 @@ def getPadding(bv):
 
 
 def bitvectoais6(bv, doPadding=True):
-    """Convert bit vector int an ITU AIS 6 bit string.  Each character represents 6 bits
+    """Convert bit vector into an ITU AIS 6 bit string. Each character represents 6 bits
 
     Args:
-        bv: message bits (must be already stuffed)
-    @type bv: BitVector
+        bv: message bits
+        doPadding: whether to pad to 6-bit alignment
     Returns:
-        str6 ASCII that as it appears in the NMEA string
         str, pad
-
-    @todo: make a test base for needing padding
-    @bug: handle case when padding needed
     """
     pad = 6 - (len(bv) % 6)
     if pad == 6:
         pad = 0
-    strLen = len(bv) // 6
-    if pad > 0:
-        strLen += 1
-    aisStrLst = []
 
     if pad != 0:
         if doPadding:
-            print("pad befaore", len(bv))
             bv = bv + BitVector(size=pad)
-            print("pad after", len(bv))
         else:
-            print("ERROR: What are you doing with a non-align entity?  Let me pad it!")
             raise ValueError("Invalid payload or state")
 
-    # else: # No pad needed
+    strLen = len(bv) // 6
+    bv_int = int(bv)
+    aisStrLst = []
+
     for i in range(strLen):
-        start = i * 6
-        end = (i + 1) * 6
-        val = int(bv[start:end])
-        c = encode[val]
-        aisStrLst.append(c)
+        shift = (strLen - 1 - i) * 6
+        val = (bv_int >> shift) & 63
+        aisStrLst.append(encode[val])
 
-    aisStr = "".join(aisStrLst)
+    return "".join(aisStrLst), pad
 
-    return aisStr, pad
+
+def bit_count(bv: BitVector) -> int:
+    """Count set bits in a BitVector using int.bit_count()."""
+    return int(bv).bit_count()
+
+
+def parity(bv: BitVector) -> int:
+    """Compute parity (0 or 1) of a BitVector using int.bit_count()."""
+    return int(bv).bit_count() & 1
 
 
 def stuffBits(bv):

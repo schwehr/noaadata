@@ -296,25 +296,22 @@ def buildDict():
 
 def decode(bits: BitVector, dropAfterFirstAt: bool = False) -> str:
     """
-    Decode bits as a string.  Does not remove the end space or @@@@.  Must be an multiple of 6 bits.
+    Decode bits as a string. Must be a multiple of 6 bits.
 
     Args:
         bits: n*6 bits that represent a string.
-    @type bits: BitVector
+        dropAfterFirstAt: stop decoding at the first '@' pad character.
     Returns:
-        string with pad spaces or @@@@
         str
     """
-    # assert(len(bits) % 6 == 0)
     numchar = len(bits) // 6
+    bits_int = int(bits)
     s = []
-    for i in range(numchar):  # FIX: off by one?
-        start = 6 * i
-        end = start + 6  # 6 * (i+1)
-        charbits = bits[start:end]
-        val = int(charbits)
+    for i in range(numchar):
+        shift = (numchar - 1 - i) * 6
+        val = (bits_int >> shift) & 63
         if dropAfterFirstAt and val == 0:
-            break  # 0 is the @ character which is used to pad strings.
+            break
         s.append(characterLUT[val])
 
     return "".join(s)
@@ -322,40 +319,38 @@ def decode(bits: BitVector, dropAfterFirstAt: bool = False) -> str:
 
 def encode(string: str, bitSize: int | None = None) -> BitVector:
     """
+    Encode an ASCII string into an AIS 6-bit BitVector.
+
     Args:
         string: python ascii string to encode.
-    @type string: str
-        bitSize: how many bits should this take.  must be a multiple of 6
-    @type bitSize: int
+        bitSize: optional size in bits (must be a multiple of 6).
     Returns:
-        encoded bits for the string
         BitVector
-    @bug: force to upper case
-    @bug: building this in reverse may be faster
-    @bug: check that bitSize is a multiple of 6
-    @bug: pad with "@" to reach requested bitSize
     """
     if bitSize:
         assert bitSize % 6 == 0
-    bv = BitVector(size=0)
-    for i in range(len(string)):
-        bv = bv + characterBits[string[i]]
+    val = 0
+    for char in string:
+        val = (val << 6) | characterDict[char]
+    total_bits = len(string) * 6
+
     if bitSize:
-        if bitSize < len(bv):
+        if bitSize < total_bits:
             print(
                 'ERROR:  string longer than specified bit count: "' + string + '"',
                 bitSize,
-                len(bv),
+                total_bits,
             )
             raise ValueError("Invalid payload or state")
-        extra = bitSize - len(bv)
-        bv = bv + BitVector(size=extra)
-    return bv
+        val <<= bitSize - total_bits
+        total_bits = bitSize
+
+    return binary.setBitVectorSize(BitVector.from_int(val), total_bits)
 
 
 def unpad(string, removeBlanks=True):
     """
-    Remove AIS string padding
+    Remove AIS string padding (@ and optionally trailing spaces).
 
     >>> unpad('@')
     ''
@@ -363,45 +358,30 @@ def unpad(string, removeBlanks=True):
     'A'
     >>> unpad('ABCDEF1234@@@@@')
     'ABCDEF1234'
-
-    FIX: is this the correct response?
-
     >>> unpad('A@B')
     'A@B'
-
-    This is non standard behavior, but some AIS systems space pad the right
-
     >>> unpad(' ')
     ''
     >>> unpad('MY SHIP NAME    ')
     'MY SHIP NAME'
-
-    The standard implies this behavior with is less fun
-
     >>> unpad('MY SHIP NAME    ',removeBlanks=False)
     'MY SHIP NAME    '
 
-    @bug: use a faster algorithm for truncating the string
     Args:
         string: string to cleanup
-    @type string: str
         removeBlanks: set to true to strip spaces on the right
-    @type removeBlanks: bool
     Returns:
-        cleaned up string
         str
     """
-    while len(string) > 0 and string[-1] == "@":
-        string = string[:-1]
+    string = string.rstrip("@")
     if removeBlanks:
-        while len(string) > 0 and string[-1] == " ":
-            string = string[:-1]
+        string = string.rstrip(" ")
     return string
 
 
 def pad(string, length):
     """
-    pad a string out to the proper length with the @ character as required by the ais spec
+    Pad a string out to the proper length with the @ character as required by the AIS spec.
 
     >>> pad('',0)
     ''
@@ -416,18 +396,11 @@ def pad(string, length):
 
     Args:
         string: string to pad out
-    @type string: str
         length: number of characters that the string must be
-    @type length: int
     Returns:
         str of len length
-        str
-
-    @bug: Use a list and join to make the string building faster
     """
-    while len(string) < length:
-        string += "@"
-    return string
+    return string.ljust(length, "@")
 
 
 if __name__ == "__main__":

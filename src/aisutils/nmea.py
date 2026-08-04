@@ -24,6 +24,8 @@ Handle creation and extraction of NMEA strings.  Maybe need a separate VDM class
 per line that is required in the NMEA specification.
 """
 
+import functools
+import operator
 import re
 import sys
 
@@ -65,25 +67,16 @@ def checksumStr(data, verbose=False):
 
     """
 
-    # FIX: strip off new line at the end too
-    # if data[0]=='!' or data[0]=='?': data = data[1:]
-    # if data[-1]=='*': data = data[:-1]
-    # if data[-3]=='*': data = data[:-3]
-    end = data.find("*")  # FIX: would rfind be faster?
+    end = data.find("*")
     start = 0
-    if data[0] in ("$", "!"):
+    if data and data[0] in ("$", "!"):
         start = 1
     data = data[start:end] if end != -1 else data[start:]
     if verbose:
         print("checking on:", start, end, data)
-    # FIX: rename sum to not shadow builting function
-    sum = 0
-    for c in data:
-        sum = sum ^ ord(c)
-    sumHex = f"{sum:x}"
-    if len(sumHex) == 1:
-        sumHex = "0" + sumHex
-    return sumHex.upper()
+
+    chk = functools.reduce(operator.xor, data.encode("latin-1"), 0)
+    return f"{chk:02X}"
 
 
 ######################################################################

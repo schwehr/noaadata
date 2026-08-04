@@ -130,6 +130,8 @@ class Station:
     A single station
     """
 
+    __slots__ = ("fields", "parameters")
+
     def __init__(self, et):
         """
         Create a station object from an element tree
@@ -221,6 +223,8 @@ class ActiveStations:
     Custom wrapper around the ActiveStations that allows the system to
     fail back to a precaptured list of stations and instruments
     """
+
+    __slots__ = ("stationsET",)
 
     SERVER_ADDR = "opendap.co-ops.nos.noaa.gov"
     """Host name for the NOAA Axis soap server"""

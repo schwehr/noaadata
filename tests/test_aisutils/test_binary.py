@@ -27,3 +27,21 @@ def test_bv_from_signed_int() -> None:
     bv_neg = binary.bvFromSignedInt(-5, 8)
     assert len(bv_neg) == 8
     assert bv_neg[0] == 1
+
+
+def test_float_bitvector_conversions() -> None:
+    val = 12.345
+    bv = binary.float2bitvec(val)
+    assert len(bv) == 32
+    recovered = binary.bitvec2float(bv)
+    assert abs(recovered - val) < 1e-5
+
+
+def test_bit_count_and_parity() -> None:
+    bv = BitVector.from_bitstring("101101")
+    assert binary.bit_count(bv) == 4
+    assert binary.parity(bv) == 0
+
+    bv_odd = BitVector.from_bitstring("10101")
+    assert binary.bit_count(bv_odd) == 3
+    assert binary.parity(bv_odd) == 1

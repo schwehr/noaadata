@@ -133,6 +133,19 @@ class Grid:
     0,0 is at the lower left and (xNumCells-1,yNumCells-1) is the upper right cell
     """
 
+    __slots__ = (
+        "grid",
+        "gridType",
+        "maxx",
+        "maxy",
+        "minx",
+        "miny",
+        "stepSize",
+        "verbose",
+        "xNumCells",
+        "yNumCells",
+    )
+
     epsilon = 0.000001
 
     def __init__(

@@ -134,6 +134,28 @@ def get_contents(nmeaStr):
 
 
 class UscgNmea:
+    __slots__ = (
+        "aisChannel",
+        "cg_sec",
+        "checksumStr",
+        "contents",
+        "fillbits",
+        "msgTypeChar",
+        "nmeaType",
+        "rssi",
+        "sentenceNum",
+        "sequentialMsgId",
+        "signalStrength",
+        "slotNumber",
+        "sqlTimestampStr",
+        "station",
+        "stationTypeCode",
+        "timeOfArrival",
+        "timestamp",
+        "totalSentences",
+        "x",
+    )
+
     @classmethod
     def from_nmea(cls, nmea_str: str) -> "UscgNmea":
         """Factory constructor to instantiate UscgNmea from a sentence string."""
@@ -179,6 +201,7 @@ class UscgNmea:
             else:
                 self.msgTypeChar = None
 
+            self.station = None
             for i in range(len(fields) - 1, 5, -1):
                 if len(fields[i]) == 0:
                     continue  # maybe it should throw a parse exception instead?
@@ -200,7 +223,7 @@ class UscgNmea:
                 if c == "T":
                     try:
                         self.timeOfArrival = float(f[1:])
-                    except:
+                    except ValueError:
                         # print 'warning: bogus time of arrival: %s' % (f[1:],)
                         pass
                     continue
@@ -222,27 +245,11 @@ class UscgNmea:
 
     def __eq__(self, other):
         # Try to be smart for speed
-        if self.cg_sec != other.cg_sec:
+        if getattr(self, "cg_sec", None) != getattr(other, "cg_sec", None):
             return False
-        if self.sentenceNum != other.sentenceNum:
+        if getattr(self, "contents", None) != getattr(other, "contents", None):
             return False
-        if self.totalSentences != other.totalSentences:
-            return False
-        if self.sequentialMsgId != other.sequentialMsgId:
-            return False
-        if self.aisChannel != other.aisChannel:
-            return False
-        if self.checksumStr != other.checksumStr:
-            return False
-        if self.fillbits != other.fillbits:
-            return False
-        if self.station != other.station:
-            return False
-        if self.contents != other.contents:
-            return False
-
-        # FIX: probably should check for the existence of rssi, signalStrength, etc
-        return True
+        return str(self) == str(other)
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -254,7 +261,7 @@ class UscgNmea:
         """Use the values in this message to reconstruct a single line nmea string"""
 
         parts = ["!" + self.nmeaType, str(self.totalSentences), str(self.sentenceNum)]
-        if self.sequentialMsgId is None:
+        if getattr(self, "sequentialMsgId", None) is None:
             parts.append("")
         else:
             parts.append(str(self.sequentialMsgId))
@@ -262,20 +269,20 @@ class UscgNmea:
         parts.append(self.contents)
         parts.append(str(self.fillbits) + "*" + self.checksumStr)
 
-        if "rssi" in self.__dict__:
+        if getattr(self, "rssi", None) is not None:
             parts.append("s" + str(self.rssi))
-        if "signalStrength" in self.__dict__:
+        if getattr(self, "signalStrength", None) is not None:
             parts.append("d" + str(self.signalStrength))
-        if "timeOfArrival" in self.__dict__:
+        if getattr(self, "timeOfArrival", None) is not None:
             parts.append("T" + str(self.timeOfArrival))
-        if "slotNumber" in self.__dict__:
+        if getattr(self, "slotNumber", None) is not None:
             parts.append("S" + str(self.slotNumber))
-        if "x" in self.__dict__:
+        if getattr(self, "x", None) is not None:
             parts.append("x" + str(self.x))
 
-        if self.station:
+        if getattr(self, "station", None):
             parts.append(self.station)
-        parts.append(str(self.cg_sec))  # Always last
+        parts.append(str(getattr(self, "cg_sec", "")))  # Always last
         return ",".join(parts)
 
 

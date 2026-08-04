@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 """Utilities for working with NMEA strings."""
 
+import functools
+import operator
 import re
 
 nmeaChecksumRE = re.compile(r"[\!\?][^\*]+\*[0-9A-Fa-f]{2}")
@@ -24,19 +26,13 @@ def checksumStr(data: str) -> str:
     '09'
     """
 
-    # FIX: strip off new line at the end too
-    if data[0] == "!" or data[0] == "?":
+    if data and data[0] in ("!", "?"):
         data = data[1:]
     if len(data) >= 3 and data[-3] == "*":
         data = data[:-3]
-    # FIX: rename sum to not shadown builting function
-    sum = 0
-    for c in data:
-        sum = sum ^ ord(c)
-    sumHex = f"{sum:x}"
-    if len(sumHex) == 1:
-        sumHex = "0" + sumHex
-    return sumHex.upper()
+
+    chk = functools.reduce(operator.xor, data.encode("latin-1"), 0)
+    return f"{chk:02X}"
 
 
 def isChecksumValid(nmeaStr: str, allowTailData: bool = True) -> bool:

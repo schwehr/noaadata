@@ -98,6 +98,16 @@ def create_daemon():
 
 # Did I want to subclass file?
 class LogFileWithRotate:
+    __slots__ = (
+        "current_date",
+        "log_file",
+        "log_filename",
+        "prefix",
+        "station",
+        "uscg_format",
+        "v",
+    )
+
     def __init__(
         self, prefix="log-", station="runknown", uscg_format=True, verbose=False
     ):

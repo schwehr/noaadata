@@ -355,6 +355,8 @@ def distance_m_unit_sphere(lat1, long1, lat2, long2):
 
 
 class BoundingBox:
+    __slots__ = ("x_max", "x_min", "y_max", "y_min")
+
     def __init__(
         self,
     ):
@@ -383,6 +385,17 @@ class BoundingBox:
 
 
 class AisPositionStats:
+    __slots__ = (
+        "bbox",
+        "count_bad_num_bits",
+        "count_bad_pos",
+        "count_no_gps",
+        "dist_hist",
+        "max_dist_km",
+        "positions",
+        "station_location",
+    )
+
     def __init__(self, station_location=None, max_dist_km=500):
         self.positions = []
         self.bbox = BoundingBox()
