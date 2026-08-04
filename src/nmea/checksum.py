@@ -39,12 +39,10 @@ def isChecksumValid(nmeaStr: str, allowTailData: bool = True) -> bool:
     """Return True if the string checks out with the checksum
 
     Args:
-        allowTailData: Permit handing of Coast Guard format with data after the checksum
-        data: NMEA message.  Leading ?/! are optional
-    @type data: str
+        nmeaStr: NMEA sentence. Leading $ or ! is optional.
+        allowTailData: Permit handling of Coast Guard format with data after the checksum.
     Returns:
         True if the checksum matches
-        bool
 
     >>> isChecksumValid("!AIVDM,1,1,,B,35MsUdPOh8JwI:0HUwquiIFH21>i,0*09")
     True

@@ -5,4 +5,5 @@ __pycache__/
 *.asc
 .coverage
 .pytest_cache/
+site/
 *~
