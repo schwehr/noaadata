@@ -2968,7 +2968,6 @@ def buildDecodeParts(o, msgET, verbose=False, prefixName=False):
     Returns:
         None
 
-     TODO(schwehr):FIX: doc strings for each decode!
      TODO(schwehr):FIX: check for a dac,fid, or efid.  If exists, then this is an AIS Msg 8 payload
      TODO(schwehr):May want to take a dictionary of already decoded fields to speed things that need prior info
     for things like variable length arrays
@@ -2992,6 +2991,32 @@ def buildDecodeParts(o, msgET, verbose=False, prefixName=False):
         type = field.attrib["type"]
 
         o.write("def " + baseName + name + "(bv, validate=False):\n")
+
+        # doc string
+        desc = field[0].text.replace("\n", " ")  # get ride of new lines
+        o.write(
+            "    '''Decode part "
+            + name
+            + " for "
+            + msgET.attrib["name"]
+            + " message.\n\n"
+        )
+        o.write("    - " + name + "(" + type + "): " + desc)
+        if len(field.xpath("required")) == 1:
+            o.write(
+                ' (field automatically set to "'
+                + field.xpath("required")[0].text
+                + '")'
+            )
+        o.write("\n")
+        o.write("    @type bv: BitVector\n")
+        o.write("    @param bv: Bits defining a message\n")
+        o.write("    @type validate: bool\n")
+        o.write("    @param validate: Set to true to cause checking to occur\n")
+        o.write("    @rtype: dict\n")
+        o.write("    @return: dict with one key set to the decoded value\n")
+        o.write("    '''\n")
+
         # Follow the same convention of decoding into a dict so that code is the same
         # o.write('    r={};')
         o.write("    return ")
