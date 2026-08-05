@@ -50,7 +50,8 @@ import sys
 import time
 import traceback
 
-import exceptions  # For KeyboardInterupt pychecker complaint
+
+import builtins as exceptions  # For KeyboardInterupt pychecker complaint
 
 import nmea.znt  # NTP tracking
 
@@ -171,9 +172,11 @@ class PassThroughServer:
         return self.options.log_file
 
     def logfile_add_start(self):
+        if not self.log:
+            return
         self.log.write(
             "# Opening log file at {} UTC,{}\n".format(
-                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"), time.time()
+                datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"), time.time()
             )
         )
         try:
@@ -187,8 +190,13 @@ class PassThroughServer:
         except:
             print("Python really should have platform and version!")
         self.log.write("# NTP status:\n")
-        for line in os.popen("ntpq -p -n"):
-            self.log.write(f"#    ntp: {line.rstrip()}\n")
+        import subprocess
+        try:
+            output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)
+            for line in output.splitlines():
+                self.log.write(f"#    ntp: {line.rstrip()}\n")
+        except Exception as e:
+            self.log.write(f"#    ntp: ntpq command failed: {e}\n")
 
     def passdata(self, unused=None):
         while self.running:
@@ -238,7 +246,7 @@ class PassThroughServer:
                     now = time.time()
                     self.log.write(
                         "# Closing log file at {} UTC,{}\n".format(
-                            datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M"),
+                            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"),
                             time.time(),
                         )
                     )
@@ -262,43 +270,47 @@ class PassThroughServer:
 
                     # Make sure that we log each line with one timestamp that matches
                     # as close as possible
+                    # m is bytes, data_cache might be string, need to handle this
+                    if isinstance(data_cache, str):
+                        data_cache = data_cache.encode("latin-1")
+
                     data_cache += m
                     if len(data_cache) > 100000:
                         print("WARNING... not seeing line endings.  NOT forwarding")
                         if self.log:
-                            self.log.write(data_cache)
+                            self.log.write(data_cache.decode("latin-1"))
                             self.log.write(f"{station_id},{now}\n")
                         recv_time = None
-                        data_cache = ""
+                        data_cache = b""
                         continue
 
-                    if "\n" not in m:
+                    if b"\n" not in m:
                         continue
 
-                    lines = data_cache.split("\n")
-                    for line in lines[:-1]:
-                        line = line.rstrip()
-                        line += f",{station_id},{recv_time}\n"
+                    lines = data_cache.split(b"\n")
+                    for line_b in lines[:-1]:
+                        line_str = line_b.decode("latin-1").rstrip()
+                        line_str += f",{station_id},{recv_time}\n"
 
                         if self.log:
-                            self.log.write(line)
+                            self.log.write(line_str)
                         if v > TERSE:
-                            print(line, end=" ")
+                            print(line_str, end=" ")
 
                         for c in self.clients:
                             try:
-                                c.send(line)
+                                c.send(line_str.encode("latin-1"))
                             except OSError:
                                 print("Client Disconnect")
                                 self.clients.remove(c)
 
                     recv_time = now
-                    data_cache = lines[-1]  # Save the last partial line
+                    data_cache = lines[-1]  # Save the last partial line (bytes)
 
                 else:
                     # Log straight through
                     if self.log:
-                        self.log.write(m)  # Takes a few before it flushes
+                        self.log.write(m.decode("latin-1"))  # Takes a few before it flushes
                     if v > TERSE:
                         print(m, end=" ")
                     for c in self.clients:

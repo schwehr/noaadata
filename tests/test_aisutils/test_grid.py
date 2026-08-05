@@ -15,11 +15,31 @@ Unit tests for the grid class
 
 import unittest
 
-from aisutils.grid import Grid
+from aisutils.grid import Grid, distancePt
 
 ######################################################################
 # UNIT TESTING
 ######################################################################
+
+class TestDistancePt(unittest.TestCase):
+    def test_zero_distance(self):
+        self.assertEqual(distancePt((1, 2), (1, 2)), 0.0)
+
+    def test_positive_coordinates(self):
+        self.assertEqual(distancePt((0, 0), (3, 4)), 5.0)
+        self.assertEqual(distancePt((1, 1), (4, 5)), 5.0)
+
+    def test_negative_coordinates(self):
+        self.assertEqual(distancePt((-1, -1), (-4, -5)), 5.0)
+        self.assertEqual(distancePt((0, 0), (-3, -4)), 5.0)
+
+    def test_float_coordinates(self):
+        self.assertEqual(distancePt((1.5, 2.5), (4.5, 6.5)), 5.0)
+        self.assertAlmostEqual(distancePt((0.1, 0.2), (0.4, 0.6)), 0.5)
+
+    def test_reversed_coordinates(self):
+        self.assertEqual(distancePt((0, 0), (3, 4)), distancePt((3, 4), (0, 0)))
+        self.assertEqual(distancePt((1.5, 2.5), (-4.5, -6.5)), distancePt((-4.5, -6.5), (1.5, 2.5)))
 
 
 class TestGrid(unittest.TestCase):
