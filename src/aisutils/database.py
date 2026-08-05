@@ -89,7 +89,7 @@ def stdCmdlineOptions(parser, dbType="postgres", verbose=False):
         try:
             defaultUser = os.getlogin()
         except OSError:
-            defaultUser = os.environ.get('USER', 'root')
+            defaultUser = os.environ.get("USER", "root")
         parser.add_option(
             "-u",
             "--database-user",
