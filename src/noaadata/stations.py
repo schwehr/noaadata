@@ -194,13 +194,13 @@ class Station:
         #           if name and p['name']==name: return True
         for p in self.parameters:
             # FIX: make this more general
-            if name and p["name"] != name:
+            if name is not None and p["name"] != name:
                 continue
-            if status and p["status"] != status:
+            if status is not None and p["status"] != status:
                 continue
-            if sensorID and p["sensorID"] != sensorID:
+            if sensorID is not None and p["sensorID"] != sensorID:
                 continue
-            if DCP and p["DCP"] != DCP:
+            if DCP is not None and p["DCP"] != DCP:
                 continue
             return True
 
