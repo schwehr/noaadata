@@ -172,7 +172,9 @@ def main():
                 if newline != -1:
                     fields = buf.split(b"\n")
                     if options.uscgFormat:
-                        print(fields[0].strip().decode("latin-1") + "," + str(time.time()))
+                        print(
+                            fields[0].strip().decode("latin-1") + "," + str(time.time())
+                        )
                     else:
                         print(fields[0].strip().decode("latin-1"))
                     buf = b"" + buf[newline + 1 :] if len(fields) > 1 else b""

@@ -138,4 +138,3 @@ $cmd --type=binary
 echo
 echo "Decode what was just created:"
 ../ais/timed_circular_notice.py --decode "`cat tmp.ais`"
-

@@ -336,4 +336,3 @@ if __name__=='__main__':
 
     now = datetime.datetime.now()
     workbook.save('results-'+now.strftime('%Y-%m-%d_%H%M')+'.xls') # FIX - command line option
-

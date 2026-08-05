@@ -21,6 +21,7 @@ from aisutils.grid import Grid, distancePt
 # UNIT TESTING
 ######################################################################
 
+
 class TestDistancePt(unittest.TestCase):
     def test_zero_distance(self):
         self.assertEqual(distancePt((1, 2), (1, 2)), 0.0)
@@ -39,7 +40,9 @@ class TestDistancePt(unittest.TestCase):
 
     def test_reversed_coordinates(self):
         self.assertEqual(distancePt((0, 0), (3, 4)), distancePt((3, 4), (0, 0)))
-        self.assertEqual(distancePt((1.5, 2.5), (-4.5, -6.5)), distancePt((-4.5, -6.5), (1.5, 2.5)))
+        self.assertEqual(
+            distancePt((1.5, 2.5), (-4.5, -6.5)), distancePt((-4.5, -6.5), (1.5, 2.5))
+        )
 
 
 class TestGrid(unittest.TestCase):

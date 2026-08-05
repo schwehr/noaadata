@@ -11,4 +11,3 @@ for filename in sys.argv[1:]:
         newFields = fields[:-1]
         newFields.append(str(ts))
         print ','.join(newFields)
-

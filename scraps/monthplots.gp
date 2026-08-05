@@ -33,4 +33,3 @@ set style fill solid border -1
 set boxwidth 0.75
 
 replot
-

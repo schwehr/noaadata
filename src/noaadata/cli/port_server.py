@@ -43,15 +43,13 @@ Migrated from ais-py in August 2007.
 )
 
 import _thread
+import builtins as exceptions  # For KeyboardInterupt pychecker complaint
 import datetime
 import os
 import socket
 import sys
 import time
 import traceback
-
-
-import builtins as exceptions  # For KeyboardInterupt pychecker complaint
 
 import nmea.znt  # NTP tracking
 
@@ -176,7 +174,8 @@ class PassThroughServer:
             return
         self.log.write(
             "# Opening log file at {} UTC,{}\n".format(
-                datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"), time.time()
+                datetime.datetime.now(datetime.UTC).strftime("%Y-%m-%d %H:%M"),
+                time.time(),
             )
         )
         try:
@@ -191,6 +190,7 @@ class PassThroughServer:
             print("Python really should have platform and version!")
         self.log.write("# NTP status:\n")
         import subprocess
+
         try:
             output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)
             for line in output.splitlines():
@@ -246,7 +246,9 @@ class PassThroughServer:
                     now = time.time()
                     self.log.write(
                         "# Closing log file at {} UTC,{}\n".format(
-                            datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M"),
+                            datetime.datetime.now(datetime.UTC).strftime(
+                                "%Y-%m-%d %H:%M"
+                            ),
                             time.time(),
                         )
                     )
@@ -310,7 +312,9 @@ class PassThroughServer:
                 else:
                     # Log straight through
                     if self.log:
-                        self.log.write(m.decode("latin-1"))  # Takes a few before it flushes
+                        self.log.write(
+                            m.decode("latin-1")
+                        )  # Takes a few before it flushes
                     if v > TERSE:
                         print(m, end=" ")
                     for c in self.clients:
