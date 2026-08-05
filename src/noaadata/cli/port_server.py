@@ -47,7 +47,7 @@ import builtins as exceptions  # For KeyboardInterupt pychecker complaint
 import datetime
 import os
 import socket
-import subprocess
+import subprocess  # nosec B404
 import sys
 import time
 import traceback
@@ -192,7 +192,7 @@ class PassThroughServer:
         self.log.write("# NTP status:\n")
 
         try:
-            output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)  # nosec B603
+            output = subprocess.check_output(["/usr/sbin/ntpd", "-p", "-n"], text=True)  # nosec B603
             for line in output.splitlines():
                 self.log.write(f"#    ntp: {line.rstrip()}\n")
         except Exception as e:
