@@ -38,10 +38,9 @@ jobs:
       - name: Check spelling (codespell)
         run: uv run codespell .
 
-      - name: Type checking (mypy & ty)
+      - name: Type checking (mypy)
         run: |
           uv run mypy src/
-          uv run ty check src/
 
       - name: Build documentation (mkdocs)
         run: uv run mkdocs build

@@ -58,6 +58,7 @@ dev = [
     "zizmor",
     "mkdocs-material",
     "mkdocstrings[python]",
+    "magicdate",
 ]
 
 [tool.hatch.build.targets.wheel]
