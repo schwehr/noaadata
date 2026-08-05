@@ -268,7 +268,6 @@ def start(options, pts):
                 if pts is not None:
                     pts.put("# " + str(timestamp) + "\n")
                 log.write("# " + str(timestamp) + "\n")
-                log.flush()  # FIX: better not to flush so writing to disk less often
                 if pts is not None:
                     pts.put(line + "\n")
                 log.write(line + "\n")
