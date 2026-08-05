@@ -47,6 +47,7 @@ import builtins as exceptions  # For KeyboardInterupt pychecker complaint
 import datetime
 import os
 import socket
+import subprocess
 import sys
 import time
 import traceback
@@ -189,7 +190,6 @@ class PassThroughServer:
         except:
             print("Python really should have platform and version!")
         self.log.write("# NTP status:\n")
-        import subprocess  # nosec B404
 
         try:
             output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)  # nosec B603
