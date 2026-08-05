@@ -94,6 +94,9 @@ uv run pytest
 uv run ruff format --check
 uv run ruff check
 
+# Run pre-commit hooks across all files
+uv run pre-commit run --all-files
+
 # Check markdown formatting and spelling
 uv run mdformat --check README.md docs/ sdd/
 uv run codespell .
@@ -149,6 +152,13 @@ Every Git commit message MUST follow the **Conventional Commits** specification:
   this repository.
 - Commit messages must remain clean, standard Conventional Commits without
   automated conversation tracking trailers.
+
+### 4.3 Mandatory Pre-Commit Hook Execution
+
+- **CRITICAL**: All developers and AI coding assistants MUST ALWAYS run
+  `uv run pre-commit run --all-files` before committing any changes.
+- All pre-commit hooks (formatting, linting, security scans, static typing) must
+  pass without errors prior to creating a Git commit.
 
 ______________________________________________________________________
 

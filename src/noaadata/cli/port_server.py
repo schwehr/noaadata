@@ -189,10 +189,10 @@ class PassThroughServer:
         except:
             print("Python really should have platform and version!")
         self.log.write("# NTP status:\n")
-        import subprocess
+        import subprocess  # nosec B404
 
         try:
-            output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)
+            output = subprocess.check_output(["ntpq", "-p", "-n"], text=True)  # nosec B603
             for line in output.splitlines():
                 self.log.write(f"#    ntp: {line.rstrip()}\n")
         except Exception as e:
