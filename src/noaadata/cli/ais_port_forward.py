@@ -150,9 +150,6 @@ class PassThroughServer:
 
         self.recvThreadStopped = True
         sys.stderr.write("... end of recv thread\n")
-        # FIX: remove these two for debugging
-        sys.stderr.write("  stopped" + str(self.recvThreadStopped) + "\n")
-        sys.stderr.write("  running" + str(self.running) + "\n")
 
     def startFilterThread(self, unused=None):
         """
