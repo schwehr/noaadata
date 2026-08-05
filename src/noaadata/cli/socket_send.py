@@ -156,7 +156,7 @@ def main():
             arg += DOS_EOL
         else:
             arg += "\n"
-        s.send(arg)
+        s.send(arg.encode("latin-1"))
 
         start = time.time()
         # print start
@@ -165,17 +165,22 @@ def main():
             readersready, _outputready, _exceptready = select.select([s], [], [], 1)
             for sock in readersready:
                 data = sock.recv(100)
+                if isinstance(buf, str):
+                    buf = buf.encode("latin-1")
                 buf += data
-                newline = buf.find("\n")
+                newline = buf.find(b"\n")
                 if newline != -1:
-                    fields = buf.split("\n")
+                    fields = buf.split(b"\n")
                     if options.uscgFormat:
-                        print(fields[0].strip() + "," + str(time.time()))
+                        print(fields[0].strip().decode("latin-1") + "," + str(time.time()))
                     else:
-                        print(fields[0].strip())
-                    buf = "" + buf[newline + 1 :] if len(fields) > 1 else ""
+                        print(fields[0].strip().decode("latin-1"))
+                    buf = b"" + buf[newline + 1 :] if len(fields) > 1 else b""
     if len(buf) > 0:
-        print(buf)
+        if isinstance(buf, bytes):
+            print(buf.decode("latin-1"))
+        else:
+            print(buf)
 
     # s.send('$xxCAB,0,0,,*40'+EOL)
     # s.send('$xxCAB,1,1,1,1*40'+EOL)
