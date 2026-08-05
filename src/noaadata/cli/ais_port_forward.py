@@ -16,9 +16,8 @@ import sys
 import time
 import traceback
 
-import exceptions
-import Queue
-import thread
+import queue as Queue
+import _thread as thread
 
 import ais.ais_msg_1 as msg1
 import aisutils.daemon
@@ -112,7 +111,7 @@ class PassThroughServer:
                     src = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     src.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                     src.connect((self.options.inHost, self.options.inPort))
-                except (OSError, inst):
+                except OSError as inst:
                     sys.stderr.write(
                         str(count)
                         + ": Failed to connect to src ... "
@@ -150,9 +149,6 @@ class PassThroughServer:
 
         self.recvThreadStopped = True
         sys.stderr.write("... end of recv thread\n")
-        # FIX: remove these two for debugging
-        sys.stderr.write("  stopped" + str(self.recvThreadStopped) + "\n")
-        sys.stderr.write("  running" + str(self.running) + "\n")
 
     def startFilterThread(self, unused=None):
         """
@@ -385,7 +381,7 @@ class PassThroughServer:
                     dst = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     dst.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                     dst.connect((self.options.outHost, self.options.outPort))
-                except (OSError, inst):
+                except OSError as inst:
                     sys.stderr.write(
                         str(count)
                         + ": Failed to connect to dst ... "
@@ -650,7 +646,7 @@ def main():
             if v:
                 sys.stderr.write("ping " + str(i) + "\n")
             logging.critical("ping " + str(i))
-    except exceptions.KeyboardInterrupt:
+    except KeyboardInterrupt:
         running = False
         if v:
             sys.stderr.write("\bshutting down...\n")
