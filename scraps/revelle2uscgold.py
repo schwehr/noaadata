@@ -30,4 +30,3 @@ for filename in sys.argv[1:]:
         ts = fields[0]
 
         print '%s,%s,%s' % (nmea,station,ts)
-

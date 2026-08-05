@@ -246,5 +246,3 @@ replot
                 ws.write(ws_row,col,int(catCounts[category][i])); col+=1
 
         workbook.save(options.basename+'.xls')
-
-

@@ -275,5 +275,3 @@ if __name__=='__main__':
         #ws.write(ws_row,col,[category]); col +=1
 
     workbook.save(options.basename+'.xls')
-
-

@@ -36,14 +36,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: mypy
-        name: mypy static type checker
-        entry: bash -c 'uv run mypy src/ --ignore-missing-imports || true'
-        language: system
-        types: [python]
-        files: ^src/
-        pass_filenames: false
-
       - id: ty
         name: ty type checker
         entry: bash -c 'uv run ty check src/ || true'
@@ -55,6 +47,14 @@ repos:
       - id: pyrefly
         name: pyrefly type checker
         entry: bash -c 'uv run pyrefly check src/ || true'
+        language: system
+        types: [python]
+        files: ^src/
+        pass_filenames: false
+
+      - id: mypy
+        name: mypy static type checker
+        entry: bash -c 'uv run mypy src/ --ignore-missing-imports || true'
         language: system
         types: [python]
         files: ^src/

@@ -175,4 +175,3 @@ CREATE TABLE summary2006
             cu.execute(str(ins))
 
         cx.commit()
-
