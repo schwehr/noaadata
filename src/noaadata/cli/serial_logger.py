@@ -18,8 +18,8 @@ import resource
 import socket
 import sys
 import time
+from queue import Queue
 
-import Queue
 import serial
 import thread
 
