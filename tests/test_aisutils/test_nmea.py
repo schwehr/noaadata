@@ -21,7 +21,7 @@ def test_bbm_decode_valid() -> None:
         "seqId": "0",
         "nmeaCmd": "BBM",
         "sentNum": "1",
-        "totSent": "1"
+        "totSent": "1",
     }
 
 
@@ -42,7 +42,9 @@ def test_bbm_decode_invalid_checksum(capsys: pytest.CaptureFixture[str]) -> None
 
     assert result is False
     captured = capsys.readouterr()
-    assert "FIX: this should be an exception in bbmDecode.  Bad checksum" in captured.out
+    assert (
+        "FIX: this should be an exception in bbmDecode.  Bad checksum" in captured.out
+    )
 
 
 def test_bbm_decode_wrong_number_of_fields(capsys: pytest.CaptureFixture[str]) -> None:
@@ -55,5 +57,8 @@ def test_bbm_decode_wrong_number_of_fields(capsys: pytest.CaptureFixture[str]) -
 
     assert result is False
     captured = capsys.readouterr()
-    assert "FIX: this should be an exception in bbmDecode.  wrong number of fields" in captured.out
+    assert (
+        "FIX: this should be an exception in bbmDecode.  wrong number of fields"
+        in captured.out
+    )
     assert msg in captured.out
