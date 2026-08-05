@@ -21,6 +21,7 @@ def test_strip_namespaces() -> None:
 
 def test_station_initialization() -> None:
     from lxml import etree
+
     xml_str = """
     <station name="Test Station" ID="123456">
         <metadata>
@@ -52,6 +53,7 @@ def test_station_initialization() -> None:
 
 def test_station_has_sensor() -> None:
     from lxml import etree
+
     xml_str = """
     <station name="Test Station" ID="123456">
         <metadata>
