@@ -1,7 +1,7 @@
 // Since: 18-Apr-2010
 // Kurt Schwehr
 // License: Apache 2.0
-// g++ ais_filter_by_mmsi.cxx -o ais_filter_by_mmsi -Wall -O3 -funroll-loops -fexpensive-optimizations 
+// g++ ais_filter_by_mmsi.cxx -o ais_filter_by_mmsi -Wall -O3 -funroll-loops -fexpensive-optimizations
 
 #include <fstream>
 #include <iostream>
@@ -37,8 +37,8 @@ void print_bits(bitset<max_bits> &bits) {
     for (size_t i=0; i < max_bits; i++) cout << i%10;    cout << endl;
 }
 
-void print_bits6(bitset<6> &bits) { 
-    for (size_t i=0; i<6; i++) cout << (bits[i]?"1":"0"); 
+void print_bits6(bitset<6> &bits) {
+    for (size_t i=0; i<6; i++) cout << (bits[i]?"1":"0");
 }
 
 int decode_message_id(bitset<max_bits> &msg_bits) {

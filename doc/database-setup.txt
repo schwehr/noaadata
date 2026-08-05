@@ -12,7 +12,7 @@ fink install psycopg2-py25 postgis83
 
 # See that no database is running
 
-ps -aux | grep post  
+ps -aux | grep post
 
 
 # Get the database up
@@ -31,7 +31,7 @@ sudo -u postgres createdb ais
 
 # Configure the database so that it can use the postgis constructs
 
-sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais 	
+sudo -u postgres /sw/bin/psql-8.3 -f /sw/share/doc/postgis83/lwpostgis.sql -d ais
 
 or
 
@@ -58,4 +58,4 @@ psql ais
 
 CREATE TABLE position (key SERIAL PRIMARY KEY, messageid INTEGER, repeatindicator INTEGER, userid INTEGER, navigationstatus INTEGER, rot INTEGER, sog DECIMAL(4,1), positionaccuracy INTEGER, cog DECIMAL(4,1), trueheading INTEGER, timestamp INTEGER, regionalreserved INTEGER, spare INTEGER, raim BOOL, state_syncstate INTEGER, state_slottimeout INTEGER, state_slotoffset INTEGER, cg_r VARCHAR(15), cg_sec INTEGER, cg_timestamp TIMESTAMP ); SELECT AddGeometryColumn('position','position',-1,'POINT',2);
 
-CREATE TABLE shipdata (key SERIAL PRIMARY KEY, messageid INTEGER, repeatindicator INTEGER, userid INTEGER, aisversion INTEGER, imonumber INTEGER, callsign VARCHAR(7), name VARCHAR(20), shipandcargo INTEGER, dima INTEGER, dimb INTEGER, dimc INTEGER, dimd INTEGER, fixtype INTEGER, eta INTEGER, draught DECIMAL(3,1), destination VARCHAR(20), dte INTEGER, spare INTEGER, cg_r VARCHAR(15), cg_sec INTEGER, cg_timestamp TIMESTAMP ); 
+CREATE TABLE shipdata (key SERIAL PRIMARY KEY, messageid INTEGER, repeatindicator INTEGER, userid INTEGER, aisversion INTEGER, imonumber INTEGER, callsign VARCHAR(7), name VARCHAR(20), shipandcargo INTEGER, dima INTEGER, dimb INTEGER, dimc INTEGER, dimd INTEGER, fixtype INTEGER, eta INTEGER, draught DECIMAL(3,1), destination VARCHAR(20), dte INTEGER, spare INTEGER, cg_r VARCHAR(15), cg_sec INTEGER, cg_timestamp TIMESTAMP );

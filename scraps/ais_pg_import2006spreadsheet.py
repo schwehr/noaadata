@@ -67,7 +67,7 @@ if __name__=='__main__':
             pass
         except:
             print 'table did not already exist'
-        
+
 
         cu.execute('''
 CREATE TABLE summary2006
@@ -140,7 +140,7 @@ CREATE TABLE summary2006
                 if len(fields[i])>0: ins.add(mon, int(fields[i]));
                 else: ins.add(mon,0)
                 i+=1
-            
+
             ins.add('timeInRegion',float(fields[i])); i+=1
             ins.add('posCountAIS', int(fields[i])); i+=1
             name = fields[i].replace("'"," ")  # NOR'EASTER causes trouble
@@ -175,4 +175,4 @@ CREATE TABLE summary2006
             cu.execute(str(ins))
 
         cx.commit()
-        
+

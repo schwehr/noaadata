@@ -64,7 +64,7 @@ if __name__=='__main__':
                       help='Report distances in nautical miles rather than km')
 
     # FIX: utm zone not hardcoded would be good
-    # UTM Zone 19... 
+    # UTM Zone 19...
     #sql='SELECT AsText(Transform(track,32619)) FROM tpath'
     # --- EPSG 32610 : WGS 84 / UTM zone 10N
     #sql='SELECT AsText(Transform(track,32610)) FROM tpath'
@@ -117,14 +117,14 @@ if __name__=='__main__':
                         monthCounts[ts.month]+= (lengthMeters/1000.) * 0.539956803
                     else:
                         monthCounts[ts.month]+=lengthMeters/1000.
-                    
-                               
+
+
                 #sys.exit('early')
             else: # do transit count
                 cu.execute('SELECT p.cg_timestamp FROM position AS p, (SELECT startpos FROM transit WHERE userid=\''+str(ship[0])+'\') AS t WHERE key = startpos;')
                 for start in cu.fetchall():
                     monthCounts[start[0].month]+=1
-        
+
         if verbose:  sys.stderr.write('  '+str(monthCounts)+'\n')
         catCounts[category]=monthCounts
 
@@ -142,7 +142,7 @@ if __name__=='__main__':
     del(o)
 
     # the above one plots backwards in gnuplot... maybe this one is better
-    
+
     o = file(options.basename+'-2.dat','w')
     o.write('# Ship transit occurance by category and month\n')
     catList = [categories[i] for i in range(len(categories))]
@@ -246,5 +246,5 @@ replot
                 ws.write(ws_row,col,int(catCounts[category][i])); col+=1
 
         workbook.save(options.basename+'.xls')
-        
-        
+
+

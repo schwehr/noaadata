@@ -1,6 +1,6 @@
 ######################################################################
 # $Id$
-# 
+#
 # AUTHOR: Kurt Schwehr
 # COPYRIGHT: 2006 University of New Hampshire, Center for Coastal and Ocean Mapping
 ######################################################################
@@ -10,7 +10,7 @@ SHELL:=bash
 help:
 	@echo
 	@echo " Welcome to the AIS python module test central:"
-	@echo 
+	@echo
 
 	@echo "  make test      - run all tests"
 

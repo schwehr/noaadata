@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
 Wind message from the SLS specification document.
 
 -->
 <aismsg>
   <notes>Copied right from the spec.  Page 8.  St Lawrence Seaway wind message (2).</notes>
 <!--  <nmea></nmea>
-  <nmeapayload><![CDATA[Fp42G`8]1Dm<H80i]m09Ce0@1A9@]]></nmeapayload> 
+  <nmeapayload><![CDATA[Fp42G`8]1Dm<H80i]m09Ce0@1A9@]]></nmeapayload>
   <nmealong>!AIVDM,1,1,,A,Fp42G`8]1Dm&lt;H80i]m09Ce0@1A9@,6*39</nmealong>
-  <nmeapayload>Fp42G`8]1Dm&lt;H80i]m09Ce0@1A9@></nmeapayload> 
+  <nmeapayload>Fp42G`8]1Dm&lt;H80i]m09Ce0@1A9@></nmeapayload>
 -->
   <binaryWithAis8>010110111000000100000010010110111000000100000010010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000010000000001010001001001010000</binaryWithAis8>
   <binaryWithHdr>010110111000000100000010010111101000001000100101000001010100110101001100011000001000000000110001100101110101000000001001010011101101000000010000000001010001001001010000</binaryWithHdr>

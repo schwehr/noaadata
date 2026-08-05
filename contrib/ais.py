@@ -119,7 +119,7 @@ cnb = (
     bitfield("status",   4, 'unsigned', 0,         "Navigation Status",
              formatter=cnb_status_legends),
     bitfield("turn",     8, 'signed',   -128,      "Rate of Turn",
-             formatter=cnb_rot_format),       
+             formatter=cnb_rot_format),
     bitfield("speed",   10, 'unsigned', 1023,      "Speed Over Ground",
              formatter=cnb_speed_format),
     bitfield("accuracy", 1, 'unsigned', None,      "Position Accuracy"),
@@ -133,7 +133,7 @@ cnb = (
     bitfield("second",   6, 'unsigned', None,       "Time Stamp",
              formatter=cnb_second_format),
     bitfield("maneuver", 2, 'unsigned', None,       "Maneuver Indicator"),
-    spare(3),  
+    spare(3),
     bitfield("raim",     1, 'unsigned', None,       "RAIM flag"),
     bitfield("radio",   19, 'unsigned', None,       "Radio status"),
 )
@@ -276,7 +276,7 @@ ship_type_legends = (
 type5 = (
     bitfield("ais_version",   2, 'unsigned', None, "AIS Version"),
     bitfield("imo_id",       30, 'unsigned',    0, "IMO Identification Number"),
-    bitfield("callsign",     42, 'string',   None, "Call Sign"),              
+    bitfield("callsign",     42, 'string',   None, "Call Sign"),
     bitfield("shipname",    120, 'string',   None, "Vessel Name"),
     bitfield("shiptype",      8, 'unsigned', None, "Ship Type",
              validator=lambda n: n >= 0 and n <= 99,
@@ -363,7 +363,7 @@ type9 = (
 
 type10 = (
     spare(2),
-    bitfield("dest_mmsi",       30, 'unsigned', None, "Destination MMSI"), 
+    bitfield("dest_mmsi",       30, 'unsigned', None, "Destination MMSI"),
     spare(2),
    )
 
@@ -585,7 +585,7 @@ type24a = (
 
 
 type24b1 = (
-    bitfield("callsign",     42, 'string',   None, "Call Sign"),              
+    bitfield("callsign",     42, 'string',   None, "Call Sign"),
     bitfield("to_bow",        9, 'unsigned',    0, "Dimension to Bow"),
     bitfield("to_stern",      9, 'unsigned',    0, "Dimension to Stern"),
     bitfield("to_port",       6, 'unsigned',    0, "Dimension to Port"),

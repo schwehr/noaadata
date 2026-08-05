@@ -3,7 +3,7 @@ SHELL := /bin/bash
 help:
 	@echo
 	@echo " Welcome to the AIS python module:"
-	@echo 
+	@echo
 	@echo "  make clean        - Clean up all the moose droppings"
 	@echo "  make real-clean   - Get out the extra scrub brush"
 	@echo

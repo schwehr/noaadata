@@ -62,7 +62,7 @@ if __name__=='__main__':
     (options,args) = parser.parse_args()
     verbose = options.verbose
 
-    # By putting imports here, help is available even 
+    # By putting imports here, help is available even
     import psycopg2 as psycopg
     import pyExcelerator as excel
     import pytz
@@ -90,7 +90,7 @@ if __name__=='__main__':
     # Give a time range summary
     cu.execute('select min(startpos),max(endpos) from transit;')
     start,stop = cu.fetchone()
-    
+
     cu.execute('SELECT cg_timestamp FROM position WHERE key=%s or key=%s;',(start,stop))
     start = mark_utc(cu.fetchone()[0])
     stop  = mark_utc(cu.fetchone()[0])
@@ -163,7 +163,7 @@ if __name__=='__main__':
     rowcount=0
     skip_notice=False
     for rowcount,transit in enumerate(cu.fetchall()):
-       
+
 #        if rowcount<1360:
 #            if not skip_notice:
 #                print 'skip!!!!!!!!'
@@ -211,7 +211,7 @@ if __name__=='__main__':
             ws.write(ws_row,col,'Min or max sog not available'); col+=1
             ws_row+=1
             continue
-         
+
         minSog=float(minSog)
         maxSog=float(maxSog)
 
@@ -220,7 +220,7 @@ if __name__=='__main__':
         cu.execute(time_range_sql)
         startTime,endTime = cu.fetchone()
 
-        
+
         cu.execute('SELECT MIN(cg_sec),MAX(cg_sec) FROM position WHERE userid=%d AND key>=%d AND key<=%d;' % (userid,startkey,endkey))
         minT,maxT = cu.fetchone()
 
@@ -251,7 +251,7 @@ if __name__=='__main__':
                 continue
 
             aisPosUsed+=1
-            
+
             if lastSOG<threshold and sog<threshold:
                 lastSOG,lastSEC=sog,sec
                 continue
@@ -284,7 +284,7 @@ if __name__=='__main__':
                     totalSecAbove += t12-lastSEC
             lastSOG,lastSEC=sog,sec
 
-            
+
 
         cu.execute('SELECT COUNT(*) FROM position WHERE key>=%s AND key<=%s AND userid=%s;',(startkey,endkey,userid));
         aisPosCount=cu.fetchone()[0];

@@ -1,6 +1,6 @@
 # -*- shell-script -*-
 # Boundary of the Stellwagen Bank for plotting with gnuplot
-# 
+#
 # gnuplot
 # set yrange [40.9:42.8]
 # set xrange [-70.75:-68.4]

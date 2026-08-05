@@ -75,7 +75,7 @@ echo    -30 255 186 133      0 255 255 255 >> $CPT_FILE
 # Coastal relief model 3sec from http://www.ngdc.noaa.gov/mgg/coastal/coastal.html
 set DATA_FILE        = gsc-coastrel-71-67-40-43.grd
 
-set INTENSITY_FILE   = 
+set INTENSITY_FILE   =
 #
 # Make color image
 echo Running grdimage...

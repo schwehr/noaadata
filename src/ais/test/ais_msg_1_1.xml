@@ -1,6 +1,6 @@
 <aismsg>
   <notes>
-    Message received on the USCG N-AIS network (Dec 2006).  
+    Message received on the USCG N-AIS network (Dec 2006).
     This Kurt's idea of what "AIS data XML" might look like.
     All sections are optional.  Any one of nmea, nmeapayload, binary,
     uscgnmea, or fields is sufficient to encode/decode the packet.

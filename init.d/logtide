@@ -3,7 +3,7 @@
 ### BEGIN INIT INFO
 # Provides:        logtide
 # Required-Start:  $ntp
-# Required-Stop:   
+# Required-Stop:
 # Default-Start:   2 3 4 5
 # Default-Stop:    0 1 6
 # Short-Description: Start tide logging daemon
@@ -47,7 +47,7 @@ case $1 in
 
 		if [ ! -d $PIDDIR ]; then
 		    mkdir -p $PIDDIR
-		    chown $RUNASUSER $PIDDIR 
+		    chown $RUNASUSER $PIDDIR
 		fi
 		# FIX: make this read through a list of loggers to run with parameters
 		# How to control all of the loggers in batch or one at a time?

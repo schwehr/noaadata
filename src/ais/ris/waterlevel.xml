@@ -61,7 +61,7 @@
       <required>1</required>
     </field>
 
-    <field name="country" numberofbits="6" arraylength="2" type="aisstr6"> 
+    <field name="country" numberofbits="6" arraylength="2" type="aisstr6">
       <description>UN country code using 2*6-Bit ASCII characters according to ERI specification</description>
       <testvalue>ZZ</testvalue>
     </field>
@@ -84,4 +84,4 @@
 
  </message>
 
-</ais-binary-message>   
+</ais-binary-message>

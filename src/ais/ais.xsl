@@ -15,7 +15,7 @@
 	  <xsl:for-each select="ais-binary-message/message">
 	    <li>
 	      <a href="{concat('#',@name)}"><xsl:value-of select="@name"/></a>
-	      (<xsl:value-of select="@dac"/>:<xsl:value-of select="@fid"/>:<xsl:value-of select="@efid"/>): 
+	      (<xsl:value-of select="@dac"/>:<xsl:value-of select="@fid"/>:<xsl:value-of select="@efid"/>):
 	      <xsl:value-of select="description"/>
 	    </li>
 	  </xsl:for-each>

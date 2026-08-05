@@ -6,7 +6,7 @@ Make script to merge all SLS into one big xml
 Make the structures be defined else where and do an XML include
 How to chain command lines based on the SLS message name or number?
 
-Do I need to use CDATA for the nmea payloads in the test directory? 
+Do I need to use CDATA for the nmea payloads in the test directory?
 
 Do I want to make each message a class?  I am thinking NO. Just adds
 more overhead, right?  Let a programmer wrap what is done by the code

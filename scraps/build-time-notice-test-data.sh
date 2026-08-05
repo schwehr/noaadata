@@ -24,7 +24,7 @@ ab3_lat=42.333248
 
 
 echo " *** AB 2 - No Whale ***"
-echo 
+echo
 
 cmd="../ais/timed_circular_notice.py  --encode \
 --UserID=$mmsi \
@@ -37,7 +37,7 @@ cmd="../ais/timed_circular_notice.py  --encode \
 "
 
 echo $cmd
-echo 
+echo
 
 $cmd --type=nmea > tmp.ais
 
@@ -74,7 +74,7 @@ echo
 echo
 
 echo " *** AB 2 - No Whale  - 3 minutes later - update that still nothing heard *** "
-echo 
+echo
 
 cmd="../ais/timed_circular_notice.py  --encode \
 --UserID=$mmsi \
@@ -86,7 +86,7 @@ cmd="../ais/timed_circular_notice.py  --encode \
 --areatype=0 \
 "
 echo $cmd
-echo 
+echo
 
 
 $cmd --type=nmea > tmp.ais
@@ -109,7 +109,7 @@ echo
 echo
 
 echo " *** AB 3 - Whale - expires in 24 hours aka 1440 minutes *** "
-echo 
+echo
 
 cmd="../ais/timed_circular_notice.py  --encode \
 --UserID=$mmsi \
@@ -121,7 +121,7 @@ cmd="../ais/timed_circular_notice.py  --encode \
 --areatype=0 \
 "
 echo $cmd
-echo 
+echo
 
 
 $cmd --type=nmea > tmp.ais

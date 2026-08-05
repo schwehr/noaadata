@@ -17,7 +17,7 @@ on requirements discussed with Leila Hatch for NOPP report.
 @undocumented: __doc__
 @since: 2008-July-21
 @status: under development
-@organization: U{CCOM<http://ccom.unh.edu/>} 
+@organization: U{CCOM<http://ccom.unh.edu/>}
 '''
 
 import sys
@@ -73,7 +73,7 @@ def main():
     for colname in ('mmsi/userid','imonumber','callsign','name','shipandcargo','shipandcargo text','length','width','min_draught','max_draught'):
         ws.write(ws_row,col,colname); col += 1
     ws_row += 1
-        
+
     vesselcount=0
     for vessel in vessels:
         vesselcount+=1
@@ -126,7 +126,7 @@ def main():
             ws.write(ws_row,col,max_draught);  col += 1
 
             ws_row += 1
-        
+
     now = datetime.datetime.now()
     workbook.save('vessels-'+now.strftime('%Y-%m-%dT%H%M')+'.xls') # FIX - command line option
 

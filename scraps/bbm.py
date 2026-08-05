@@ -44,13 +44,13 @@ def create(payload,fill_bits=0,prefix='xx',seq_msg_id=0, msg_type=8,ais_chan='A'
     p.append(payload)
     p.append(str(fill_bits)+'*')
     s = ','.join(p)
-    
+
     s+=ais.nmea.checksumStr(s)
     return s
 
 
 
-    
+
 def do_doctest(verbose=False):
     '''
     @return: success
@@ -67,7 +67,7 @@ def do_doctest(verbose=False):
     numfail, numtests = doctest.testmod()
     if numfail == 0:
         print 'ok  numtests:', numtests
-    else: 
+    else:
         print 'FAILED', numfail, 'tests out of', numtests
         success = False
     sys.argv = argv_orig # Restore the original args

@@ -7,20 +7,20 @@ use HTTP::Request::Common;
 
 my $userAgent = LWP::UserAgent->new(agent => 'perl post');
 
-my $message = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?> 
-<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" 
-xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" 
+my $message = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
+<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\"
+xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"
 xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">
 
 <soapenv:Body>
-<water:getWaterLevelRawSixMin 
+<water:getWaterLevelRawSixMin
 xmlns:water=\"http://opendap.co-ops.nos.noaa.gov/axis/webservices/waterlevelrawsixmin/wsdl\">
-  <stationId xmlns=\"\">8638610</stationId> 
-  <beginDate xmlns=\"\">20070122 20:28</beginDate> 
-  <endDate xmlns=\"\">20070122 20:58</endDate> 
-  <datum xmlns=\"\">MLLW</datum> 
-  <unit xmlns=\"\">0</unit> 
-  <timeZone xmlns=\"\">0</timeZone> 
+  <stationId xmlns=\"\">8638610</stationId>
+  <beginDate xmlns=\"\">20070122 20:28</beginDate>
+  <endDate xmlns=\"\">20070122 20:58</endDate>
+  <datum xmlns=\"\">MLLW</datum>
+  <unit xmlns=\"\">0</unit>
+  <timeZone xmlns=\"\">0</timeZone>
   </water:getWaterLevelRawSixMin>
   </soapenv:Body>
   </soapenv:Envelope>

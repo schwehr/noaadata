@@ -13,7 +13,7 @@ function sma = six_min_avg(tides)
 year = 1;
 mon = 2;
 day = 3;
-hour = 4; 
+hour = 4;
 minute = 5;
 sec = 6;
 
@@ -40,6 +40,6 @@ sma = zeros(length(six_min_indices),7);
 for idx=1:length(six_min_indices)
 
 	  sma(idx,:) =horzcat(times(idx,:), ...
-			       mean(tides(five_min_indices(idx):seven_min_indices(idx),7) )); 
+			       mean(tides(five_min_indices(idx):seven_min_indices(idx),7) ));
 
 end

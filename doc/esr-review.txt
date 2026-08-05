@@ -6,7 +6,7 @@ other reviews and comments.
 
 These comments from ESR are included with permission.
 
--kurt 
+-kurt
 17-Mar-2009
 
 ----------------------------------------------------------------------
@@ -93,9 +93,9 @@ of 26 message type description objects, each one of which is a list of
 bitfeld-description tuples associating with each field an offset, a
 width, a data type, a scaling lambda function for report generation,
 and whatever other per-field and per-message metadata I needed.  If there
-were conditional alternatives for the interpretation of bitfield spans, I 
+were conditional alternatives for the interpretation of bitfield spans, I
 would have expressed them as vectors of field sublists guarded by a
-selection predicate (again a lambda expression). 
+selection predicate (again a lambda expression).
 
 I would then have written a single driver program, *not* generated
 from XML, that would do message parsing and report generation by
@@ -123,12 +123,12 @@ separate blobs of generated code that can't readily be merged.
 
 3. Retargeting the structure compiler so it could produce the core structure
 for implementation in a different language (Ruby, Perl, Java, etc.) would
-become practical.  (No, this almost certainly wouldn't work for C or C++, their 
+become practical.  (No, this almost certainly wouldn't work for C or C++, their
 type ontologies aren't strong enough to bear the weight.)
 
-4. Your problem with nonlinear scaling for report generation on stuff like ROT 
+4. Your problem with nonlinear scaling for report generation on stuff like ROT
 would be much more easily solved.  It's a bitch with your present organization
-because you haven't got the procedural knowledge embodied in generated parser 
+because you haven't got the procedural knowledge embodied in generated parser
 code separated from what is actually a different *kind* of procedural knowledge,
 about report-generator callbacks.
 

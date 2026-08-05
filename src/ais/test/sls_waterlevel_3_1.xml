@@ -24,7 +24,7 @@
     <field name="time_min" bits="100010">34</field>
     <field name="stationid" bits="010100000101010011010100110001100000100000">TEST1  </field>
     <field name="longitude" bits="0000110001100101110101000"></field> <!-- 27deg 05'E -->
-    
+
     <field name="latitude" bits="000001001010011101101000">5 05N</field>
     <field name="waterleveltype" bits="0">0</field>
     <field name="waterlevel" bits="0000000000100000">32cm</field>

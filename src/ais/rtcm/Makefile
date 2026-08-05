@@ -9,7 +9,7 @@ EXP:=../expandais.py
 PYTHONPATH=..:../..
 
 %.py: %.xml ${GEN}
-	xmllint --noout $< 
+	xmllint --noout $<
 	${EXP} -i $< -o $<.expanded
 	${GEN} -i $<.expanded -o $@
 	rm -f $<.expanded
@@ -35,7 +35,7 @@ default: ${AISPYFILES} ${AISHTMLFILES}
 py: ${AISPYFILES}
 html: ${AISHTMLFILES}
 
-#view-html: 
+#view-html:
 #	open $<
 clean:
 	rm -f *expanded*.{xml,html}
@@ -54,7 +54,7 @@ docs:
 	epydoc --check *.py
 
 %.py: %.xml ${GEN}
-	xmllint --noout $< 
+	xmllint --noout $<
 	../expandais.py -i $< -o $<.expanded
 	${GEN} -i $<.expanded -o $@
 	rm -f $<.expanded

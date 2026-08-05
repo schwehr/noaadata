@@ -10,8 +10,8 @@ clean:
 
 #CFLAGS += -g  # Can leave on even when optimizing
 CFLAGS += -Wall
-#CFLAGS += -Wimplicit-int 
-#CFLAGS += -Wimplicit-function-declaration 
+#CFLAGS += -Wimplicit-int
+#CFLAGS += -Wimplicit-function-declaration
 #CFLAGS += -Wnested-externs
 CFLAGS += -Wimplicit
 CFLAGS += -W

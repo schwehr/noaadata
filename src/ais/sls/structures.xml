@@ -18,7 +18,7 @@
       <decimalplaces>4</decimalplaces>
       <testvalue>-122.16328</testvalue>  <!-- Stanford - Trancos -->
     </field>
-    
+
     <field name="latitude" numberofbits="24" type="decimal">
       <description>North South location</description>
       <range min="-90" max="90"/>
@@ -37,7 +37,7 @@
       <description>month 1..12</description>
       <testvalue>2</testvalue>
     </field>
- 	
+
     <field name="day" numberofbits="5" type="uint">
       <description>day of the month 1..31</description>
       <testvalue>28</testvalue>

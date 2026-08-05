@@ -75,7 +75,7 @@ if __name__=='__main__':
 #                      help='Report distances in nautical miles rather than km')
 
     # FIX: utm zone not hardcoded would be good
-    # UTM Zone 19... 
+    # UTM Zone 19...
     #sql='SELECT AsText(Transform(track,32619)) FROM tpath'
     # --- EPSG 32610 : WGS 84 / UTM zone 10N
     #sql='SELECT AsText(Transform(track,32610)) FROM tpath'
@@ -113,7 +113,7 @@ if __name__=='__main__':
     meanMinSpeed={}
     meanMaxSpeed={}
 
-    
+
     for category in categories:
         if verbose: sys.stderr.write('Category: '+category+'\n')
 
@@ -174,7 +174,7 @@ if __name__=='__main__':
         meanMaxSpeed[category] = reduce(add, maxSpeeds)/len(maxSpeeds)
         if verbose:
             sys.stderr.write('  mean min/max speed: '+str(meanMinSpeed[category])+' ... '+str(meanMaxSpeed[category])+'\n')
-                
+
         if verbose: sys.stderr.write('  calculating avg length\n')
         cu.execute('SELECT AVG(length) FROM summary2006 WHERE catagory=\''+category+'\';')
         curMeanLength=cu.fetchone()[0]
@@ -197,7 +197,7 @@ if __name__=='__main__':
         del n
         del curMeanLength
         del lenStdDev
-        
+
         cu.execute('SELECT (SUM(firstdraft)+SUM(lastdraft))/(COUNT(firstdraft)+COUNT(lastdraft))'\
                    'FROM summary2006 WHERE catagory=\''+category+'\' AND firstdraft IS NOT NULL AND lastdraft IS NOT NULL;')
         curMeanDraft=cu.fetchone()[0]
@@ -211,7 +211,7 @@ if __name__=='__main__':
                    ' WHERE catagory=\''+category+'\' AND lastdraft IS NOT NULL;')
         n = n1 + cu.fetchone()[0]
         print '  n:',n
-        
+
         cu.execute('SELECT firstdraft,lastdraft  FROM summary2006 WHERE catagory=\''+category+'\' '\
                    ' AND firstdraft IS NOT NULL AND lastdraft IS NOT NULL')
         sum = 0
@@ -225,8 +225,8 @@ if __name__=='__main__':
     #print ' ',transitTime
     #for key in transitTime:
     #    print key,transitTime[key]
-    
-        
+
+
     if verbose: sys.stderr.write('\nwriting spreadsheet...\n')
 
 
@@ -239,7 +239,7 @@ if __name__=='__main__':
     ws.write(ws_row,0,'Fishing vessels left out'); ws_row+=1
     ws.write(ws_row,0,'Class A only'); ws_row+=1
     ws_row+=1
-    
+
     col=0
     ws.write(ws_row,col,'Vessel type'); col+=1
     ws.write(ws_row,col,'# of vessels'); col+=1
@@ -275,5 +275,5 @@ if __name__=='__main__':
         #ws.write(ws_row,col,[category]); col +=1
 
     workbook.save(options.basename+'.xls')
-        
-        
+
+

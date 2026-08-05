@@ -82,7 +82,7 @@ def isChecksumValid(nmeaStr, allowTailData=True):
         #if checksum.upper()==checksumStr(nmeaStr[match.end()
 
 
-    if nmeaStr[-3]!='*': 
+    if nmeaStr[-3]!='*':
         print 'FIX: warning... bad nmea string'
         return False  # Bad string without proper checksum
     checksum=nmeaStr[-2:]
@@ -108,7 +108,7 @@ def isChecksumValid(nmeaStr, allowTailData=True):
 #       import doctest
 #       numfail,numtests=doctest.testmod()
 #       if numfail==0: print 'ok'
-#       else: 
+#       else:
 #           print 'FAILED'
 #           success=False
 

@@ -30,7 +30,7 @@ real-clean: clean
 	rm -rf build dist
 	rm -rf html*
 	rm -f 8*.{ais,txt,html} current.ais all.ais
-	find . -name .DS_Store | xargs rm 
+	find . -name .DS_Store | xargs rm
 
 
 .PHONY: test tests
@@ -44,12 +44,12 @@ test:
 .PHONY: check
 check:
 	@grep -n FIX Makefile */Makefile | grep -v grep
-	@grep -n FIX */*.py 
+	@grep -n FIX */*.py
 	@echo
 	pychecker ${PKG}
 	find . -name \*.py | xargs egrep '@(todo|bug)'
 
-sdist: test 
+sdist: test
 	@echo
 	@echo Building a source distribution...
 	@echo

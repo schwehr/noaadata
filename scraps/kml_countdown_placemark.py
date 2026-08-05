@@ -56,15 +56,15 @@ def timeSec2KmlTime(timeSec):
         sys.exit('ERROR: this is not a valid time:'+str(timeSec))
     s = "%4d-%02d-%02dT%02d:%02d:%02dZ" % (t[0],t[1],t[2],t[3],t[4],t[5])
     return s
-    
+
 
 if __name__ == '__main__':
     from optparse import OptionParser
     import magicdate
-    
+
     parser = OptionParser(usage="%prog [options] [file1] [file2] ...",
                           version="%prog "+__version__+' ('+__date__+')',option_class=magicdate.MagicDateOption)
- 
+
     parser.add_option('--start-time',dest='start',type='magicdate',default=None,help='magicdate')
     #parser.add_option('--end-time'  ,dest='end'  ,type='magicdate',default=None,help='magicdate')
 
@@ -146,10 +146,10 @@ if __name__ == '__main__':
 
 <a href="http://vislab-ccom.unh.edu/~schwehr/sampletext.html">Additional Information</a>
 </pre>
-  
+
         </description>'''
-                         
-                                 
+
+
 
         print '<Point><coordinates>'+str(x)+','+str(y)+','+str(z)+'</coordinates></Point>'
         print '<TimeSpan><begin>'+nowStr+'</begin><end>'+nowStr_plus1+'</end></TimeSpan>'

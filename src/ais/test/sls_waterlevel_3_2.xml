@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 
+<!--
 
 MsgNum, LineNum, MM/DD HH:MM, StnID, Longitude, Latitude, Water Level Type, Water Level, Ref Datum
 000001, 000001, 10/01 03:56, SLBL, -73.518350, 45.496667, Depth,  5.58m, IGLD-85

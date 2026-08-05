@@ -3,7 +3,7 @@
 ### BEGIN INIT INFO
 # Provides:        logais
 # Required-Start:  $ntp
-# Required-Stop:   
+# Required-Stop:
 # Default-Start:   2 3 4 5
 # Default-Stop:    0 1 6
 # Short-Description: Start ais logging daemon
@@ -22,7 +22,7 @@ PIDDIR=/var/run/data
 PIDFILE=$PIDDIR/logais.pid
 
 
-test -x $DAEMON || echo "ERROR: can not find logger daemon: $DAEMON"  
+test -x $DAEMON || echo "ERROR: can not find logger daemon: $DAEMON"
 test -x $DAEMON || exit 5
 
 UGID=$(getent passwd $RUNASUSER | cut -f 3,4 -d:) || true
@@ -40,7 +40,7 @@ case $1 in
 
 		if [ ! -d $PIDDIR ]; then
 		    mkdir -p $PIDDIR
-		    chown $RUNASUSER $PIDDIR 
+		    chown $RUNASUSER $PIDDIR
 		fi
 		# FIX: make this read through a list of loggers to run with parameters
 		# How to control all of the loggers in batch or one at a time?
