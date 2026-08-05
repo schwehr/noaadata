@@ -1241,6 +1241,7 @@ version = "0.46"
 source = { editable = "." }
 dependencies = [
     { name = "bitvector-modern" },
+    { name = "lxml" },
     { name = "numpy" },
     { name = "psycopg2-binary" },
 ]
@@ -1278,6 +1279,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "bitvector-modern", specifier = ">=0.0.7" },
+    { name = "lxml", specifier = ">=5.0" },
     { name = "lxml", marker = "extra == 'gis'", specifier = ">=5.0" },
     { name = "numpy", specifier = ">=1.26.0" },
     { name = "psycopg2-binary", specifier = ">=2.9" },

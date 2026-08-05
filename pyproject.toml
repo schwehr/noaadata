@@ -28,6 +28,7 @@ dependencies = [
     "bitvector-modern>=0.0.7",
     "numpy>=1.26.0",
     "psycopg2-binary>=2.9",
+    "lxml>=5.0",
 ]
 
 [project.optional-dependencies]
