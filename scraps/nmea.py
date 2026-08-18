@@ -1,26 +1,33 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2189 $'.split()[1]
-__date__ = '$Date: 2006-05-29 15:40:45 -0400 (Mon, 29 May 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+__version__ = "$Revision: 2189 $".split()[1]
+__date__ = "$Date: 2006-05-29 15:40:45 -0400 (Mon, 29 May 2006) $".split()[1]
+__author__ = "Kurt Schwehr"
 
-__doc__='''
+__doc__ = (
+    """
 Utilities for working with NMEA strings.
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
+@author: """
+    + __author__
+    + """
+@version: """
+    + __version__
+    + """
 @copyright: 2006
 
 @var __date__: Date of last svn commit
 @undocumented: __version__ __author__ __doc__ myparser
-'''
+"""
+)
 
 # Python standard libraries
-import time, sys
+import sys
+import time
 
 # Local Modules
-#import binary
+# import binary
 
-#import verbosity
-#from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
+# import verbosity
+# from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
 
 
 def checksumStr(data):
@@ -40,22 +47,29 @@ def checksumStr(data):
     """
 
     # FIX: strip off new line at the end too
-    if data[0]=='!' or data[0]=='?': data = data[1:]
-    if data[-1]=='*': data = data[:-1]
-    if data[-3]=='*': data = data[:-3]
+    if data[0] == "!" or data[0] == "?":
+        data = data[1:]
+    if data[-1] == "*":
+        data = data[:-1]
+    if data[-3] == "*":
+        data = data[:-3]
     # FIX: rename sum to not shadown builting function
-    sum=0
-    for c in data: sum = sum ^ ord(c)
-    sumHex = "%x" % sum
-    if len(sumHex)==1: sumHex = '0'+sumHex
+    csum = 0
+    for c in data:
+        csum = csum ^ ord(c)
+    sumHex = "%x" % csum
+    if len(sumHex) == 1:
+        sumHex = "0" + sumHex
     return sumHex.upper()
 
 
 ######################################################################
 # common variables
 import re
+
 nmeaChecksumRegExStr = r"""\,[0-9]\*[0-9A-F][0-9A-F]"""
 nmeaChecksumRE = re.compile(nmeaChecksumRegExStr)
+
 
 def isChecksumValid(nmeaStr, allowTailData=True):
     """Return True if the string checks out with the checksum
@@ -77,17 +91,19 @@ def isChecksumValid(nmeaStr, allowTailData=True):
 
     if allowTailData:
         match = nmeaChecksumRE.search(nmeaStr)
-        if not match: return False
-        nmeaStr = nmeaStr[:match.end()]
-        #if checksum.upper()==checksumStr(nmeaStr[match.end()
+        if not match:
+            return False
+        nmeaStr = nmeaStr[: match.end()]
+        # if checksum.upper()==checksumStr(nmeaStr[match.end()
 
-
-    if nmeaStr[-3]!='*':
-        print 'FIX: warning... bad nmea string'
+    if nmeaStr[-3] != "*":
+        print("FIX: warning... bad nmea string")
         return False  # Bad string without proper checksum
-    checksum=nmeaStr[-2:]
-    if checksum.upper()==checksumStr(nmeaStr).upper(): return True
+    checksum = nmeaStr[-2:]
+    if checksum.upper() == checksumStr(nmeaStr).upper():
+        return True
     return False
+
 
 # ######################################################################
 # if __name__=='__main__':
