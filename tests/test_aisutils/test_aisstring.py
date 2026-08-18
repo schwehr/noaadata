@@ -29,6 +29,16 @@ def test_encode_fixed_bitsize() -> None:
     assert decoded == "SHIP@@@@@@"
 
 
+def test_encode_bitsize_not_multiple_of_6() -> None:
+    with pytest.raises(AssertionError):
+        aisstring.encode("SHIP", bitSize=10)
+
+
+def test_encode_bitsize_too_small() -> None:
+    with pytest.raises(ValueError, match="Invalid payload or state"):
+        aisstring.encode("LONGSHIPNAME", bitSize=6)
+
+
 @pytest.mark.parametrize(
     ("padded_str", "expected_unpadded"),
     [
