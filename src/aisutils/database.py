@@ -86,10 +86,7 @@ def stdCmdlineOptions(parser, dbType="postgres", verbose=False):
             help="Host name of the computer serving the dbx [default: %default]",
         )
         # defaultUser = os.genenv('USER')
-        try:
-            defaultUser = os.getlogin()
-        except OSError:
-            defaultUser = os.environ.get("USER", "root")
+        defaultUser = os.getlogin()
         parser.add_option(
             "-u",
             "--database-user",

@@ -5,7 +5,7 @@ import optparse
 import pathlib
 import sqlite3
 from types import SimpleNamespace
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -28,7 +28,8 @@ def test_dbtypes_content() -> None:
     assert "sqlite" in database.dbTypes
 
 
-def test_std_cmdline_options_postgres() -> None:
+@patch.object(database.os, "getlogin", return_value="testuser")
+def test_std_cmdline_options_postgres(mock_getlogin: MagicMock) -> None:
     """Test stdCmdlineOptions adds postgres options to OptionParser."""
     parser = optparse.OptionParser()
     database.stdCmdlineOptions(parser, dbType="postgres")
@@ -45,7 +46,8 @@ def test_std_cmdline_options_sqlite() -> None:
     assert parser.has_option("-f")
 
 
-def test_std_cmdline_options_all() -> None:
+@patch.object(database.os, "getlogin", return_value="testuser")
+def test_std_cmdline_options_all(mock_getlogin: MagicMock) -> None:
     """Test stdCmdlineOptions with dbType='all' adds all database options."""
     parser = optparse.OptionParser()
     database.stdCmdlineOptions(parser, dbType="all")
@@ -56,7 +58,10 @@ def test_std_cmdline_options_all() -> None:
     assert parser.has_option("-f")
 
 
-def test_std_cmdline_options_verbose(capsys: pytest.CaptureFixture[str]) -> None:
+@patch.object(database.os, "getlogin", return_value="testuser")
+def test_std_cmdline_options_verbose(
+    mock_getlogin: MagicMock, capsys: pytest.CaptureFixture[str]
+) -> None:
     """Test stdCmdlineOptions with verbose=True writes log messages to stderr."""
     parser = optparse.OptionParser()
     database.stdCmdlineOptions(parser, dbType="all", verbose=True)
