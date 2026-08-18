@@ -16,6 +16,30 @@ def test_rmc_match_and_lonlat() -> None:
     assert abs(lat - 42.3812833) < 1e-4
 
 
+def test_rmc_lonlat_south_east() -> None:
+    sentence = (
+        "$GPRMC,123519.00,A,4807.0380,S,01131.0000,E,022.4,084.4,230394,003.1,W*6A"
+    )
+    match = rmc.compile_obj.search(sentence)
+    assert match is not None
+
+    lon, lat = rmc.lonlat(match)
+    assert abs(lon - 11.516666) < 1e-4
+    assert abs(lat - (-48.1173)) < 1e-4
+
+
+def test_rmc_lonlat_zero() -> None:
+    sentence = (
+        "$GPRMC,123519.00,A,0000.0000,N,00000.0000,E,022.4,084.4,230394,003.1,W*6A"
+    )
+    match = rmc.compile_obj.search(sentence)
+    assert match is not None
+
+    lon, lat = rmc.lonlat(match)
+    assert lon == 0.0
+    assert lat == 0.0
+
+
 def test_zda_decode_and_epoch() -> None:
     sentence = "$ZQZDA,110003.00,27,03,2006,-5,00*47"
     decoded = zda.zdaDecode(sentence)
