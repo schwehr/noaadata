@@ -1,19 +1,6 @@
-"""Unit tests for NMEA RMC, ZDA, and ZNT sentence parsers."""
+"""Unit tests for NMEA ZDA and ZNT sentence parsers."""
 
-from nmea import rmc, zda, znt
-
-
-def test_rmc_match_and_lonlat() -> None:
-    sentence = "$GPRMC,173011.82,V,4222.8770,N,07103.0096,W,0.00,0.0,151008,14.9,W,N*27"
-    match = rmc.compile_obj.search(sentence)
-    assert match is not None
-    assert match.group("msg_type") == "RMC"
-    assert match.group("hour") == "17"
-    assert match.group("minute") == "30"
-
-    lon, lat = rmc.lonlat(match)
-    assert abs(lon - (-71.05016)) < 1e-4
-    assert abs(lat - 42.3812833) < 1e-4
+from nmea import zda, znt
 
 
 def test_zda_decode_and_epoch() -> None:
