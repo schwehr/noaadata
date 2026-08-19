@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
 __version__ = ["$Revision:", "4791", "$"][1]
-__date__ = ["$Date:", "2006-09-24", "14:01:41", "-0400", "(Sun,", "24", "Sep", "2006)", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-24",
+    "14:01:41",
+    "-0400",
+    "(Sun,",
+    "24",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -184,9 +194,7 @@ if __name__ == "__main__":
                 timeBase = (int(z["year"]), int(z["mon"]), int(z["day"]))
             if line[:6] == "$GPGGA" and timeBase is not None:
                 g = nm.ggaDecode(line)
-                ts = calendar.timegm(
-                    (*timeBase, g["hour"], g["min"], g["decimalsec"])
-                )
+                ts = calendar.timegm((*timeBase, g["hour"], g["min"], g["decimalsec"]))
 
                 if lastPos is None:
                     utm = proj(float(g["lon"]), float(g["lat"]))

@@ -2,7 +2,17 @@
 __author__ = "Kurt Schwehr"
 __version__ = ["$Revision:", "9833", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = ["$Date:", "2008-07-03", "22:21:26", "-0400", "(Thu,", "03", "Jul", "2008)", "$"][1]
+__date__ = [
+    "$Date:",
+    "2008-07-03",
+    "22:21:26",
+    "-0400",
+    "(Thu,",
+    "03",
+    "Jul",
+    "2008)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 __doc__ = """
