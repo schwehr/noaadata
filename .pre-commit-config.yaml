@@ -32,7 +32,6 @@ repos:
     rev: v2.4.1
     hooks:
       - id: codespell
-        args: ["--skip", "*.bib,*.html,*.lock,*.ais,doc/*,scraps/*,contrib/*,test/*", "-L", "mmsi,sog,cog,nmea,co-ops,rtcm,ser,inport,inPort,startd,startD,unparseable,unparse,teather,thos,pring,preceeding,happenin,wieghted,builting,hight,keyworks,toke"]
 
   - repo: local
     hooks:
