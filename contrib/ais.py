@@ -815,7 +815,7 @@ class AISUnpackingException:
         self.value = value
 
     def __repr__(self):
-        return "Validation on fieldname %s failed (value %s)" % (
+        return "Validation on fieldname {} failed (value {})".format(
             self.fieldname,
             self.value,
         )

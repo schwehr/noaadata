@@ -29,4 +29,4 @@ for filename in sys.argv[1:]:
         station = "rREVELLE"  # should we be introducing a new code "s" for ship?
         ts = fields[0]
 
-        print("%s,%s,%s" % (nmea, station, ts))
+        print(f"{nmea},{station},{ts}")
