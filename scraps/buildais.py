@@ -43,12 +43,12 @@ import math
 import sys
 from decimal import Decimal
 
-import nmeamessages as nm
 from BitVector import BitVector
 from pyproj import Proj
 
 import ais.ais_msg_1 as m1
 import nmea
+import nmeamessages as nm
 from ais import binary
 
 # mmsi='999999'
@@ -91,7 +91,7 @@ def getHeading(utm1, utm2):
     lon2, lat2 = utm2
     dx = lon1 - lon2
     dy = lat1 - lat2
-    # print 'dx/dy:',dx,dy
+    # print('dx/dy:',dx,dy)
     headingRad = math.atan2(dx, dy)
     headingDeg = math.degrees(headingRad)
     if headingDeg < 0:
@@ -220,14 +220,14 @@ if __name__ == "__main__":
 
                 msg1Dict["longitude"] = Decimal(str(g["lon"]))
                 msg1Dict["latitude"] = Decimal(str(g["lat"]))
-                # print 'heading',heading
-                # print msg1Dict['longitude'],msg1Dict['latitude']
+                # print('heading',heading)
+                # print(msg1Dict['longitude'],msg1Dict['latitude'])
                 msg1Dict["COG"] = int(heading)
                 msg1Dict["TrueHeading"] = int(
                     heading
                 )  # Force both COG and TrueHeading to point forward
                 # if verbose:
-                #    print 'speedKnots',speedKnots,'speedMetersPerSec',speedMetersPerSec,'FROM',dist,deltaT
+                #    print('speedKnots',speedKnots,'speedMetersPerSec',speedMetersPerSec,'FROM',dist,deltaT)
                 msg1Dict["SOG"] = Decimal(str(speedKnots))
 
                 bits = m1.encode(msg1Dict)

@@ -15,18 +15,18 @@ for filename in sys.argv[1:]:
         fields = line.split()
 
         nmea = fields[1]
-        if '!AIVDO' not in nmea and '!AIVDM' not in nmea:
+        if "!AIVDO" not in nmea and "!AIVDM" not in nmea:
             # ignore AIALR and anything else not AIS that comes through
             continue
 
-        if '!AIVDO' in nmea:
+        if "!AIVDO" in nmea:
             vdo_count += 1
             if vdo_count % 60 != 1:  # Only want 1 msg / minute
                 continue
 
         # Might consider injecting a 'A' channel hear for code that expects a channel
 
-        station = 'rREVELLE'  # should we be introducing a new code "s" for ship?
+        station = "rREVELLE"  # should we be introducing a new code "s" for ship?
         ts = fields[0]
 
-        print '%s,%s,%s' % (nmea,station,ts)
+        print("%s,%s,%s" % (nmea, station, ts))

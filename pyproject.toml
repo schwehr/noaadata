@@ -146,10 +146,9 @@ tasks_directory = "tests/test_properties"
 [tool.ruff]
 target-version = "py313"
 line-length = 88
-src = ["src", "tests", "scripts"]
+src = ["src", "tests", "scripts", "scraps"]
 exclude = [
     "contrib",
-    "scraps",
 ]
 
 [tool.ruff.lint]

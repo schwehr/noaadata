@@ -110,13 +110,13 @@ def processFile(
 
     # if stdDev is not float:
     if stdDev is None:
-        # print 'coverting',stdDev
+        # print('coverting',stdDev)
         stdDev = "0.000"
-        # print 'after',stdDev
+        # print('after',stdDev)
     elif type(stdDev) is float:
-        # print 'before',stdDev
+        # print('before',stdDev)
         stdDev = f"{stdDev:0.3f}"
-        # print 'after',stdDev
+        # print('after',stdDev)
 
     for line in infile:
         if line[0] == "#":
@@ -130,9 +130,9 @@ def processFile(
 
         timestamp = float(timestamp)
         if timeshift != 0:
-            # print 'shifting from ',timestamp
+            # print('shifting from ',timestamp)
             timestamp = timestamp + timeshift
-            # print 'shifting to ',timestamp
+            # print('shifting to ',timestamp)
 
         dTime = datetime.datetime.utcfromtimestamp(timestamp)
         timeStr = dTime.strftime(timeFormat)
@@ -154,8 +154,8 @@ def processFile(
         waterlevel = A + B * N + C * (N**2.0) + D * (N**3.0)
         waterlevel = (waterlevel / d) * g
         waterlevel -= datumOffset
-        # print waterlevel, d*g, d, g
-        # print waterlevel
+        # print(waterlevel, d*g, d, g)
+        # print(waterlevel)
 
         resultStr = timeStr + "    " + (f"{waterlevel:0.2f}") + "   " + str(stdDev)
         out.write(resultStr + "\n")

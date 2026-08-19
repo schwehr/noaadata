@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-__version__ = "$Revision: 2189 $".split()[1]
-__date__ = "$Date: 2006-05-29 15:40:45 -0400 (Mon, 29 May 2006) $".split()[1]
+__version__ = ["$Revision:", "2189", "$"][1]
+__date__ = ["$Date:", "2006-05-29", "15:40:45", "-0400", "(Mon,", "29", "May", "2006)", "$"][1]
 __author__ = "Kurt Schwehr"
 
 __doc__ = (
@@ -118,14 +118,14 @@ def isChecksumValid(nmeaStr, allowTailData=True):
 #     success=True
 
 #     if options.doctest:
-#       import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+#       import os; print(os.path.basename(sys.argv[0]), 'doctests ...',)
 #       sys.argv= [sys.argv[0]]
 #       if options.verbosity>=VERBOSE: sys.argv.append('-v')
 #       import doctest
 #       numfail,numtests=doctest.testmod()
-#       if numfail==0: print 'ok'
+#       if numfail==0: print('ok')
 #       else:
-#           print 'FAILED'
+#           print('FAILED')
 #           success=False
 
 #     if not success:

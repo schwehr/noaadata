@@ -1,53 +1,62 @@
 #!/usr/bin/env python
-__version__ = '$Revision: 2068 $'.split()[1]
-__date__ = '$Date: 2006-05-02 08:17:59 -0400 (Tue, 02 May 2006) $'.split()[1]
-__author__ = 'Kurt Schwehr'
+__version__ = ["$Revision:", "2068", "$"][1]
+__date__ = ["$Date:", "2006-05-02", "08:17:59", "-0400", "(Tue,", "02", "May", "2006)", "$"][1]
+__author__ = "Kurt Schwehr"
 
-__doc__='''
+__doc__ = (
+    """
 Generate/decode NMEA messages.  For now, this just supports ZDA time stamps.
 
-@author: '''+__author__+'''
-@version: ''' + __version__ +'''
+@author: """
+    + __author__
+    + """
+@version: """
+    + __version__
+    + """
 @copyright: 2006
 
 @var __date__: Date of last svn commit
 
 @undocumented: __version__ __author__ __doc__ myparser
-'''
+"""
+)
 
 # Python standard libraries
-import time, sys
+# import verbosity
+# from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
+import calendar  # to make the seconds since the epoch
+import sys
+import time
 
 # Local
 import nmea
-#import verbosity
-#from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
-import calendar # to make the seconds since the epoch
 
 # Valid clock sources.
-timekeepers={
-    'ZA': 'atomic clock',
-    'ZC': 'chronometer',
-    'ZQ': 'quartz',
-    'ZV': 'radio update'
+timekeepers = {
+    "ZA": "atomic clock",
+    "ZC": "chronometer",
+    "ZQ": "quartz",
+    "ZV": "radio update",
 }
 
 
 def zdaEpochSeconds(nmeaStr):
-    '''
+    """
     Return the seconds since the Epoch
 
     @return: seconds since the Epoch UTC
     @rtype: float
-    '''
+    """
     z = zdaDecode(nmeaStr)
-    print z
-    #return calendar.timegm((z['year'],z['mon'],z['day'],z['hour'],z['min'],z['sec']+))
-    return calendar.timegm((z['year'],z['mon'],z['day'],z['hour'],z['min'],z['decimalsec']))
+    print(z)
+    # return calendar.timegm((z['year'],z['mon'],z['day'],z['hour'],z['min'],z['sec']+))
+    return calendar.timegm(
+        (z["year"], z["mon"], z["day"], z["hour"], z["min"], z["decimalsec"])
+    )
 
 
 def zdaDecode(nmeaStr):
-    '''
+    """
     Decode quartz time nmea messages.
 
     >>> zdaDecode('$ZQZDA,110003.00,27,03,2006,-5,00*47')
@@ -57,74 +66,79 @@ def zdaDecode(nmeaStr):
     @type nmeaStr: str
     @rtype: dict
     @return: name value pairs for the GMT time of the message
-    '''
+    """
     # FIX: strip off new line here?
-    assert(len(nmeaStr)>20)
-    assert(nmeaStr[0] in ('$','!'))
-    assert(nmeaStr[3:6]=='ZDA')
-    #print nmeaStr, nmea.isChecksumValid(nmeaStr)
-    #assert(nmea.isChecksumValid(nmeaStr))
-    fields = nmeaStr.split(',')
-    val={}
-    val['timekeeper']=fields[0][1:3]
-    val['hour']=int(fields[1][0:2])
-    val['min']=int(fields[1][2:4])
-    val['sec']=int(fields[1][4:6])
-    val['decimalsec']=float(fields[1][4:9])
-    assert(fields[1][6]=='.')
-    val['hsec']=int(fields[1][7:9]) # hundredths of seconds
-    val['day']=int(fields[2])
-    val['mon']=int(fields[3])
-    val['year']=int(fields[4])
-    val['localzonehour']=int(fields[5])
-    val['localzonemin']=int(fields[6][0:2])
+    assert len(nmeaStr) > 20
+    assert nmeaStr[0] in ("$", "!")
+    assert nmeaStr[3:6] == "ZDA"
+    # print(nmeaStr, nmea.isChecksumValid(nmeaStr))
+    # assert(nmea.isChecksumValid(nmeaStr))
+    fields = nmeaStr.split(",")
+    val = {}
+    val["timekeeper"] = fields[0][1:3]
+    val["hour"] = int(fields[1][0:2])
+    val["min"] = int(fields[1][2:4])
+    val["sec"] = int(fields[1][4:6])
+    val["decimalsec"] = float(fields[1][4:9])
+    assert fields[1][6] == "."
+    val["hsec"] = int(fields[1][7:9])  # hundredths of seconds
+    val["day"] = int(fields[2])
+    val["mon"] = int(fields[3])
+    val["year"] = int(fields[4])
+    val["localzonehour"] = int(fields[5])
+    val["localzonemin"] = int(fields[6][0:2])
 
     return val
 
-def ggaDecode(nmeaStr,validate=False):
-    '''
+
+def ggaDecode(nmeaStr, validate=False):
+    """
     Decode NMEA GPS FIX data
 
     $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
 
     @param nmeaStr: nmea string to decode
-    '''
+    """
     if validate:
-        assert(len(nmeaStr)>=71)
-        assert(len(nmeaStr)<=78)
-        assert(nmeaStr[0] in ('$','!'))
-        assert(nmeaStr[3:6]=='GGA')
-        #assert(nmea.isChecksumValid(nmeaStr))
-    fields = nmeaStr.split(',')
-    r={} # Results dict to be returned
-    r['hour']=int(fields[1][0:2])
-    r['min']=int(fields[1][2:4])
-    r['sec']=int(fields[1][4:6])
-    r['hsec']=int(fields[1][7:9]) # hundredths of seconds
-    r['decimalsec']=float(fields[1][4:9])
-    r['lat']=float(fields[2][0:2]) + float(fields[2][2:])/60.
-    if fields[3]=='S': r['lat']=-r['lat']
+        assert len(nmeaStr) >= 71
+        assert len(nmeaStr) <= 78
+        assert nmeaStr[0] in ("$", "!")
+        assert nmeaStr[3:6] == "GGA"
+        # assert(nmea.isChecksumValid(nmeaStr))
+    fields = nmeaStr.split(",")
+    r = {}  # Results dict to be returned
+    r["hour"] = int(fields[1][0:2])
+    r["min"] = int(fields[1][2:4])
+    r["sec"] = int(fields[1][4:6])
+    r["hsec"] = int(fields[1][7:9])  # hundredths of seconds
+    r["decimalsec"] = float(fields[1][4:9])
+    r["lat"] = float(fields[2][0:2]) + float(fields[2][2:]) / 60.0
+    if fields[3] == "S":
+        r["lat"] = -r["lat"]
 
     # FIX: lon probably will fail for
     lon = fields[4][:3]
-    if lon[0]=='0': lon = lon[1:]
-    r['lon']=float(lon) + float(fields[4][3:])/60.
-    if fields[5]=='W': r['lon']=-r['lon']
-    r['qual']=int(fields[6])
-    r['sats']=int(fields[7])
-    r['horz_dilution']=float(fields[8]) # meters
-    r['alt']=float(fields[9]) # altitude in meters above the geoid, meters
-    r['alt_units']=fields[10]
-    r['geoidal_sep']=float(fields[11])
-    r['geoidal_sep_units']=fields[12]
+    if lon[0] == "0":
+        lon = lon[1:]
+    r["lon"] = float(lon) + float(fields[4][3:]) / 60.0
+    if fields[5] == "W":
+        r["lon"] = -r["lon"]
+    r["qual"] = int(fields[6])
+    r["sats"] = int(fields[7])
+    r["horz_dilution"] = float(fields[8])  # meters
+    r["alt"] = float(fields[9])  # altitude in meters above the geoid, meters
+    r["alt_units"] = fields[10]
+    r["geoidal_sep"] = float(fields[11])
+    r["geoidal_sep_units"] = fields[12]
     try:
-        r['age']=float(fields[13])
+        r["age"] = float(fields[13])
     except:
-        r['age']=None
-    r['diff_ref_station']=fields[14]
+        r["age"] = None
+    r["diff_ref_station"] = fields[14]
     return r
 
-'''
+
+"""
 GGA - Global Positioning System Fix Data
 Time, Position and fix related data for a GPS receiver.
 
@@ -163,10 +177,11 @@ Time, Position and fix related data for a GPS receiver.
  15) Checksum
 
 $GPGGA,152009.00,3652.48059177,N,07620.02018248,W,1,11,0.8,3.669,M,-34.579,M,,*57
-'''
+"""
+
 
 def zdaDict2TIMESTAMP(zdaDict):
-    '''
+    """
     Make an SQL TIMESTAMP from the results of a zdaDecode
 
     >>> zdaDict2TIMESTAMP({'hour': 11, 'min': 0, 'hsec': 0, 'sec': 3, 'mon': 3, 'year': 2006, 'day': 27})
@@ -176,14 +191,14 @@ def zdaDict2TIMESTAMP(zdaDict):
     @type zdaDict: dict
     @return: TIMESTAMP
     @rtype: str
-    '''
-    s=''
-    s+=str(zdaDict['year'])
-    s+='-'+('%02d' % zdaDict['mon'])
-    s+='-'+('%02d' % zdaDict['day'])
-    s+=' '+('%02d' % zdaDict['hour'])
-    s+=':'+('%02d' % zdaDict['min'])
-    s+=':'+('%02d' % zdaDict['sec'])
+    """
+    s = ""
+    s += str(zdaDict["year"])
+    s += "-" + ("%02d" % zdaDict["mon"])
+    s += "-" + ("%02d" % zdaDict["day"])
+    s += " " + ("%02d" % zdaDict["hour"])
+    s += ":" + ("%02d" % zdaDict["min"])
+    s += ":" + ("%02d" % zdaDict["sec"])
     return s
 
 
@@ -201,14 +216,14 @@ def zdaDict2TIMESTAMP(zdaDict):
 #     success=True
 
 #     if options.doctest:
-#       import os; print os.path.basename(sys.argv[0]), 'doctests ...',
+#       import os; print(os.path.basename(sys.argv[0]), 'doctests ...',)
 #       sys.argv= [sys.argv[0]]
 #       if options.verbosity>=VERBOSE: sys.argv.append('-v')
 #       import doctest
 #       numfail,numtests=doctest.testmod()
-#       if numfail==0: print 'ok'
+#       if numfail==0: print('ok')
 #       else:
-#           print 'FAILED'
+#           print('FAILED')
 #           success=False
 
 #     if not success:
