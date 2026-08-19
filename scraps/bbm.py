@@ -2,7 +2,17 @@
 __author__ = "Kurt Schwehr"
 __version__ = ["$Revision:", "4799", "$"][1]
 __revision__ = __version__  # For pylint
-__date__ = ["$Date:", "2006-09-25", "11:09:02", "-0400", "(Mon,", "25", "Sep", "2006)", "$"][1]
+__date__ = [
+    "$Date:",
+    "2006-09-25",
+    "11:09:02",
+    "-0400",
+    "(Mon,",
+    "25",
+    "Sep",
+    "2006)",
+    "$",
+][1]
 __copyright__ = "2008"
 __license__ = "Apache 2.0"
 
@@ -19,8 +29,9 @@ Output python code for BBM encode and decode for a particular binary message
 import os
 import sys
 
-import ais.nmea
 import StringIO
+
+import ais.nmea
 
 
 def create(payload, fill_bits=0, prefix="xx", seq_msg_id=0, msg_type=8, ais_chan="A"):
