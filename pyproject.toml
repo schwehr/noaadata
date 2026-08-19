@@ -7,7 +7,7 @@ name = "noaadata"
 version = "0.46"
 description = "Encode/decode NOAA co-ops marine data and marine AIS"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = { text = "Apache-2.0" }
 authors = [
     { name = "Kurt Schwehr", email = "schwehr@gmail.com" }
@@ -18,7 +18,7 @@ classifiers = [
     "Environment :: Console",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Communications",
     "Topic :: Database",
     "Topic :: Scientific/Engineering :: Information Analysis",
@@ -254,7 +254,7 @@ ignore-words-list = [
 ]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 ignore_missing_imports = true
 warn_redundant_casts = true
 warn_unused_ignores = true

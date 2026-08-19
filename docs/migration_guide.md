@@ -1,14 +1,14 @@
 # Migration Guide: Upgrading to Modern `noaadata`
 
 This guide assists developers upgrading from legacy `noaadata` / `setup.py`
-packaging to the modern Python `>=3.13` standard using `pyproject.toml` and
+packaging to the modern Python `>=3.14` standard using `pyproject.toml` and
 `uv`.
 
 ## Overview of Major Changes
 
-1. **Python 3.13+ Requirements**:
+1. **Python 3.14+ Requirements**:
 
-   - Modern `noaadata` requires Python `>=3.13`.
+   - Modern `noaadata` requires Python `>=3.14`.
    - Uses PEP 585/PEP 604 standard typing syntax (`list[int]`, `str | None`).
 
 1. **Packaging & Installation**:

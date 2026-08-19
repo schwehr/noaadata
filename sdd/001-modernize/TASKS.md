@@ -1,4 +1,4 @@
-# Actionable Task Checklist (TASKS): Modernizing noaadata to Pure-Python >=3.13
+# Actionable Task Checklist (TASKS): Modernizing noaadata to Pure-Python >=3.14
 
 This checklist outlines the sequential tasks required to modernize the
 `noaadata` repository (\[`README`\](noaadata/README)) according to the
@@ -37,7 +37,7 @@ ______________________________________________________________________
   - [x] Remove legacy \[`setup.py`\](noaadata/setup.py), `setup.cfg`,
     `requirements.txt`, and \[`MANIFEST.in`\](noaadata/MANIFEST.in).
   - [x] Create `pyproject.toml` with `hatchling` as the PEP 517 build backend
-    and declare `requires-python = ">=3.13"`.
+    and declare `requires-python = ">=3.14"`.
   - [x] Migrate CLI scripts from \[`scripts/`\](noaadata/scripts) into
     `[project.scripts]` entry points in `pyproject.toml`.
   - [x] Configure dependency groups (`dev`, optional `db` and `gis` extras) and
@@ -121,7 +121,7 @@ ______________________________________________________________________
 
 - [x] **3.1 Configure & Run `ruff` Formatting and Linting**
 
-  - [x] Configure `ruff` in `pyproject.toml` with target Python `3.13` and
+  - [x] Configure `ruff` in `pyproject.toml` with target Python `3.14` and
     selected rule sets (`E`, `F`, `W`, `I`, `UP`, `B`, `C4`, `SIM`, `RUF`, `PT`,
     `PL`).
   - [x] Run `ruff format` across `src/`, `tests/`, and `scripts/` to standardize
@@ -309,7 +309,7 @@ ______________________________________________________________________
 - [x] **8.2 Establish GitHub Actions CI/CD Pipelines**
 
   - [x] Create `.github/workflows/ci.yml` for automated matrix testing across
-    Linux, macOS, and Windows on Python 3.13 and 3.14.
+    Linux, macOS, and Windows on Python 3.14.
   - [x] Ensure CI runs formatting (`ruff format --check`, `mdformat --check`),
     linting (`ruff check`), spell checking (`codespell`), typing (`ty`, `mypy`),
     tests with coverage (`--fail-under=95`), and benchmarks.

@@ -157,7 +157,7 @@ class UscgNmea:
     )
 
     @classmethod
-    def from_nmea(cls, nmea_str: str) -> "UscgNmea":
+    def from_nmea(cls, nmea_str: str) -> UscgNmea:
         """Factory constructor to instantiate UscgNmea from a sentence string."""
         return cls(nmea_str=nmea_str)
 

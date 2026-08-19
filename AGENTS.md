@@ -6,7 +6,7 @@ working on **noaadata** ([`README.md`](README.md)).
 
 > **IMPORTANT CONTINUOUS UPDATE MANDATE**: As `noaadata` undergoes Spec-Driven
 > Development (SDD) modernization from legacy packaging ([`setup.py`](setup.py))
-> to modern Python (`>=3.13`, `pyproject.toml`, `uv`, `pytest`, `ruff`, strict
+> to modern Python (`>=3.14`, `pyproject.toml`, `uv`, `pytest`, `ruff`, strict
 > static typing), **you must continuously update all sections of `AGENTS.md`**
 > (overview, repository layout, build/test commands, formatting standards, and
 > architecture notes) as the codebase evolves.
