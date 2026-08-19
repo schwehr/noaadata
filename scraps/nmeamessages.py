@@ -24,14 +24,14 @@ import nmea
 #from verbosity import BOMBASTIC,VERBOSE,TRACE,TERSE,ALWAYS
 import calendar # to make the seconds since the epoch
 
-
+# Valid clock sources.
 timekeepers={
     'ZA': 'atomic clock',
     'ZC': 'chronometer',
     'ZQ': 'quartz',
     'ZV': 'radio update'
 }
-'list of the valide clock sources'
+
 
 def zdaEpochSeconds(nmeaStr):
     '''
@@ -100,7 +100,7 @@ def ggaDecode(nmeaStr,validate=False):
     r['hour']=int(fields[1][0:2])
     r['min']=int(fields[1][2:4])
     r['sec']=int(fields[1][4:6])
-    r['hsec']=int(fields[1][7:9]) # hundreths of seconds
+    r['hsec']=int(fields[1][7:9]) # hundredths of seconds
     r['decimalsec']=float(fields[1][4:9])
     r['lat']=float(fields[2][0:2]) + float(fields[2][2:])/60.
     if fields[3]=='S': r['lat']=-r['lat']

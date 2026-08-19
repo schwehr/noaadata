@@ -45,10 +45,10 @@ if __name__=='__main__':
 
     parser.add_option('-m','--max-speed',dest='maxSpeed',default=102.19
                       ,type='float'
-                      ,help='102.3 is technically the undefined value for speed, but some venders do not agree [default: %default]')
+                      ,help='102.3 is technically the undefined value for speed, but some vendors do not agree [default: %default]')
     parser.add_option('-t','--threshold-speed',dest='thresholdSpeed',default=12.
                       ,type='float'
-                      ,help='102.3 is technically the undefined value for speed, but some venders do not agree [default: %default]')
+                      ,help='102.3 is technically the undefined value for speed, but some vendors do not agree [default: %default]')
 
     parser.add_option('--mmsi',dest='mmsi', default=None, type='int'
                       ,help='Restrict the summary to just one vessel')

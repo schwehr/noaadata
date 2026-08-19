@@ -22,8 +22,6 @@ kilometers.  Sorry.  No nautical miles.
 @status: under development
 @license: Apache 2.0
 @since: 2007-Nov-24
-
-@todo: catagory - yeah, it is mispelled.  bugger
 """
 
 import sys, os, math
@@ -65,7 +63,7 @@ if __name__=='__main__':
                       help='Host name on which the database resides [default: %default]')
     parser.add_option('-r','--restrict-table',dest='table', default='summary2006'
                       ,help='SQL table to use for picking the ship type [default: %default]')
-    parser.add_option('-R','--restrict-field',dest='field', default='catagory'
+    parser.add_option('-R','--restrict-field',dest='field', default='category'
                       ,help='SQL field to use for picking the ship type [default: %default]')
 
 #    parser.add_option('--excel',dest='excel',default=False,action='store_true',
@@ -120,13 +118,13 @@ if __name__=='__main__':
         minSpeeds=[]
         maxSpeeds=[]
 
-        q = 'SELECT COUNT(id) FROM transit,(SELECT DISTINCT(userid) FROM summary2006 WHERE catagory=\''+category+'\') AS ships WHERE transit.userid=ships.userid;'
+        q = 'SELECT COUNT(id) FROM transit,(SELECT DISTINCT(userid) FROM summary2006 WHERE category=\''+category+'\') AS ships WHERE transit.userid=ships.userid;'
         cu.execute(q)
         transits=cu.fetchone()[0]
         if verbose: sys.stderr.write('  Num transits: '+str(transits)+'\n')
         numberTransits[category]=transits
 
-        cu.execute('SELECT DISTINCT(userid) FROM summary2006 WHERE catagory=\''+category+'\';') #LIMIT 20;')
+        cu.execute('SELECT DISTINCT(userid) FROM summary2006 WHERE category=\''+category+'\';') #LIMIT 20;')
         ships = cu.fetchall()
         if verbose: sys.stderr.write('  Num ships: '+str(len(ships))+'\n')
         vesselCounts[category] = len(ships)
@@ -176,17 +174,17 @@ if __name__=='__main__':
             sys.stderr.write('  mean min/max speed: '+str(meanMinSpeed[category])+' ... '+str(meanMaxSpeed[category])+'\n')
 
         if verbose: sys.stderr.write('  calculating avg length\n')
-        cu.execute('SELECT AVG(length) FROM summary2006 WHERE catagory=\''+category+'\';')
+        cu.execute('SELECT AVG(length) FROM summary2006 WHERE category=\''+category+'\';')
         curMeanLength=cu.fetchone()[0]
         meanLength[category] = curMeanLength
 
         # Compute standard error stderr = stddev/#samples.
         # Where stddev (aka sigma) is sqrt ( 1/N * sum [(xi - xave)^2 ] )
-        cu.execute('SELECT length FROM summary2006 WHERE catagory=\''+category+'\' AND length IS NOT NULL;')
+        cu.execute('SELECT length FROM summary2006 WHERE category=\''+category+'\' AND length IS NOT NULL;')
         sum = 0
         for length in cu.fetchall():
             sum += (length[0] - curMeanLength)**2
-        cu.execute('SELECT count(length) FROM summary2006 WHERE catagory=\''+category+'\' AND length IS NOT NULL;')
+        cu.execute('SELECT count(length) FROM summary2006 WHERE category=\''+category+'\' AND length IS NOT NULL;')
         n = cu.fetchone()[0]
         print '  n:',n
         lenStdDev = math.sqrt ( sum / n)
@@ -199,20 +197,20 @@ if __name__=='__main__':
         del lenStdDev
 
         cu.execute('SELECT (SUM(firstdraft)+SUM(lastdraft))/(COUNT(firstdraft)+COUNT(lastdraft))'\
-                   'FROM summary2006 WHERE catagory=\''+category+'\' AND firstdraft IS NOT NULL AND lastdraft IS NOT NULL;')
+                   'FROM summary2006 WHERE category=\''+category+'\' AND firstdraft IS NOT NULL AND lastdraft IS NOT NULL;')
         curMeanDraft=cu.fetchone()[0]
         print '  curMeanDraft:',curMeanDraft
         meanDraught[category] = curMeanDraft
 
         cu.execute('SELECT count(firstdraft) FROM summary2006'\
-                   ' WHERE catagory=\''+category+'\' AND firstdraft IS NOT NULL;')
+                   ' WHERE category=\''+category+'\' AND firstdraft IS NOT NULL;')
         n1 = cu.fetchone()[0]
         cu.execute('SELECT count(lastdraft) FROM summary2006'\
-                   ' WHERE catagory=\''+category+'\' AND lastdraft IS NOT NULL;')
+                   ' WHERE category=\''+category+'\' AND lastdraft IS NOT NULL;')
         n = n1 + cu.fetchone()[0]
         print '  n:',n
 
-        cu.execute('SELECT firstdraft,lastdraft  FROM summary2006 WHERE catagory=\''+category+'\' '\
+        cu.execute('SELECT firstdraft,lastdraft  FROM summary2006 WHERE category=\''+category+'\' '\
                    ' AND firstdraft IS NOT NULL AND lastdraft IS NOT NULL')
         sum = 0
         for draft in cu.fetchall():

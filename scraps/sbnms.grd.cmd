@@ -55,8 +55,8 @@ gmtset COLOR_FOREGROUND 255/255/255
 gmtset COLOR_NAN 255/255/255
 gmtset PLOT_DEGREE_FORMAT ddd:mm
 #
-# Make color pallette table file
-echo Making color pallette table file...
+# Make color palette table file
+echo Making color palette table file...
 echo   -300  37  57 175   -270  40 127 251 > $CPT_FILE
 echo   -270  40 127 251   -240  50 190 255 >> $CPT_FILE
 echo   -240  50 190 255   -210 106 235 255 >> $CPT_FILE

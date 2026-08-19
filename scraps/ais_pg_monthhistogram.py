@@ -20,8 +20,6 @@ associated with the first month that the vessel is observed.
 @status: under development
 @license: Apache 2.0
 @since: 2007-Nov-24
-
-@todo: catagory - yeah, it is mispelled.  bugger
 """
 
 import sys, os
@@ -53,7 +51,7 @@ if __name__=='__main__':
                       help='Host name on which the database resides [default: %default]')
     parser.add_option('-r','--restrict-table',dest='table', default='summary2006'
                       ,help='SQL table to use for picking the ship type [default: %default]')
-    parser.add_option('-R','--restrict-field',dest='field', default='catagory'
+    parser.add_option('-R','--restrict-field',dest='field', default='category'
                       ,help='SQL field to use for picking the ship type [default: %default]')
     parser.add_option('--excel',dest='excel',default=False,action='store_true',
                       help='Write excel spreadsheet')
@@ -95,9 +93,8 @@ if __name__=='__main__':
     catCounts={}
     for category in categories:
         if verbose: sys.stderr.write('Category: '+category+'\n')
-        #print 'FIX: remove limit'
-        # Yes, I know that I mispelled the field in the database
-        cu.execute('SELECT DISTINCT(userid) FROM summary2006 WHERE catagory=\''+category+'\';')  # LIMIT 20;')
+        # print 'FIX: remove limit'
+        cu.execute('SELECT DISTINCT(userid) FROM summary2006 WHERE category=\''+category+'\';')  # LIMIT 20;')
         ships = cu.fetchall()
         if verbose: sys.stderr.write('  Num ships: '+str(len(ships))+'\n')
         monthCounts = [0,]*13  # leave 0 well alone
@@ -131,7 +128,7 @@ if __name__=='__main__':
     #print catCounts
     # gnuplot 4.2 compatible file for histogram plots
     o = file(options.basename+'.dat','w')
-    o.write('# Ship transit occurance by category and month\n')
+    o.write('# Ship transit occurrence by category and month\n')
     o.write('Category Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec\n')
     for category in categories:
         o.write(category)
@@ -144,7 +141,7 @@ if __name__=='__main__':
     # the above one plots backwards in gnuplot... maybe this one is better
 
     o = file(options.basename+'-2.dat','w')
-    o.write('# Ship transit occurance by category and month\n')
+    o.write('# Ship transit occurrence by category and month\n')
     catList = [categories[i] for i in range(len(categories))]
     print catList
     o.write('- '+' '.join(catList)+'\n')

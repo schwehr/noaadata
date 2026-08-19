@@ -54,7 +54,7 @@ class dispatch:
 # Message-type-specific information begins here. There are four
 # different kinds of things in it: (1) string tables for expanding
 # enumerated-type codes, (2) hook functions, (3) instruction tables,
-# and (4) field group declarations.  This is the part that could, in
+# and (4) field group declarations. This is the part that could, in
 # theory, be generated from a portable higher-level specification in
 # XML; only the hook functions are actually language-specific, and
 # your XML definition could in theory embed several different ones for
@@ -64,7 +64,7 @@ cnb_status_legends = (
         "Under way using engine",
         "At anchor",
         "Not under command",
-        "Restricted manoeuverability",
+        "Restricted manoeuverability",  # codespell:ignore manoeuverability
         "Constrained by her draught",
         "Moored",
         "Aground",
@@ -723,10 +723,10 @@ def aivdm_unpack(data, offset, values, instructions):
             if inst.validator and not inst.validator(value):
                 raise AISUnpackingException(inst.name, value)
             offset += inst.width
-            # An important thing about the unpacked representation this
-            # generates is tha it carries forward the meta-information from
-            # the field type definition.  This stuff is then available for
-            # use by report-generating code.
+            # The unpacked representation this generates carries
+            # forward the meta-information from the field type
+            # definition. This stuff is then available for use by
+            # report-generating code.
             cooked.append([inst.name, value, inst.type, inst.legend, inst.formatter])
     return cooked
 

@@ -6,13 +6,9 @@ default:
 	@echo ""
 	@echo ""
 clean:
-	rm -f {month,speed}*summar*.{xls,dat,gp}
+	rm -f {month,speed}*summary*.{xls,dat,gp}
 
-#CFLAGS += -g  # Can leave on even when optimizing
 CFLAGS += -Wall
-#CFLAGS += -Wimplicit-int
-#CFLAGS += -Wimplicit-function-declaration
-#CFLAGS += -Wnested-externs
 CFLAGS += -Wimplicit
 CFLAGS += -W
 CFLAGS += -Wredundant-decls

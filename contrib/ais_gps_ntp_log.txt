@@ -86,7 +86,7 @@ handling creating new log files every day and shutting down cleanly.
 
 With a combination AIS/GPS, one can infer that the AIS messages arrived in the
 times between surrounding GPS messages. If only AIS messages are being logged,
-then it is handy to add a timestamp to the recevied line. The serial_logger.py
+then it is handy to add a timestamp to the received line. The serial_logger.py
 either adds a '# timestamp' or extends the line with a stationid and timestamp
 in USGC format. These timestamps are floating point seconds since epoch. The
 USCG format is useful when aggregating AIS reports, as it allows keeping track
@@ -111,7 +111,7 @@ using the 127.0.0.1 address. The man page for gpsd has a 'USE WITH NTP' section
 that describes configuration of both gpsd and ntpd.
 
 Versions of gpsd 2.35 and newer have the ability to pass AIS messages. (Earlier
-versions surpressed non GPS-like messages.) The noaadata-py logging from gpsd
+versions suppressed non GPS-like messages.) The noaadata-py logging from gpsd
 makes a TCP connection to the local gpsd network service, and asks for the raw
 input lines. (In fact it was the desire to use gpsd with ntpd and noaadata-py
 that motivated the change to gpsd.)
@@ -133,18 +133,18 @@ Using logged data
 
 Some AIS messages are contained in multiple lines of raw log data. The
 noaadata-py script ais_normalize is a tool that accepts the timestamped
-or USCG format log files and outputs a normailzed form with each AIS
+or USCG format log files and outputs a normalized form with each AIS
 message represented by one line of text. The normalized form is what
 the parsing tools need, and handle decoding for display of for populating
 a database.
 
 Summary
 
-With a small investment in the inital configuration it is possible to have
+With a small investment in the initial configuration it is possible to have
 useful logs of AIS messages. By incorporating timestamps and receiver location
 into the raw data logs, it is possible to aggregate logs from multiple sources.
 Even if the sources are a combination of land, maritime mobile and even satellite
-based, the GPS time synchronization makes the log data consistant. Combination
+based, the GPS time synchronization makes the log data consistent. Combination
 of ntpd, gpsd and noaadata-py is possible and practical.
 
 References:

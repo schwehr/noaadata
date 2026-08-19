@@ -94,7 +94,7 @@ CREATE TABLE summary2006
   name varchar(40),             -- Vessel Name
   shiptype varchar(50),         -- From msg 5
   cargotype varchar(50),        -- From msg 5
-  catagory varchar(40) NOT NULL,-- Vessel Catagory... **V** 6 possible (pass, fishing, cargo_contr, serv_rese, tanker, tug)
+  category varchar(40) NOT NULL,-- Vessel Category... **V** 6 possible (pass, fishing, cargo_contr, serv_rese, tanker, tug)
   vesseltype varchar(50),       -- vessel type (w)
   vcargo varchar(50),           -- X
   length REAL,                  -- m??
@@ -113,7 +113,7 @@ CREATE TABLE summary2006
 
         cu.execute('CREATE INDEX summary2006_userid_idx ON summary2006(userid);')
         cu.execute('CREATE INDEX summary2006_userid2_idx ON summary2006(userid2);')
-        cu.execute('CREATE INDEX summary2006_catagory_idx ON summary2006(catagory);')
+        cu.execute('CREATE INDEX summary2006_category_idx ON summary2006(category);')
         cx.commit()
 
     for filename in args:
