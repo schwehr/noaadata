@@ -815,10 +815,7 @@ class AISUnpackingException:
         self.value = value
 
     def __repr__(self):
-        return "Validation on fieldname {} failed (value {})".format(
-            self.fieldname,
-            self.value,
-        )
+        return f"Validation on fieldname {self.fieldname} failed (value {self.value})"
 
 
 def aivdm_unpack(data, offset, values, instructions):

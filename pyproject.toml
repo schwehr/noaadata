@@ -42,6 +42,7 @@ gis = [
 
 [dependency-groups]
 dev = [
+    "pre-commit",
     "pytest",
     "pytest-cov",
     "pytest-benchmark",
