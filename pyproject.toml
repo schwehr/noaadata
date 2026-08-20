@@ -203,8 +203,6 @@ ignore = [
     "B904",    # Raise without from
     "RUF012",  # Mutable class default
     "RUF100",  # Unused noqa directive
-    "W291",    # Trailing whitespace
-    "W293",    # Blank line with whitespace
 ]
 
 [tool.ruff.lint.per-file-ignores]
