@@ -416,10 +416,6 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
         o.write('        out.write("<td>' + fieldtype + '</td>\\n")\n')
 
         numbits = int(field.attrib["numberofbits"])
-        if hasSubTag(field, "required"):
-            field.xpath("required")[0].text
-        if hasSubTag(field, "unavailable"):
-            field.xpath("unavailable")[0].text
         arraylen = 1
         if "arraylength" in field.attrib:
             arraylen = int(field.attrib["arraylength"])
@@ -577,10 +573,6 @@ def buildPrint(o, msgET, verbose=False, prefixName=False):
         fieldname = field.attrib["name"]
         fieldtype = field.attrib["type"]
         numbits = int(field.attrib["numberofbits"])
-        if hasSubTag(field, "required"):
-            field.xpath("required")[0].text
-        if hasSubTag(field, "unavailable"):
-            field.xpath("unavailable")[0].text
         arraylen = 1
         if "arraylength" in field.attrib:
             arraylen = int(field.attrib["arraylength"])

@@ -199,7 +199,6 @@ ignore = [
     "SIM108",  # Use ternary operator
     "SIM113",  # Enumerate for loop
     "SIM115",  # Open file with context handler
-    "B018",    # Useless attribute access
 ]
 
 [tool.ruff.lint.per-file-ignores]
