@@ -73,7 +73,8 @@ def start(pid_file=None):
     """
     create()
     if pid_file is not None:
-        open(pid_file, "w").write(str(os.getpid()) + "\n")
+        with open(pid_file, "w") as f:
+            f.write(str(os.getpid()) + "\n")
 
 
 def create():

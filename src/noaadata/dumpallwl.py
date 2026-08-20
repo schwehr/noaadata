@@ -8,6 +8,7 @@ time period.
 """
 
 import calendar
+import contextlib
 import sys
 from decimal import Decimal
 
@@ -251,58 +252,58 @@ if __name__ == "__main__":
     stationId = options.station
     mmsi = options.mmsi
 
-    if options.outputFileName:
-        o = open(options.outputFileName, "w")
-    else:
-        o = sys.stdout
+    with (
+        open(options.outputFileName, "w")
+        if options.outputFileName
+        else contextlib.nullcontext(sys.stdout)
+    ) as o:
+        server = SOAPProxy(url, namespace)
 
-    server = SOAPProxy(url, namespace)
+        for mon in range(options.monthStart, options.monthEnd + 1):
+            beginDate = str(options.year) + ("%02d" % mon) + "01"
+            endDate = str(options.year) + ("%02d" % mon) + str(daysPerMon[mon])
+            print(beginDate, "...", endDate)
+            response = server.getWaterLevelRawSixMin(
+                stationId=str(stationId),
+                beginDate=beginDate,
+                endDate=endDate,
+                datum=options.datum,
+                unit=0,
+                timeZone=0,
+            )
+            for wl in response.item:
+                # if verbose:
+                #    print wl
+                try:
+                    wlStr = noaawaterlevel2aisMsg8Nmea(
+                        stationId, mmsi, datum=options.datum, wl=wl
+                    )
+                except:
+                    print("ERROR: something with this line")
+                    print(wl)
+                    continue
+                o.write(wlStr + "\n")
 
-    for mon in range(options.monthStart, options.monthEnd + 1):
-        beginDate = str(options.year) + ("%02d" % mon) + "01"
-        endDate = str(options.year) + ("%02d" % mon) + str(daysPerMon[mon])
-        print(beginDate, "...", endDate)
-        response = server.getWaterLevelRawSixMin(
-            stationId=str(stationId),
-            beginDate=beginDate,
-            endDate=endDate,
-            datum=options.datum,
-            unit=0,
-            timeZone=0,
-        )
-        for wl in response.item:
-            # if verbose:
-            #    print wl
-            try:
+        if False:
+            beginDate = "20070401"
+            endDate = "20070401"
+            # datum='MSL'
+            # print beginDate,'...',endDate
+            response = server.getWaterLevelRawSixMin(
+                stationId=str(stationId),
+                beginDate=beginDate,
+                endDate=endDate,
+                datum=options.datum,
+                unit=0,
+                timeZone=0,
+            )
+            # print len(response.item)
+            # wl = response.item[1]
+            for wl in response.item:
+                # print wl
                 wlStr = noaawaterlevel2aisMsg8Nmea(
                     stationId, mmsi, datum=options.datum, wl=wl
                 )
-            except:
-                print("ERROR: something with this line")
-                print(wl)
-                continue
-            o.write(wlStr + "\n")
-
-    if False:
-        beginDate = "20070401"
-        endDate = "20070401"
-        # datum='MSL'
-        # print beginDate,'...',endDate
-        response = server.getWaterLevelRawSixMin(
-            stationId=str(stationId),
-            beginDate=beginDate,
-            endDate=endDate,
-            datum=options.datum,
-            unit=0,
-            timeZone=0,
-        )
-        # print len(response.item)
-        # wl = response.item[1]
-        for wl in response.item:
-            # print wl
-            wlStr = noaawaterlevel2aisMsg8Nmea(
-                stationId, mmsi, datum=options.datum, wl=wl
-            )
-            if verbose:
-                print(wlStr)
-            o.write(wlStr + "\n")
+                if verbose:
+                    print(wlStr)
+                o.write(wlStr + "\n")

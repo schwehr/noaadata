@@ -30,8 +30,9 @@ def main():
     <Folder id="bounding boxes">
 """)
     for filename in args:
-        for line in open(filename):
-            station, x1, x2, y1, y2 = line.split()
+        with open(filename) as f:
+            for line in f:
+                station, x1, x2, y1, y2 = line.split()
             print(
                 f"""<Placemark><name>{station}</name><Polygon>
   <!-- specific to Polygon -->

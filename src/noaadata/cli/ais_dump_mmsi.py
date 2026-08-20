@@ -7,6 +7,7 @@
  TODO(schwehr):Option to check the AIVDM tags to make sure that the messages should be combined
 """
 
+import contextlib
 import sys
 from optparse import OptionParser
 
@@ -34,28 +35,29 @@ def main():
     )
 
     (options, args) = parser.parse_args()
-    o = sys.stdout
-    if options.outputFilename is not None:
-        o = open(options.outFilename, "w")
-
-    print(args)
-    for filename in args:
-        print(filename)
-        for line in file(filename):
-            if line[0] == "#":
-                continue
-            fields = line.split(",")[:6]
-            if fields[2] != "1":  # Must be the start of a sequence
-                continue
-            if len(fields[5]) < 7:
-                continue
-            bv = binary.ais6tobitvec(fields[5][:7])  # Hacked for speed
-            int(bv[8:38])
-            mmsi = str(int(bv[8:38]))
-            o.write(mmsi)
-            if options.dumpLine:
-                o.write(" " + line.strip())
-            o.write("\n")
+    with (
+        open(options.outputFilename, "w")
+        if options.outputFilename is not None
+        else contextlib.nullcontext(sys.stdout)
+    ) as o:
+        print(args)
+        for filename in args:
+            print(filename)
+            with open(filename) as f:
+                for line in f:
+                    if line[0] == "#":
+                        continue
+                    fields = line.split(",")[:6]
+                    if fields[2] != "1":  # Must be the start of a sequence
+                        continue
+                    if len(fields[5]) < 7:
+                        continue
+                    bv = binary.ais6tobitvec(fields[5][:7])  # Hacked for speed
+                    mmsi = str(int(bv[8:38]))
+                    o.write(mmsi)
+                    if options.dumpLine:
+                        o.write(" " + line.strip())
+                    o.write("\n")
 
 
 if __name__ == "__main__":

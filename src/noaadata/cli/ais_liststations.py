@@ -83,16 +83,17 @@ def main():
     if options.count_each_station:
         stations = {}
         for filename in args:
-            for linenum, line in enumerate(open(filename)):
-                if options.progress:
-                    if linenum % progress_interval == 0:
-                        sys.stderr.write("linenum: %d\n" % linenum)
-                station = getStation(line, options.withR)
-                if station:
-                    if station not in stations:
-                        stations[station] = 1
-                    else:
-                        stations[station] += 1
+            with open(filename) as f:
+                for linenum, line in enumerate(f):
+                    if options.progress:
+                        if linenum % progress_interval == 0:
+                            sys.stderr.write("linenum: %d\n" % linenum)
+                    station = getStation(line, options.withR)
+                    if station:
+                        if station not in stations:
+                            stations[station] = 1
+                        else:
+                            stations[station] += 1
         for station in stations:
             print(station, stations[station])
 
@@ -101,18 +102,19 @@ def main():
         for filename in args:
             if options.verbose:
                 print("Processing file:", filename)
-            for linenum, line in enumerate(open(filename)):
-                if options.progress:
-                    if linenum % progress_interval == 0:
-                        sys.stderr.write("linenum: %d\n" % linenum)
-                station = getStation(line, options.withR)
-                if station is None:
-                    if verbose:
-                        print("WARNING: no station for line", line)
-                    continue
+            with open(filename) as f:
+                for linenum, line in enumerate(f):
+                    if options.progress:
+                        if linenum % progress_interval == 0:
+                            sys.stderr.write("linenum: %d\n" % linenum)
+                    station = getStation(line, options.withR)
+                    if station is None:
+                        if verbose:
+                            print("WARNING: no station for line", line)
+                        continue
 
-                if verbose and station not in stations:
-                    print("New station:", station)
+                    if verbose and station not in stations:
+                        print("New station:", station)
 
                 stations.add(station)
 

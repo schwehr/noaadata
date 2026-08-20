@@ -140,19 +140,20 @@ def main():
     ships = {}
     position_count = 0
     for filename in args:
-        for line in open(filename):
-            try:
-                x, y, m, t = line.split()
-            except Exception:
-                sys.stderr.write(f"ERROR: {line}\n")
-                continue
-            if x == "181":
-                continue  # Position report without a location.
-            position_count += 1
-            if m not in ships:
-                ships[m] = [(x, y, m, t)]
-            else:
-                ships[m].append((x, y, m, int(float(t))))
+        with open(filename) as f:
+            for line in f:
+                try:
+                    x, y, m, t = line.split()
+                except Exception:
+                    sys.stderr.write(f"ERROR: {line}\n")
+                    continue
+                if x == "181":
+                    continue  # Position report without a location.
+                position_count += 1
+                if m not in ships:
+                    ships[m] = [(x, y, m, t)]
+                else:
+                    ships[m].append((x, y, m, int(float(t))))
 
     if v:
         sys.stderr.write(f"num_ships = {len(ships)}\n")

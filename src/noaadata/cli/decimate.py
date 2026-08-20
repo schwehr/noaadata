@@ -126,33 +126,34 @@ def main():
         count = 1
         skipping = options.startSkip
         previousLine = None
-        for line in open(filename):
-            if options.preserveStr is not None:
-                if line[: len(options.preserveStr)] == options.preserveStr:
-                    if options.preserveEnd and previousLine is not None:
-                        print(previousLine, end="")
-                        previousLine = None
+        with open(filename) as f:
+            for line in f:
+                if options.preserveStr is not None:
+                    if line[: len(options.preserveStr)] == options.preserveStr:
+                        if options.preserveEnd and previousLine is not None:
+                            print(previousLine, end="")
+                            previousLine = None
+                        print(line, end="")
+                        if options.preserveBegin:
+                            count = 1
+                            skipping = options.startSkip
+                        continue
+                if not skipping:
                     print(line, end="")
-                    if options.preserveBegin:
+                    previousLine = None
+                    count += 1
+                    if count > options.keepLines:
+                        skipping = True
+                        if options.blankLine:
+                            print()
                         count = 1
-                        skipping = options.startSkip
-                    continue
-            if not skipping:
-                print(line, end="")
-                previousLine = None
-                count += 1
-                if count > options.keepLines:
-                    skipping = True
-                    if options.blankLine:
-                        print()
-                    count = 1
-            else:  # Skipping is true
-                count += 1
-                if count > options.skipLines:
-                    skipping = False
-                    count = 1
-                else:
-                    previousLine = line
+                else:  # Skipping is true
+                    count += 1
+                    if count > options.skipLines:
+                        skipping = False
+                        count = 1
+                    else:
+                        previousLine = line
 
 
 if __name__ == "__main__":

@@ -65,7 +65,8 @@ def main():
 
     (options, args) = parser.parse_args()
     for filename in args:
-        parse_msgs(open(filename), verbose=options.verbose)
+        with open(filename) as f:
+            parse_msgs(f, verbose=options.verbose)
 
 
 if __name__ == "__main__":

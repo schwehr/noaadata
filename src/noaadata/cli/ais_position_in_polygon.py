@@ -62,6 +62,7 @@ egrep '!AIVDM,1,1,[0-9]?,[AB],[1-3]' biglog.ais > pos_msgs.ais
 """
 )
 
+import contextlib
 import sys
 
 from cartography.geometry import Geometry
@@ -551,46 +552,49 @@ def main():
 
     (options, args) = parser.parse_args()
 
-    outFile = sys.stdout
-    if options.outputFilename is not None:
-        outFile = open(options.outputFilename, "w")
+    with (
+        open(options.outputFilename, "w")
+        if options.outputFilename is not None
+        else contextlib.nullcontext(sys.stdout)
+    ) as outFile:
+        if options.useBox:
+            x = options.lonMin
+            X = options.lonMax
+            y = options.latMin
+            Y = options.latMax
+            if verbose:
+                print("using bbox", x, X, "    ", y, Y)
+            if len(args) == 0:
+                count = filter_box(sys.stdin, outFile, x, X, y, Y, options.verbose)
+                if options.verbose:
+                    sys.stderr.write("Found points inside: " + str(count) + "\n")
+            else:
+                for filename in args:
+                    if options.verbose:
+                        sys.stderr.write("Working on file: " + filename + "\n")
+                    with open(filename) as in_f:
+                        count = filter_box(in_f, outFile, x, X, y, Y, options.verbose)
+                    if options.verbose:
+                        sys.stderr.write("Found points inside: " + str(count) + "\n")
+            sys.exit(0)
 
-    if options.useBox:
-        x = options.lonMin
-        X = options.lonMax
-        y = options.latMin
-        Y = options.latMax
-        if verbose:
-            print("using bbox", x, X, "    ", y, Y)
+        if options.verbose:
+            sys.stderr.write("WKT:\n  " + options.polygonWKT + "\n")
+
         if len(args) == 0:
-            count = filter_box(sys.stdin, outFile, x, X, y, Y, options.verbose)
+            count = filter_file(sys.stdin, outFile, options.polygonWKT, options.verbose)
             if options.verbose:
                 sys.stderr.write("Found points inside: " + str(count) + "\n")
         else:
             for filename in args:
                 if options.verbose:
                     sys.stderr.write("Working on file: " + filename + "\n")
-                count = filter_box(open(filename), outFile, x, X, y, Y, options.verbose)
+                with open(filename) as in_f:
+                    count = filter_file(
+                        in_f, outFile, options.polygonWKT, options.verbose
+                    )
                 if options.verbose:
                     sys.stderr.write("Found points inside: " + str(count) + "\n")
-        sys.exit(0)
-
-    if options.verbose:
-        sys.stderr.write("WKT:\n  " + options.polygonWKT + "\n")
-
-    if len(args) == 0:
-        count = filter_file(sys.stdin, outFile, options.polygonWKT, options.verbose)
-        if options.verbose:
-            sys.stderr.write("Found points inside: " + str(count) + "\n")
-    else:
-        for filename in args:
-            if options.verbose:
-                sys.stderr.write("Working on file: " + filename + "\n")
-            count = filter_file(
-                open(filename), outFile, options.polygonWKT, options.verbose
-            )
-            if options.verbose:
-                sys.stderr.write("Found points inside: " + str(count) + "\n")
 
 
 if __name__ == "__main__":

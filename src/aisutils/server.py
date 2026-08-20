@@ -134,7 +134,7 @@ class LogFileWithRotate:
         self.log_filename = self.prefix + now.strftime("%Y-%m-%d")
         if self.v:
             print(f"opening log file: {self.log_filename}")
-        self.log_file = open(self.log_filename, "a")
+        self.log_file = open(self.log_filename, "a")  # noqa: SIM115
         self.write_header()
 
     def write_header(self):

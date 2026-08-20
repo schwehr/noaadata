@@ -30,23 +30,23 @@ import time
 
 
 def main():
-    o = open("norfolk-log.ais", "a")
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("10.1.1.29", 5505))
-    s.send(b"$xxBSQ,ACA,*03\x0d\x0a")
-    buf = b""
-    while True:
-        readersready, _outputready, _exceptready = select.select([s], [], [], 0.1)
-        for sock in readersready:
-            data = sock.recv(100)
-            buf += data
-            newline = buf.find(b"\n")
-            if newline != -1:
-                fields = buf.split(b"\n")
-                msg = fields[0].decode("latin-1").strip() + "," + str(time.time())
-                print(msg)
-                o.write(msg + "\n")
-                buf = b"" + buf[newline + 1 :] if len(fields) > 1 else b""
+    with open("norfolk-log.ais", "a") as o:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect(("10.1.1.29", 5505))
+        s.send(b"$xxBSQ,ACA,*03\x0d\x0a")
+        buf = b""
+        while True:
+            readersready, _outputready, _exceptready = select.select([s], [], [], 0.1)
+            for sock in readersready:
+                data = sock.recv(100)
+                buf += data
+                newline = buf.find(b"\n")
+                if newline != -1:
+                    fields = buf.split(b"\n")
+                    msg = fields[0].decode("latin-1").strip() + "," + str(time.time())
+                    print(msg)
+                    o.write(msg + "\n")
+                    buf = b"" + buf[newline + 1 :] if len(fields) > 1 else b""
 
 
 if __name__ == "__main__":

@@ -35,19 +35,20 @@ def main():
 
     for filename in args:
         last = None
-        for line in open(filename):
-            x, y = line.split()[:2]
-            x = float(x)
-            y = float(y)
-            if last is None:
-                last = (x, y)
-                print(line, end="")
-                continue
-            if (x < last[0] - epsilon or x > last[0] + epsilon) and (
-                y < last[1] - epsilon or y > last[1] + epsilon
-            ):
-                last = (x, y)
-                print(line, end="")
+        with open(filename) as f:
+            for line in f:
+                x, y = line.split()[:2]
+                x = float(x)
+                y = float(y)
+                if last is None:
+                    last = (x, y)
+                    print(line, end="")
+                    continue
+                if (x < last[0] - epsilon or x > last[0] + epsilon) and (
+                    y < last[1] - epsilon or y > last[1] + epsilon
+                ):
+                    last = (x, y)
+                    print(line, end="")
 
 
 if __name__ == "__main__":

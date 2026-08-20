@@ -7,6 +7,7 @@ version with no error checking.
  TODO(schwehr):Option to check the AIVDM tags to make sure that the messages should be combined
 """
 
+import contextlib
 import sys
 from optparse import OptionParser
 
@@ -34,48 +35,50 @@ def main():
     )
 
     options, args = parser.parse_args()
-    o = sys.stdout
-    if options.outputFilename is not None:
-        o = open(options.outputFilename, "w")
+    with (
+        open(options.outputFilename, "w")
+        if options.outputFilename is not None
+        else contextlib.nullcontext(sys.stdout)
+    ) as o:
+        for filename in args:
+            print(filename)
+            linenum = 1
+            with open(filename) as f:
+                for line in f:
+                    if linenum % 1000 == 0:
+                        print("line", linenum)
+                    linenum += 1
 
-    for filename in args:
-        print(filename)
-        linenum = 1
-        for line in file(filename):
-            if linenum % 1000 == 0:
-                print("line", linenum)
-            linenum += 1
+                    # try:
 
-            # try:
+                    match_obj = uscg_ais_nmea_regex.search(line)
+                    if match_obj is None:
+                        sys.stderr.write(line)
+                        continue
+                    station = match_obj.group("station")
 
-            match_obj = uscg_ais_nmea_regex.search(line)
-            if match_obj is None:
-                sys.stderr.write(line)
-                continue
-            station = match_obj.group("station")
+                    # except:
+                    #    sys.stderr.write('bad line: %s\n' %line)
+                    #    continue
 
-            # except:
-            #    sys.stderr.write('bad line: %s\n' %line)
-            #    continue
-
-            fields = line.split(",")[:6]
-            if fields[2] != "1":  # Must be the start of a sequence
-                # if verbose:
-                #    print 'skipping based on field 2',line
-                continue
-            if len(fields[5]) < 39:
-                # if verbose:
-                #    print 'skipping',line
-                continue
-            bv = binary.ais6tobitvec(fields[5][:39])  # Hacked for speed
-            # print int(bv[8:38]),aisstring.decode(bv[112:232],True)
-            name = aisstring.decode(bv[112:232], True).strip("@ ")
-            mmsi = str(int(bv[8:38]))
-            imo = str(int(bv[40:70]))
-            # if len(name)<1 or name[0]=='X': print 'TROUBLE with line:',line
-            if len(name) < 1:
-                print("TROUBLE with line:", line)
-            o.write(mmsi + " " + imo + " " + station + " " + name + "\n")
+                    fields = line.split(",")[:6]
+                    if fields[2] != "1":  # Must be the start of a sequence
+                        # if verbose:
+                        #    print 'skipping based on field 2',line
+                        continue
+                    if len(fields[5]) < 39:
+                        # if verbose:
+                        #    print 'skipping',line
+                        continue
+                    bv = binary.ais6tobitvec(fields[5][:39])  # Hacked for speed
+                    # print int(bv[8:38]),aisstring.decode(bv[112:232],True)
+                    name = aisstring.decode(bv[112:232], True).strip("@ ")
+                    mmsi = str(int(bv[8:38]))
+                    imo = str(int(bv[40:70]))
+                    # if len(name)<1 or name[0]=='X': print 'TROUBLE with line:',line
+                    if len(name) < 1:
+                        print("TROUBLE with line:", line)
+                    o.write(mmsi + " " + imo + " " + station + " " + name + "\n")
 
 
 if __name__ == "__main__":

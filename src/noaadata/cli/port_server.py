@@ -121,7 +121,7 @@ class PassThroughServer:
         self.options = options
         if options.log_file:
             self.curLogFile = self.getLogFileName()
-            self.log = open(self.curLogFile, "a")
+            self.log = open(self.curLogFile, "a")  # noqa: SIM115
             self.logfile_add_start()
         else:
             self.log = None
@@ -254,7 +254,7 @@ class PassThroughServer:
                     )
                     self.log.close()
                     self.curLogFile = new_log_file
-                    self.log = open(self.curLogFile, "a")
+                    self.log = open(self.curLogFile, "a")  # noqa: SIM115
                     self.logfile_add_start()
                     self.znt.out_file = (
                         self.log

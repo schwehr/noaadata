@@ -326,19 +326,20 @@ def main():
             print()
             print(znt2.pretty())
 
-    znt_logger = ZntLogger(
-        open(options.out_file, "w"),
-        enabled=True,  # Just force on in the case of the test program.
-        max_sec=options.znt_max_sec,
-        max_cnt=options.znt_max_cnt,
-        always=options.znt_always,
-        station=options.station,
-        verbose=options.verbose,
-    )
+    with open(options.out_file, "w") as out_f:
+        znt_logger = ZntLogger(
+            out_f,
+            enabled=True,  # Just force on in the case of the test program.
+            max_sec=options.znt_max_sec,
+            max_cnt=options.znt_max_cnt,
+            always=options.znt_always,
+            station=options.station,
+            verbose=options.verbose,
+        )
 
-    while True:
-        time.sleep(options.delay)
-        znt_logger.update()
+        while True:
+            time.sleep(options.delay)
+            znt_logger.update()
 
 
 if __name__ == "__main__":

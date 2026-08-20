@@ -245,72 +245,81 @@ def main():
 """)
     itemNum = 0  # For staggering/stuttering the height
     for filename in args:
-        for line in open(filename):
-            fields = line.split()
-            x, y = fields[:2]
-            if x == "181":
-                continue  # bad data - typical for AIS positions that are not valid
+        with open(filename) as f:
+            for line in f:
+                fields = line.split()
+                x, y = fields[:2]
+                if x == "181":
+                    continue  # bad data - typical for AIS positions that are not valid
 
-            if shapeType == "point":
-                print("      <Placemark>")
-                if len(fields) > 2:
-                    print("        <name>" + fields[-1] + "</name>")
-                print("        <description>" + " ".join(fields[2:]) + "</description>")
-                print(
-                    "        <Point><coordinates>"
-                    + x
-                    + ","
-                    + y
-                    + ",0</coordinates></Point>"
-                )
-                print("      </Placemark>")
+                if shapeType == "point":
+                    print("      <Placemark>")
+                    if len(fields) > 2:
+                        print("        <name>" + fields[-1] + "</name>")
+                    print(
+                        "        <description>"
+                        + " ".join(fields[2:])
+                        + "</description>"
+                    )
+                    print(
+                        "        <Point><coordinates>"
+                        + x
+                        + ","
+                        + y
+                        + ",0</coordinates></Point>"
+                    )
+                    print("      </Placemark>")
 
-            if shapeType == "square":
-                xutm, yutm = proj(float(x), float(y))
-                xmin, ymin = proj(xutm - radius, yutm - radius, inverse=True)
-                xmax, ymax = proj(xutm + radius, yutm + radius, inverse=True)
-                xmin = str(xmin)
-                ymin = str(ymin)
-                xmax = str(xmax)
-                ymax = str(ymax)
-                print("      <Placemark>")
-                if len(fields) > 2:
-                    print("        <name>" + fields[-1] + "</name>")
-                # print '        <description>'+' '.join(fields[2:])+'</description>'
-                print("        <Polygon><outerBoundaryIs><LinearRing><coordinates>")
-                print("          " + xmin + "," + ymax + "," + str(z))
-                print("          " + xmin + "," + ymin + "," + str(z))
-                print("          " + xmax + "," + ymin + "," + str(z))
-                print("          " + xmax + "," + ymax + "," + str(z))
-                print("          " + xmin + "," + ymax + "," + str(z))
-                print("        </coordinates></LinearRing></outerBoundaryIs></Polygon>")
-                print("      </Placemark>")
+                if shapeType == "square":
+                    xutm, yutm = proj(float(x), float(y))
+                    xmin, ymin = proj(xutm - radius, yutm - radius, inverse=True)
+                    xmax, ymax = proj(xutm + radius, yutm + radius, inverse=True)
+                    xmin = str(xmin)
+                    ymin = str(ymin)
+                    xmax = str(xmax)
+                    ymax = str(ymax)
+                    print("      <Placemark>")
+                    if len(fields) > 2:
+                        print("        <name>" + fields[-1] + "</name>")
+                    # print '        <description>'+' '.join(fields[2:])+'</description>'
+                    print("        <Polygon><outerBoundaryIs><LinearRing><coordinates>")
+                    print("          " + xmin + "," + ymax + "," + str(z))
+                    print("          " + xmin + "," + ymin + "," + str(z))
+                    print("          " + xmax + "," + ymin + "," + str(z))
+                    print("          " + xmax + "," + ymax + "," + str(z))
+                    print("          " + xmin + "," + ymax + "," + str(z))
+                    print(
+                        "        </coordinates></LinearRing></outerBoundaryIs></Polygon>"
+                    )
+                    print("      </Placemark>")
 
-            if shapeType == "circle":
-                itemNum += 1
-                if options.staggerHeight is not None:
-                    z = zOrig if itemNum % 2 == 0 else zOrig + options.staggerHeight
+                if shapeType == "circle":
+                    itemNum += 1
+                    if options.staggerHeight is not None:
+                        z = zOrig if itemNum % 2 == 0 else zOrig + options.staggerHeight
 
-                xutm, yutm = proj(float(x), float(y))
-                pts = getCircle(xutm, yutm, radius)
-                print("      <Placemark>")
-                if len(fields) > 2:
-                    print("        <name>" + fields[-1] + "</name>")
-                if options.withStyle:
-                    print("        <styleUrl>#" + options.styleName + "</styleUrl>")
-                # print '        <description>'+' '.join(fields[2:])+'</description>'
-                print("        <Polygon>")
-                print("          <altitudeMode>relativeToGround</altitudeMode>")
-                print("            <outerBoundaryIs><LinearRing><coordinates>")
-                # print '          '+xmin+','+ymax+','+str(z)
-                for pt in pts:
-                    x, y = proj(pt[0], pt[1], inverse=True)
+                    xutm, yutm = proj(float(x), float(y))
+                    pts = getCircle(xutm, yutm, radius)
+                    print("      <Placemark>")
+                    if len(fields) > 2:
+                        print("        <name>" + fields[-1] + "</name>")
+                    if options.withStyle:
+                        print("        <styleUrl>#" + options.styleName + "</styleUrl>")
+                    # print '        <description>'+' '.join(fields[2:])+'</description>'
+                    print("        <Polygon>")
+                    print("          <altitudeMode>relativeToGround</altitudeMode>")
+                    print("            <outerBoundaryIs><LinearRing><coordinates>")
+                    # print '          '+xmin+','+ymax+','+str(z)
+                    for pt in pts:
+                        x, y = proj(pt[0], pt[1], inverse=True)
+                        print("            " + str(x) + "," + str(y) + "," + str(z))
+                    # Close the circle
+                    x, y = proj(pts[0][0], pts[0][1], inverse=True)
                     print("            " + str(x) + "," + str(y) + "," + str(z))
-                # Close the circle
-                x, y = proj(pts[0][0], pts[0][1], inverse=True)
-                print("            " + str(x) + "," + str(y) + "," + str(z))
-                print("        </coordinates></LinearRing></outerBoundaryIs></Polygon>")
-                print("      </Placemark>")
+                    print(
+                        "        </coordinates></LinearRing></outerBoundaryIs></Polygon>"
+                    )
+                    print("      </Placemark>")
 
     print("""
     </Folder>

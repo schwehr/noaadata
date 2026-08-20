@@ -146,12 +146,13 @@ def main():
         if options.withStyle:
             print("\t  <styleUrl>#" + options.styleName + "</styleUrl>")
         print("\t  <LineString><coordinates>")
-        for point in open(filename):
-            x, y = point.split()[:2]
-            if options.z is not None:
-                print("\t\t", x + "," + y + "," + str(options.z))
-            else:
-                print("\t\t" + x + "," + y + ",0")
+        with open(filename) as f:
+            for point in f:
+                x, y = point.split()[:2]
+                if options.z is not None:
+                    print("\t\t", x + "," + y + "," + str(options.z))
+                else:
+                    print("\t\t" + x + "," + y + ",0")
         print("\t  </coordinates></LineString>")
         print("\t</Placemark>")
         print("</Folder>")

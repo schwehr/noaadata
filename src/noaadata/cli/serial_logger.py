@@ -182,7 +182,7 @@ def start(options, pts):
     current_day = time.gmtime()[2]
     if not options.daemonMode:
         sys.stderr.write(f"opening logfile: {logfile}\n")
-    log = open(logfile, "a")
+    log = open(logfile, "a")  # noqa: SIM115
     log.write("# START LOGGING UTC seconds since the epoch: " + str(time.time()) + "\n")
     log.write("# SPEED:       " + str(options.baud) + "\n")
     log.write("# PORT:        " + str(options.port) + "\n")
@@ -214,7 +214,7 @@ def start(options, pts):
             log.write("# Log roll over\n")
             log.close()
             logfile = options.log_prefix + date_str()
-            log = open(logfile, "a")
+            log = open(logfile, "a")  # noqa: SIM115
             log.write(
                 "# START LOGGING UTC seconds since the epoch: "
                 + str(time.time())
@@ -469,7 +469,8 @@ def main():
     if options.daemonMode:
         create_daemon()
         if options.pidFile is not None:
-            open(options.pidFile, "w").write(str(os.getpid()) + "\n")
+            with open(options.pidFile, "w") as f:
+                f.write(str(os.getpid()) + "\n")
 
     pts = None
     if options.tcpOutput:

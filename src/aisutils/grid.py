@@ -698,21 +698,21 @@ class Grid:
 
     def writeLayoutGnuplot(self, filename):
         "Write out the grid lines as gnuplot dat file"
-        o = open(filename, "w")
-        # Horizontal lines
-        minxStr = str(self.minx) + " "
-        maxxStr = str(self.maxx) + " "
-        for yCell in range(self.yNumCells + 1):
-            yStr = str(self.miny + yCell * self.stepSize) + " 0\n"
-            o.write(minxStr + yStr)
-            o.write(maxxStr + yStr + "\n")
-        # Vertical Lines
-        minyStr = " " + str(self.miny) + " 0\n"
-        maxyStr = " " + str(self.maxy) + " 0\n"
-        for xCell in range(self.xNumCells + 1):
-            xStr = str(self.minx + xCell * self.stepSize)
-            o.write(xStr + minyStr)
-            o.write(xStr + maxyStr + "\n")
+        with open(filename, "w") as o:
+            # Horizontal lines
+            minxStr = str(self.minx) + " "
+            maxxStr = str(self.maxx) + " "
+            for yCell in range(self.yNumCells + 1):
+                yStr = str(self.miny + yCell * self.stepSize) + " 0\n"
+                o.write(minxStr + yStr)
+                o.write(maxxStr + yStr + "\n")
+            # Vertical Lines
+            minyStr = " " + str(self.miny) + " 0\n"
+            maxyStr = " " + str(self.maxy) + " 0\n"
+            for xCell in range(self.xNumCells + 1):
+                xStr = str(self.minx + xCell * self.stepSize)
+                o.write(xStr + minyStr)
+                o.write(xStr + maxyStr + "\n")
 
     def addMultiSegLine(self, multiSegLine, verbose=False):
         grid = self.grid
@@ -761,27 +761,27 @@ class Grid:
         """
         assert not useSquares  # FIX: implement this feature
         grid = self.grid
-        o = open(filename, "w")
-        for i in range(grid.shape[0]):
-            for j in range(grid.shape[1]):
-                x, y = self.getCellCenter(i, j)
-                o.write(f"{x:f} {y:f} {grid[i, j]:f}\n")
+        with open(filename, "w") as o:
+            for i in range(grid.shape[0]):
+                for j in range(grid.shape[1]):
+                    x, y = self.getCellCenter(i, j)
+                    o.write(f"{x:f} {y:f} {grid[i, j]:f}\n")
 
     def writeArcAsciiGrid(self, filename):
         g = self.grid
-        o = open(filename, "w")
-        o.write("ncols        " + str(self.xNumCells) + "\n")
-        o.write("nrows        " + str(self.yNumCells) + "\n")
-        o.write("xllcorner    " + str(self.minx) + "\n")
-        o.write("yllcorner    " + str(self.miny) + "\n")
-        o.write("cellsize     " + str(self.stepSize) + "\n")
-        for j in range(self.yNumCells - 1, -1, -1):
-            # print j
-            zPoints = []
-            for i in range(self.xNumCells):
-                zPoints.append("%3d" % (g[i, j]))
-            o.write(" ".join(zPoints))
-            o.write("\n")
+        with open(filename, "w") as o:
+            o.write("ncols        " + str(self.xNumCells) + "\n")
+            o.write("nrows        " + str(self.yNumCells) + "\n")
+            o.write("xllcorner    " + str(self.minx) + "\n")
+            o.write("yllcorner    " + str(self.miny) + "\n")
+            o.write("cellsize     " + str(self.stepSize) + "\n")
+            for j in range(self.yNumCells - 1, -1, -1):
+                # print j
+                zPoints = []
+                for i in range(self.xNumCells):
+                    zPoints.append("%3d" % (g[i, j]))
+                o.write(" ".join(zPoints))
+                o.write("\n")
 
 
 ############################################################

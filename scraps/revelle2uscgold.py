@@ -10,8 +10,9 @@ import sys
 vdo_count = 0
 
 for filename in sys.argv[1:]:
-    for line in open(filename):
-        line.strip()
+    with open(filename) as f:
+        for line in f:
+            line.strip()
         fields = line.split()
 
         nmea = fields[1]

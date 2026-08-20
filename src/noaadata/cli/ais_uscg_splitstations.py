@@ -18,6 +18,7 @@ Split USCG N-AIS messages into separate stations
 @license: Apache 2.0
 """
 
+import contextlib
 import os
 
 
@@ -64,24 +65,25 @@ def splitstations(
     else:
         subdir = "."
 
-    stations = {}
-    for line in logfile:
-        station = getStation(line)
-        if station is None:
-            continue
+    with contextlib.ExitStack() as stack:
+        stations = {}
+        for line in logfile:
+            station = getStation(line)
+            if station is None:
+                continue
 
-        # Handle opening the file if have not seen the station before
-        if station not in stations:
-            if verbose:
-                print("New station:", station)
-            filename = subdir + "/" + station
-            if stationSubdirs:
-                if not os.access(filename, os.X_OK):
-                    os.mkdir(filename)
-                filename += "/log.ais"
-            stations[station] = file(filename, "a")
+            # Handle opening the file if have not seen the station before
+            if station not in stations:
+                if verbose:
+                    print("New station:", station)
+                filename = subdir + "/" + station
+                if stationSubdirs:
+                    if not os.access(filename, os.X_OK):
+                        os.mkdir(filename)
+                    filename += "/log.ais"
+                stations[station] = stack.enter_context(open(filename, "a"))
 
-        stations[station].write(line)
+            stations[station].write(line)
 
     if verbose:
         print("Finished file.  Station count =", len(stations))
@@ -136,15 +138,15 @@ def main():
     for filename in args:
         if options.verbose:
             print("Processing file:", filename)
-        logfile = open(filename)
-        splitstations(
-            logfile,
-            options.subdir,
-            options.basename,
-            options.withR,
-            options.verbose,
-            options.withStationSubdirs,
-        )
+        with open(filename) as logfile:
+            splitstations(
+                logfile,
+                options.subdir,
+                options.basename,
+                options.withR,
+                options.verbose,
+                options.withStationSubdirs,
+            )
 
 
 if __name__ == "__main__":

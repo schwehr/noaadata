@@ -198,7 +198,6 @@ ignore = [
     "SIM105",  # Suppressible exception
     "SIM108",  # Use ternary operator
     "SIM113",  # Enumerate for loop
-    "SIM115",  # Open file with context handler
 ]
 
 [tool.ruff.lint.per-file-ignores]
