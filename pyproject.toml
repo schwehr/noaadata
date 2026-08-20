@@ -201,8 +201,6 @@ ignore = [
     "SIM115",  # Open file with context handler
     "B018",    # Useless attribute access
     "B904",    # Raise without from
-    "RUF012",  # Mutable class default
-    "RUF100",  # Unused noqa directive
 ]
 
 [tool.ruff.lint.per-file-ignores]

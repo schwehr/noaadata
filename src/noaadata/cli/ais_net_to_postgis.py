@@ -23,6 +23,7 @@ import socket
 import sys
 import time
 import traceback
+import typing
 
 import magicdate
 import thread
@@ -340,7 +341,7 @@ class PassThroughServer:
     """
 
     # Indexed by socket. Handles if we have partial text.
-    nmeaInputs = {}
+    nmeaInputs: typing.ClassVar[dict] = {}
 
     def __init__(self, options, dbHandler):
         """
