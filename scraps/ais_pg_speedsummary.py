@@ -196,9 +196,7 @@ if __name__ == "__main__":
         monthCounts = [
             0,
         ] * 13  # leave 0 well alone
-        shipCount = 0
-        for ship in ships:
-            shipCount += 1
+        for shipCount, ship in enumerate(ships, start=1):
             if shipCount % 20 == 0:
                 print(" ", shipCount)
             q = (

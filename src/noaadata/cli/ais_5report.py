@@ -94,23 +94,22 @@ def main():
     msgsByShip = {}
     # FIX: error checking?
     for filename in args:
-        linenum = 0
-        for line in file(filename):
-            line = line.strip()
-            linenum += 1
-            if linenum % 1000 == 0:
-                print(linenum)
-            fields = line.split(",")
-            bv = binary.ais6tobitvec(fields[5][:38])
-            mmsi = m5.decodeUserID(bv)
-            timestamp = fields[-1]
+        with open(filename) as f:
+            for linenum, line in enumerate(f, start=1):
+                line = line.strip()
+                if linenum % 1000 == 0:
+                    print(linenum)
+                fields = line.split(",")
+                bv = binary.ais6tobitvec(fields[5][:38])
+                mmsi = m5.decodeUserID(bv)
+                timestamp = fields[-1]
 
-            if mmsi in msgsByShip:
-                # if line not in msgsByShip:
-                msgsByShip[mmsi].append(line)
-            # if line in timeByMsgs
-            else:
-                msgsByShip[mmsi] = [line]
+                if mmsi in msgsByShip:
+                    # if line not in msgsByShip:
+                    msgsByShip[mmsi].append(line)
+                # if line in timeByMsgs
+                else:
+                    msgsByShip[mmsi] = [line]
 
     print("Finished scan.  Now processing ships.\n")
 

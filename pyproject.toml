@@ -197,7 +197,6 @@ ignore = [
     "SIM103",  # Return negated condition directly
     "SIM105",  # Suppressible exception
     "SIM108",  # Use ternary operator
-    "SIM113",  # Enumerate for loop
 ]
 
 [tool.ruff.lint.per-file-ignores]

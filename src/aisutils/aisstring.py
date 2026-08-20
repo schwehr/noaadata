@@ -267,15 +267,12 @@ def buildDict():
     Returns:
         test to stdout
     """
-    count = 0
     print("characterDict={")
-    for i in range(len(characterLUT)):
-        count += 1
-        c = characterLUT[i]
+    for i, c in enumerate(characterLUT):
         if c == "\\":
             c = "\\\\"
         print("'" + c + "': " + str(i) + ",", end=" ")
-        if count % 6 == 0:
+        if (i + 1) % 6 == 0:
             print()
     print("}")
 

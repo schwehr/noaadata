@@ -327,27 +327,25 @@ def main():
         print(sql)
     cu.execute(sql)
 
-    tracksFile = file(basename + "-tracks.dat", "w")
-    trackNum = 0
-    for trackline in cu.fetchall():
-        trackNum += 1
-        if trackNum % 50 == 0:
-            sys.stderr.write("track " + str(trackNum) + "\n")
+    with open(basename + "-tracks.dat", "w") as tracksFile:
+        for trackNum, trackline in enumerate(cu.fetchall(), start=1):
+            if trackNum % 50 == 0:
+                sys.stderr.write("track " + str(trackNum) + "\n")
 
-        track = trackline[0]  # print track
-        trackseq = grid.wktLine2list(track)  # print trackseq
-        if verbose:
-            print("len", len(trackseq))
-            if len(trackseq) < 2:
-                print("TOO SHORT: ", track)
-                sys.exit("crap")
-        for pt in trackseq:
-            tracksFile.write(str(pt[0]) + " " + str(pt[1]) + " 0\n")
-        # cells = getMultiSegLineCells(bbox,step,trackseq,verbose)
-        # print cells
-        g.addMultiSegLine(trackseq)
+            track = trackline[0]  # print track
+            trackseq = grid.wktLine2list(track)  # print trackseq
+            if verbose:
+                print("len", len(trackseq))
+                if len(trackseq) < 2:
+                    print("TOO SHORT: ", track)
+                    sys.exit("crap")
+            for pt in trackseq:
+                tracksFile.write(str(pt[0]) + " " + str(pt[1]) + " 0\n")
+            # cells = getMultiSegLineCells(bbox,step,trackseq,verbose)
+            # print cells
+            g.addMultiSegLine(trackseq)
 
-    tracksFile.write("\n")
+        tracksFile.write("\n")
 
     g.writeCellsGnuplot(basename + "-cells.dat")
     g.writeArcAsciiGrid(basename + "-grd.asc")

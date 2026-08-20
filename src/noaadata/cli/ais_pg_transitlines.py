@@ -160,10 +160,7 @@ CREATE TABLE """
     # Loop through each transit and create the line geometry in tpath
     cu.execute("SELECT * FROM transit;")
     cu2 = cx.cursor()
-    rowNum = 0
-    for row in cu.fetchall():
-        rowNum += 1
-
+    for rowNum, row in enumerate(cu.fetchall(), start=1):
         id, userid, startpos, endpos = row
 
         cu2.execute(

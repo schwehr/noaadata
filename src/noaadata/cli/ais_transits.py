@@ -342,9 +342,7 @@ def detectTransits(inFile, basename, options):
             totalSamples = (
                 0  # What was the total number of AIS position messages from this ship?
             )
-            transitCount = 0  # What transit number for THIS ship
-            for tr in transits:
-                transitCount += 1
+            for transitCount, tr in enumerate(transits, start=1):
                 start = tr[0]
                 end = tr[1]
                 samples = tr[2]

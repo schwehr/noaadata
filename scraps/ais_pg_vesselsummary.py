@@ -116,26 +116,24 @@ def main():
     ws = workbook.add_sheet("Vessel Stats")
     ws_row = 0
 
-    col = 0
-    for colname in (
-        "mmsi/userid",
-        "imonumber",
-        "callsign",
-        "name",
-        "shipandcargo",
-        "shipandcargo text",
-        "length",
-        "width",
-        "min_draught",
-        "max_draught",
+    for col, colname in enumerate(
+        (
+            "mmsi/userid",
+            "imonumber",
+            "callsign",
+            "name",
+            "shipandcargo",
+            "shipandcargo text",
+            "length",
+            "width",
+            "min_draught",
+            "max_draught",
+        )
     ):
         ws.write(ws_row, col, colname)
-        col += 1
     ws_row += 1
 
-    vesselcount = 0
-    for vessel in vessels:
-        vesselcount += 1
+    for vesselcount, vessel in enumerate(vessels, start=1):
         if vesselcount % 10 == 0:
             print("vessel count", vesselcount)
 
