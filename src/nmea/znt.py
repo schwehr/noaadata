@@ -156,8 +156,8 @@ class Znt:
     def decode_znt(self, nmea_str):
         try:
             match = znt_regex.search(nmea_str).groupdict()
-        except:
-            raise NmeaNotZnt()
+        except Exception:
+            raise NmeaNotZnt() from None
 
         if checksum_str(nmea_str) != match["checksum"]:
             raise NmeaChecksumError(

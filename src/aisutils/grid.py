@@ -737,7 +737,7 @@ class Grid:
                     print("error on grid cell inc:", str(multiSegLine)[:40], "...")
                     print("CRAP... grid failure")
                     print("  ", cell, self.xNumCells, self.yNumCells)
-                    raise ValueError("Invalid payload or state")
+                    raise ValueError("Invalid payload or state") from e
         elif self.gridType == "distance":
             result = self.getMultiSegLineCellsWithCrossings(multiSegLine)
             if verbose:

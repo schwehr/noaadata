@@ -59,7 +59,9 @@ def create_daemon():
     try:
         pid = os.fork()
     except OSError as except_params:
-        raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
+        raise Exception(
+            "%s [%d]" % (except_params.strerror, except_params.errno)
+        ) from except_params
 
     if pid == 0:
         # The first child.
@@ -68,7 +70,9 @@ def create_daemon():
         try:
             pid = os.fork()  # Fork a second child.
         except OSError as except_params:
-            raise Exception("%s [%d]" % (except_params.strerror, except_params.errno))
+            raise Exception(
+                "%s [%d]" % (except_params.strerror, except_params.errno)
+            ) from except_params
 
         if pid != 0:
             os._exit(0)  # Exit parent (the first child) of the second child.

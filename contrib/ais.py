@@ -925,7 +925,7 @@ if __name__ == "__main__":
         (options, arguments) = getopt.getopt(sys.argv[1:], "cjs")
     except getopt.GetoptError as msg:
         print("ais.py: " + str(msg))
-        raise SystemExit(1)
+        raise SystemExit(1) from msg
 
     scaled = False
     json = False
