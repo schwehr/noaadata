@@ -77,7 +77,7 @@ def ggaDecode(nmeaStr, validate=False):
     """
     if validate:
         assert len(nmeaStr) >= 71
-        assert len(nmeaStr) <= 78
+        assert len(nmeaStr) <= 82
         assert nmeaStr[0] in ("$", "!")
         assert nmeaStr[3:6] == "GGA"
         # assert(nmea.isChecksumValid(nmeaStr))
