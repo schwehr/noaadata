@@ -29,6 +29,24 @@ def test_make_float():
     assert d["otherval"] == "4.56"
 
 
+def test_make_float_missing_key():
+    d = {"val": "1.23"}
+    with pytest.raises(KeyError):
+        znt.make_float(d, "missing_key")
+
+
+def test_make_float_invalid_value():
+    d = {"val": "not_a_float"}
+    with pytest.raises(ValueError):
+        znt.make_float(d, "val")
+
+
+def test_make_float_invalid_type():
+    d = {"val": None}
+    with pytest.raises(TypeError):
+        znt.make_float(d, "val")
+
+
 def test_znt_decode_success():
     nmea_str = "$PNTZNT,1270567048.57,127.0.0.1,17.151.16.21,4,1270565749.41,0.000080,-20,0.117325,0.046249*14"
     z = znt.Znt(nmea_str=nmea_str)
