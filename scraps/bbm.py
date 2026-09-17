@@ -29,8 +29,9 @@ Output python code for BBM encode and decode for a particular binary message
 import os
 import sys
 
-import ais.nmea
 import StringIO
+
+import ais.nmea
 
 
 def create(payload, fill_bits=0, prefix="xx", seq_msg_id=0, msg_type=8, ais_chan="A"):
