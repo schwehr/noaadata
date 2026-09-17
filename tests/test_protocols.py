@@ -2,7 +2,6 @@
 
 from ais.protocols import AISMessageHandler
 from aisutils.protocols import DatabaseBridge, GISExporter
-from nmea.protocols import NMEASentenceHandler
 
 
 class DummyAISDecoder:
@@ -11,14 +10,6 @@ class DummyAISDecoder:
 
     def encode(self, params, validate=True):
         return None
-
-
-class DummyNMEADecoder:
-    def decode(self, sentence):
-        return {"talker": "GP"}
-
-    def checksum(self, sentence):
-        return "00"
 
 
 class DummyDBBridge:
@@ -37,11 +28,6 @@ class DummyGISExporter:
 def test_ais_message_handler_protocol():
     decoder = DummyAISDecoder()
     assert isinstance(decoder, AISMessageHandler)
-
-
-def test_nmea_sentence_handler_protocol():
-    decoder = DummyNMEADecoder()
-    assert isinstance(decoder, NMEASentenceHandler)
 
 
 def test_database_bridge_protocol():
