@@ -24,8 +24,9 @@ TODO(schwehr): How to deal with bad positions?
 """
 import sys
 
-import ais.ais_msg_1 as m1
 import ais.binary
+
+import ais.ais_msg_1 as m1
 from aisutils import uscg
 
 
