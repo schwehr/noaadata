@@ -94,7 +94,6 @@ import ais_msg_22
 # import ais_msg_24
 # import ais_msg_25
 # import ais_msg_26
-import binary
 
 msgModByNumber = {
     1: ais_msg_1,
