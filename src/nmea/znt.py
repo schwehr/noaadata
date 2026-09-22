@@ -15,6 +15,7 @@ try:
 except ImportError:
     ntplib = None
 
+import datetime
 import functools
 import operator
 import optparse
@@ -75,7 +76,7 @@ def print_response(response):
     )
     print("Poll : %d" % response.poll)
     print("Mode : %s (%d)" % (ntplib.mode_to_text(response.mode), response.mode))
-    print(f"Python time: {time.time():f}, {datetime.datetime.utcnow()!s}")
+    print(f"Python time: {time.time():f}, {datetime.datetime.now(datetime.UTC)!s}")
     print("Transmit timestamp : " + time.ctime(response.tx_time))
     print("Reference timestamp : " + time.ctime(response.ref_time))
     print("Original timestamp : " + time.ctime(response.orig_time))

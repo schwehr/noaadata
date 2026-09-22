@@ -195,3 +195,43 @@ def test_znt_logger_update_no_write(mock_znt_class):
     # Force write
     logger.update(force=True)
     assert mock_znt_class.called
+
+
+def test_print_response(capsys):
+    response = MockNTPStats()
+    znt.print_response(response)
+
+    captured = capsys.readouterr()
+    stdout = captured.out
+
+    assert "Version number : 4" in stdout
+    assert "Offset : 0.000080" in stdout
+    assert "Stratum :" in stdout
+    assert "Precision : -20" in stdout
+    assert "Root delay : 0.117325" in stdout
+    assert "Root dispersion : 0.046249" in stdout
+    assert "Delay : 0.001000" in stdout
+    assert "Leap indicator :" in stdout
+    assert "Poll : 6" in stdout
+    assert "Mode :" in stdout
+    assert "Python time:" in stdout
+    assert "Transmit timestamp :" in stdout
+    assert "Reference timestamp :" in stdout
+    assert "Original timestamp :" in stdout
+    assert "Receive timestamp :" in stdout
+    assert "Destination timestamp :" in stdout
+    assert "Reference clock identifier :" in stdout
+
+
+def test_print_response_stratum_1(capsys):
+    response = MockNTPStats()
+    response.stratum = 1
+    response.ref_id = 1195725632  # 'GPS ' in 32-bit uint
+    znt.print_response(response)
+
+    captured = capsys.readouterr()
+    stdout = captured.out
+
+    assert "Stratum :" in stdout
+    assert "(1)" in stdout
+    assert "Reference clock identifier :" in stdout
