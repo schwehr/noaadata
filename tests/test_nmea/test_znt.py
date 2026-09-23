@@ -1,4 +1,5 @@
 import io
+import optparse
 import time
 from unittest import mock
 
@@ -268,3 +269,47 @@ def test_print_response_stratum_1(capsys):
     assert "Stratum :" in stdout
     assert "(1)" in stdout
     assert "Reference clock identifier :" in stdout
+
+
+def test_znt_logger_opts_defaults():
+    parser = optparse.OptionParser()
+    returned_parser = znt.znt_logger_opts(parser)
+    assert returned_parser is parser
+    options, _ = parser.parse_args([])
+    assert options.znt_enable is False
+    assert options.znt_max_sec == 5.0
+    assert options.znt_max_cnt == 10000
+    assert options.znt_always is False
+
+
+def test_znt_logger_opts_custom():
+    parser = optparse.OptionParser()
+    znt.znt_logger_opts(parser)
+    options, _ = parser.parse_args(
+        [
+            "--znt-enable",
+            "--znt-max-sec",
+            "12.5",
+            "--znt-max-cnt",
+            "500",
+            "--znt-always",
+        ]
+    )
+    assert options.znt_enable is True
+    assert options.znt_max_sec == 12.5
+    assert options.znt_max_cnt == 500
+    assert options.znt_always is True
+
+
+@mock.patch("nmea.znt.Znt")
+def test_znt_logger_update_verbose(mock_znt_class, capsys):
+    mock_znt_instance = mock.Mock()
+    mock_znt_instance.nmea_str = "$PNTZNT,fake*xx"
+    mock_znt_class.return_value = mock_znt_instance
+
+    out_file = io.StringIO()
+    logger = znt.ZntLogger(out_file, always=True, verbose=True)
+    logger.update()
+
+    captured = capsys.readouterr()
+    assert "$PNTZNT,fake*xx" in captured.out
