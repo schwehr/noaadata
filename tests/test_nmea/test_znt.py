@@ -122,16 +122,49 @@ def test_znt_get_status(mock_ref_id_to_text):
     assert z.nmea_str.endswith(f"*{znt.checksum_str(z.nmea_str)}")
 
 
-def test_znt_pretty():
+def test_znt_pretty_decoded_exact_format():
     nmea_str = "$PNTZNT,1270567048.57,127.0.0.1,17.151.16.21,4,1270565749.41,0.000080,-20,0.117325,0.046249*14"
     z = znt.Znt(nmea_str=nmea_str)
     pretty_str = z.pretty()
 
-    assert "ZNT - NMEA Proprietary NTP status report" in pretty_str
-    assert "talker:    NT" in pretty_str
-    assert "timestamp:    1270567048.57" in pretty_str
-    assert "stratum:    4" in pretty_str
-    assert "precision:    -20.0" in pretty_str
+    expected = (
+        "ZNT - NMEA Proprietary NTP status report\n\n"
+        "            talker:    NT\n"
+        "         timestamp:    1270567048.57\n"
+        "              host:    127.0.0.1\n"
+        "         ref_clock:    17.151.16.21\n"
+        "           stratum:    4\n"
+        "       last_update:    1270565749.41\n"
+        "            offset:    8e-05\n"
+        "         precision:    -20.0\n"
+        "        root_delay:    0.117325\n"
+        "   root_dispersion:    0.046249"
+    )
+    assert pretty_str == expected
+
+
+@mock.patch("ntplib.NTPClient", MockNTPClient)
+@mock.patch("ntplib.ref_id_to_text")
+def test_znt_pretty_from_get_status(mock_ref_id_to_text):
+    mock_ref_id_to_text.return_value = "17.151.16.21"
+    z = znt.Znt(hostname="127.0.0.1")
+    pretty_str = z.pretty()
+
+    lines = pretty_str.split("\n")
+    assert lines[0] == "ZNT - NMEA Proprietary NTP status report"
+    assert lines[1] == ""
+    assert "            talker:    PNT" in lines[2]
+    assert "              host:    127.0.0.1" in lines[4]
+    assert "         ref_clock:    17.151.16.21" in lines[5]
+    assert "           stratum:    2" in lines[6]
+
+
+def test_znt_pretty_missing_param_key_error():
+    z = znt.Znt.__new__(znt.Znt)
+    z.params = {"talker": "NT"}
+    with pytest.raises(KeyError) as exc_info:
+        z.pretty()
+    assert "timestamp" in str(exc_info.value)
 
 
 def test_znt_logger_will_write():
